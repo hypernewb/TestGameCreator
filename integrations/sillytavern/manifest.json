@@ -1,0 +1,8 @@
+{
+  "display_name": "Story Framework",
+  "loading_order": 100,
+  "js": "index.mjs",
+  "author": "Story Framework project",
+  "version": "0.2.0",
+  "auto_update": false
+}

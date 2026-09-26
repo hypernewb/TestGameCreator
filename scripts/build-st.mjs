@@ -1,0 +1,10 @@
+import {mkdirSync,cpSync,readFileSync,writeFileSync,rmSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
+const root=fileURLToPath(new URL('../',import.meta.url)),out=root+'dist/story-framework-st';
+rmSync(out,{recursive:true,force:true});mkdirSync(out,{recursive:true});
+for(const name of ['index.mjs','manifest.json'])cpSync(root+'integrations/sillytavern/'+name,out+'/'+name);
+writeFileSync(out+'/adapter.mjs',readFileSync(root+'integrations/sillytavern/adapter.mjs','utf8').replaceAll('../../packages/','./packages/'));
+for(const name of ['core','modules','ai'])cpSync(root+'packages/'+name,out+'/packages/'+name,{recursive:true});
+cpSync(root+'vendor/venus',out+'/vendor/venus',{recursive:true});
+mkdirSync(out+'/public',{recursive:true});cpSync(root+'public/calendar.mjs',out+'/public/calendar.mjs');
+cpSync(root+'packs',out+'/packs',{recursive:true});console.log('Built dist/story-framework-st. See docs/SILLYTAVERN.md before installing.');

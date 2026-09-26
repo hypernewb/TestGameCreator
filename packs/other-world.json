@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "id": "sample.other-world",
+  "version": "0.2.0",
+  "title": "Across the Threshold \u2014 Living World",
+  "subtitle": "A second world \u00b7 powers \u00b7 location lore",
+  "playerId": "traveller",
+  "calendar": "Pulse",
+  "accent": "#b2a5ef",
+  "modules": {
+    "social.conversation": "0.1.0",
+    "items.inventory": "0.1.0",
+    "story.quests": "0.1.0",
+    "powers.abilities": "0.1.0",
+    "world.objects": "0.1.0",
+    "world.daypart": "0.1.0"
+  },
+  "durations": {
+    "core.inspect": 0,
+    "social.speak": 0,
+    "powers.use": 2,
+    "powers.rest": 3
+  },
+  "locations": [
+    {
+      "id": "sanctuary",
+      "name": "Sanctuary",
+      "description": "A quiet chamber surrounds a well of light. Rest here to restore resonance. Beyond the arch lies a sealed threshold.",
+      "background": "assets/sanctuary.svg",
+      "exits": [
+        {
+          "to": "threshold"
+        },
+        {
+          "to": "retreat"
+        }
+      ]
+    },
+    {
+      "id": "threshold",
+      "name": "Threshold",
+      "description": "A lattice of pale light blocks the path. Your attunement can loosen its pattern, but doing so costs three resonance.",
+      "background": "assets/threshold.svg",
+      "exits": [
+        {
+          "to": "sanctuary"
+        },
+        {
+          "to": "observatory",
+          "flag": "seal-open",
+          "reason": "Use Attune at the Threshold to break the seal."
+        }
+      ]
+    },
+    {
+      "id": "observatory",
+      "name": "Observatory",
+      "description": "The sky is unfamiliar. A small compass rests beneath the window. Return it to the Warden to complete this test journey.",
+      "background": "assets/observatory.svg",
+      "exits": [
+        {
+          "to": "threshold"
+        }
+      ]
+    },
+    {
+      "id": "retreat",
+      "name": "Retreat",
+      "description": "A private place to pause as the next part of the day begins.",
+      "background": "assets/sanctuary.svg",
+      "exits": [
+        {
+          "to": "sanctuary"
+        }
+      ]
+    }
+  ],
+  "actors": [
+    {
+      "id": "traveller",
+      "name": "You",
+      "location": "retreat"
+    },
+    {
+      "id": "warden",
+      "name": "Warden",
+      "location": "sanctuary",
+      "description": "An adult keeper of the sanctuary.",
+      "style": "Patient and restrained",
+      "goal": "See the lost compass safely returned.",
+      "traits": [
+        "patient",
+        "vigilant"
+      ],
+      "backstory": "The Warden watches the threshold for changes in the sky.",
+      "likes": [
+        "careful observation"
+      ],
+      "dislikes": [
+        "reckless uses of resonance"
+      ],
+      "voice": "Slow, measured, slightly poetic."
+    }
+  ],
+  "items": [
+    {
+      "id": "compass",
+      "name": "Star compass",
+      "owner": "observatory"
+    }
+  ],
+  "facts": [
+    {
+      "id": "resonance-law",
+      "text": "Attunement costs three resonance. Resting in the Sanctuary restores it.",
+      "knownBy": "public"
+    }
+  ],
+  "resource": {
+    "name": "Resonance",
+    "max": 5,
+    "restAt": "sanctuary"
+  },
+  "abilities": [
+    {
+      "id": "attune",
+      "name": "Attune",
+      "cost": 3,
+      "location": "threshold",
+      "flag": "seal-open",
+      "result": "The seal opens. Three resonance spent; the Observatory is now reachable."
+    }
+  ],
+  "quests": [
+    {
+      "id": "crossing",
+      "name": "Open the threshold",
+      "hint": "Use Attune at the Threshold.",
+      "any": [
+        {
+          "event": "powers.used",
+          "match": {
+            "ability": "attune"
+          }
+        }
+      ]
+    },
+    {
+      "id": "return",
+      "name": "Return the star compass",
+      "hint": "Find the compass in the Observatory and give it to the Warden.",
+      "any": [
+        {
+          "event": "items.transferred",
+          "match": {
+            "item": "compass",
+            "to": "warden"
+          }
+        }
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "star-map",
+      "name": "Star map",
+      "location": "observatory",
+      "description": "The etched constellations point toward a world you do not know.",
+      "tags": [
+        "stars",
+        "observatory"
+      ]
+    },
+    {
+      "id": "inscribed-arch",
+      "name": "Inscribed arch",
+      "location": "threshold",
+      "description": "Lines of pale light trace a sealed passage. Attunement can open it.",
+      "tags": [
+        "threshold",
+        "seal"
+      ]
+    }
+  ],
+  "lorebook": [
+    {
+      "id": "threshold-lore",
+      "text": "The arch responds to resonance; attunement drains the traveller but opens the passage.",
+      "tags": [
+        "arch",
+        "threshold",
+        "seal"
+      ],
+      "scope": "location",
+      "location": "threshold",
+      "knownBy": "public"
+    },
+    {
+      "id": "star-lore",
+      "text": "The Observatory records constellations from a distant sky.",
+      "tags": [
+        "star",
+        "map",
+        "observatory"
+      ],
+      "scope": "location",
+      "location": "observatory",
+      "knownBy": "public"
+    }
+  ],
+  "daypart": {
+    "interval": 4,
+    "labels": [
+      "First Watch",
+      "Second Watch"
+    ],
+    "introLocation": "retreat",
+    "event": "The sky beyond the arch is shifting.",
+    "hangouts": [
+      {
+        "char": "warden",
+        "where": "Sanctuary",
+        "plan": "Study the changing sky with the Warden"
+      }
+    ],
+    "backgroundOnly": []
+  }
+}

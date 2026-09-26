@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536" role="img" aria-label="Ada portrait neutral">
+<path d="M144 1536q8-359 165-473l150-75h114l150 75q157 114 157 473" fill="#342f49" stroke="#191b2c" stroke-width="20"/>
+<path d="M306 1536l100-448 106 105 105-105 101 448" fill="#ddd2bd"/>
+<path d="M473 827v203l40 114 42-114V827" fill="#b98168"/>
+<path d="M304 478q0-260 208-280 208 20 208 280l-23 277q-27 213-185 231-158-18-185-231z" fill="#d8a483" stroke="#38252c" stroke-width="17"/>
+<path d="M317 533q-60-176-12-308 65-151 207-151 197 0 233 181 17 92-26 278-30-107-55-178-147 90-323 43-20 66-24 135z" fill="#302735"/>
+<path d="M322 510q-24 237-44 486l105-88-21-432m342 34q24 237 42 486l-105-88 21-432" fill="#302735"/>
+<path d="M382 559q31-19 76-10m107 0q45-9 76 10" fill="none" stroke="#342530" stroke-width="17" stroke-linecap="round"/>
+<path d="M381 588h71m119 0h71" stroke="#242537" stroke-width="13" stroke-linecap="round"/>
+<path d="M502 588l-10 63q16 11 38 0" fill="none" stroke="#a76d61" stroke-width="9"/>
+<path d="M452 713q61 16 119 0" fill="none" stroke="#773f47" stroke-width="12" stroke-linecap="round"/>
+<path d="M309 1110l-113 426m519-426 113 426" stroke="#716583" stroke-width="25"/>
+<path d="M674 1075q-75 82-160 100-85-18-160-100" fill="none" stroke="#e9d6c0" stroke-width="14"/>
+</svg>

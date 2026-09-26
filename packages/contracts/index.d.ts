@@ -1,0 +1,8 @@
+export interface Command { id:string; actorId:string; type:string; args:Record<string,unknown>; expectedRevision:number }
+export interface Event { id:string; type:string; payload:Record<string,unknown>; tick:number; visibility:'public'|string[] }
+export interface World { schemaVersion:number; campaignId:string; packId:string; packVersion:string; packDigest:string; moduleVersions:Record<string,string>; revision:number; tick:number; rng:number; actors:Record<string,{name:string;location:string}>; flags:Record<string,boolean>; modules:Record<string,unknown>; events:Event[]; turns:Record<string,Turn> }
+export interface Turn { id:string; command:Command; events:Event[]; narrative:string|null; status:'pending'|'complete'; fallback?:boolean; context?:unknown }
+export interface Transaction { state:World; pack:unknown; set(path:(string|number)[],value:unknown):void; emit(type:string,payload:Record<string,unknown>,visibility?:'public'|string[]):void; random():number }
+export interface Module { id:string; version:string; coreApi:string; requires:string[]; validate?(pack:any):void; init?(pack:any):unknown; commands?:Record<string,(tx:Transaction,args:any)=>void>; react?(tx:Transaction,event:Event):void; actions?(state:World,pack:any):Action[]; panel?(state:World,pack:any):{title:string;lines:string[]} }
+export interface Action { label:string; type:string; args:Record<string,unknown> }
+export interface Provider { interpret(input:string,context:unknown,actions:Action[],signal?:AbortSignal):Promise<{type:string;args:Record<string,unknown>}>; narrate(context:unknown,signal?:AbortSignal):Promise<string> }

@@ -1,0 +1,206 @@
+{
+  "schemaVersion": 1,
+  "id": "sample.economy",
+  "version": "0.1.0",
+  "title": "The Workshop \u2014 Shop and Shifts",
+  "subtitle": "Earn, buy and sell \u00b7 Programmed money",
+  "playerId": "player",
+  "calendar": "Shift",
+  "accent": "#a9c59b",
+  "modules": {
+    "social.conversation": "0.1.0",
+    "social.relationships": "0.1.0",
+    "world.schedule": "0.1.0",
+    "items.inventory": "0.1.0",
+    "story.quests": "0.1.0",
+    "world.economy": "0.1.0"
+  },
+  "durations": {
+    "core.inspect": 0,
+    "social.speak": 1
+  },
+  "locations": [
+    {
+      "id": "hub",
+      "name": "Hub",
+      "description": "Late light falls through the tall windows. A message on the desk asks for a missing notebook. Bring it to Ada, or meet her in the Meeting Room to explain the delay.",
+      "background": "assets/hub.svg",
+      "exits": [
+        {
+          "to": "workshop"
+        },
+        {
+          "to": "meeting"
+        }
+      ]
+    },
+    {
+      "id": "workshop",
+      "name": "Workshop",
+      "description": "An orderly room of unfinished projects. A notebook and a brass token sit on the workbench.",
+      "background": "assets/workshop.svg",
+      "exits": [
+        {
+          "to": "hub"
+        },
+        {
+          "to": "meeting",
+          "flag": "access",
+          "reason": "Deliver the notebook or speak to Ada at the meeting to open the shortcut."
+        }
+      ]
+    },
+    {
+      "id": "meeting",
+      "name": "Meeting Room",
+      "description": "Three chairs surround a circular table. Ada arrives at shift 4 and returns to the Hub at shift 8; the schedule repeats every 12 shifts. If you miss her, you can wait for the next meeting.",
+      "background": "assets/meeting.svg",
+      "exits": [
+        {
+          "to": "hub"
+        },
+        {
+          "to": "workshop",
+          "flag": "access",
+          "reason": "The workshop shortcut is still locked."
+        }
+      ]
+    }
+  ],
+  "actors": [
+    {
+      "id": "player",
+      "name": "You",
+      "location": "hub"
+    },
+    {
+      "id": "ada",
+      "name": "Ada",
+      "location": "hub",
+      "description": "An adult project coordinator with a precise manner.",
+      "style": "Measured and practical",
+      "goal": "Recover her notebook or agree a revised plan."
+    },
+    {
+      "id": "brin",
+      "name": "Brin",
+      "location": "workshop",
+      "description": "An adult maker with an easy smile.",
+      "style": "Warm and direct",
+      "goal": "Finish the workshop project."
+    },
+    {
+      "id": "cyra",
+      "name": "Cyra",
+      "location": "meeting",
+      "description": "An adult organizer reviewing the agenda.",
+      "style": "Brief and observant",
+      "goal": "Keep the meeting useful."
+    }
+  ],
+  "items": [
+    {
+      "id": "notebook",
+      "name": "Notebook",
+      "owner": "workshop"
+    },
+    {
+      "id": "token",
+      "name": "Brass token",
+      "owner": "workshop"
+    },
+    {
+      "id": "toolkit",
+      "name": "Maker toolkit",
+      "description": "A set of sturdy hand tools.",
+      "owner": "workshop",
+      "shop": true,
+      "price": 20
+    }
+  ],
+  "facts": [
+    {
+      "id": "agenda",
+      "text": "Ada needs her notebook. The meeting is another way to resolve the delay.",
+      "knownBy": "public"
+    },
+    {
+      "id": "ada-secret",
+      "text": "Ada plans a surprise exhibition for Brin.",
+      "knownBy": [
+        "ada"
+      ]
+    },
+    {
+      "id": "old-meeting",
+      "text": "The meeting starts at shift 3.",
+      "knownBy": "public"
+    },
+    {
+      "id": "new-meeting",
+      "text": "The meeting was moved to shift 4.",
+      "supersedes": "old-meeting",
+      "knownBy": "public"
+    }
+  ],
+  "schedules": [
+    {
+      "actor": "ada",
+      "period": 12,
+      "stops": [
+        {
+          "at": 4,
+          "location": "meeting"
+        },
+        {
+          "at": 8,
+          "location": "hub"
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "errand",
+      "name": "Resolve Ada\u2019s missing notebook",
+      "hint": "Give Ada the notebook, or talk to her in the Meeting Room.",
+      "any": [
+        {
+          "event": "items.transferred",
+          "match": {
+            "item": "notebook",
+            "to": "ada"
+          }
+        },
+        {
+          "event": "social.spoke",
+          "match": {
+            "target": "ada",
+            "location": "meeting"
+          }
+        }
+      ],
+      "unlock": "access",
+      "rewardText": "The workshop shortcut is now open."
+    }
+  ],
+  "initialMoney": 10,
+  "activities": [
+    {
+      "id": "work-shift",
+      "name": "Work a shift",
+      "description": "You help prepare the workshop and earn pay.",
+      "location": "workshop",
+      "duration": 1,
+      "phrases": [
+        "work a shift"
+      ],
+      "effects": [
+        {
+          "type": "money",
+          "delta": 20
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,397 @@
+Upstream source path,System family,Route,Local correspondence,Static import count,Notes
+main/charImageProtocol.ts,Desktop service and files,Future adaptation,,6,Needs module schema and integration review
+main/index.ts,Desktop service and files,Future adaptation,,15,Needs module schema and integration review
+main/ipc.ts,Desktop service and files,Future adaptation,,33,Needs module schema and integration review
+main/logFile.ts,Desktop service and files,Future adaptation,,9,Needs module schema and integration review
+main/paths.ts,Desktop service and files,Future adaptation,,7,Needs module schema and integration review
+main/redact.ts,Desktop service and files,Future adaptation,,4,Needs module schema and integration review
+main/services/archiveService.ts,Desktop service and files,Future adaptation,,10,Needs module schema and integration review
+main/services/assetService.ts,Desktop service and files,Future adaptation,,7,Needs module schema and integration review
+main/services/backupService.ts,Desktop service and files,Future adaptation,,19,Needs module schema and integration review
+main/services/characterService.ts,Desktop service and files,Future adaptation,,16,Needs module schema and integration review
+main/services/characterTransferService.ts,Desktop service and files,Future adaptation,,13,Needs module schema and integration review
+main/services/comfyService.ts,Desktop service and files,Future adaptation,,22,Needs module schema and integration review
+main/services/downloadService.ts,Desktop service and files,Future adaptation,,7,Needs module schema and integration review
+main/services/endingArtService.ts,Desktop service and files,Future adaptation,,9,Needs module schema and integration review
+main/services/gpuService.ts,Desktop service and files,Future adaptation,,5,Needs module schema and integration review
+main/services/grabBagService.ts,Desktop service and files,Future adaptation,,4,Needs module schema and integration review
+main/services/imageFiles.ts,Desktop service and files,Future adaptation,,4,Needs module schema and integration review
+main/services/jsonFile.ts,Desktop service and files,Future adaptation,,4,Needs module schema and integration review
+main/services/processTree.ts,Desktop service and files,Future adaptation,,1,Needs module schema and integration review
+main/services/profilePictureService.ts,Desktop service and files,Future adaptation,,6,Needs module schema and integration review
+main/services/profileService.ts,Desktop service and files,Future adaptation,,9,Needs module schema and integration review
+main/services/pythonService.ts,Desktop service and files,Future adaptation,,6,Needs module schema and integration review
+main/services/roomService.ts,Desktop service and files,Future adaptation,,10,Needs module schema and integration review
+main/services/saveService.ts,Desktop service and files,Future adaptation,,6,Needs module schema and integration review
+main/services/settingsService.ts,Desktop service and files,Future adaptation,,7,Needs module schema and integration review
+main/services/setupService.ts,Desktop service and files,Future adaptation,,13,Needs module schema and integration review
+main/services/updatePlan.ts,Desktop service and files,Future adaptation,,2,Needs module schema and integration review
+main/services/updateService.ts,Desktop service and files,Future adaptation,,13,Needs module schema and integration review
+main/updateHelper.ts,Desktop service and files,Future adaptation,,4,Needs module schema and integration review
+preload/api.d.ts,Electron IPC bridge,Setting/platform specific,,4,Do not copy wholesale into a reusable framework
+preload/index.ts,Electron IPC bridge,Setting/platform specific,,2,Do not copy wholesale into a reusable framework
+renderer/App.tsx,Application support,Future adaptation,,36,Needs module schema and integration review
+renderer/components/Burst.tsx,Application support,Future adaptation,,3,Needs module schema and integration review
+renderer/components/CardCaption.tsx,Application support,Future adaptation,,2,Needs module schema and integration review
+renderer/components/CharacterJobCard.tsx,Application support,Future adaptation,,9,Needs module schema and integration review
+renderer/components/CheckField.tsx,Application support,Future adaptation,,1,Needs module schema and integration review
+renderer/components/ChipListInput.tsx,Application support,Future adaptation,,1,Needs module schema and integration review
+renderer/components/ColorWheel.tsx,Application support,Future adaptation,,1,Needs module schema and integration review
+renderer/components/ComboField.tsx,Application support,Future adaptation,,3,Needs module schema and integration review
+renderer/components/ConfirmModal.tsx,Application support,Future adaptation,,6,Needs module schema and integration review
+renderer/components/Crossing.tsx,Application support,Future adaptation,,8,Needs module schema and integration review
+renderer/components/Cursor.tsx,Application support,Future adaptation,,2,Needs module schema and integration review
+renderer/components/DayChangeSplash.tsx,Application support,Future adaptation,,8,Needs module schema and integration review
+renderer/components/DeadNote.tsx,Application support,Future adaptation,,3,Needs module schema and integration review
+renderer/components/DialogFrame.tsx,Application support,Future adaptation,,4,Needs module schema and integration review
+renderer/components/ErrorModal.tsx,Application support,Future adaptation,,7,Needs module schema and integration review
+renderer/components/FatalErrorScreen.tsx,Application support,Future adaptation,,5,Needs module schema and integration review
+renderer/components/LandscapeTile.tsx,Application support,Future adaptation,,5,Needs module schema and integration review
+renderer/components/LayerPainter.tsx,Application support,Future adaptation,,8,Needs module schema and integration review
+renderer/components/LettersMark.tsx,Application support,Future adaptation,,2,Needs module schema and integration review
+renderer/components/LlmFailureModal.tsx,Application support,Future adaptation,,8,Needs module schema and integration review
+renderer/components/ModalHost.tsx,Application support,Future adaptation,,1,Needs module schema and integration review
+renderer/components/MoneyCard.tsx,Application support,Future adaptation,,5,Needs module schema and integration review
+renderer/components/SelectField.tsx,Application support,Future adaptation,,1,Needs module schema and integration review
+renderer/components/SetControl.tsx,Application support,Future adaptation,,5,Needs module schema and integration review
+renderer/components/SfwCheckList.tsx,Application support,Future adaptation,,3,Needs module schema and integration review
+renderer/components/StatRadar.tsx,Application support,Future adaptation,,5,Needs module schema and integration review
+renderer/components/TagSelect.tsx,Application support,Future adaptation,,1,Needs module schema and integration review
+renderer/components/TextField.tsx,Application support,Future adaptation,,1,Needs module schema and integration review
+renderer/components/TitleTab.tsx,Application support,Future adaptation,,3,Needs module schema and integration review
+renderer/components/WardrobeColumn.tsx,Application support,Future adaptation,,11,Needs module schema and integration review
+renderer/components/popupPlace.ts,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/components/useModalShell.ts,Application support,Future adaptation,,4,Needs module schema and integration review
+renderer/components/useWindowKeydown.ts,Application support,Future adaptation,,1,Needs module schema and integration review
+renderer/consoleLog.ts,Application support,Future adaptation,,2,Needs module schema and integration review
+renderer/env.d.ts,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/index.html,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/main.tsx,Application support,Future adaptation,,6,Needs module schema and integration review
+renderer/platform.ts,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/prompts/bunnybot.ts,"Phone, feed and text prompts",Future adaptation,,3,Needs module schema and integration review
+renderer/prompts/characterPrompt.ts,Character authoring and image prompts,Future adaptation,,13,Needs module schema and integration review
+renderer/prompts/characterSuggestions.ts,Character authoring and image prompts,Future adaptation,,2,Needs module schema and integration review
+renderer/prompts/classProgress.ts,University progression prompts,Setting/platform specific,,4,Do not copy wholesale into a reusable framework
+renderer/prompts/classPrompt.ts,University progression prompts,Setting/platform specific,,6,Do not copy wholesale into a reusable framework
+renderer/prompts/endingPostsPrompt.ts,"Phone, feed and text prompts",Future adaptation,,8,Needs module schema and integration review
+renderer/prompts/feedRandoms.ts,"Phone, feed and text prompts",Future adaptation,,2,Needs module schema and integration review
+renderer/prompts/gameDate.ts,"World, scene and AI prompts",Future adaptation,,2,Needs module schema and integration review
+renderer/prompts/graduation.ts,University progression prompts,Setting/platform specific,,5,Do not copy wholesale into a reusable framework
+renderer/prompts/hangoutClassifierPrompt.ts,University progression prompts,Setting/platform specific,,6,Do not copy wholesale into a reusable framework
+renderer/prompts/introScript.ts,"World, scene and AI prompts",Future adaptation,,3,Needs module schema and integration review
+renderer/prompts/lorebook.ts,"World, scene and AI prompts",Partially adapted,vendor/venus/lorebook.mjs,10,Selected behavior adapted; upstream module not copied wholesale
+renderer/prompts/moods.ts,"World, scene and AI prompts",Future adaptation,,0,Needs module schema and integration review
+renderer/prompts/npcRelationship.ts,"World, scene and AI prompts",Future adaptation,,5,Needs module schema and integration review
+renderer/prompts/occasionPrompt.ts,"World, scene and AI prompts",Future adaptation,,9,Needs module schema and integration review
+renderer/prompts/occasions.ts,"World, scene and AI prompts",Future adaptation,,6,Needs module schema and integration review
+renderer/prompts/profilePrompt.ts,Character authoring and image prompts,Future adaptation,,9,Needs module schema and integration review
+renderer/prompts/quizPrompt.ts,University progression prompts,Setting/platform specific,,4,Do not copy wholesale into a reusable framework
+renderer/prompts/relationship.ts,"World, scene and AI prompts",Future adaptation,,6,Needs module schema and integration review
+renderer/prompts/scenePrompt.ts,"World, scene and AI prompts",Partially adapted,vendor/venus/scenePrompt.mjs,29,Selected behavior adapted; upstream module not copied wholesale
+renderer/prompts/schedulePrompt.ts,University progression prompts,Setting/platform specific,,8,Do not copy wholesale into a reusable framework
+renderer/prompts/schema.ts,"World, scene and AI prompts",Future adaptation,,1,Needs module schema and integration review
+renderer/prompts/seedWords.ts,"World, scene and AI prompts",Future adaptation,,0,Needs module schema and integration review
+renderer/prompts/setting.ts,"World, scene and AI prompts",Future adaptation,,7,Needs module schema and integration review
+renderer/prompts/slotIntroPrompt.ts,"World, scene and AI prompts",Future adaptation,,12,Needs module schema and integration review
+renderer/prompts/springBreak.ts,University progression prompts,Setting/platform specific,,2,Do not copy wholesale into a reusable framework
+renderer/prompts/statActions.ts,"World, scene and AI prompts",Future adaptation,,1,Needs module schema and integration review
+renderer/prompts/supporters.ts,"Phone, feed and text prompts",Future adaptation,,2,Needs module schema and integration review
+renderer/prompts/textLedgerPrompt.ts,"Phone, feed and text prompts",Future adaptation,,4,Needs module schema and integration review
+renderer/prompts/textingPrompt.ts,"Phone, feed and text prompts",Future adaptation,,15,Needs module schema and integration review
+renderer/prompts/venus.ts,"World, scene and AI prompts",Future adaptation,,4,Needs module schema and integration review
+renderer/prompts/weather.ts,"World, scene and AI prompts",Future adaptation,,5,Needs module schema and integration review
+renderer/signalsmith-stretch.d.ts,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/stores/assetStore.ts,Assets and image generation,Future adaptation,,4,Needs module schema and integration review
+renderer/stores/audioEngine.ts,Audio and ambience,Future adaptation,,4,Needs module schema and integration review
+renderer/stores/audioStore.ts,Audio and ambience,Future adaptation,,18,Needs module schema and integration review
+renderer/stores/bunnyboardStore.ts,Phone and feed runtime,Future adaptation,,1,Needs module schema and integration review
+renderer/stores/characterStore.ts,Assets and image generation,Future adaptation,,20,Needs module schema and integration review
+renderer/stores/classScheduler.ts,Game state and VN presentation,Future adaptation,,6,Needs module schema and integration review
+renderer/stores/comfyStore.ts,Assets and image generation,Future adaptation,,3,Needs module schema and integration review
+renderer/stores/crossingStore.ts,Game state and VN presentation,Future adaptation,,4,Needs module schema and integration review
+renderer/stores/feedRolls.ts,Phone and feed runtime,Future adaptation,,4,Needs module schema and integration review
+renderer/stores/feedView.ts,Phone and feed runtime,Future adaptation,,5,Needs module schema and integration review
+renderer/stores/gameLoop.ts,Game state and VN presentation,Future adaptation,,58,Needs module schema and integration review
+renderer/stores/gameStore.ts,Game state and VN presentation,Future adaptation,,21,Needs module schema and integration review
+renderer/stores/grabBagStore.ts,Game state and VN presentation,Future adaptation,,4,Needs module schema and integration review
+renderer/stores/hiddenScheduler.ts,Game state and VN presentation,Future adaptation,,5,Needs module schema and integration review
+renderer/stores/imageUrl.ts,Assets and image generation,Future adaptation,,0,Needs module schema and integration review
+renderer/stores/jobStore.ts,Game state and VN presentation,Future adaptation,,2,Needs module schema and integration review
+renderer/stores/jsonStream.ts,Game state and VN presentation,Ported utility,vendor/venus/jsonStream.mjs,0,TypeScript removed and used as a reusable utility
+renderer/stores/llmQueue.ts,LLM transport and scheduling,Partially adapted,vendor/venus/requestQueue.mjs,0,Selected behavior adapted; upstream module not copied wholesale
+renderer/stores/loop/academics.ts,Game loop and scene orchestration,Future adaptation,,8,Needs module schema and integration review
+renderer/stores/loop/cast.ts,Game loop and scene orchestration,Future adaptation,,4,Needs module schema and integration review
+renderer/stores/loop/casting.ts,Game loop and scene orchestration,Partially adapted,packages/core/engine.mjs,10,Selected behavior adapted; upstream module not copied wholesale
+renderer/stores/loop/classify.ts,Game loop and scene orchestration,Future adaptation,,11,Needs module schema and integration review
+renderer/stores/loop/crushes.ts,Game loop and scene orchestration,Future adaptation,,5,Needs module schema and integration review
+renderer/stores/loop/endingArt.ts,Game loop and scene orchestration,Future adaptation,,9,Needs module schema and integration review
+renderer/stores/loop/endingPosts.ts,Game loop and scene orchestration,Future adaptation,,16,Needs module schema and integration review
+renderer/stores/loop/exams.ts,Game loop and scene orchestration,Future adaptation,,11,Needs module schema and integration review
+renderer/stores/loop/farewells.ts,Game loop and scene orchestration,Future adaptation,,3,Needs module schema and integration review
+renderer/stores/loop/feed.ts,Game loop and scene orchestration,Future adaptation,,10,Needs module schema and integration review
+renderer/stores/loop/hangouts.ts,Game loop and scene orchestration,Future adaptation,,13,Needs module schema and integration review
+renderer/stores/loop/hooks.ts,Game loop and scene orchestration,Future adaptation,,3,Needs module schema and integration review
+renderer/stores/loop/jobs.ts,Game loop and scene orchestration,Future adaptation,,8,Needs module schema and integration review
+renderer/stores/loop/ledgerView.ts,Game loop and scene orchestration,Future adaptation,,6,Needs module schema and integration review
+renderer/stores/loop/npc.ts,Game loop and scene orchestration,Future adaptation,,15,Needs module schema and integration review
+renderer/stores/loop/profilePicture.ts,Game loop and scene orchestration,Future adaptation,,6,Needs module schema and integration review
+renderer/stores/loop/promptState.ts,Game loop and scene orchestration,Future adaptation,,25,Needs module schema and integration review
+renderer/stores/loop/rumors.ts,Game loop and scene orchestration,Future adaptation,,6,Needs module schema and integration review
+renderer/stores/loop/saves.ts,Game loop and scene orchestration,Partially adapted,packages/persistence/store.mjs,5,Selected behavior adapted; upstream module not copied wholesale
+renderer/stores/loop/springBreak.ts,Game loop and scene orchestration,Future adaptation,,4,Needs module schema and integration review
+renderer/stores/loop/state.ts,Game loop and scene orchestration,Future adaptation,,6,Needs module schema and integration review
+renderer/stores/loop/statusSteps.ts,Game loop and scene orchestration,Future adaptation,,4,Needs module schema and integration review
+renderer/stores/loop/stream.ts,Game loop and scene orchestration,Future adaptation,,10,Needs module schema and integration review
+renderer/stores/loop/turn.ts,Game loop and scene orchestration,Partially adapted,packages/ai/service.mjs,10,Selected behavior adapted; upstream module not copied wholesale
+renderer/stores/newGame.ts,Game state and VN presentation,Future adaptation,,9,Needs module schema and integration review
+renderer/stores/npcOverlay.ts,Game state and VN presentation,Future adaptation,,4,Needs module schema and integration review
+renderer/stores/npcRunIns.ts,Game state and VN presentation,Future adaptation,,5,Needs module schema and integration review
+renderer/stores/renameMentions.ts,Game state and VN presentation,Future adaptation,,2,Needs module schema and integration review
+renderer/stores/replyFloor.ts,Game state and VN presentation,Future adaptation,,0,Needs module schema and integration review
+renderer/stores/reschedule.ts,Game state and VN presentation,Future adaptation,,6,Needs module schema and integration review
+renderer/stores/retryGate.ts,Game state and VN presentation,Future adaptation,,1,Needs module schema and integration review
+renderer/stores/saveStore.ts,"Save, settings and setup",Future adaptation,,3,Needs module schema and integration review
+renderer/stores/sceneSanitizer.ts,Game state and VN presentation,Partially adapted,vendor/venus/sceneSanitizer.mjs,15,Selected behavior adapted; upstream module not copied wholesale
+renderer/stores/sceneStream.ts,Game state and VN presentation,Ported utility,vendor/venus/sceneStream.mjs,1,Ported parser available; UI and LLM streaming not integrated
+renderer/stores/settingsStore.ts,"Save, settings and setup",Future adaptation,,3,Needs module schema and integration review
+renderer/stores/setupStore.ts,"Save, settings and setup",Future adaptation,,5,Needs module schema and integration review
+renderer/stores/silentRetry.ts,Game state and VN presentation,Partially adapted,vendor/venus/retry.mjs,1,Selected behavior adapted; upstream module not copied wholesale
+renderer/stores/slotActions.ts,Game state and VN presentation,Future adaptation,,12,Needs module schema and integration review
+renderer/stores/slotAskers.ts,Game state and VN presentation,Future adaptation,,5,Needs module schema and integration review
+renderer/stores/slotCrossing.ts,Game state and VN presentation,Future adaptation,,9,Needs module schema and integration review
+renderer/stores/soundscape.ts,Audio and ambience,Future adaptation,,6,Needs module schema and integration review
+renderer/stores/stageDisplay.ts,Game state and VN presentation,Partially adapted,vendor/venus/stageDisplay.mjs,4,Selected behavior adapted; upstream module not copied wholesale
+renderer/stores/textingLoop.ts,Phone and feed runtime,Future adaptation,,25,Needs module schema and integration review
+renderer/stores/textingPace.ts,Phone and feed runtime,Future adaptation,,2,Needs module schema and integration review
+renderer/stores/textingStream.ts,Phone and feed runtime,Ported utility,vendor/venus/textingStream.mjs,1,Ported parser available; UI and LLM streaming not integrated
+renderer/stores/timetable.ts,Game state and VN presentation,Future adaptation,,10,Needs module schema and integration review
+renderer/stores/uiStore.ts,Game state and VN presentation,Future adaptation,,3,Needs module schema and integration review
+renderer/stores/updateStore.ts,"Save, settings and setup",Future adaptation,,3,Needs module schema and integration review
+renderer/stores/whereabouts.ts,Game state and VN presentation,Future adaptation,,7,Needs module schema and integration review
+renderer/views/AppSettingsModal.tsx,Visual novel UI,Future adaptation,,28,Needs module schema and integration review
+renderer/views/BgModal.tsx,Visual novel UI,Future adaptation,,13,Needs module schema and integration review
+renderer/views/BunnyboardModal.tsx,Visual novel UI,Future adaptation,,36,Needs module schema and integration review
+renderer/views/CalendarModal.tsx,Visual novel UI,Future adaptation,,18,Needs module schema and integration review
+renderer/views/CastModal.tsx,Visual novel UI,Future adaptation,,15,Needs module schema and integration review
+renderer/views/CharacterHeightModal.tsx,Visual novel UI,Future adaptation,,11,Needs module schema and integration review
+renderer/views/CharacterModal.tsx,Visual novel UI,Future adaptation,,20,Needs module schema and integration review
+renderer/views/ChatLogModal.tsx,Visual novel UI,Future adaptation,,13,Needs module schema and integration review
+renderer/views/ClassScheduleModal.tsx,Visual novel UI,Future adaptation,,16,Needs module schema and integration review
+renderer/views/ClassSelectView.tsx,Visual novel UI,Future adaptation,,16,Needs module schema and integration review
+renderer/views/ContactPage.tsx,Visual novel UI,Future adaptation,,20,Needs module schema and integration review
+renderer/views/CoursePickerModal.tsx,Visual novel UI,Future adaptation,,11,Needs module schema and integration review
+renderer/views/CourseWeek.tsx,Visual novel UI,Future adaptation,,9,Needs module schema and integration review
+renderer/views/CreditsModal.tsx,Visual novel UI,Future adaptation,,8,Needs module schema and integration review
+renderer/views/CustomOutfitsModal.tsx,Visual novel UI,Future adaptation,,8,Needs module schema and integration review
+renderer/views/Dialogue.tsx,Visual novel UI,Future adaptation,,7,Needs module schema and integration review
+renderer/views/DownloadModal.tsx,Visual novel UI,Future adaptation,,3,Needs module schema and integration review
+renderer/views/EditCharacterModal.tsx,Visual novel UI,Future adaptation,,48,Needs module schema and integration review
+renderer/views/EditPromptModal.tsx,Visual novel UI,Future adaptation,,8,Needs module schema and integration review
+renderer/views/FeedbackModal.tsx,Visual novel UI,Future adaptation,,7,Needs module schema and integration review
+renderer/views/FingerFixModal.tsx,Visual novel UI,Future adaptation,,14,Needs module schema and integration review
+renderer/views/GameMenuModal.tsx,Visual novel UI,Future adaptation,,6,Needs module schema and integration review
+renderer/views/GameView.tsx,Visual novel UI,Future adaptation,,64,Needs module schema and integration review
+renderer/views/GenerateCharacterModal.tsx,Visual novel UI,Future adaptation,,16,Needs module schema and integration review
+renderer/views/GiftMessageModal.tsx,Visual novel UI,Future adaptation,,8,Needs module schema and integration review
+renderer/views/GiftTargetModal.tsx,Visual novel UI,Future adaptation,,9,Needs module schema and integration review
+renderer/views/HandPreviewModal.tsx,Visual novel UI,Future adaptation,,13,Needs module schema and integration review
+renderer/views/ImageGalleryModal.tsx,Visual novel UI,Future adaptation,,10,Needs module schema and integration review
+renderer/views/InventoryModal.tsx,Visual novel UI,Future adaptation,,10,Needs module schema and integration review
+renderer/views/ItemCard.tsx,Visual novel UI,Future adaptation,,7,Needs module schema and integration review
+renderer/views/JobsModal.tsx,Visual novel UI,Future adaptation,,15,Needs module schema and integration review
+renderer/views/LandingChrome.tsx,Visual novel UI,Future adaptation,,16,Needs module schema and integration review
+renderer/views/LoadCharacterModal.tsx,Visual novel UI,Future adaptation,,10,Needs module schema and integration review
+renderer/views/LoadGameModal.tsx,Visual novel UI,Future adaptation,,19,Needs module schema and integration review
+renderer/views/MainMenu.tsx,Visual novel UI,Future adaptation,,24,Needs module schema and integration review
+renderer/views/ManageCharactersView.tsx,Visual novel UI,Future adaptation,,20,Needs module schema and integration review
+renderer/views/MapModal.tsx,Visual novel UI,Future adaptation,,13,Needs module schema and integration review
+renderer/views/MilestoneModal.tsx,Visual novel UI,Future adaptation,,10,Needs module schema and integration review
+renderer/views/NewGameView.tsx,Visual novel UI,Future adaptation,,40,Needs module schema and integration review
+renderer/views/PlayerNameModal.tsx,Visual novel UI,Future adaptation,,9,Needs module schema and integration review
+renderer/views/ProfilePictureModal.tsx,Visual novel UI,Future adaptation,,10,Needs module schema and integration review
+renderer/views/RankUpModal.tsx,Visual novel UI,Future adaptation,,8,Needs module schema and integration review
+renderer/views/RegenerateModal.tsx,Visual novel UI,Future adaptation,,10,Needs module schema and integration review
+renderer/views/RescheduleModal.tsx,Visual novel UI,Future adaptation,,14,Needs module schema and integration review
+renderer/views/SceneChrome.tsx,Visual novel UI,Future adaptation,,14,Needs module schema and integration review
+renderer/views/SetHeightModal.tsx,Visual novel UI,Future adaptation,,6,Needs module schema and integration review
+renderer/views/SetupView.tsx,Visual novel UI,Future adaptation,,23,Needs module schema and integration review
+renderer/views/SfwPromptModal.tsx,Visual novel UI,Future adaptation,,10,Needs module schema and integration review
+renderer/views/ShopModal.tsx,Visual novel UI,Future adaptation,,13,Needs module schema and integration review
+renderer/views/SupportModal.tsx,Visual novel UI,Future adaptation,,9,Needs module schema and integration review
+renderer/views/TransparencyFixModal.tsx,Visual novel UI,Future adaptation,,13,Needs module schema and integration review
+renderer/views/UpdateFailedModal.tsx,Visual novel UI,Future adaptation,,5,Needs module schema and integration review
+renderer/views/UpdateModal.tsx,Visual novel UI,Future adaptation,,3,Needs module schema and integration review
+renderer/views/bgAssets.ts,Visual novel UI,Future adaptation,,2,Needs module schema and integration review
+renderer/views/boxRows.ts,Visual novel UI,Future adaptation,,0,Needs module schema and integration review
+renderer/views/characterFields.ts,Visual novel UI,Future adaptation,,4,Needs module schema and integration review
+renderer/views/characterIcons.tsx,Visual novel UI,Future adaptation,,1,Needs module schema and integration review
+renderer/views/clockTheme.ts,Visual novel UI,Future adaptation,,2,Needs module schema and integration review
+renderer/views/handFix.ts,Visual novel UI,Future adaptation,,1,Needs module schema and integration review
+renderer/views/imagePreload.ts,Visual novel UI,Future adaptation,,1,Needs module schema and integration review
+renderer/views/mapLayout.ts,Visual novel UI,Future adaptation,,0,Needs module schema and integration review
+renderer/views/motion.ts,Visual novel UI,Future adaptation,,2,Needs module schema and integration review
+renderer/views/promptKindFields.ts,Visual novel UI,Future adaptation,,2,Needs module schema and integration review
+renderer/views/repairIcons.tsx,Visual novel UI,Future adaptation,,1,Needs module schema and integration review
+renderer/views/screenIcons.tsx,Visual novel UI,Future adaptation,,4,Needs module schema and integration review
+renderer/views/sfwFields.ts,Visual novel UI,Future adaptation,,1,Needs module schema and integration review
+renderer/views/spriteBreath.ts,Visual novel UI,Future adaptation,,0,Needs module schema and integration review
+renderer/views/updateCaption.ts,Visual novel UI,Future adaptation,,1,Needs module schema and integration review
+renderer/views/useEndpointProbe.ts,Visual novel UI,Future adaptation,,5,Needs module schema and integration review
+renderer/views/volumeFields.ts,Visual novel UI,Future adaptation,,1,Needs module schema and integration review
+renderer/vu_styles/AddCharacter.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/BgPicker.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/BunnyMap.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Bunnyboard.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Burst.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Calendar.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Cast.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/CharacterHeight.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/CharacterPanel.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/ChatLog.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/ClassSchedule.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/ContactPage.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/CourseSchedule.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Credits.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Crossing.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/CustomOutfits.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/DayChangeSplash.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/DeadNote.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Dialog.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Dialogue.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/EditCharacter.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/EditPrompt.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Fatal.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Feedback.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/GameMenu.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/GameStage.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/GenerateCharacter.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Gift.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/HandPreview.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/ImageGallery.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Inventory.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/ItemCard.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Jobs.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Landing.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/LettersMark.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/LoadGame.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/MainMenu.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/ManageCharacters.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Milestone.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/MoneyCard.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/NewGame.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/PlayerName.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/PopList.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/ProfilePicture.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/RankUp.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Regenerate.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Reschedule.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Scene.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Settings.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Setup.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Shop.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/StatRadar.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/Support.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/WardrobeFix.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/base.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/fonts.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/index.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/stage.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/tokens.css,Application support,Future adaptation,,0,Needs module schema and integration review
+renderer/vu_styles/window.css,Application support,Future adaptation,,0,Needs module schema and integration review
+shared/academics.ts,Economy and progression rules,Future adaptation,,4,Needs module schema and integration review
+shared/appId.ts,Shared world rules and validation,Future adaptation,,0,Needs module schema and integration review
+shared/assetRules.ts,Visual presentation and assets,Future adaptation,,2,Needs module schema and integration review
+shared/audio.ts,Shared world rules and validation,Future adaptation,,2,Needs module schema and integration review
+shared/backgroundSets.ts,Visual presentation and assets,Future adaptation,,1,Needs module schema and integration review
+shared/backup.ts,Shared world rules and validation,Future adaptation,,6,Needs module schema and integration review
+shared/base64.ts,Shared world rules and validation,Future adaptation,,0,Needs module schema and integration review
+shared/characterFiles.ts,Shared world rules and validation,Future adaptation,,6,Needs module schema and integration review
+shared/characterRules.ts,Shared world rules and validation,Future adaptation,,7,Needs module schema and integration review
+shared/characterTransfer.ts,Shared world rules and validation,Future adaptation,,5,Needs module schema and integration review
+shared/classes.ts,Economy and progression rules,Future adaptation,,2,Needs module schema and integration review
+shared/classifier.ts,Economy and progression rules,Partially adapted,vendor/venus/sceneClassifier.mjs,1,Selected behavior adapted; upstream module not copied wholesale
+shared/dating.ts,Social and romance rules,Future adaptation,,5,Needs module schema and integration review
+shared/dorms.ts,Shared world rules and validation,Future adaptation,,1,Needs module schema and integration review
+shared/emotions.ts,Visual presentation and assets,Future adaptation,,1,Needs module schema and integration review
+shared/endingPicture.ts,Shared world rules and validation,Future adaptation,,3,Needs module schema and integration review
+shared/endpoint.ts,Shared world rules and validation,Future adaptation,,0,Needs module schema and integration review
+shared/errors.ts,Shared world rules and validation,Future adaptation,,1,Needs module schema and integration review
+shared/feed.ts,Shared world rules and validation,Future adaptation,,3,Needs module schema and integration review
+shared/gameOver.ts,Shared world rules and validation,Future adaptation,,1,Needs module schema and integration review
+shared/gpuRules.ts,Shared world rules and validation,Future adaptation,,1,Needs module schema and integration review
+shared/grabBag.ts,Shared world rules and validation,Future adaptation,,0,Needs module schema and integration review
+shared/hash.ts,Shared world rules and validation,Future adaptation,,0,Needs module schema and integration review
+shared/imageBytes.ts,Visual presentation and assets,Future adaptation,,1,Needs module schema and integration review
+shared/imagePrompt.ts,Visual presentation and assets,Future adaptation,,4,Needs module schema and integration review
+shared/jobQueue.ts,Economy and progression rules,Future adaptation,,4,Needs module schema and integration review
+shared/jobs.ts,Economy and progression rules,Future adaptation,,5,Needs module schema and integration review
+shared/jsonValidate.ts,Shared world rules and validation,Future adaptation,,1,Needs module schema and integration review
+shared/lineup.ts,Shared world rules and validation,Future adaptation,,0,Needs module schema and integration review
+shared/llm/adapter.ts,LLM transport and scheduling,Future adaptation,,2,Needs module schema and integration review
+shared/llm/cloudClassifier.ts,LLM transport and scheduling,Future adaptation,,2,Needs module schema and integration review
+shared/llm/cloudImage.ts,LLM transport and scheduling,Future adaptation,,6,Needs module schema and integration review
+shared/llm/cloudLlm.ts,LLM transport and scheduling,Future adaptation,,10,Needs module schema and integration review
+shared/llm/endpointProbe.ts,LLM transport and scheduling,Future adaptation,,6,Needs module schema and integration review
+shared/llm/geminiAdapter.ts,LLM transport and scheduling,Future adaptation,,4,Needs module schema and integration review
+shared/llm/httpStatus.ts,LLM transport and scheduling,Partially adapted,vendor/venus/retry.mjs,0,Selected behavior adapted; upstream module not copied wholesale
+shared/llm/index.ts,LLM transport and scheduling,Future adaptation,,5,Needs module schema and integration review
+shared/llm/openaiAdapter.ts,LLM transport and scheduling,Partially adapted,vendor/venus/openaiResponse.mjs,4,Selected behavior adapted; upstream module not copied wholesale
+shared/llm/settingsPort.ts,LLM transport and scheduling,Future adaptation,,1,Needs module schema and integration review
+shared/llm/transport.ts,LLM transport and scheduling,Future adaptation,,6,Needs module schema and integration review
+shared/locations.ts,Shared world rules and validation,Future adaptation,,1,Needs module schema and integration review
+shared/logRules.ts,Shared world rules and validation,Future adaptation,,2,Needs module schema and integration review
+shared/money.ts,Economy and progression rules,Partially adapted,vendor/venus/money.mjs,0,Selected behavior adapted; upstream module not copied wholesale
+shared/npcRelationships.ts,Social and romance rules,Partially adapted,vendor/venus/npcRelationships.mjs,2,Selected behavior adapted; upstream module not copied wholesale
+shared/outfits.ts,Visual presentation and assets,Future adaptation,,2,Needs module schema and integration review
+shared/playerStats.ts,Economy and progression rules,Future adaptation,,2,Needs module schema and integration review
+shared/positions.ts,Visual presentation and assets,Future adaptation,,1,Needs module schema and integration review
+shared/profileCrop.ts,Shared world rules and validation,Future adaptation,,2,Needs module schema and integration review
+shared/profilePicture.ts,Shared world rules and validation,Future adaptation,,3,Needs module schema and integration review
+shared/promptKinds.ts,Shared world rules and validation,Future adaptation,,0,Needs module schema and integration review
+shared/providers.ts,Shared world rules and validation,Future adaptation,,2,Needs module schema and integration review
+shared/relationship.ts,Social and romance rules,Future adaptation,,5,Needs module schema and integration review
+shared/retry.ts,Shared world rules and validation,Future adaptation,,1,Needs module schema and integration review
+shared/room.ts,Shared world rules and validation,Future adaptation,,0,Needs module schema and integration review
+shared/rumors.ts,Social and romance rules,Future adaptation,,4,Needs module schema and integration review
+shared/saveRules.ts,Shared world rules and validation,Future adaptation,,2,Needs module schema and integration review
+shared/sceneActions.ts,Visual presentation and assets,Ported utility,vendor/venus/sceneActions.mjs,4,TypeScript removed and used as a reusable utility
+shared/sentences.ts,Shared world rules and validation,Partially adapted,vendor/venus/sceneText.mjs,0,Selected behavior adapted; upstream module not copied wholesale
+shared/settingsRules.ts,Shared world rules and validation,Future adaptation,,4,Needs module schema and integration review
+shared/setupManifest.ts,Shared world rules and validation,Future adaptation,,0,Needs module schema and integration review
+shared/sfw.ts,Shared world rules and validation,Future adaptation,,3,Needs module schema and integration review
+shared/shop.ts,Economy and progression rules,Future adaptation,,4,Needs module schema and integration review
+shared/shuffle.ts,Shared world rules and validation,Future adaptation,,0,Needs module schema and integration review
+shared/spriteScale.ts,Visual presentation and assets,Future adaptation,,0,Needs module schema and integration review
+shared/stageZoom.ts,Visual presentation and assets,Future adaptation,,0,Needs module schema and integration review
+shared/statusMark.ts,Economy and progression rules,Future adaptation,,1,Needs module schema and integration review
+shared/supporters.ts,Shared world rules and validation,Future adaptation,,0,Needs module schema and integration review
+shared/tags.ts,Shared world rules and validation,Future adaptation,,0,Needs module schema and integration review
+shared/tallies.ts,Shared world rules and validation,Future adaptation,,1,Needs module schema and integration review
+shared/traits.ts,Social and romance rules,Future adaptation,,1,Needs module schema and integration review
+shared/types.ts,Shared world rules and validation,Future adaptation,,13,Needs module schema and integration review
+shared/updateSource.ts,Shared world rules and validation,Future adaptation,,0,Needs module schema and integration review
+shared/uuid.ts,Shared world rules and validation,Future adaptation,,0,Needs module schema and integration review
+shared/weather.ts,Shared world rules and validation,Future adaptation,,2,Needs module schema and integration review
+shared/zipRules.ts,Shared world rules and validation,Future adaptation,,2,Needs module schema and integration review
+web/assets.ts,Web shell,Future adaptation,,5,Needs module schema and integration review
+web/backup.ts,Web shell,Future adaptation,,15,Needs module schema and integration review
+web/blob.ts,Web shell,Future adaptation,,1,Needs module schema and integration review
+web/boot.ts,Web shell,Future adaptation,,11,Needs module schema and integration review
+web/bridge.ts,Web shell,Future adaptation,,29,Needs module schema and integration review
+web/chars.ts,Web shell,Future adaptation,,20,Needs module schema and integration review
+web/db/chars.ts,Web shell,Future adaptation,,6,Needs module schema and integration review
+web/db/grabbags.ts,Web shell,Future adaptation,,2,Needs module schema and integration review
+web/db/log.ts,Web shell,Future adaptation,,1,Needs module schema and integration review
+web/db/open.ts,Web shell,Future adaptation,,5,Needs module schema and integration review
+web/db/saves.ts,Web shell,Future adaptation,,5,Needs module schema and integration review
+web/db/settings.ts,Web shell,Future adaptation,,4,Needs module schema and integration review
+web/download.ts,Web shell,Future adaptation,,2,Needs module schema and integration review
+web/emitter.ts,Web shell,Future adaptation,,0,Needs module schema and integration review
+web/files.ts,Web shell,Future adaptation,,3,Needs module schema and integration review
+web/images.ts,Web shell,Future adaptation,,4,Needs module schema and integration review
+web/index.html,Web shell,Future adaptation,,0,Needs module schema and integration review
+web/log.ts,Web shell,Future adaptation,,4,Needs module schema and integration review
+web/packs.ts,Web shell,Future adaptation,,5,Needs module schema and integration review
+web/profile.ts,Web shell,Future adaptation,,9,Needs module schema and integration review
+web/settings.ts,Web shell,Future adaptation,,4,Needs module schema and integration review
+web/transfer.ts,Web shell,Future adaptation,,17,Needs module schema and integration review

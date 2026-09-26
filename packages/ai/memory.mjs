@@ -76,7 +76,17 @@ export function playerStatements(state,pack,actorId,{keep=40,statements=4}={}){
  out.sort((a,b)=>a.tick-b.tick);
  const lasting=out.filter(m=>m.kind==='promise'||m.kind==='disclosure').slice(-keep),plain=out.filter(m=>m.kind==='statement').slice(-statements);
  const chosen=new Set([...lasting,...plain]);
- return out.filter(m=>chosen.has(m)&&m.said).map(m=>({source:m.source,kind:m.kind,promise:m.kind==='promise',text:memoryText(m.kind,m.said,m.listener,player)}));
+ // Once this character has heard the player's name, later memories use it: "Mara promised Ada…" reads as a person.
+ let known=player;
+ return out.flatMap(m=>{const label=known;if(player==='the player'&&m.kind==='disclosure')known=disclosedName(m.said)||known;
+  return chosen.has(m)&&m.said?[{source:m.source,kind:m.kind,promise:m.kind==='promise',text:memoryText(m.kind,m.said,m.listener,label)}]:[];});
+}
+
+const NOT_A_NAME=new Set('not just only still also really so very here back the a an whatever anything'.split(' '));
+/** The name a player gives in "my name is Mara" / "call me Mara", or ''. */
+export function disclosedName(said){
+ const m=/\b(?:my name(?:'s| is)|call me|i go by)\s+([a-z][\w'-]{0,23})/i.exec(String(said||''));
+ return m&&!NOT_A_NAME.has(m[1].toLowerCase())?m[1][0].toUpperCase()+m[1].slice(1):'';
 }
 
 /** Rank bonus for memories that share words with what the player is asking right now (0–6). */

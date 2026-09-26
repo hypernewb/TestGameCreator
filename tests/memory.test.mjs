@@ -1,14 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {createWorld} from '../packages/core/engine.mjs';
+import {createWorld,validatePack} from '../packages/core/engine.mjs';
 import {registry} from '../packages/modules/index.mjs';
 import {Store} from '../packages/persistence/store.mjs';
 import {GameService,sceneFallback} from '../packages/ai/service.mjs';
 import {normalizeSceneLines} from '../packages/ai/providers.mjs';
 import {messageTokens} from '../packages/ai/budget.mjs';
 import {budgetSceneContext} from '../packages/ai/context-budget.mjs';
-import {classifyUtterance,memoryText,mentionsPlayer,stripPlaceholders} from '../packages/ai/memory.mjs';
+import {classifyUtterance,memoryText,mentionsPlayer,stripPlaceholders,disclosedName,playerStatements} from '../packages/ai/memory.mjs';
 import {scenePromptMessages,absentView} from '../vendor/venus/scenePrompt.mjs';
 const pack=()=>JSON.parse(readFileSync(new URL('../packs/neutral.json',import.meta.url)));
 const said=(input,names=['Ada'])=>{const c=classifyUtterance(input,names);return {kind:c.kind,text:memoryText(c.kind,c.said,'Ada')};};
@@ -23,6 +23,26 @@ test('player utterances are classified so questions are dropped and disclosures 
  assert.deepEqual(said('Tell Ada about the storm that sank my father’s boat'),{kind:'disclosure',text:'the player told Ada about the storm that sank the player’s father’s boat'});
  assert.equal(said('Tell Ada a joke about a clockmaker').kind,'statement');
  assert.equal(said('Talk to Ada: I love this place').text,'the player told Ada: the player loves this place');
+});
+
+test('a name the player gives is used in that character’s later memories',()=>{
+ assert.equal(disclosedName('my name is mara and I sail'),'Mara');
+ assert.equal(disclosedName('call me Jo'),'Jo');
+ assert.equal(disclosedName('my name is not important'),'');
+ const p=pack(),mem=(source,tick,text,knownBy=['player','ada'])=>({source,tick,text,knownBy});
+ const state={turns:{},modules:{'social.conversation':{memories:[mem('a',1,'Tell Ada I love the harbor'),mem('b',2,'Tell Ada my name is Mara'),mem('c',3,'Tell Ada I am nervous'),mem('d',4,'Tell Brin I am tired',['player','brin'])]}}};
+ p.actors.find(a=>a.id===p.playerId).name='You';
+ assert.deepEqual(playerStatements(state,p,'ada').map(m=>m.text),['the player told Ada: the player loves the harbor','the player told Ada: the player’s name is Mara','Mara told Ada: Mara is nervous']);
+ // Brin never heard the name.
+ assert.deepEqual(playerStatements(state,p,'brin').map(m=>m.text),['the player told Brin: the player is tired']);
+});
+
+test('actor pronouns are validated and reach the cast profile',()=>{
+ const p=pack(),ada=p.actors.find(a=>a.id==='ada');ada.pronouns='she/her';
+ assert.ok(validatePack(p,registry).length);
+ const context={stagedCast:['ada'],sceneHistory:[],memories:[],playerAction:'Wave'};
+ assert.ok(/she\/her/.test(scenePromptMessages(context,p)[1].content));
+ ada.pronouns=7;assert.throws(()=>validatePack(p,registry),/pronouns/);
 });
 
 test('model impressions must be about the player, and role-play placeholders are replaced',()=>{

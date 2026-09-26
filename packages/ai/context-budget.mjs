@@ -65,8 +65,8 @@ export function recentlySurfaced(world,turnId,window=8){
  return seen;
 }
 
-const profileOf=a=>({id:a.id,name:a.name,description:a.description||'',personality:a.personality||'',traits:a.traits||[],voice:a.voice||'',goal:a.goal||'',backstory:a.backstory||'',likes:a.likes||[],dislikes:a.dislikes||[]});
-const compactProfile=a=>({id:a.id,name:a.name,personality:clip(a.personality||a.description||'',240),traits:a.traits||[],voice:a.voice||''});
+const profileOf=a=>({id:a.id,name:a.name,pronouns:a.pronouns,description:a.description||'',personality:a.personality||'',traits:a.traits||[],voice:a.voice||'',goal:a.goal||'',backstory:a.backstory||'',likes:a.likes||[],dislikes:a.dislikes||[]});
+const compactProfile=a=>({id:a.id,name:a.name,pronouns:a.pronouns,personality:clip(a.personality||a.description||'',240),traits:a.traits||[],voice:a.voice||''});
 
 /**
  * Fits a scene context into the model's window. `render(context)` must return the prompt messages so the fixed
@@ -81,7 +81,7 @@ export function budgetSceneContext(context,pack,world,turnId,{window=8192,reply=
  const budget=Math.max(0,Math.floor(window*(1-margin))-reply),poolBudget=Math.max(0,budget-base);
  const items=[],add=(pool,tier,key,rank,pairs,extra={})=>{const levels=lods(pairs,ratio,promptView[pool]);if(levels.length)items.push({pool,tier,key,rank,lods:levels,...extra});};
  const actors=pack.actors.filter(a=>cast.includes(a.id));
- actors.forEach((a,i)=>add('castProfiles',1,`cast:${a.id}`,100-i,[['full',profileOf(a)],['compact',compactProfile(a)],['name',{id:a.id,name:a.name}]]));
+ actors.forEach((a,i)=>add('castProfiles',1,`cast:${a.id}`,100-i,[['full',profileOf(a)],['compact',compactProfile(a)],['name',{id:a.id,name:a.name,pronouns:a.pronouns}]]));
  const history=context.sceneHistory||[];
  // `verbatim` caps how many recent turns may stay word for word even when they fit: a small model given 25 full turns
  // loses track of which question it is answering, and does better with a short transcript plus one-line digests.

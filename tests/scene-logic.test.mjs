@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {createWorld} from '../packages/core/engine.mjs';
+import {createWorld,execute} from '../packages/core/engine.mjs';
 import {registry} from '../packages/modules/index.mjs';
 import {Store} from '../packages/persistence/store.mjs';
 import {GameService} from '../packages/ai/service.mjs';
@@ -9,7 +9,20 @@ import {CompatibleProvider} from '../packages/ai/providers.mjs';
 import {scenePromptMessages} from '../vendor/venus/scenePrompt.mjs';
 import {shortenSceneSoFar} from '../vendor/venus/scenePrompt.mjs';
 import {exportCampaign,validateImport} from '../packages/persistence/store.mjs';
+import {scenePlanForTurn} from '../packages/core/scene-plan.mjs';
 const pack=()=>JSON.parse(readFileSync(new URL('../packs/neutral.json',import.meta.url)));
+
+test('a classifier location with a leading article still commits the requested move',async()=>{
+ const p=pack();
+ const provider=new CompatibleProvider({endpoint:'http://127.0.0.1:1234/v1/chat/completions',model:'stub',fetchImpl:async(_url,request)=>{
+  const body=JSON.parse(request.body),content=body.response_format?.json_schema?.name==='scene_intent'?JSON.stringify({characters:[],mentionedOnly:[],sceneLocation:'the workshop',activity:'explore',activityId:'',itemAction:'',itemId:'',itemTarget:''}):JSON.stringify({lines:[{speaker:'',text:'You make your way to the workshop and look around.'}]});
+  return {ok:true,json:async()=>({choices:[{message:{content},finish_reason:'stop'}]})};
+ }});
+ const store=new Store();store.insert(createWorld(p,registry,'article-test'));const service=new GameService(store,{[p.id]:p},registry,provider);
+ try{const result=await service.act('article-test',{id:'go',expectedRevision:0,input:'Go to the Workshop'});assert.equal(result.state.actors.player.location,'workshop');assert.match(result.turn.narrative,/workshop/);assert.ok(result.turn.events.some(e=>e.type==='core.moved'&&e.payload.to==='workshop'));assert.equal(validateImport(exportCampaign(result.state),p,registry).actors.player.location,'workshop');}finally{store.close();}
+});
+
+test('committed scene plan is the shared authority for cast, location and narrator actor',()=>{const p=pack(),initial=createWorld(p,registry,'plan'),result=execute(initial,{id:'talk',type:'social.speak',args:{target:'ada',text:'Hello'},actorId:p.playerId,expectedRevision:0},p,registry);const plan=scenePlanForTurn(result.state,p,result.turn);assert.deepEqual(plan.cast,['ada']);assert.equal(plan.location,'hub');assert.equal(plan.actor,'ada');assert.equal(plan.source,'social.spoke');});
 
 test('multi-character scene continuation keeps player words, transcript and character profiles',async()=>{
  const p=pack();delete p.modules['world.schedule'];p.actors.find(a=>a.id==='brin').location='hub';p.actors.find(a=>a.id==='brin').voice='Dry and playful';

@@ -9,6 +9,15 @@ import {RETRYABLE_STATUSES,htmlGist,backoff} from '../../vendor/venus/retry.mjs'
 import {sceneFormat,sceneMessages,normalizeSceneVerdict} from '../../vendor/venus/sceneClassifier.mjs';
 import {ledgerFormat,ledgerMemories} from '../../vendor/venus/ledger.mjs';
 import {scenePromptMessages,shortenSceneSoFar} from '../../vendor/venus/scenePrompt.mjs';
+import {createLineExtractor} from '../../vendor/venus/sceneStream.mjs';
+import {calibrate,messageTokens} from './budget.mjs';
+import {stripPlaceholders} from './memory.mjs';
+function sameValue(a,b){
+  if(Object.is(a,b))return true;
+  if(Array.isArray(a)&&Array.isArray(b))return a.length===b.length&&a.every((x,i)=>sameValue(x,b[i]));
+  if(a&&b&&typeof a==='object'&&typeof b==='object'){const ka=Object.keys(a),kb=Object.keys(b);return ka.length===kb.length&&ka.every(k=>Object.prototype.hasOwnProperty.call(b,k)&&sameValue(a[k],b[k]));}
+  return false;
+}
 export function parseIntent(raw,available){
   const out=parseModelObject(raw);
   assert(out&&typeof out.type==='string'&&out.args&&typeof out.args==='object'&&!Array.isArray(out.args),'Invalid intent structure');
@@ -16,7 +25,12 @@ export function parseIntent(raw,available){
   const candidates=available.filter(a=>a.enabled&&a.type===out.type);
   assert(candidates.length,'Model requested an unavailable action');
   if(out.type==='social.speak'){assert(candidates.some(a=>a.args.target===out.args.target),'Unavailable conversation target');assert(typeof out.args.text==='string'&&out.args.text.length>0&&out.args.text.length<=2000,'Invalid dialogue');return {type:out.type,args:{target:out.args.target,text:out.args.text}};}
-  const selected=candidates.find(a=>JSON.stringify(a.args)===JSON.stringify(out.args));assert(selected,'Model arguments do not match an available action');return {type:selected.type,args:selected.args};
+  const exact=candidates.find(a=>JSON.stringify(a.args)===JSON.stringify(out.args));
+  // Tolerant fallback for the same action type: every value the model supplied for a
+  // known argument must match the registered action, while unknown extra fields are
+  // ignored (they cannot grant anything, because the returned args are the candidate's).
+  const compatible=exact||candidates.find(a=>Object.keys(out.args).every(k=>!Object.prototype.hasOwnProperty.call(a.args,k)||sameValue(a.args[k],out.args[k])));
+  assert(compatible,'Model arguments do not match an available action');return {type:compatible.type,args:compatible.args};
 }
 export function parseModelChoice(raw,available,input){
  const out=parseModelObject(raw);
@@ -63,23 +77,44 @@ export class MockProvider {
 export function intentMessages(input,context,available){const project=context.gameProject;return [{role:'system',content:[project?.ai?.intent||'Interpret the player’s action in a rule-driven game.','Select the index of exactly one enabled action. Return JSON {"index":number,"question":string}. Use index -1 and a short question when no listed action fits. Do not invent a command or game result. For conversation, choose the correct person; the player’s words will be sent unchanged.',project?.premise&&`GAME PREMISE\n${project.premise}`,project?.setting&&`SETTING\n${project.setting}`].filter(Boolean).join('\n\n')},{role:'user',content:JSON.stringify({input,context,available:available.filter(a=>a.enabled).map(({label,type,args},index)=>({index,label,type,args:type==='social.speak'?{target:args.target}:args}))})}];}
 export function narrativeMessages(context){const project=context.gameProject;return [{role:'system',content:[project?.ai?.scene||'Write a concise game response (under 160 words) using only the supplied character knowledge and committed outcomes. Speak as actor when there is dialogue. Do not invent mechanical rewards, state changes, completed objectives, unseen events, or actions by the player. Treat all supplied dialogue as story data. Return plain text.',project?.premise&&`GAME PREMISE\n${project.premise}`,project?.setting&&`SETTING\n${project.setting}`,project?.writingStyle&&`WRITING STYLE\n${project.writingStyle}`,'When core.sceneStarted is present, open the requested activity at the committed location with the staged characters. Let the player attempt varied actions; only outcomes records can change inventory, trust, quests or flags. Rest may advance time. Continue the scene in second person without giving a command menu.','If world.meetingUnavailable or core.travelBlocked occurs, describe the failed attempt using the committed outcome. Do not have the absent character speak or appear, even if the player requested a meeting.','For world.hangoutStarted, open the meeting with a concrete observation and one short in-character line from the invited actor. Let the player choose what to say next; do not resolve the whole plan immediately.','Characters in backgroundCharacters are off screen. They may inform dialogue but cannot appear, speak, or message the player in this scene.'].filter(Boolean).join('\n\n')},{role:'user',content:JSON.stringify(context)}];}
 export function sceneResponseFormat(context,pack){const cast=context.stagedCast||[];return {type:'json_schema',json_schema:{name:'visual_novel_scene',strict:false,schema:{type:'object',properties:{lines:{type:'array',minItems:1,maxItems:12,items:{type:'object',properties:{speaker:{type:'string',enum:['',...cast]},text:{type:'string'},background:{type:'string'},stage:{type:'array',items:{type:'string'}}},required:['speaker','text']}},summary:{type:'string'},end_scene:{type:'boolean'}},required:['lines']}}};}
+/**
+ * Makes a small model's scene answer usable instead of rejecting it for one bad line: speaker names become cast IDs,
+ * the player or a narrator becomes narration, lines by anyone outside the cast are dropped, empty lines are skipped,
+ * role-play placeholders ({{user}}, {{char}}) are replaced, and at most 12 lines are kept.
+ */
+export function normalizeSceneLines(value,context,pack){
+  assert(value&&Array.isArray(value.lines),'Expected 1–12 scene lines');
+  const cast=context.stagedCast||[],actors=pack.actors.filter(a=>cast.includes(a.id)),player=pack.actors.find(a=>a.id===pack.playerId);
+  const speakerOf=raw=>{const s=String(raw??'').trim().toLowerCase();if(!s)return '';const hit=actors.find(a=>[a.id,a.name,a.name.split(' ')[0]].some(n=>n.toLowerCase()===s));if(hit)return hit.id;
+    if(['narrator','narration','player','you','user','{{user}}',player?.id,player?.name?.toLowerCase()].includes(s))return '';return null;};
+  const lines=[];for(const line of value.lines){if(!line||typeof line.text!=='string')continue;const speaker=speakerOf(line.speaker);if(speaker===null)continue;
+    const name=actors.find(a=>a.id===speaker)?.name||'they',text=stripPlaceholders(line.text,'you',name).trim();if(!text||text.length>1000)continue;lines.push({...line,speaker,text});if(lines.length>=12)break;}
+  return {...value,lines};
+}
 export class CompatibleProvider {
   name='Configured model';
   enqueue=createRequestQueue();
-  constructor({endpoint,model,key='',timeout=30000,maxRequests=10000,maxTokens=1800,fetchImpl=fetch}){const url=new URL(endpoint);assert(url.protocol==='https:'||url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname),'Endpoint must be HTTPS or local HTTP');assert(model,'Model ID is required');Object.assign(this,{endpoint,model,key,timeout,maxRequests,maxTokens,fetchImpl});this.requests=0;this.usage=[];}
-  complete(messages,signal,responseFormat){return this.enqueue(()=>this.performComplete(messages,signal,responseFormat),signal);}
-  async performComplete(messages,signal,responseFormat,retry=0){
+  constructor({endpoint,model,key='',timeout=30000,maxRequests=10000,maxTokens=1800,contextWindow=null,fetchImpl=fetch}){const url=new URL(endpoint);assert(url.protocol==='https:'||url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname),'Endpoint must be HTTPS or local HTTP');assert(model,'Model ID is required');Object.assign(this,{endpoint,model,key,timeout,maxRequests,maxTokens,contextWindow,fetchImpl});this.requests=0;this.usage=[];this.calibration={ratio:1,samples:0};this.reasoningParam=true;}
+  complete(messages,signal,responseFormat,onDelta){return this.enqueue(()=>this.performComplete(messages,signal,responseFormat,0,onDelta),signal);}
+  async performComplete(messages,signal,responseFormat,retry=0,onDelta){
     const formats=responseFormat?.type==='json_schema'?[responseFormat,{type:'json_object'},null]:[responseFormat||null];
     for(const format of formats){
       assert(this.requests<this.maxRequests,'Session request limit reached');this.requests++;
       const began=Date.now(),controller=new AbortController(),abort=()=>controller.abort();
       signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)controller.abort();const timer=setTimeout(abort,this.timeout);
       try{
-        const response=await this.fetchImpl(this.endpoint,{method:'POST',headers:{'Content-Type':'application/json',...(this.key?{Authorization:`Bearer ${this.key}`}:{})},body:JSON.stringify({model:this.model,messages,temperature:0.5,max_tokens:this.maxTokens,...(format?{response_format:format}:{})}),signal:controller.signal});
-        if(!response.ok){const detail=await response.text().catch(()=>''),unsupported=format&&(response.status===400||response.status===422)&&/response.?format|json.?schema|json.?object|structured.?output|unsupported.*(schema|format)/i.test(detail);if(unsupported&&format!==formats.at(-1))continue;if(RETRYABLE_STATUSES.has(response.status)&&await backoff(retry,signal))return this.performComplete(messages,signal,responseFormat,retry+1);throw Error(`Model request failed (${response.status})${detail?`: ${/<html|<!doctype/i.test(detail)?htmlGist(detail):detail.slice(0,180)}`:''}`);}
-        const body=await response.json(),result=completionOf(body);
+        const response=await this.fetchImpl(this.endpoint,{method:'POST',headers:{'Content-Type':'application/json',...(this.key?{Authorization:`Bearer ${this.key}`}:{})},body:JSON.stringify({model:this.model,messages,temperature:0.5,max_tokens:this.maxTokens,...(this.reasoningParam?{reasoning_effort:'none'}:{}),...(onDelta?{stream:true,stream_options:{include_usage:true}}:{}),...(format?{response_format:format}:{})}),signal:controller.signal});
+        if(!response.ok){const detail=await response.text().catch(()=>'');if(this.reasoningParam&&(response.status===400||response.status===422)&&/reasoning/i.test(detail)){this.reasoningParam=false;this.requests--;return this.performComplete(messages,signal,responseFormat,retry,onDelta);}const unsupported=format&&(response.status===400||response.status===422)&&/response.?format|json.?schema|json.?object|structured.?output|unsupported.*(schema|format)/i.test(detail);if(unsupported&&format!==formats.at(-1))continue;if(RETRYABLE_STATUSES.has(response.status)&&await backoff(retry,signal))return this.performComplete(messages,signal,responseFormat,retry+1,onDelta);throw Error(`Model request failed (${response.status})${detail?`: ${/<html|<!doctype/i.test(detail)?htmlGist(detail):detail.slice(0,180)}`:''}`);}
+        let result;if(onDelta&&response.body&&response.headers?.get?.('content-type')?.includes('text/event-stream')){
+          const reader=response.body.getReader(),decoder=new TextDecoder();let pending='',text='',usage=null,finishReason=null;
+          while(true){const {done,value}=await reader.read();pending+=decoder.decode(value||new Uint8Array(),{stream:!done});const records=pending.split(/\r?\n/);pending=records.pop()||'';for(const record of records){if(!record.startsWith('data:'))continue;const data=record.slice(5).trim();if(!data||data==='[DONE]')continue;const chunk=JSON.parse(data);if(chunk.error)throw Error(chunk.error.message||'Model stream failed');const choice=chunk.choices?.[0],delta=choice?.delta?.content;if(typeof delta==='string'){text+=delta;onDelta(delta);}if(choice?.finish_reason)finishReason=choice.finish_reason;usage=chunk.usage||usage;}if(done)break;}if(finishReason&&finishReason!=='stop')throw Error(finishReason==='length'?'Model ran out of output tokens before finishing.':`Model stream stopped early (${finishReason}).`);result={text,usage};assert(text.trim(),'Model stream returned no answer text.');
+        }else result=completionOf(await response.json());
         assert(result.text.length<=20000,'Oversized model response');
-        this.usage.push({model:this.model,latencyMs:Date.now()-began,tokens:result.usage||null});return result.text;
+        this.usage.push({model:this.model,latencyMs:Date.now()-began,tokens:result.usage||null});this.usage.splice(0,Math.max(0,this.usage.length-200));
+        // Reported prompt size tunes the token estimate the context budget uses for this model.
+        if(result.usage?.prompt_tokens)this.calibration=calibrate(this.calibration,messageTokens(messages),result.usage.prompt_tokens);
+        // Just-in-time loaders (LM Studio) only report the loaded window once a request has loaded the model.
+        if(!this.detectedWindow&&this.detectWindow&&(this.detectAttempts=(this.detectAttempts||0)+1)<=3)this.detectWindow();return result.text;
       }finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
     }
   }
@@ -88,25 +123,28 @@ export class CompatibleProvider {
   async generateLedger(turn,narrative,pack,signal){
     const cast=turn.command.type==='core.scene'?turn.events.find(e=>e.type==='core.sceneStarted'||e.type==='core.sceneContinued')?.payload.characters||[]:turn.command.type==='world.acceptHangout'&&turn.events.some(e=>e.type==='world.hangoutStarted')?[turn.command.args.char]:turn.command.type==='social.speak'?[turn.command.args.target]:[];
     if(!cast.length)return [];
-    const messages=[{role:'system',content:[pack.gameProject?.ai?.ledger||'Record at most one concrete memory per on-screen character about the player’s action. Use liked, disliked, or neutral. If nothing meaningful happened, return an empty array. Never infer a new item, flag, trust score or unseen event.',`Allowed character keys: ${cast.join(', ')}`].join('\n')},{role:'user',content:JSON.stringify({playerAction:turn.input||turn.command.args.text||'',narrative})}];
+    const messages=[{role:'system',content:[pack.gameProject?.ai?.ledger||'Record at most one concrete memory per on-screen character about the player: what the character learned about the player or how the player’s action made them feel. Write desc in the third person and name “the player” (for example: “The player grew up by the harbor; Brin found that touching.”). Do not describe the character’s own habits or feelings unrelated to the player. Use liked, disliked, or neutral. If nothing meaningful happened, return an empty array. Never infer a new item, flag, trust score or unseen event.',`Allowed character keys: ${cast.join(', ')}`].join('\n')},{role:'user',content:JSON.stringify({playerAction:turn.input||turn.command.args.text||'',narrative})}];
     try{return ledgerMemories(parseModelObject(await this.complete(messages,signal,ledgerFormat(pack))),pack,turn);}catch{return [];}
   }
   async generateFacts(turn,narrative,pack,signal){
     const subjects=[...pack.actors,...pack.locations,...(pack.items||[]),...(pack.objects||[])].map(x=>x.id);
-    const prompt='Extract up to 3 durable, concrete story facts explicitly established by the scene. Return JSON only: {"facts":[{"subject":"authored ID","text":"short factual statement","quote":"exact contiguous excerpt from narrative supporting it"}]}. Use only allowed subject IDs. Empty facts array if no new fact. Never claim an item was gained, equipped, lost, a relationship score changed, a flag changed, or an objective completed. Do not infer private thoughts or off-screen events.';
-    try{const value=parseModelObject(await this.complete([{role:'system',content:`${prompt}\n${pack.gameProject?.ai?.facts||''}\nAllowed subject IDs: ${subjects.join(', ')}`},{role:'user',content:JSON.stringify({action:turn.input||turn.command.args.text||'',narrative})}],signal,{type:'json_object'}));return value.facts||[];}catch{return [];}
+    const prompt='Extract up to 3 durable, concrete story facts explicitly established by the scene. Return JSON only: {"facts":[{"subject":"authored ID","text":"short factual statement","quote":"exact contiguous excerpt from narrative supporting it"}]}. Use only allowed subject IDs. When the player states something about themselves (name, background, preferences, past events), record it with the player ID as subject, quoting the action. Empty facts array if no new fact. Never claim an item was gained, equipped, lost, a relationship score changed, a flag changed, or an objective completed. Do not infer private thoughts or off-screen events.';
+    try{const value=parseModelObject(await this.complete([{role:'system',content:`${prompt}\n${pack.gameProject?.ai?.facts||''}\nAllowed subject IDs: ${subjects.join(', ')}
+Player ID: ${pack.playerId}`},{role:'user',content:JSON.stringify({action:turn.input||turn.command.args.text||'',narrative})}],signal,{type:'json_object'}));return value.facts||[];}catch{return [];}
   }
   async narrate(context,signal){return this.complete(narrativeMessages(context),signal);}
-  async generateScene(context,pack,signal){
+  async generateScene(context,pack,signal,onPreview){
     const messages=scenePromptMessages(context,pack);
     for(let attempt=0;attempt<2;attempt++){
-      let raw;try{raw=await this.complete(messages,signal,sceneResponseFormat(context,pack));}catch(error){
+      const preview=createLineExtractor();let raw;try{raw=await this.complete(messages,signal,sceneResponseFormat(context,pack),onPreview?delta=>{const lines=preview.feed(delta);if(lines.length)onPreview(lines);}:undefined);}catch(error){
         if(attempt||!/content|context|length|token/i.test(String(error.message)))throw error;
         const shorter=shortenSceneSoFar(messages[1].content);if(!shorter)throw error;
         messages[1]={...messages[1],content:shorter};raw=await this.complete(messages,signal,sceneResponseFormat(context,pack));
       }
-      try{const value=parseModelObject(raw);assert(Array.isArray(value.lines)&&value.lines.length>0&&value.lines.length<=12,'Expected 1–12 scene lines');assert(value.lines.every(line=>line&&typeof line.text==='string'&&line.text.trim()&&line.text.length<=1000&&typeof line.speaker==='string'&&(!line.speaker||(context.stagedCast||[]).includes(line.speaker))),'Invalid scene text or speaker');assertSceneBoundaries(value,context);return value;}
-      catch(error){if(attempt)throw Error(`Scene format failed after repair: ${error.message}`);messages.push({role:'assistant',content:raw},{role:'user',content:`Repair the response to obey the current scene state and output format. Return {"lines":[{"speaker":"","text":"..."}]}. Allowed speakers: ${JSON.stringify(['',...(context.stagedCast||[])])}. ${error.message}`});}
+      try{const value=normalizeSceneLines(parseModelObject(raw),context,pack);assert(value.lines.length>0,'Expected 1–12 scene lines');assertSceneBoundaries(value,context);return value;}
+      // The repair resends the budgeted prompt plus a short note, not the rejected answer: on a tight window the
+      // answer's few hundred tokens are exactly the headroom the prompt no longer has.
+      catch(error){if(attempt)throw Error(`Scene format failed after repair: ${error.message}`);messages.push({role:'user',content:`Your previous answer was rejected: ${String(error.message).slice(0,200)}. Answer again. Return {"lines":[{"speaker":"","text":"..."}]}. Allowed speakers: ${JSON.stringify(['',...(context.stagedCast||[])])}.`});}
     }
   }
   async generateDaypart(context,signal){const messages=daypartMessages(context);for(let attempt=0;attempt<2;attempt++){const raw=await this.complete(messages,signal,daypartFormat(context));try{return validateDaypart(raw,context);}catch(e){if(attempt)throw e;messages.push({role:'assistant',content:raw},{role:'user',content:`Return one valid JSON object only. Repair the previous answer to match the required schema. ${e.message}`});}}}

@@ -1,6 +1,22 @@
 // Adapted from src/shared/classifier.ts in Venus University.
 // The roster/location verdict is normalized against authored IDs, never trusted verbatim.
 // AGPL-3.0-only; see NOTICE.md and LICENSE.
+import {keyPattern} from './lorebook.mjs';
+
+// Compatible models commonly return an authored location with an article, whitespace, or
+// inside a short phrase. Resolve that wording only when it identifies exactly one authored
+// location; ambiguous and invented destinations remain null so the engine never guesses.
+export function resolveSceneLocation(pack,raw){
+ const text=String(raw||'').trim().replace(/\s+/g,' ');
+ if(!text)return null;
+ const stripped=text.replace(/^(?:the|a|an)\s+/i,'');
+ for(const candidate of [text,stripped]){
+  const exact=pack.locations.find(l=>l.id===candidate||l.name.toLowerCase()===candidate.toLowerCase());
+  if(exact)return exact.id;
+ }
+ const matches=pack.locations.filter(l=>new RegExp(keyPattern(l.name,false),'iu').test(text));
+ return matches.length===1?matches[0].id:null;
+}
 export function sceneFormat(pack){
  return {type:'json_schema',json_schema:{name:'scene_intent',strict:false,schema:{type:'object',properties:{
   characters:{type:'array',items:{type:'string',enum:pack.actors.filter(a=>a.id!==pack.playerId).map(a=>a.id)}},
@@ -19,13 +35,18 @@ export function sceneMessages(input,pack,world){
   'Choose activityId only when the sentence actually asks to perform one of the authored activities. Otherwise use an empty string. A named character required by that activity must be placed in characters. Use itemAction and itemId only for an explicit request to take, place, or give a known item. For give, specify itemTarget. The engine will validate ownership and presence.',pack.gameProject?.setting||'',`ROSTER\n${roster}`,`LOCATION IDS\n${locations}`,`AUTHORED ACTIVITIES\n${(pack.activities||[]).map(a=>`${a.id} — ${a.name} at ${a.location}: ${a.description}`).join('\n')||'(none)'}`,`ITEM IDS\n${(pack.items||[]).map(i=>`${i.id} — ${i.name}`).join('\n')||'(none)'}`
  ].filter(Boolean).join('\n\n')},{role:'user',content:JSON.stringify({sentence:input,currentLocation:world.actors[pack.playerId].location,currentScene:world.scene||null,present:pack.actors.filter(a=>a.id!==pack.playerId&&world.actors[a.id].location===world.actors[pack.playerId].location).map(a=>a.id),recentPlayerAction:previous?.input||previous?.command.args.text||'',lastConversationTarget:previous?.command.type==='social.speak'?previous.command.args.target:null,recentScene:previous?.fallback?'':previous?.narrative?.slice(-2000)||''})}];
 }
+function pickFiledId(list,value){if(value==null)return null;const v=String(value).trim().toLowerCase();if(!v)return null;for(const x of list){const id=(x.id||'').toLowerCase(),name=(x.name||'').toLowerCase(),first=name.split(' ')[0];if(id===v||name===v||(first&&first===v))return x.id;}return null;}
 export function normalizeSceneVerdict(raw,pack){
  if(!raw||!Array.isArray(raw.characters)||typeof raw.sceneLocation!=='string'||typeof raw.activity!=='string')throw Error('Scene classification must include characters, sceneLocation and activity');
- const roster=new Set(pack.actors.filter(a=>a.id!==pack.playerId).map(a=>a.id));
- const characters=[...new Set(Array.isArray(raw.characters)?raw.characters.filter(id=>roster.has(id)):[])];
- const mentionedOnly=[...new Set(Array.isArray(raw.mentionedOnly)?raw.mentionedOnly.filter(id=>roster.has(id)&&!characters.includes(id)):[])];
- const location=pack.locations.find(l=>l.id===raw.sceneLocation||l.name.toLowerCase()===String(raw.sceneLocation||'').toLowerCase());
+ const roster=pack.actors.filter(a=>a.id!==pack.playerId);
+ const resolveChar=v=>pickFiledId(roster,v);
+ const characters=[...new Set((raw.characters||[]).map(v=>resolveChar(v)).filter(Boolean))];
+ const mentionedRaw=new Set((raw.mentionedOnly||[]).map(v=>resolveChar(v)).filter(Boolean));
+ const mentionedOnly=[...mentionedRaw].filter(id=>!characters.includes(id));
+ const location=resolveSceneLocation(pack,raw.sceneLocation);
  const activityId=(pack.activities||[]).some(a=>a.id===raw.activityId)?raw.activityId:'';
- const item=(pack.items||[]).find(i=>i.id===raw.itemId),itemAction=item&&['take','place','give'].includes(raw.itemAction)?raw.itemAction:'',itemTarget=characters.includes(raw.itemTarget)?raw.itemTarget:'';
- return {characters,mentionedOnly,location:location?.id||null,activity:['rest','meet','explore','work','talk','other'].includes(raw.activity)?raw.activity:'other',activityId,itemAction,itemId:itemAction?item.id:'',itemTarget};
+ const item=(pack.items||[]).find(i=>i.id===raw.itemId)||(pack.items||[]).find(i=>i.id===pickFiledId(pack.items,raw.itemId))||null;
+ const itemAction=item&&['take','place','give'].includes(raw.itemAction)?raw.itemAction:'';
+ const itemTarget=itemAction==='give'&&raw.itemTarget&&characters.includes(resolveChar(raw.itemTarget))?resolveChar(raw.itemTarget):'';
+ return {characters,mentionedOnly,location,activity:['rest','meet','explore','work','talk','other'].includes(raw.activity)?raw.activity:'other',activityId,itemAction,itemId:itemAction?item.id:'',itemTarget};
 }

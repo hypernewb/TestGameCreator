@@ -12,6 +12,7 @@ import {contextFor} from '../packages/ai/context.mjs';
 import {validateGeneratedFacts} from '../packages/modules/facts.mjs';
 import {keyPattern,matchedLoreKeys} from '../vendor/venus/lorebook.mjs';
 import {parseAction,showAction,spriteAction} from '../vendor/venus/sceneActions.mjs';
+import {normalizeSceneVerdict} from '../vendor/venus/sceneClassifier.mjs';
 import {normalizeLocalEndpoint} from '../packages/ai/local-settings.mjs';
 import {GameService} from '../packages/ai/service.mjs';
 import {SillyTavernProvider} from '../integrations/sillytavern/adapter.mjs';
@@ -51,12 +52,34 @@ test('clarification spends no time',async()=>{const {store,service:svc}=service(
 test('compatible adapter repairs invalid JSON once and tracks usage',async()=>{let calls=0;const provider=new CompatibleProvider({endpoint:'http://localhost:1234/v1/chat/completions',model:'test',fetchImpl:async()=>({ok:true,json:async()=>({choices:[{message:{content:++calls===1?'bad':'{"type":"core.wait","args":{}}'}}],usage:{total_tokens:12}})})});const out=await provider.interpret('wait',{},[{type:'core.wait',args:{},enabled:true}]);assert.equal(out.type,'core.wait');assert.equal(calls,2);assert.equal(provider.usage.length,2);});
 test('compatible adapter fails on repeated malformed output and budget limit',async()=>{const provider=new CompatibleProvider({endpoint:'https://example.test/v1/chat/completions',model:'test',maxRequests:2,fetchImpl:async()=>({ok:true,json:async()=>({choices:[{message:{content:'bad'}}]})})});await assert.rejects(()=>provider.interpret('wait',{},[]),/parseable JSON/);await assert.rejects(()=>provider.narrate({}),/limit/);});
 test('cancellation before commit leaves state untouched',async()=>{const {store,service:svc}=service();const c=new AbortController();c.abort();await assert.rejects(()=>svc.act('test',req('one',0,'core.wait'),c.signal),/Cancelled/);assert.equal(store.load('test').revision,0);store.close();});
+test('parseIntent tolerates extra/omitted args but never accepts a changed value',()=>{
+ const available=[
+  {type:'core.move',args:{to:'workshop'},enabled:true},
+  {type:'world.buy',args:{item:'token'},enabled:true},
+  {type:'world.buy',args:{item:'book'},enabled:true}
+ ];
+ // exact match still wins
+ assert.deepEqual(parseIntent({type:'core.move',args:{to:'workshop'}},available),{type:'core.move',args:{to:'workshop'}});
+ // a schema-injected optional field no longer breaks an otherwise-valid move
+ assert.deepEqual(parseIntent({type:'core.move',args:{to:'workshop',sceneLocation:''}},available),{type:'core.move',args:{to:'workshop'}});
+ // an extra key on the model envelope is ignored; returned args stay canonical
+ assert.deepEqual(parseIntent({type:'world.buy',args:{item:'token'},extra:true},available),{type:'world.buy',args:{item:'token'}});
+ // a changed known value is never accepted
+ assert.throws(()=>parseIntent({type:'core.move',args:{to:'observatory'}},available),/arguments do not match/);
+ assert.throws(()=>parseIntent({type:'world.buy',args:{item:'sword'}},available),/arguments do not match/);
+ // a no-arg action still resolves
+ assert.deepEqual(parseIntent({type:'core.wait',args:{}},[{type:'core.wait',args:{},enabled:true}]),{type:'core.wait',args:{}});
+});
 test('campaign export/import verifies history and rejects tampering',()=>{const h=harness(fantasy);h.act('core.move',{to:'threshold'});h.act('powers.use',{ability:'attune'});const data=exportCampaign(h.state);assert.equal(validateImport(data,fantasy,registry).tick,3);assert.ok(!JSON.stringify(data).includes('API_KEY'));data.state.modules['powers.abilities'].energy=999;assert.throws(()=>validateImport(data,fantasy,registry),/mismatch/);});
 test('pack change and module changes block loading',()=>{const data=exportCampaign(harness().state),p=clone(neutral);p.title='Changed';assert.throws(()=>validateImport(data,p,registry),/exact pack/);});
 test('SillyTavern adapter supplies isolated raw messages',async()=>{let request;const st=new SillyTavernProvider(()=>({generateRaw:async r=>{request=r;return '{"type":"core.wait","args":{}}';}}));const result=await st.interpret('wait',{facts:[]},[{type:'core.wait',args:{},enabled:true}]);assert.equal(result.type,'core.wait');assert.ok(Array.isArray(request.prompt));assert.equal(request.prompt[0].role,'system');});
 test('HTTP host serves UI, plays action, exports/imports and blocks cross origin',async()=>{const app=createApp({dataPath:':memory:'});await new Promise(r=>app.server.listen(0,'127.0.0.1',r));const base=`http://127.0.0.1:${app.server.address().port}`;const post=async(path,body,extra={})=>fetch(base+path,{method:'POST',headers:{'Content-Type':'application/json',...extra},body:JSON.stringify(body)});try{assert.equal((await fetch(base)).status,200);const s=await (await post('/api/new',{packId:neutral.id})).json();const a=await (await post('/api/action',{campaignId:s.state.campaignId,...req('one',0,'core.wait')})).json();assert.equal(a.state.tick,1);const exported=await (await fetch(base+'/api/export?id='+s.state.campaignId)).json();const imported=await (await post('/api/import',exported)).json();assert.equal(imported.state.tick,1);assert.notEqual(imported.state.campaignId,s.state.campaignId);assert.equal((await post('/api/new',{packId:neutral.id},{Origin:'https://evil.test'})).status,400);}finally{await new Promise(r=>app.server.close(r));app.store.close();}});
 test('static file boundary accepts Windows separators and rejects path traversal',()=>{assert.equal(isFileWithin('C:\\game\\public','C:\\game\\public\\index.html',win32),true);assert.equal(isFileWithin('C:\\game\\public','C:\\game\\private\\secret',win32),false);assert.equal(isFileWithin('/game/public','/game/public/index.html',posix),true);assert.equal(isFileWithin('/game/public','/game/publicity/secret',posix),false);});
 test('migration takes backup first and leaves original intact on failure',async()=>{const {migrateSave}=await import('../packages/persistence/migrations.mjs');const original={version:0,old:'value'},backups=[];const migrated=migrateSave(original,1,{0:s=>({version:1,value:s.old})},s=>backups.push(s));assert.deepEqual(migrated,{version:1,value:'value'});assert.deepEqual(backups,[original]);assert.throws(()=>migrateSave(original,1,{0:s=>{s.old='changed';throw Error('broken');}},s=>backups.push(s)),/broken/);assert.equal(original.old,'value');});
+test('campaign commits create bounded recovery backups and restore without losing the current snapshot',()=>{const store=new Store(),initial=createWorld(neutral,registry,'recoverable');store.insert(initial);const changed=execute(initial,{id:'wait',type:'core.wait',args:{},actorId:neutral.playerId,expectedRevision:0},neutral,registry).state;store.commit(changed,0);const before=store.backups('recoverable');assert.equal(before.length,1);assert.equal(before[0].revision,0);const restored=store.restore('recoverable',before[0].id);assert.equal(restored.tick,0);assert.equal(restored.revision,0);assert.ok(store.backups('recoverable').some(x=>x.reason==='before restore'&&x.revision===1));assert.equal(validateImport(exportCampaign(restored),neutral,registry).revision,0);store.close();});
+test('version-one campaign exports migrate through a backed-up envelope before validation',()=>{const old={format:'story-framework',version:1,state:harness().state},backups=[];const {migrateCampaignExport}=awaitedStoreModule();const migrated=migrateCampaignExport(old,value=>backups.push(value));assert.equal(migrated.version,2);assert.equal(migrated.migrations[0].id,'export-envelope-v2');assert.deepEqual(backups[0],old);assert.equal(validateImport(old,neutral,registry).revision,0);});
+function awaitedStoreModule(){return storeModule;}
+const storeModule=await import('../packages/persistence/store.mjs');
 test('accepted character reply is available only to conversation participants',async()=>{const {store,service:svc}=service();const r=await svc.act('test',req('one',0,'social.speak',{target:'ada',text:'I promise to return it.'}));assert.ok(contextFor(r.state,neutral,'ada').dialogue.length);assert.equal(contextFor(r.state,neutral,'brin').dialogue.length,0);store.close();});
 test('real HTTP adapter transport is exercised against local compatible stub',async()=>{const http=await import('node:http');let called=0;const server=http.createServer(async(req,res)=>{let body='';for await(const chunk of req)body+=chunk;const data=JSON.parse(body);assert.equal(data.model,'stub');assert.equal(req.headers.authorization,'Bearer test-only');assert.equal(data.response_format.type,'json_schema');called++;res.setHeader('Content-Type','application/json');res.end(JSON.stringify({choices:[{message:{content:'{"type":"core.wait","args":{}}'}}]}));});await new Promise(r=>server.listen(0,'127.0.0.1',r));try{const p=new CompatibleProvider({endpoint:`http://127.0.0.1:${server.address().port}/v1/chat/completions`,model:'stub',key:'test-only'});assert.equal((await p.interpret('wait',{},[{type:'core.wait',args:{},enabled:true}])).type,'core.wait');assert.equal(called,1);}finally{await new Promise(r=>server.close(r));}});
 test('timeout exits provider call and mechanical state can still fall back',async()=>{const p=new CompatibleProvider({endpoint:'http://localhost:1234/chat',model:'slow',timeout:10,fetchImpl:async(_,opts)=>new Promise((resolve,reject)=>{opts.signal.addEventListener('abort',()=>reject(new Error('timeout')));})});const {store,service:svc}=service(neutral,p);const r=await svc.act('test',req('one',0,'core.wait'));assert.equal(r.turn.fallback,true);assert.equal(r.state.tick,1);store.close();});
@@ -114,7 +137,7 @@ test('scripted scene triggers once, blocks unrelated actions, applies validated 
  h.act('core.move',{to:'hub'});assert.equal(h.state.modules['story.scenes'].pending,null);
  const entered=h.act('core.move',{to:'workshop'});assert.equal(h.state.modules['story.scenes'].pending,'workshop-discovery');
  assert.equal(entered.turn.events.filter(e=>e.type==='story.sceneStarted').length,1);
- assert.deepEqual(actions(h.state,p,registry).map(a=>a.label),['Keep the note and promise to tell Ada','Leave the note where it is']);
+ assert.deepEqual(actions(h.state,p,registry).map(a=>a.label),['Keep the note and promise to tell Ada','Leave the note where it is','Leave the scene']);
  const before=clone(h.state);assert.throws(()=>h.act('core.wait'),/Choose an option/);assert.throws(()=>h.act('story.choose',{scene:'workshop-discovery',choice:'invented'}),/Unknown scene choice/);assert.deepEqual(h.state,before);
  h.act('story.choose',{scene:'workshop-discovery',choice:'tell-ada'});assert.equal(h.state.flags.access,true);assert.equal(h.state.modules['social.relationships'].edges['ada--player'],4);assert.equal(h.state.modules['story.scenes'].pending,null);
  assert.equal(h.state.modules['story.scenes'].memories[0].character,'ada');assert.ok(contextFor(h.state,p).memories.some(m=>m.source==='scene:workshop-discovery'));
@@ -335,6 +358,23 @@ test('event debugger reports unmet gates, pause event, and locked choice',()=>{
  s=execute(s,{type:'social.speak',args:{target:'brin',text:'Hi'},id:'hi',actorId:p.playerId,expectedRevision:5},p,registry).state;
  assert.equal(diagnoseScenes(s,p).find(x=>x.id==='friday-arrival').choices.find(x=>x.id==='support').reasons.length,0);
 });
+test('scripted triggers use priority, retain a bounded queue, and can be left safely',()=>{
+ const p=clone(neutral);p.modules['story.scenes']='0.1.0';const make=(id,priority)=>({id,title:id,priority,opening:id,trigger:{event:'core.inspected',match:{}},choices:[{id:'ok',label:'OK',result:'done',effects:[]}]});p.scriptedScenes=[make('low',1),make('high',10),make('middle',5)];
+ let s=createWorld(p,registry,'queue');s=execute(s,{type:'core.inspect',args:{},id:'fire',actorId:p.playerId,expectedRevision:0},p,registry).state;
+ assert.equal(s.modules['story.scenes'].pending,'high');assert.deepEqual(s.modules['story.scenes'].queue.map(x=>x.scene),['middle','low']);const debug=awaitedSceneModule().diagnoseScenes(s,p).find(x=>x.id==='middle');assert.equal(debug.status,'queued');assert.ok(debug.reasons[0].includes('Fired at tick 0, queued behind high'));
+ s=execute(s,{type:'story.leave',args:{scene:'high'},id:'leave',actorId:p.playerId,expectedRevision:1},p,registry).state;assert.equal(s.modules['story.scenes'].pending,'middle');assert.equal(s.modules['story.scenes'].history.at(-1).status,'dismissed');assert.ok(s.events.some(e=>e.type==='story.sceneDismissed'));
+ s=execute(s,{type:'story.choose',args:{scene:'middle',choice:'ok'},id:'middle',actorId:p.playerId,expectedRevision:2},p,registry).state;assert.equal(s.modules['story.scenes'].pending,'low');
+});
+test('scene plans are stateful, enter AI context, emit lifecycle events, and satisfy waitFor',()=>{
+ const p=clone(neutral);p.modules['story.scenes']='0.1.0';p.scriptedScenes=[{id:'promise',title:'Promise',priority:10,opening:'Make a plan.',trigger:{event:'core.inspected',match:{}},choices:[{id:'make',label:'Make plan',result:'made',effects:[{type:'plan',character:'ada',plan:'Meet at the hub',deadlineTick:5}],next:'followup',waitFor:{event:'story.planKept',match:{character:'ada'}}}],beats:[{id:'followup',opening:'You kept it.',choices:[{id:'done',label:'Done',result:'done',effects:[]}]}]},{id:'fulfil',title:'Fulfil',priority:1,opening:'Keep it.',trigger:{event:'core.waited',match:{}},choices:[{id:'keep',label:'Keep plan',result:'kept',effects:[{type:'planStatus',character:'ada',plan:'Meet at the hub',status:'kept'}]}]}];
+ let s=createWorld(p,registry,'plans');s=execute(s,{type:'core.inspect',args:{},id:'open',actorId:p.playerId,expectedRevision:0},p,registry).state;s=execute(s,{type:'story.choose',args:{scene:'promise',choice:'make'},id:'make',actorId:p.playerId,expectedRevision:1},p,registry).state;
+ assert.equal(s.modules['story.scenes'].plans[0].status,'pending');assert.equal(contextFor(s,p).plans[0].plan,'Meet at the hub');assert.ok(s.events.some(e=>e.type==='story.planCreated'));
+ s=execute(s,{type:'core.wait',args:{},id:'wait',actorId:p.playerId,expectedRevision:2},p,registry).state;assert.equal(s.modules['story.scenes'].pending,'fulfil');s=execute(s,{type:'story.choose',args:{scene:'fulfil',choice:'keep'},id:'keep',actorId:p.playerId,expectedRevision:3},p,registry).state;
+ assert.equal(s.modules['story.scenes'].plans[0].status,'kept');assert.equal(s.modules['story.scenes'].pending,'promise');assert.equal(s.modules['story.scenes'].pendingBeat,'followup');assert.ok(s.events.some(e=>e.type==='story.planKept'));
+});
+test('overdue scene plans break automatically',()=>{
+ const p=clone(neutral);p.modules['story.scenes']='0.1.0';p.scriptedScenes=[{id:'promise',title:'Promise',opening:'Plan.',trigger:{event:'core.inspected',match:{}},choices:[{id:'make',label:'Make',result:'made',effects:[{type:'plan',character:'ada',plan:'Return soon',deadlineTick:0}]}]}];let s=createWorld(p,registry,'overdue');s=execute(s,{type:'core.inspect',args:{},id:'open',actorId:p.playerId,expectedRevision:0},p,registry).state;s=execute(s,{type:'story.choose',args:{scene:'promise',choice:'make'},id:'make',actorId:p.playerId,expectedRevision:1},p,registry).state;s=execute(s,{type:'core.wait',args:{},id:'late',actorId:p.playerId,expectedRevision:2},p,registry).state;assert.equal(s.modules['story.scenes'].plans[0].status,'broken');assert.ok(s.events.some(e=>e.type==='story.planBroken'));
+});
 function awaitedSceneModule(){return sceneModule;}
 const sceneModule=await import('../packages/modules/scenes.mjs');
 test('free-form talk scene records conversation and resumes a paused event chain',()=>{
@@ -361,4 +401,99 @@ test('beat graph validates targets and keeps locked choices unavailable',()=>{
 });
 test('playtest response exposes event diagnostics for the chain sample',async()=>{
  const app=createApp({dataPath:':memory:'});await new Promise(resolve=>app.server.listen(0,'127.0.0.1',resolve));try{const url=`http://127.0.0.1:${app.server.address().port}`;const response=await fetch(url+'/api/new',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({packId:'sample.event-chain',startId:'friday-morning'})});assert.equal(response.status,200);const data=await response.json();const scene=data.eventDebug.find(x=>x.id==='friday-arrival');assert.equal(scene.status,'waiting');assert.ok(scene.reasons.some(x=>x.includes('Daypart')));}finally{await new Promise(resolve=>app.server.close(resolve));app.store.close();}
+test('core.waitUntil advances time to a scheduled arrival and rejects impossible waits',()=>{
+ // Ada's schedule: at tick 4 she is in the Meeting Room, at tick 8 back in the Hub (period 12).
+ const p=clone(neutral);const h=harness(p);
+ h.act('core.move',{to:'meeting'}); // tick 0 -> 1; Ada stays in the Hub
+ assert.equal(h.state.tick,1);assert.equal(h.state.actors.ada.location,'hub');
+ const r=h.act('core.waitUntil',{actor:'ada',location:'meeting'});
+ assert.equal(r.state.tick,4);assert.equal(r.state.actors.ada.location,'meeting');
+ assert.ok(r.turn.events.some(e=>e.type==='core.waited'&&e.payload.actor==='ada'));
+ // schedule module offers a Wait action for an upcoming arrival
+ const h2=harness(clone(neutral));h2.act('core.move',{to:'meeting'});
+ assert.ok(actions(h2.state,p,registry).some(a=>a.type==='core.waitUntil'&&a.args.actor==='ada'&&a.args.location===undefined));
+ // already present is refused
+ const h3=harness(clone(neutral));
+ assert.throws(()=>h3.act('core.waitUntil',{actor:'ada'}),/already here/);
+ // character with no schedule (and not where you are) cannot be waited for
+ const h4=harness(clone(neutral));h4.act('core.move',{to:'meeting'});
+ assert.throws(()=>h4.act('core.waitUntil',{actor:'brin',location:'meeting'}),/no upcoming stop/);
+ // you can only wait where you are
+ assert.throws(()=>harness(clone(neutral)).act('core.waitUntil',{actor:'ada',location:'workshop'}),/Wait where you are/);
 });
+test('a failed meeting reports when the character is next available',()=>{
+ const p=clone(neutral);const h=harness(p);
+ const r=h.act('core.scene',{text:'meet Ada in the meeting room',activity:'meet',characters:['ada'],location:'meeting',activityId:''});
+ const ev=r.turn.events.find(e=>e.type==='world.meetingUnavailable');
+ assert.ok(ev,'a meeting attempt that cannot happen reports why');
+ assert.equal(ev.payload.nextArrival,4);
+ assert.match(ev.payload.text,/\bAda\b is not at/);
+});
+test('normalizeSceneVerdict resolves actors, location, item and target by name or id',()=>{
+ const v=normalizeSceneVerdict({characters:['Ada','Brin'],mentionedOnly:['Cyra'],sceneLocation:'Meeting Room',activity:'other',itemId:'Notebook',itemAction:'give',itemTarget:'Ada'},neutral);
+ assert.deepEqual(v,{characters:['ada','brin'],mentionedOnly:['cyra'],location:'meeting',activity:'other',activityId:'',itemAction:'give',itemId:'notebook',itemTarget:'ada'});
+ // ids still resolve exactly
+ const w=normalizeSceneVerdict({characters:['ada'],mentionedOnly:[],sceneLocation:'workshop',activity:'talk',itemId:'',itemAction:''},neutral);
+ assert.deepEqual(w,{characters:['ada'],mentionedOnly:[],location:'workshop',activity:'talk',activityId:'',itemAction:'',itemId:'',itemTarget:''});
+ // a give target outside the cast is never accepted
+ const x=normalizeSceneVerdict({characters:['ada'],mentionedOnly:['brin'],sceneLocation:'hub',activity:'give',itemId:'Notebook',itemAction:'give',itemTarget:'Brin'},neutral);
+ assert.equal(x.itemTarget,'');
+});
+test('item actions allow an unambiguous pronoun but still require naming when ambiguous',()=>{
+ // unambiguous: only the notebook is takeable at the workshop
+ const p=clone(neutral);p.items.find(i=>i.id==='token').owner='meeting';
+ const h=harness(p);h.act('core.move',{to:'workshop'});
+ h.act('core.scene',{text:"I'll take it",activity:'other',location:'workshop',characters:[],itemAction:'take',itemId:'notebook'});
+ assert.equal(h.state.modules['items.inventory'].owners.notebook,'player');
+ // naming the item always works, even when several are present
+ const h2=harness(clone(neutral));h2.act('core.move',{to:'workshop'});
+ h2.act('core.scene',{text:"I'll take the Notebook",activity:'other',location:'workshop',characters:[],itemAction:'take',itemId:'notebook'});
+ assert.equal(h2.state.modules['items.inventory'].owners.notebook,'player');
+ // ambiguous pronoun is refused
+ const h3=harness(clone(neutral));h3.act('core.move',{to:'workshop'});
+ assert.throws(()=>h3.act('core.scene',{text:"I'll take it",activity:'other',location:'workshop',characters:[],itemAction:'take',itemId:'notebook'}),/name the item/);
+});
+
+test('character stats drive authored relationship progression without leaking private values',()=>{
+ const p=clone(neutral);p.modules['character.stats']='0.1.0';p.modules['social.progression']='0.1.0';p.modules['story.scenes']='0.1.0';
+ p.statDefinitions=[{id:'confidence',name:'Confidence',min:0,max:10,visibility:'public'},{id:'private-hope',name:'Private hope',min:0,max:10,visibility:'private'}];
+ p.initialStats=[{character:p.playerId,stat:'confidence',value:4},{character:'ada',stat:'private-hope',value:7}];
+ p.relationshipStates=[{id:'stranger',name:'Stranger'},{id:'interested',name:'Interested'}];
+ p.relationshipProgressions=[{character:'ada',initial:'stranger',transitions:[{from:'stranger',to:'interested',event:'character.statChanged',match:{character:p.playerId,stat:'confidence'},requires:{stats:[{character:'player',stat:'confidence',min:5}]}}]}];
+ p.scriptedScenes=[{id:'confidence-scene',title:'A decisive moment',opening:'You decide to be direct.',trigger:{event:'core.inspected',match:{location:'hub'}},choices:[{id:'speak',label:'Speak confidently',result:'You make your point.',effects:[{type:'stat',character:p.playerId,stat:'confidence',delta:2}]}]}];
+ validatePack(p,registry);const h=harness(p);h.act('core.inspect');assert.equal(h.state.modules['story.scenes'].pending,'confidence-scene');const result=h.act('story.choose',{scene:'confidence-scene',choice:'speak'});
+ assert.equal(h.state.modules['character.stats'].values['player--confidence'],6);assert.equal(h.state.modules['social.progression'].states.ada,'interested');assert.ok(result.turn.events.some(e=>e.type==='character.statChanged'));assert.ok(result.turn.events.some(e=>e.type==='social.relationshipStateChanged'));
+ const playerContext=contextFor(h.state,p,p.playerId),adaContext=contextFor(h.state,p,'ada');assert.equal(playerContext.characterStats.find(x=>x.character==='ada')?.values['private-hope'],undefined);assert.equal(adaContext.characterStats.find(x=>x.character==='ada').values['private-hope'],7);assert.deepEqual(playerContext.relationshipProgression,[{character:'ada',state:'interested'}]);
+ const restored=replay(createWorld(p,registry,'test'),h.state.events);assert.deepEqual(restored.modules['character.stats'],h.state.modules['character.stats']);assert.deepEqual(restored.modules['social.progression'],h.state.modules['social.progression']);
+});
+
+test('dating profiles combine hard eligibility, personal preferences, discovery, signals, and agency',()=>{
+ const p=clone(neutral);p.modules['character.stats']='0.1.0';p.modules['social.bonds']='0.1.0';p.modules['social.dating']='0.1.0';p.modules['story.scenes']='0.1.0';p.actors.find(a=>a.id===p.playerId).identityTags=['woman'];p.actors.find(a=>a.id===p.playerId).traits=['bold'];
+ p.statDefinitions=[{id:'confidence',name:'Confidence',min:0,max:10,visibility:'public'}];p.initialStats=[{character:p.playerId,stat:'confidence',value:6}];p.relationshipDimensions=[{id:'affection',name:'Affection'}];p.initialBonds=[{character:'ada',dimension:'affection',value:40}];
+ p.datingProfiles=[{character:'ada',initialChemistry:0,scoreVisibility:'hidden',eligibility:{anyTags:['woman'],forbiddenFlags:['betrayed-ada']},thresholds:{crush:25,date:30,exclusive:70},preferences:[{id:'confidence-fit',type:'stat',stat:'confidence',min:5,weight:15,label:'likes confidence',visibility:'public'},{id:'affection-fit',type:'bond',dimension:'affection',min:30,weight:10,label:'values familiarity',visibility:'discoverable'},{id:'bold-fit',type:'trait',trait:'bold',weight:5,label:'likes bold people',visibility:'private'}],signals:[{id:'noticed-detail',event:'core.inspected',match:{location:'hub'},delta:5,label:'paid attention'}]}];
+ p.scriptedScenes=[{id:'learn-preference',title:'A revealing conversation',opening:'Ada shares something personal.',trigger:{event:'social.crushStarted',match:{character:'ada'}},choices:[{id:'listen',label:'Listen',result:'You understand her better.',effects:[{type:'discoverPreference',character:'ada',preference:'affection-fit'}]}]}];
+ validatePack(p,registry);const h=harness(p);const inspect=h.act('core.inspect');assert.ok(inspect.turn.events.some(e=>e.type==='social.attractionChanged'));assert.ok(inspect.turn.events.some(e=>e.type==='social.crushStarted'));assert.equal(h.state.modules['social.dating'].characters.ada.score,35);assert.equal(h.state.modules['social.dating'].characters.ada.phase,'crush');assert.equal(h.state.modules['story.scenes'].pending,'learn-preference');
+ h.act('story.choose',{scene:'learn-preference',choice:'listen'});const player=contextFor(h.state,p,p.playerId).dating.find(x=>x.character==='ada'),ada=contextFor(h.state,p,'ada').dating.find(x=>x.character==='ada');assert.deepEqual(player.preferences.map(x=>x.id).sort(),['affection-fit','confidence-fit']);assert.equal(player.score,undefined);assert.equal(ada.preferences.length,3);assert.equal(ada.score,35);
+ const date=h.act('social.askDate',{character:'ada'});assert.equal(h.state.modules['social.dating'].characters.ada.phase,'dating');assert.ok(date.turn.events.some(e=>e.type==='social.dateAccepted'));const restored=replay(createWorld(p,registry,'test'),h.state.events);assert.deepEqual(restored.modules['social.dating'],h.state.modules['social.dating']);
+ const blocked=clone(p);blocked.flags=undefined;blocked.datingProfiles[0].eligibility.anyTags=['man'];const hb=harness(blocked);hb.act('core.inspect');assert.equal(hb.state.modules['social.dating'].characters.ada.eligible,false);assert.throws(()=>hb.act('social.askDate',{character:'ada'}),/orientation/);
+});
+
+test('relationship agreements make witnessed jealousy, repair, satisfaction, and breakup deterministic',()=>{
+ const witnessModule={id:'test.witness',version:'0.1.0',coreApi:'0.1.0',requires:[],commands:{'test.flirt'(tx,args){tx.emit('social.romanticInteraction',{target:'brin',witnesses:args.witnesses||[],text:'A romantic interaction occurs.'});},'test.apologize'(tx){tx.emit('social.apology',{character:'ada',text:'You repair the conflict.'});}}};const custom={...registry,[witnessModule.id]:witnessModule};
+ const p=clone(neutral);p.modules['social.dating']='0.1.0';p.modules['test.witness']='0.1.0';p.datingProfiles=[{character:'ada',initialChemistry:40,initialSatisfaction:50,initialPhase:'dating',agreements:['monogamous','open'],thresholds:{crush:10,date:20,exclusive:30},preferences:[],signals:[],maintenance:{strainedAt:20,breakupAt:-20,signals:[{id:'witnessed-flirt',event:'social.romanticInteraction',delta:-40,label:'saw partner flirt',witnessed:true,agreements:['monogamous'],repeatable:true},{id:'repair',event:'social.apology',match:{character:'ada'},delta:30,label:'conflict repaired',repeatable:true}]}}];validatePack(p,custom);let state=createWorld(p,custom,'dating-maintenance');const act=(type,args={})=>{const result=execute(state,{id:`m${state.revision}`,actorId:p.playerId,type,args,expectedRevision:state.revision},p,custom);state=result.state;return result;};
+ act('social.defineRelationship',{character:'ada',agreement:'monogamous'});assert.equal(state.modules['social.dating'].characters.ada.agreement,'monogamous');assert.equal(state.modules['social.dating'].characters.ada.phase,'exclusive');
+ act('test.flirt',{witnesses:[]});assert.equal(state.modules['social.dating'].characters.ada.satisfaction,50,'unwitnessed behavior does not create omniscient jealousy');const first=act('test.flirt',{witnesses:['ada']});assert.equal(state.modules['social.dating'].characters.ada.satisfaction,10);assert.ok(first.turn.events.some(e=>e.type==='social.relationshipStrained'));
+ const repair=act('test.apologize');assert.equal(state.modules['social.dating'].characters.ada.satisfaction,40);assert.ok(repair.turn.events.some(e=>e.type==='social.relationshipRepaired'));act('test.flirt',{witnesses:['ada']});const breakup=act('test.flirt',{witnesses:['ada']});assert.equal(state.modules['social.dating'].characters.ada.phase,'broken');assert.ok(breakup.turn.events.some(e=>e.type==='social.relationshipBroken'));assert.deepEqual(replay(createWorld(p,custom,'dating-maintenance'),state.events).modules['social.dating'],state.modules['social.dating']);
+});
+
+test('NPC romance network creates a visible rival turning point without silently reassigning a partner',()=>{
+ const p=clone(neutral);p.modules['social.dating']='0.1.0';p.modules['social.romance-network']='0.1.0';p.modules['story.scenes']='0.1.0';p.actors.find(a=>a.id==='brin').location='hub';p.actors.find(a=>a.id==='ada').location='hub';
+ p.datingProfiles=[{character:'ada',initialChemistry:70,initialSatisfaction:-30,initialPhase:'exclusive',initialAgreement:'monogamous',agreements:['monogamous','open'],thresholds:{crush:20,date:30,exclusive:60},preferences:[],signals:[]}];
+ p.romanceAgents=[{character:'brin',autonomy:'turning-point',pursuitThreshold:40,commitThreshold:80,rivalThreshold:60,leaveThreshold:-20,rivalryVisibility:'participants'},{character:'ada',autonomy:'turning-point',pursuitThreshold:40,commitThreshold:80,rivalThreshold:60,leaveThreshold:-20,rivalryVisibility:'participants'}];p.npcChemistry=[{from:'brin',to:'ada',value:80},{from:'ada',to:'brin',value:70}];p.initialNpcRomances=[];
+ p.scriptedScenes=[{id:'rival-turning-point',title:'A difficult conversation',opening:'Ada tells you that Brin has feelings for her.',trigger:{event:'social.rivalPursuitStarted',match:{target:'ada'}},choices:[{id:'stay',label:'Try to repair this',result:'Ada chooses to stay and talk.',effects:[{type:'revealRivalry',id:'pressure-1-brin-ada'},{type:'resolveRivalry',id:'pressure-1-brin-ada',outcome:'stay'}]}]}];
+ validatePack(p,registry);const h=harness(p);const turn=h.act('core.wait');const pressure=h.state.modules['social.romance-network'].pressures[0];assert.deepEqual({pursuer:pressure.pursuer,target:pressure.target,status:pressure.status,known:pressure.knownToPlayer},{pursuer:'brin',target:'ada',status:'pending',known:false});assert.equal(h.state.modules['social.dating'].characters.ada.phase,'exclusive','the simulation creates pressure rather than transferring a partner');assert.equal(contextFor(h.state,p,p.playerId).romanceNetwork.pressures.length,0,'a private pursuit does not leak before disclosure');assert.ok(turn.turn.events.some(e=>e.type==='social.rivalPursuitStarted'));assert.equal(h.state.modules['story.scenes'].pending,'rival-turning-point');
+ const resolved=h.act('story.choose',{scene:'rival-turning-point',choice:'stay'});assert.equal(h.state.modules['social.romance-network'].pressures[0].status,'stayed');assert.equal(h.state.modules['social.dating'].characters.ada.phase,'exclusive');assert.ok(resolved.turn.events.some(e=>e.type==='social.rivalryDiscovered'));assert.ok(resolved.turn.events.some(e=>e.type==='social.rivalryResolved'));assert.equal(contextFor(h.state,p,p.playerId).romanceNetwork.pressures.length,1);const restored=replay(createWorld(p,registry,'test'),h.state.events);assert.deepEqual(restored.modules['social.romance-network'],h.state.modules['social.romance-network']);
+});
+
+});
+test('facts the player states about themselves may quote the player action, but only for the player subject',()=>{const p=clone(neutral);const turn={id:'t1',input:'Tell Ada my name is Mara and I grew up by the harbor',command:{type:'social.speak',args:{target:'ada',text:'my name is Mara'}},events:[]};const narrative='Ada nods and smiles.';assert.equal(validateGeneratedFacts([{subject:p.playerId,text:'The player grew up by the harbor.',quote:'I grew up by the harbor'}],p,turn,narrative).length,1);assert.throws(()=>validateGeneratedFacts([{subject:'ada',text:'Ada grew up by the harbor.',quote:'I grew up by the harbor'}],p,turn,narrative),/quote/);});

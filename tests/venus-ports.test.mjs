@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createLineExtractor} from '../vendor/venus/sceneStream.mjs';
+import {normalizeSceneVerdict} from '../vendor/venus/sceneClassifier.mjs';
 import {createTextExtractor} from '../vendor/venus/textingStream.mjs';
 import {createRequestQueue} from '../vendor/venus/requestQueue.mjs';
 import {CompatibleProvider} from '../packages/ai/providers.mjs';
@@ -22,6 +23,14 @@ test('ported scene and texting parsers emit complete values once across arbitrar
  assert.deepEqual(texts,messages);
 });
 
+test('scene location classification tolerates model phrasing but refuses invented or ambiguous places',()=>{
+ const p=JSON.parse(readFileSync(new URL('../packs/scripted-workshop.json',import.meta.url)));
+ const locationOf=sceneLocation=>normalizeSceneVerdict({characters:[],mentionedOnly:[],sceneLocation,activity:'explore',activityId:''},p).location;
+ for(const text of ['workshop','Workshop','the workshop','Workshop ',' Workshop','Go to the Workshop'])assert.equal(locationOf(text),'workshop');
+ assert.equal(locationOf('the Meeting Room'),'meeting');
+ for(const text of ['','   ','invented palace','somewhere between the Hub and the Workshop'])assert.equal(locationOf(text),null);
+});
+
 test('ported serial queue skips cancelled jobs and survives a failed predecessor',async()=>{
  const enqueue=createRequestQueue();let release;const order=[];
  const first=enqueue(async()=>{order.push('first');await new Promise(r=>release=r);throw Error('failed');});
@@ -37,6 +46,13 @@ test('compatible provider serializes simultaneous requests to its local endpoint
   return {ok:true,json:async()=>({choices:[{message:{content:'OK'},finish_reason:'stop'}]})};
  }});
  const a=provider.complete([],null);const b=provider.complete([],null);await Promise.resolve();assert.equal(calls,1);release();assert.deepEqual(await Promise.all([a,b]),['OK','OK']);assert.equal(maxActive,1);
+});
+
+test('compatible provider emits complete sanitized-preview candidates from an SSE scene stream',async()=>{
+ const p=JSON.parse(readFileSync(new URL('../packs/neutral.json',import.meta.url))),json=JSON.stringify({lines:[{speaker:'ada',text:'First page.'},{speaker:'',text:'Second page.'}]});
+ const chunks=[json.slice(0,35),json.slice(35,65),json.slice(65)],encoder=new TextEncoder();
+ const provider=new CompatibleProvider({endpoint:'http://localhost:1234/v1/chat/completions',model:'stream',fetchImpl:async()=>new Response(new ReadableStream({start(controller){for(const chunk of chunks)controller.enqueue(encoder.encode(`data: ${JSON.stringify({choices:[{delta:{content:chunk}}]})}\n\n`));controller.enqueue(encoder.encode('data: [DONE]\n\n'));controller.close();}}),{headers:{'Content-Type':'text/event-stream'}})});
+ const seen=[],context={stagedCast:['ada'],absentCharacters:[],sceneHistory:[],playerAction:'Continue',location:p.locations[0]};const result=await provider.generateScene(context,p,null,lines=>seen.push(...lines));assert.deepEqual(result.lines.map(x=>x.text),['First page.','Second page.']);assert.deepEqual(seen.map(x=>x.text),['First page.','Second page.']);
 });
 
 test('NPC social module develops off-screen relationships reproducibly and exports cleanly',()=>{

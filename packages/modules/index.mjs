@@ -10,7 +10,11 @@ import {equipment} from './equipment.mjs';
 import {bonds} from './bonds.mjs';
 import {npcSocial} from './npc-social.mjs';
 import {economy} from './economy.mjs';
-export const registry=Object.fromEntries([conversation,relationships,schedule,quests,inventory,abilities,objects,daypart,worldEvents,scenes,facts,equipment,bonds,npcSocial,economy].map(m=>[m.id,m]));
+import {stats} from './stats.mjs';
+import {progression} from './progression.mjs';
+import {dating} from './dating.mjs';
+import {romanceNetwork} from './romance-network.mjs';
+export const registry=Object.fromEntries([conversation,relationships,schedule,quests,inventory,abilities,objects,daypart,worldEvents,scenes,facts,equipment,bonds,npcSocial,economy,stats,progression,dating,romanceNetwork].map(m=>[m.id,m]));
 const descriptions={
  'social.conversation':['Character conversation','Enables conversations with characters who share the player’s location.'],
  'social.relationships':['Relationships','Tracks trust changes from recorded conversations.'],
@@ -26,6 +30,10 @@ const descriptions={
  'items.equipment':['Equipment','Adds named slots and equip or remove actions for carried items.'],
  'social.bonds':['Relationship dimensions','Adds authored relationship values such as affection, rivalry, or familiarity.'],
  'social.npc':['NPC social life','Characters sharing off-screen locations develop friendships and rivalries at time boundaries.'],
- 'world.economy':['Money and shop','Set starting funds and sell priced items at their home location. Activities and scenes can award money.']
+ 'world.economy':['Money and shop','Set starting funds and sell priced items at their home location. Activities and scenes can award money.'],
+ 'character.stats':['Character stats','Adds pack-defined numeric qualities with authored ranges, progression, and visibility.'],
+ 'social.progression':['Relationship states','Adds authored event-driven relationship stages for each character.'],
+ 'social.dating':['Attraction and dating','Adds character-specific eligibility, preferences, chemistry, crushes, dates, and explainable romance state.'],
+ 'social.romance-network':['NPC romance network','Adds directional NPC attraction, existing couples, autonomous courtship, and rival turning points.']
 };
 export const moduleCatalog=Object.fromEntries(Object.values(registry).map(m=>[m.id,{id:m.id,version:m.version,requires:m.requires||[],title:descriptions[m.id][0],description:descriptions[m.id][1],group:m.id.split('.')[0]}]));

@@ -1,4 +1,4 @@
-import {assert, safeKey, scheduleDestination,releaseScene} from '../core/engine.mjs';
+import {assert, safeKey, scheduleDestination, nextArrivalTick, releaseScene} from '../core/engine.mjs';
 const definition=(id,extra)=>({id,version:'0.1.0',coreApi:'0.1.0',requires:[],...extra});
 export const conversation=definition('social.conversation',{
   init:()=>({memories:[]}),
@@ -27,6 +27,7 @@ export const relationships=definition('social.relationships',{
 export const schedule=definition('world.schedule',{
   validate(p){for(const [i,r] of (p.schedules||[]).entries()){assert(p.actors.some(a=>a.id===r.actor)&&r.actor!==p.playerId,`schedules[${i}].actor: unknown NPC`);assert(Array.isArray(r.stops||[])&&Array.isArray(r.weekly||[])&&(r.stops?.length||r.weekly?.length),'schedule: at least one stop required');if(r.stops?.length)assert(Number.isInteger(r.period)&&r.period>0&&r.period<=10000,`schedules[${i}].period: invalid`);for(const st of r.stops||[]){assert(Number.isInteger(st.at)&&st.at>=0&&st.at<r.period,'schedule.stop.at: invalid');assert(p.locations.some(l=>l.id===st.location),'schedule.stop.location: unknown');}const seen=new Set();for(const st of r.weekly||[]){const key=`${st.weekday}/${st.daypart}`;assert(!seen.has(key),'schedule.weekly: duplicate day and part');seen.add(key);assert(['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].includes(st.weekday)&&['Morning','Afternoon','Evening'].includes(st.daypart),'schedule.weekly: invalid weekday or daypart');assert(p.locations.some(l=>l.id===st.location),'schedule.weekly: unknown location');}}},
   react(tx,e){if(e.type!=='core.timeAdvanced')return;for(let tick=e.payload.from+1;tick<=e.payload.to;tick++)for(const r of tx.pack.schedules||[]){const location=scheduleDestination(tx.pack,r,tick);if(!location||e.payload.sceneCast?.includes(r.actor)||tx.state.actors[r.actor].location===location)continue;tx.set(['actors',r.actor,'location'],location);tx.emit('world.actorArrived',{actor:r.actor,location},[r.actor]);}},
+  actions(s,p){const here=s.actors[p.playerId].location;const out=[];for(const r of p.schedules||[]){if(s.actors[r.actor].location===here)continue;if(nextArrivalTick(p,r.actor,here,s.tick)===null)continue;const name=s.actors[r.actor].name;out.push({label:`Wait until ${name} arrives`,type:'core.waitUntil',args:{actor:r.actor}});}return out;},
   panel(s,p){return {title:'Schedule',lines:(p.schedules||[]).map(r=>`${s.actors[r.actor].name}: ${[...(r.stops||[]).map(st=>`${p.locations.find(l=>l.id===st.location).name} at tick ${st.at} / ${r.period}`),...(r.weekly||[]).map(st=>`${st.weekday} ${st.daypart}: ${p.locations.find(l=>l.id===st.location).name}`)].join(' · ')}`)};}
 });
 export const quests=definition('story.quests',{

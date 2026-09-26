@@ -1,0 +1,93 @@
+// What the player has told characters, rebuilt from committed turns at read time (no save migration).
+// Small local models misattribute first-person text ("my name is Mara") to whoever speaks next, and questions
+// ("Ask Brin what he does on rest days") carry nothing worth remembering. So each player utterance is classified,
+// questions are dropped, and the rest is phrased with an explicit speaker: the player told Brin: “…”.
+import {terms} from './retrieval.mjs';
+
+const escape=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const FIRST_PERSON=/\b(?:i|i'm|im|i've|i'd|i'll|my|me|mine|myself)\b/i;
+const ASKING=/^\s*(?:i\s+)?(?:ask|asks|wonder|quiz|question)\b/i;
+const INTERROGATIVE=/^\s*(?:what|where|when|who|whom|whose|why|how|which|whether|if|do|does|did|are|is|was|were|can|could|will|would|should|have|has|had)\b/i;
+const PROMISE=/\bpromise[sd]?\b|\b(?:i'll|i will|i swear|i vow)\b/i;
+
+/** Classifies one player utterance: question | promise | disclosure (about the player) | statement. */
+export function classifyUtterance(input,names=[]){
+ const text=String(input||'').trim();if(!text)return {kind:'statement',said:''};
+ const who=names.filter(Boolean).map(escape).join('|')||'(?!)';
+ // Strip the addressing wrapper players type in scene mode: "Tell Brin (that) …", "Talk to Brin: …".
+ const said=text.replace(new RegExp(`^\\s*talk to (?:${who})\\s*:\\s*`,'i'),'')
+  .replace(new RegExp(`^\\s*(?:i\\s+)?(?:tell|tells|say|says|mention|explain|admit|confess|reveal|share|whisper|remind|inform|reply|answer)(?:\\s+to)?\\s+(?:${who})\\b[\\s,:]*(?:that\\s+)?`,'i'),'').trim();
+ if(ASKING.test(text))return {kind:'question',said};
+ if(PROMISE.test(said))return {kind:'promise',said};
+ if(/\?\s*$/.test(said)||INTERROGATIVE.test(said))return {kind:'question',said};
+ return {kind:FIRST_PERSON.test(said)?'disclosure':'statement',said};
+}
+
+// Third person, not quotes: a 9B model reads “my favorite color is teal” as its own line even inside quotation marks.
+const PRESENT=/\bI (love|like|hate|want|need|think|feel|know|live|work|prefer|miss|play|enjoy|believe|remember|mean|hope|wish|study|own|keep|promise|swear|vow)\b/gi;
+function thirdPerson(text,player,listener){
+ return text
+  .replace(/\bI(?:'m| am)\b/gi,`${player} is`).replace(/\bI was\b/gi,`${player} was`).replace(/\bI(?:'ve| have)\b/gi,`${player} has`)
+  .replace(/\bI'd\b/gi,`${player} would`).replace(/\bI'll\b/gi,`${player} will`).replace(/\bI do\b/g,`${player} does`)
+  .replace(PRESENT,(_,verb)=>`${player} ${verb}${/(?:s|sh|ch|x|o)$/i.test(verb)?'es':'s'}`)
+  .replace(/\bI\b/g,player).replace(/\b(?:my|mine)\b/gi,`${player}’s`).replace(/\b(?:me|myself)\b/gi,player)
+  .replace(/\byour\b/gi,`${listener}’s`).replace(/\byou\b/gi,listener);
+}
+/** Phrases a classified utterance so a small model cannot take the player's "I" and "my" as its own. */
+export function memoryText(kind,said,listener,player='the player'){
+ const verb=kind==='promise'?'promised':'told';
+ // "Thank Brin and promise to bring him coffee" keeps only the promise itself.
+ const text=(kind==='promise'&&!/^i\b/i.test(said)?said.replace(/^.*?\bpromise[sd]?\s+(?:(?:him|her|them)\s+)?/i,''):said).replace(/^[“"]|[”"]$/g,'');
+ const direct=FIRST_PERSON.test(text.split(/\s+/)[0]||'');
+ return `${player} ${verb} ${listener}${direct?':':''} ${thirdPerson(text,player,listener)}`;
+}
+
+/** True when a model-written impression is about the player rather than the character's own habits. */
+export function mentionsPlayer(text,playerName=''){
+ const d=String(text||'');if(/\b(?:player|you|your|yours|user)\b|\{\{\s*user/i.test(d))return true;
+ return Boolean(playerName&&playerName!=='You'&&new RegExp(`\\b${escape(playerName)}\\b`,'i').test(d));
+}
+
+const sceneCast=turn=>turn.events?.find(e=>e.type==='core.sceneStarted'||e.type==='core.sceneContinued')?.payload.characters||[];
+
+/**
+ * Player statements visible to actorId, newest last. Sources: the conversation module's memories (social.speak and
+ * scene "talk" turns) plus completed scene turns that recorded none ("continue" turns and group scenes).
+ * Promises and disclosures are all kept (newest `keep`); plain statements only the newest `statements`.
+ */
+export function playerStatements(state,pack,actorId,{keep=40,statements=4}={}){
+ const nameOf=id=>pack.actors.find(a=>a.id===id)?.name||id,playerName=nameOf(pack.playerId),player=playerName&&playerName!=='You'?playerName:'the player';
+ const visible=knownBy=>actorId===pack.playerId||knownBy.includes(actorId);
+ const out=[],covered=new Set();
+ for(const m of state.modules['social.conversation']?.memories||[]){
+  if(!visible(m.knownBy||[]))continue;
+  const listeners=(m.knownBy||[]).filter(id=>id!==pack.playerId),names=listeners.flatMap(id=>[nameOf(id),nameOf(id).split(' ')[0]]);
+  const raw=String(m.text||'').replace(/^You (?:tell|talk to) [^:]+:\s*/,'').replace(/^“|”$/g,'');
+  const c=classifyUtterance(raw,names);covered.add(String(m.source).split('.')[0]);
+  out.push({source:m.source,tick:m.tick||0,kind:m.promise&&c.kind!=='question'?'promise':c.kind,said:c.said,listener:listeners.map(nameOf).join(' and ')||'someone'});
+ }
+ for(const turn of Object.values(state.turns||{})){
+  if(turn.status!=='complete'||covered.has(turn.id)||turn.command?.type!=='core.scene')continue;
+  const cast=sceneCast(turn);if(!cast.length||!(actorId===pack.playerId||cast.includes(actorId)))continue;
+  const input=turn.input||turn.command.args?.text||'';if(!input)continue;
+  const c=classifyUtterance(input,cast.flatMap(id=>[nameOf(id),nameOf(id).split(' ')[0]]));
+  out.push({source:turn.id,tick:turn.events?.[0]?.tick||0,kind:c.kind,said:c.said,listener:cast.map(nameOf).join(' and ')});
+ }
+ out.sort((a,b)=>a.tick-b.tick);
+ const lasting=out.filter(m=>m.kind==='promise'||m.kind==='disclosure').slice(-keep),plain=out.filter(m=>m.kind==='statement').slice(-statements);
+ const chosen=new Set([...lasting,...plain]);
+ return out.filter(m=>chosen.has(m)&&m.said).map(m=>({source:m.source,kind:m.kind,promise:m.kind==='promise',text:memoryText(m.kind,m.said,m.listener,player)}));
+}
+
+/** Rank bonus for memories that share words with what the player is asking right now (0–6). */
+// Words every memory shares with every request ("ask Ada", "the player told") say nothing about the topic.
+const FILLER=new Set(terms('ask asked tell told say said player promise promised remember'));
+export function relevance(text,query,names=[]){
+ if(!query)return 0;const ignore=new Set([...FILLER,...names.flatMap(n=>terms(n))]),wanted=new Set(terms(query).filter(t=>!ignore.has(t)));if(!wanted.size)return 0;
+ let hits=0;for(const t of new Set(terms(text)))if(wanted.has(t))hits++;return Math.min(6,hits*2);
+}
+
+/** Removes SillyTavern-style placeholders that role-play fine-tunes leak into prose. */
+export function stripPlaceholders(text,player='you',character='they'){
+ return String(text).replace(/\{\{\s*user\s*\}\}/gi,player).replace(/\{\{\s*char\s*\}\}/gi,character);
+}

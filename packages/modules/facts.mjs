@@ -26,7 +26,9 @@ export function validateGeneratedFacts(raw,pack,turn,narrative){
  const location=turn.events.find(e=>e.type==='core.sceneStarted'||e.type==='core.sceneContinued')?.payload.location||turn.events.find(e=>e.type==='social.spoke')?.payload.location;
  return raw.map((fact,index)=>{
   assert(fact&&typeof fact==='object'&&subjects.has(fact.subject),'Unknown fact subject');
-  assert(typeof fact.quote==='string'&&fact.quote.length>=8&&fact.quote.length<=220&&narrative.includes(fact.quote),'Fact quote must occur in scene narration');
+  // What the player says about themselves ("my name is Mara") is in their action, not the narration.
+  const said=fact.subject===pack.playerId?String(turn.input||turn.command.args?.text||''):'';
+  assert(typeof fact.quote==='string'&&fact.quote.length>=8&&fact.quote.length<=220&&(narrative.includes(fact.quote)||said.includes(fact.quote)),'Fact quote must occur in scene narration');
   assert(typeof fact.text==='string'&&fact.text.trim().length>=8&&fact.text.length<=220,'Invalid fact text');
   // New claims cannot alter ownership, flags, scores, or other game rules.
   assert(!/\b(?:equipped|inventory|trust score|affection score|flag set|quest completed)\b/i.test(fact.text),'Mechanical changes require a rule');

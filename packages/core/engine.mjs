@@ -7,6 +7,15 @@ export function safeKey(s) { return typeof s === 'string' && /^[a-zA-Z0-9][a-zA-
 export function routeBetween(pack,from,to,flags={}) { const queue=[[from]],seen=new Set([from]);while(queue.length){const path=queue.shift(),at=path.at(-1);if(at===to)return path;for(const e of pack.locations.find(l=>l.id===at)?.exits||[])if(!seen.has(e.to)&&(!e.flag||flags[e.flag])){seen.add(e.to);queue.push([...path,e.to]);}}return null; }
 export function scheduleDestination(pack,schedule,tick) {for(const stop of schedule.stops||[])if(tick%schedule.period===stop.at)return stop.location;const interval=pack.daypart?.interval||4;if(tick%interval===0){const clock=calendarFor(tick,pack);for(const stop of schedule.weekly||[])if(stop.weekday===clock.weekday&&stop.daypart===clock.daypart)return stop.location;}return null;}
 export function scheduledLocation(world,pack,id,arrivalTick) {if(!pack.modules['world.schedule'])return world.actors[id].location;let at=world.actors[id].location;for(let tick=world.tick+1;tick<=arrivalTick;tick++)for(const schedule of pack.schedules||[])if(schedule.actor===id)at=scheduleDestination(pack,schedule,tick)||at;return at;}
+// First tick after fromTick on which this actor's schedule places them at `location`
+// (or null if none within the horizon). Deterministic: depends only on pack and ticks.
+export function nextArrivalTick(pack,actor,location,fromTick,maxTicks=null){
+ if(!pack.modules['world.schedule'])return null;
+ const schedule=(pack.schedules||[]).find(r=>r.actor===actor);if(!schedule)return null;
+ const horizon=maxTicks??(pack.daypart?.interval||4)*3*7;
+ for(let tick=fromTick+1;tick<=fromTick+horizon;tick++)if(scheduleDestination(pack,schedule,tick)===location)return tick;
+ return null;
+}
 // A cast member remains present for the scene. Apply the latest missed scheduled stop at its boundary.
 export function settleSceneAttendance(world,pack){
  const scene=world.scene;
@@ -30,7 +39,7 @@ export function releaseScene(tx){
  tx.set(['scene'],null);
 }
 export function travel(tx,pack,from,to,player){const route=routeBetween(pack,from,to,tx.state.flags);if(!route){tx.emit('core.travelBlocked',{from,to,text:`You cannot reach ${pack.locations.find(l=>l.id===to).name} from here.`},[player]);return null;}for(let i=1;i<route.length;i++){tx.set(['actors',player,'location'],route[i]);tx.emit('core.moved',{actor:player,from:route[i-1],to:route[i],text:`You go to ${pack.locations.find(l=>l.id===route[i]).name}.`},[player]);}return route;}
-export function meetingArrival(tx,world,pack,id,to,arrival){const location=scheduledLocation(world,pack,id,arrival);if(location!==to){tx.emit('world.meetingUnavailable',{character:id,location:to,text:`${tx.state.actors[id].name} is not at ${pack.locations.find(l=>l.id===to).name} when you arrive.`},[pack.playerId]);return false;}if(tx.state.actors[id].location!==to){tx.set(['actors',id,'location'],to);tx.emit('world.actorArrived',{actor:id,location:to,text:`${tx.state.actors[id].name} arrives at ${pack.locations.find(l=>l.id===to).name}.`},[pack.playerId,id]);}return true;}
+export function meetingArrival(tx,world,pack,id,to,arrival){const location=scheduledLocation(world,pack,id,arrival);if(location!==to){const at=nextArrivalTick(pack,id,to,arrival);const when=at===null?'':` They are scheduled back at ${pack.locations.find(l=>l.id===to).name} from ${calendarFor(at,pack).weekday} ${calendarFor(at,pack).daypart}.`;tx.emit('world.meetingUnavailable',{character:id,location:to,nextArrival:at,text:`${tx.state.actors[id].name} is not at ${pack.locations.find(l=>l.id===to).name} when you arrive.${when}`},[pack.playerId]);return false;}if(tx.state.actors[id].location!==to){tx.set(['actors',id,'location'],to);tx.emit('world.actorArrived',{actor:id,location:to,text:`${tx.state.actors[id].name} arrives at ${pack.locations.find(l=>l.id===to).name}.`},[pack.playerId,id]);}return true;}
 export function digest(x) { let h=2166136261; for(const c of JSON.stringify(x)) h=Math.imul(h^c.charCodeAt(0),16777619); return (h>>>0).toString(16); }
 export function resolveModules(pack, registry) {
   const ordered=[], visiting=new Set(), done=new Set();
@@ -95,8 +104,8 @@ export function execute(world,command,pack,registry) {
   assert(safeKey(command.id),'Invalid turn ID');assert(command.expectedRevision===world.revision,'Stale revision; refresh and try again');
   assert(command.actorId===pack.playerId,'Only the player can submit commands');
   assert(command.args&&typeof command.args==='object'&&!Array.isArray(command.args),'args must be an object');
-  if(world.modules['story.scenes']?.pending)assert(command.type==='story.choose','Choose an option in the active scene first');
-  const mods=resolveModules(pack,registry), state=clone(world), emitted=[];let steps=0;
+  if(world.modules['story.scenes']?.pending)assert(['story.choose','story.leave'].includes(command.type),'Choose an option or leave the active scene first');
+  const mods=resolveModules(pack,registry), state=clone(world), emitted=[];let steps=0,waitTicks=0;
   const tx={state,pack,world,commandId:command.id,
     emit(type,payload,visibility='public'){assert(++steps<=200,'Event reaction limit exceeded');const event={id:`${command.id}.${emitted.length}`,type,payload:clone(payload),tick:state.tick,visibility:clone(visibility)};emitted.push(event);return event;},
     set(path,value){put(state,path,value);this.emit('core.patch',{path,value},[]);},
@@ -106,6 +115,7 @@ export function execute(world,command,pack,registry) {
     'core.move'(tx,args){const from=tx.state.actors[pack.playerId].location;const exit=pack.locations.find(l=>l.id===from).exits.find(e=>e.to===args.to);assert(exit,'No route to that location');assert(!exit.flag||tx.state.flags[exit.flag],exit.reason||'This route is locked');releaseScene(tx);tx.set(['actors',pack.playerId,'location'],args.to);tx.emit('core.moved',{actor:pack.playerId,from,to:args.to,text:`Travelled to ${pack.locations.find(l=>l.id===args.to).name}.`});},
     'core.inspect'(tx){const l=pack.locations.find(l=>l.id===state.actors[pack.playerId].location);tx.emit('core.inspected',{text:l.description||l.name,location:l.id},[pack.playerId]);},
     'core.wait'(tx){tx.emit('core.waited',{text:'You wait and watch the world move.'},[pack.playerId]);},
+    'core.waitUntil'(tx,args){const to=args.location||state.actors[pack.playerId].location;assert(pack.actors.some(a=>a.id===args.actor&&a.id!==pack.playerId),'Unknown character to wait for');assert(pack.locations.some(l=>l.id===to),'Unknown wait location');assert(state.actors[pack.playerId].location===to,'Wait where you are');assert(state.actors[args.actor].location!==to,'That character is already here');const at=nextArrivalTick(pack,args.actor,to,world.tick);assert(at&&at>world.tick,'That character has no upcoming stop here soon');waitTicks=at-world.tick;const name=state.actors[args.actor].name;tx.emit('core.waited',{actor:args.actor,location:to,tick:at,text:`You wait until ${name} arrives here.`},[pack.playerId]);},
     'core.endScene'(tx){assert(tx.state.scene,'There is no active conversation to end');releaseScene(tx);tx.emit('core.sceneEnded',{text:'You end the conversation.'},[pack.playerId]);},
     'core.scene'(tx,args){
       assert(typeof args.text==='string'&&args.text.trim().length>0&&args.text.length<=2000,'Scene request must contain 1–2000 characters');
@@ -152,10 +162,7 @@ export function execute(world,command,pack,registry) {
       if(args.itemAction){
         assert(pack.modules['items.inventory']&&['take','place','give'].includes(args.itemAction),'Inventory action unavailable');
         const item=(pack.items||[]).find(i=>i.id===args.itemId);assert(item,'Unknown item');
-        assert(args.text.toLowerCase().includes(item.name.toLowerCase())||args.text.toLowerCase().includes(item.id.replaceAll('-',' ')),'The player did not name that item');
-        const verb=args.itemAction==='take'?/\b(take|pick up|grab|collect|get)\b/i:args.itemAction==='give'?/\b(give|hand|pass)\b/i:/\b(place|drop|leave|put)\b/i;
-        assert(verb.test(args.text),'The player did not request that item action');
-        const owners=tx.state.modules['items.inventory'].owners,from=owners[item.id];let owner;
+        const owners=tx.state.modules['items.inventory'].owners;const inScope=args.itemAction==='take'?pack.items.filter(i=>owners[i.id]===to&&(!i.shop||!pack.modules['world.economy'])&&(!i.hidden||tx.state.modules['world.objects']?.discovered.includes(i.id))):pack.items.filter(i=>owners[i.id]===pack.playerId);const named=args.text.toLowerCase().includes(item.name.toLowerCase())||args.text.toLowerCase().includes(item.id.replaceAll('-',' '));assert(named||(inScope.length===1&&inScope[0].id===item.id),'Please name the item you intend to use.');const from=owners[item.id];let owner;
         if(args.itemAction==='take'){assert(!item.shop||!pack.modules['world.economy'],'Buy this item at its shop');assert(from===to,'Item is not at this location');assert(!item.hidden||tx.state.modules['world.objects']?.discovered.includes(item.id),'Item has not been discovered');owner=pack.playerId;}
         else {assert(from===pack.playerId,'You do not own that item');if(args.itemAction==='place')owner=to;else{assert(cast.includes(args.itemTarget)&&tx.state.actors[args.itemTarget]?.location===to,'Recipient is not in this scene');owner=args.itemTarget;}}
         tx.set(['modules','items.inventory','owners',item.id],owner);tx.emit('items.transferred',{item:item.id,from,to:owner,text:`${args.itemAction==='take'?'You take':args.itemAction==='give'?'You give':'You place'} ${item.name}.`},[pack.playerId,...cast]);
@@ -168,7 +175,7 @@ export function execute(world,command,pack,registry) {
   const invitationLocation=invitation&&pack.locations.find(l=>l.name===invitation.where||l.id===invitation.where)?.id;
   const route=command.type==='core.scene'||invitation?routeBetween(pack,world.actors[pack.playerId].location,invitationLocation||command.args.location||world.actors[pack.playerId].location,world.flags):null;
   const travelCost=route?route.length-1:0;
-  const cost=command.type==='world.nextDaypart'?pack.daypart.interval-state.tick%pack.daypart.interval:invitation?route?travelCost+1:0:command.type==='core.scene'&&!route?0:authored?travelCost+authored.duration:command.type==='core.scene'&&command.args.activity==='rest'?travelCost+(pack.daypart?.interval||4)-state.tick%(pack.daypart?.interval||4):command.type==='core.scene'?travelCost+(command.args.activity==='continue'?0:1):pack.durations?.[command.type]??(command.type==='core.inspect'?0:1);assert(Number.isInteger(cost)&&cost>=0&&cost<=100,'Invalid action duration');
+  const cost=command.type==='core.waitUntil'?waitTicks:command.type==='world.nextDaypart'?pack.daypart.interval-state.tick%pack.daypart.interval:invitation?route?travelCost+1:0:command.type==='core.scene'&&!route?0:authored?travelCost+authored.duration:command.type==='core.scene'&&command.args.activity==='rest'?travelCost+(pack.daypart?.interval||4)-state.tick%(pack.daypart?.interval||4):command.type==='core.scene'?travelCost+(command.args.activity==='continue'?0:1):pack.durations?.[command.type]??(command.type==='core.inspect'?0:1);assert(Number.isInteger(cost)&&cost>=0&&cost<=100,'Invalid action duration');
   if(cost){const before=state.tick;tx.set(['tick'],before+cost);tx.emit('core.timeAdvanced',{from:before,to:state.tick,sceneCast:state.scene?.characters||[]},[]);}
   for(let i=0;i<emitted.length;i++){const e=emitted[i];if(e.type==='core.patch')continue;for(const m of mods)m.react?.(tx,e);}
   tx.set(['revision'],world.revision+1);
@@ -176,7 +183,7 @@ export function execute(world,command,pack,registry) {
   state.events.push(...emitted);state.turns[command.id]=turn;return {state,turn,duplicate:false};
 }
 export function actions(world,pack,registry){
-  if(world.modules['story.scenes']?.pending)return resolveModules(pack,registry).flatMap(m=>m.actions?.(world,pack)||[]).filter(a=>a.type==='story.choose').map((a,i)=>{try{execute(world,{...a,id:`preview-choice-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry);return {...a,enabled:true};}catch(e){return {...a,enabled:false,reason:e.message};}});
+  if(world.modules['story.scenes']?.pending)return resolveModules(pack,registry).flatMap(m=>m.actions?.(world,pack)||[]).filter(a=>['story.choose','story.leave'].includes(a.type)).map((a,i)=>{try{execute(world,{...a,id:`preview-choice-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry);return {...a,enabled:true};}catch(e){return {...a,enabled:false,reason:e.message};}});
   const loc=pack.locations.find(l=>l.id===world.actors[pack.playerId].location);
   const list=[{label:'Look around',type:'core.inspect',args:{}},{label:'Wait',type:'core.wait',args:{}},...(world.scene?[{label:'End conversation',type:'core.endScene',args:{}}]:[]),...loc.exits.map(e=>({label:`Go to ${pack.locations.find(l=>l.id===e.to).name}`,type:'core.move',args:{to:e.to}})),...resolveModules(pack,registry).flatMap(m=>m.actions?.(world,pack)||[])];
   return list.map((a,i)=>{try{execute(world,{...a,id:`preview-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry);return {...a,enabled:true};}catch(e){return {...a,enabled:false,reason:e.message};}});

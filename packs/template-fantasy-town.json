@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "id": "template.fantasy-town-adult",
+  "version": "0.1.0",
+  "title": "Moonlit Town Template",
+  "subtitle": "Adult fantasy romance template",
+  "playerId": "player",
+  "calendar": "Moon",
+  "modules": {
+    "social.conversation": "0.1.0",
+    "social.relationships": "0.1.0",
+    "world.schedule": "0.1.0",
+    "items.inventory": "0.1.0",
+    "world.economy": "0.1.0",
+    "social.dating": "0.1.0",
+    "social.intimacy": "0.1.0",
+    "social.phone": "0.1.0",
+    "social.feed": "0.1.0",
+    "story.endings": "0.1.0",
+    "story.timed-events": "0.1.0"
+  },
+  "locations": [
+    {
+      "id": "inn",
+      "name": "Moonlit Inn",
+      "description": "An inn for adult travelers.",
+      "exits": [
+        {
+          "to": "market"
+        }
+      ]
+    },
+    {
+      "id": "market",
+      "name": "Night Market",
+      "description": "A lantern-lit magical market.",
+      "exits": [
+        {
+          "to": "inn"
+        }
+      ]
+    }
+  ],
+  "actors": [
+    {
+      "id": "player",
+      "name": "You",
+      "age": 24,
+      "location": "inn",
+      "identityTags": [
+        "adult"
+      ]
+    },
+    {
+      "id": "ryn",
+      "name": "Ryn",
+      "age": 120,
+      "location": "inn",
+      "identityTags": [
+        "adult",
+        "elf"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "moonwine",
+      "name": "Moonwine",
+      "owner": "market",
+      "shop": true,
+      "price": 10
+    }
+  ],
+  "schedules": [
+    {
+      "actor": "ryn",
+      "period": 4,
+      "stops": [
+        {
+          "at": 1,
+          "location": "market"
+        },
+        {
+          "at": 3,
+          "location": "inn"
+        }
+      ]
+    }
+  ],
+  "initialMoney": 18,
+  "economySettings": {
+    "debtLimit": 10
+  },
+  "services": [
+    {
+      "id": "private-bath",
+      "name": "Reserve enchanted bath",
+      "location": "inn",
+      "price": 14,
+      "result": "The enchanted bath is made private."
+    }
+  ],
+  "wageRules": [
+    {
+      "id": "guild-pay",
+      "event": "core.inspected",
+      "match": {
+        "location": "market"
+      },
+      "amount": 10,
+      "cooldown": 3
+    }
+  ],
+  "datingProfiles": [
+    {
+      "character": "ryn",
+      "initialChemistry": 20,
+      "initialPhase": "crush",
+      "agreements": [
+        "casual",
+        "polyamorous"
+      ],
+      "thresholds": {
+        "crush": 10,
+        "date": 25,
+        "exclusive": 60
+      },
+      "preferences": [],
+      "signals": []
+    }
+  ],
+  "intimacySettings": {
+    "difficulty": "easy",
+    "contentLevel": "explicit",
+    "privateLocations": [
+      "inn"
+    ],
+    "aftercareOptions": []
+  },
+  "intimacyCategories": [
+    {
+      "id": "moonlit",
+      "name": "Moonlit tryst",
+      "privacy": "private",
+      "casual": true,
+      "resolution": "direct",
+      "requiresAgreement": []
+    }
+  ],
+  "intimacyProfiles": [
+    {
+      "character": "ryn",
+      "openness": 85,
+      "casual": true,
+      "consentPolicy": "threshold",
+      "allowedCategories": [
+        "moonlit"
+      ],
+      "blockedCategories": [],
+      "interests": []
+    }
+  ],
+  "phoneContacts": [
+    "ryn"
+  ],
+  "phoneMessages": [
+    {
+      "id": "sending-stone",
+      "character": "ryn",
+      "text": "Meet me before the moon sets.",
+      "trigger": {
+        "event": "core.inspected",
+        "match": {
+          "location": "inn"
+        }
+      },
+      "replies": [
+        {
+          "id": "come",
+          "text": "I will be there."
+        }
+      ],
+      "offer": {
+        "location": "inn",
+        "expiresIn": 2
+      }
+    }
+  ],
+  "feedPosts": [
+    {
+      "id": "notice-board",
+      "author": "ryn",
+      "text": "The moon market opens tonight.",
+      "trigger": {
+        "event": "core.inspected",
+        "match": {
+          "location": "market"
+        }
+      },
+      "reactions": [
+        "like",
+        "flirt"
+      ]
+    }
+  ],
+  "timedEvents": [
+    {
+      "id": "moon-market",
+      "name": "Moon market rendezvous",
+      "startTick": 1,
+      "endTick": 3,
+      "location": "market",
+      "character": "ryn",
+      "missedRecap": "The moon market vanished before you arrived."
+    }
+  ],
+  "endings": [
+    {
+      "id": "moon-bond",
+      "name": "Return under every moon",
+      "character": "ryn",
+      "requires": {
+        "intimacyCounts": {
+          "ryn": 1
+        }
+      }
+    }
+  ]
+}

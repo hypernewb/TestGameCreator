@@ -68,8 +68,12 @@ no migration.
   dependency.
 - `CompatibleProvider` corrects it with a moving average of `usage.prompt_tokens / estimate` (`provider.calibration`).
   Streamed requests ask for `stream_options.include_usage`, so the large scene prompt is calibrated too.
-- The reply reserve is the full `max_tokens` (1800) until five replies have been seen. After that it is 1.5× the longest
-  of the last 30 replies, with a minimum of 512 (`replyReserve`). On a 4K window this roughly doubles the room for context.
+- The reply reserve is `max_tokens` (1800) or a fifth of the window, whichever is smaller (at least 512), until five
+  replies have been seen. After that it is 1.5× the longest of the last 30 replies, with a minimum of 512 (`replyReserve`).
+  On a 4K window the first turns reserve about 820 instead of 1800.
+- Each request's `max_tokens` is capped to what the window leaves after the prompt, with a minimum of 256
+  (`CompatibleProvider.outputCap`). Ollama and LM Studio drop the start of a prompt when prompt + `max_tokens`
+  overflows the window. That start holds the system rules and cast.
 - `detectContextWindow` probes, in order: llama.cpp `/props`, LM Studio `/api/v0/models/{id}`, Ollama `/api/show`,
   then `/v1/models` metadata.
   - Ollama's OpenAI route uses `num_ctx`, not the model's maximum, and drops the *start* of an over-long prompt. Without an explicit

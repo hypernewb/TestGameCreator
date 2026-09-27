@@ -1,5 +1,5 @@
 import {createRequestQueue} from '../../vendor/venus/requestQueue.mjs';
-import {assertSceneBoundaries} from './scene-boundaries.mjs';
+import {lintScene} from './narration-lint.mjs';
 import {assert} from '../core/engine.mjs';
 import {daypartMessages,validateDaypart,fallbackDaypart} from './daypart.mjs';
 import {parseModelObject} from './json.mjs';
@@ -95,6 +95,8 @@ export class CompatibleProvider {
   name='Configured model';
   enqueue=createRequestQueue();
   constructor({endpoint,model,key='',timeout=30000,maxRequests=10000,maxTokens=1800,contextWindow=null,fetchImpl=fetch}){const url=new URL(endpoint);assert(url.protocol==='https:'||url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname),'Endpoint must be HTTPS or local HTTP');assert(model,'Model ID is required');Object.assign(this,{endpoint,model,key,timeout,maxRequests,maxTokens,contextWindow,fetchImpl});this.requests=0;this.usage=[];this.calibration={ratio:1,samples:0};this.reasoningParam=true;}
+  // Local servers (Ollama num_ctx, LM Studio) drop the start of a prompt when prompt+max_tokens overflows the window; ask only for what is left.
+  outputCap(messages){return this.contextWindow?Math.min(this.maxTokens,Math.max(256,this.contextWindow-Math.ceil(messageTokens(messages,this.calibration?.ratio||1)*1.03)-16)):this.maxTokens;}
   complete(messages,signal,responseFormat,onDelta){return this.enqueue(()=>this.performComplete(messages,signal,responseFormat,0,onDelta),signal);}
   async performComplete(messages,signal,responseFormat,retry=0,onDelta){
     const formats=responseFormat?.type==='json_schema'?[responseFormat,{type:'json_object'},null]:[responseFormat||null];
@@ -103,7 +105,7 @@ export class CompatibleProvider {
       const began=Date.now(),controller=new AbortController(),abort=()=>controller.abort();
       signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)controller.abort();const timer=setTimeout(abort,this.timeout);
       try{
-        const response=await this.fetchImpl(this.endpoint,{method:'POST',headers:{'Content-Type':'application/json',...(this.key?{Authorization:`Bearer ${this.key}`}:{})},body:JSON.stringify({model:this.model,messages,temperature:0.5,max_tokens:this.maxTokens,...(this.reasoningParam?{reasoning_effort:'none'}:{}),...(onDelta?{stream:true,stream_options:{include_usage:true}}:{}),...(format?{response_format:format}:{})}),signal:controller.signal});
+        const response=await this.fetchImpl(this.endpoint,{method:'POST',headers:{'Content-Type':'application/json',...(this.key?{Authorization:`Bearer ${this.key}`}:{})},body:JSON.stringify({model:this.model,messages,temperature:0.5,max_tokens:this.outputCap(messages),...(this.reasoningParam?{reasoning_effort:'none'}:{}),...(onDelta?{stream:true,stream_options:{include_usage:true}}:{}),...(format?{response_format:format}:{})}),signal:controller.signal});
         if(!response.ok){const detail=await response.text().catch(()=>'');if(this.reasoningParam&&(response.status===400||response.status===422)&&/reasoning/i.test(detail)){this.reasoningParam=false;this.requests--;return this.performComplete(messages,signal,responseFormat,retry,onDelta);}const unsupported=format&&(response.status===400||response.status===422)&&/response.?format|json.?schema|json.?object|structured.?output|unsupported.*(schema|format)/i.test(detail);if(unsupported&&format!==formats.at(-1))continue;if(RETRYABLE_STATUSES.has(response.status)&&await backoff(retry,signal))return this.performComplete(messages,signal,responseFormat,retry+1,onDelta);throw Error(`Model request failed (${response.status})${detail?`: ${/<html|<!doctype/i.test(detail)?htmlGist(detail):detail.slice(0,180)}`:''}`);}
         let result;if(onDelta&&response.body&&response.headers?.get?.('content-type')?.includes('text/event-stream')){
           const reader=response.body.getReader(),decoder=new TextDecoder();let pending='',text='',usage=null,finishReason=null;
@@ -134,17 +136,25 @@ Player ID: ${pack.playerId}`},{role:'user',content:JSON.stringify({action:turn.i
   }
   async narrate(context,signal){return this.complete(narrativeMessages(context),signal);}
   async generateScene(context,pack,signal,onPreview){
-    const messages=scenePromptMessages(context,pack);
+    const messages=scenePromptMessages(context,pack),lintTrace=[];
     for(let attempt=0;attempt<2;attempt++){
       const preview=createLineExtractor();let raw;try{raw=await this.complete(messages,signal,sceneResponseFormat(context,pack),onPreview?delta=>{const lines=preview.feed(delta);if(lines.length)onPreview(lines);}:undefined);}catch(error){
         if(attempt||!/content|context|length|token/i.test(String(error.message)))throw error;
         const shorter=shortenSceneSoFar(messages[1].content);if(!shorter)throw error;
         messages[1]={...messages[1],content:shorter};raw=await this.complete(messages,signal,sceneResponseFormat(context,pack));
       }
-      try{const value=normalizeSceneLines(parseModelObject(raw),context,pack);assert(value.lines.length>0,'Expected 1–12 scene lines');assertSceneBoundaries(value,context);return value;}
+      try{
+        const value=normalizeSceneLines(parseModelObject(raw),context,pack);assert(value.lines.length>0,'Expected 1–12 scene lines');lintScene(value,context,pack);
+        if(lintTrace.length){lintTrace[lintTrace.length-1].resolved=true;value.lintTrace=lintTrace;}
+        return value;
+      }
       // The repair resends the budgeted prompt plus a short note, not the rejected answer: on a tight window the
       // answer's few hundred tokens are exactly the headroom the prompt no longer has.
-      catch(error){if(attempt)throw Error(`Scene format failed after repair: ${error.message}`);messages.push({role:'user',content:`Your previous answer was rejected: ${String(error.message).slice(0,200)}. Answer again. Return {"lines":[{"speaker":"","text":"..."}]}. Allowed speakers: ${JSON.stringify(['',...(context.stagedCast||[])])}.`});}
+      catch(error){
+        lintTrace.push({attempt,check:error.lintCheck||'format',message:String(error.message).slice(0,200)});
+        if(attempt)throw Error(`Scene format failed after repair: ${error.message}`);
+        messages.push({role:'user',content:`Your previous answer was rejected: ${String(error.message).slice(0,200)}. Answer again. Return {"lines":[{"speaker":"","text":"..."}]}. Allowed speakers: ${JSON.stringify(['',...(context.stagedCast||[])])}.`});
+      }
     }
   }
   async generateDaypart(context,signal){const messages=daypartMessages(context);for(let attempt=0;attempt<2;attempt++){const raw=await this.complete(messages,signal,daypartFormat(context));try{return validateDaypart(raw,context);}catch(e){if(attempt)throw e;messages.push({role:'assistant',content:raw},{role:'user',content:`Return one valid JSON object only. Repair the previous answer to match the required schema. ${e.message}`});}}}

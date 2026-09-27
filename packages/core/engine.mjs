@@ -5,7 +5,7 @@ export const clone = x => structuredClone(x);
 export function assert(ok, message) { if (!ok) throw new Error(message); }
 export function safeKey(s) { return typeof s === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,99}$/.test(s) && !['__proto__','constructor','prototype'].includes(s); }
 export function routeBetween(pack,from,to,flags={}) { const queue=[[from]],seen=new Set([from]);while(queue.length){const path=queue.shift(),at=path.at(-1);if(at===to)return path;for(const e of pack.locations.find(l=>l.id===at)?.exits||[])if(!seen.has(e.to)&&(!e.flag||flags[e.flag])){seen.add(e.to);queue.push([...path,e.to]);}}return null; }
-export function scheduleDestination(pack,schedule,tick) {for(const stop of schedule.stops||[])if(tick%schedule.period===stop.at)return stop.location;const interval=pack.daypart?.interval||4;if(tick%interval===0){const clock=calendarFor(tick,pack);for(const stop of schedule.weekly||[])if(stop.weekday===clock.weekday&&stop.daypart===clock.daypart)return stop.location;}return null;}
+export function scheduleDestination(pack,schedule,tick) {const exception=(pack.scheduleExceptions||[]).find(x=>x.actor===schedule.actor&&tick>=x.startTick&&tick<=x.endTick);if(exception)return exception.location;for(const stop of schedule.stops||[])if(tick%schedule.period===stop.at)return stop.location;const interval=pack.daypart?.interval||4;if(tick%interval===0){const clock=calendarFor(tick,pack);for(const stop of schedule.weekly||[])if(stop.weekday===clock.weekday&&stop.daypart===clock.daypart)return stop.location;}return null;}
 export function scheduledLocation(world,pack,id,arrivalTick) {if(!pack.modules['world.schedule'])return world.actors[id].location;let at=world.actors[id].location;for(let tick=world.tick+1;tick<=arrivalTick;tick++)for(const schedule of pack.schedules||[])if(schedule.actor===id)at=scheduleDestination(pack,schedule,tick)||at;return at;}
 // First tick after fromTick on which this actor's schedule places them at `location`
 // (or null if none within the horizon). Deterministic: depends only on pack and ticks.
@@ -41,6 +41,50 @@ export function releaseScene(tx){
 export function travel(tx,pack,from,to,player){const route=routeBetween(pack,from,to,tx.state.flags);if(!route){tx.emit('core.travelBlocked',{from,to,text:`You cannot reach ${pack.locations.find(l=>l.id===to).name} from here.`},[player]);return null;}for(let i=1;i<route.length;i++){tx.set(['actors',player,'location'],route[i]);tx.emit('core.moved',{actor:player,from:route[i-1],to:route[i],text:`You go to ${pack.locations.find(l=>l.id===route[i]).name}.`},[player]);}return route;}
 export function meetingArrival(tx,world,pack,id,to,arrival){const location=scheduledLocation(world,pack,id,arrival);if(location!==to){const at=nextArrivalTick(pack,id,to,arrival);const when=at===null?'':` They are scheduled back at ${pack.locations.find(l=>l.id===to).name} from ${calendarFor(at,pack).weekday} ${calendarFor(at,pack).daypart}.`;tx.emit('world.meetingUnavailable',{character:id,location:to,nextArrival:at,text:`${tx.state.actors[id].name} is not at ${pack.locations.find(l=>l.id===to).name} when you arrive.${when}`},[pack.playerId]);return false;}if(tx.state.actors[id].location!==to){tx.set(['actors',id,'location'],to);tx.emit('world.actorArrived',{actor:id,location:to,text:`${tx.state.actors[id].name} arrives at ${pack.locations.find(l=>l.id===to).name}.`},[pack.playerId,id]);}return true;}
 export function digest(x) { let h=2166136261; for(const c of JSON.stringify(x)) h=Math.imul(h^c.charCodeAt(0),16777619); return (h>>>0).toString(16); }
+// Only the fields execute()/createWorld() actually depend on: state-affecting rules, IDs, schemas. Prose and
+// presentation (names, descriptions, portraits, phrases, prompts) are deliberately left out so editing them
+// never invalidates a save.
+const pick=(o,keys)=>Object.fromEntries(keys.filter(k=>o[k]!==undefined).map(k=>[k,o[k]]));
+export function mechanicsShape(pack) {
+ return {
+  schemaVersion:pack.schemaVersion,id:pack.id,version:pack.version,modules:pack.modules,playerId:pack.playerId,
+  locations:pack.locations.map(l=>({id:l.id,exits:(l.exits||[]).map(e=>pick(e,['to','flag']))})),
+  actors:pack.actors.map(a=>({id:a.id,location:a.location})),
+  items:(pack.items||[]).map(i=>pick(i,['id','shop','hidden'])),
+  activities:(pack.activities||[]).map(a=>pick(a,['id','location','duration','once','requiresFlag','requiresItem','character','minTrust','effects'])),
+  schedules:pack.schedules||[],daypart:pack.daypart||null,
+  initialRelationships:pack.initialRelationships||[],
+  startOptions:(pack.startOptions||[]).map(s=>pick(s,['id','playerLocation','tick'])),
+ };
+}
+export function mechanicsDigest(pack) { return digest(mechanicsShape(pack)); }
+// A human-readable preview of what a mechanics change would do, for migration UIs.
+export function describeMechanicsChange(oldPack,newPack) {
+ const a=mechanicsShape(oldPack),b=mechanicsShape(newPack),changes=[];
+ if(a.schemaVersion!==b.schemaVersion)changes.push(`schemaVersion: ${a.schemaVersion} -> ${b.schemaVersion}`);
+ if(JSON.stringify(a.modules)!==JSON.stringify(b.modules))changes.push('modules changed');
+ if(a.playerId!==b.playerId)changes.push(`playerId: ${a.playerId} -> ${b.playerId}`);
+ for(const [kind,before,after] of [['locations',a.locations,b.locations],['actors',a.actors,b.actors],['items',a.items,b.items],['activities',a.activities,b.activities]]) {
+  for(const id of new Set([...before,...after].map(x=>x.id))) {
+   const bx=before.find(x=>x.id===id),ax=after.find(x=>x.id===id);
+   if(!bx)changes.push(`${kind}.${id}: added`);
+   else if(!ax)changes.push(`${kind}.${id}: removed`);
+   else if(JSON.stringify(bx)!==JSON.stringify(ax))changes.push(`${kind}.${id}: changed`);
+  }
+ }
+ for(const key of ['schedules','daypart','initialRelationships','startOptions'])if(JSON.stringify(a[key])!==JSON.stringify(b[key]))changes.push(`${key}: changed`);
+ return changes;
+}
+// Applies a mechanics change to an existing world: re-validates the new pack, then records the change so
+// the switch is auditable instead of a silent digest bump.
+export function migratePack(world,oldPack,newPack,registry) {
+ const from=mechanicsDigest(oldPack),to=mechanicsDigest(newPack);
+ assert(world.packDigest===from,'World does not match the pack being migrated from');
+ assert(from!==to,'No mechanics change to migrate');
+ validatePack(newPack,registry);
+ const changes=describeMechanicsChange(oldPack,newPack);
+ return {...clone(world),packId:newPack.id,packVersion:newPack.version,packDigest:to,moduleVersions:clone(newPack.modules),revision:world.revision+1,migrations:[...(world.migrations||[]),{tick:world.tick,from,to,changes}]};
+}
 export function resolveModules(pack, registry) {
   const ordered=[], visiting=new Set(), done=new Set();
   const visit=id=>{ assert(!visiting.has(id),`Module dependency cycle: ${id}`); if(done.has(id))return;
@@ -91,7 +135,7 @@ export function validatePack(pack, registry) {
 export function createWorld(pack,registry,id='campaign',seed=42,startId) {
   const mods=validatePack(pack,registry); assert(safeKey(id),'Invalid campaign ID');
   const start=(pack.startOptions||[]).find(x=>x.id===(startId||pack.startOptions?.[0]?.id));assert(!startId||start,'Unknown start option');
-  const s={schemaVersion:1,campaignId:id,packId:pack.id,packVersion:pack.version,packDigest:digest(pack),moduleVersions:clone(pack.modules),startId:start?.id||null,revision:0,tick:start?.tick??0,initialSeed:seed>>>0,rng:seed>>>0,actors:Object.fromEntries(pack.actors.map(a=>[a.id,{name:a.name,location:a.id===pack.playerId&&start?start.playerLocation:a.location}])),flags:{},modules:{},scene:null,activityUses:{},events:[],turns:{}};
+  const s={schemaVersion:1,campaignId:id,packId:pack.id,packVersion:pack.version,packDigest:mechanicsDigest(pack),moduleVersions:clone(pack.modules),startId:start?.id||null,revision:0,tick:start?.tick??0,initialSeed:seed>>>0,rng:seed>>>0,actors:Object.fromEntries(pack.actors.map(a=>[a.id,{name:a.name,location:a.id===pack.playerId&&start?start.playerLocation:a.location}])),flags:{},modules:{},scene:null,activityUses:{},events:[],turns:{}};
   for(const m of mods)s.modules[m.id]=m.init?.(pack)||{};
   if(s.modules['social.relationships'])for(const r of pack.initialRelationships||[])s.modules['social.relationships'].edges[`${r.character}--${pack.playerId}`]=r.trust;
   return s;
@@ -100,11 +144,11 @@ function put(state,path,value) {assert(Array.isArray(path)&&path.length>0&&path.
 export function replay(initial,events) {const s=clone(initial);for(const e of events)if(e.type==='core.patch')put(s,e.payload.path,e.payload.value);return s;}
 export function execute(world,command,pack,registry) {
   if(world.turns[command.id])return {state:world,turn:world.turns[command.id],duplicate:true};
-  assert(world.packDigest===digest(pack),'Pack changed: migration required');
+  assert(world.packDigest===mechanicsDigest(pack),'Pack changed: migration required');
   assert(safeKey(command.id),'Invalid turn ID');assert(command.expectedRevision===world.revision,'Stale revision; refresh and try again');
   assert(command.actorId===pack.playerId,'Only the player can submit commands');
   assert(command.args&&typeof command.args==='object'&&!Array.isArray(command.args),'args must be an object');
-  if(world.modules['story.scenes']?.pending)assert(['story.choose','story.leave'].includes(command.type),'Choose an option or leave the active scene first');
+  if(world.modules['story.scenes']?.pending)assert(['story.choose','story.leave','social.withdrawConsent'].includes(command.type),'Choose an option, withdraw consent, or leave the active scene first');
   const mods=resolveModules(pack,registry), state=clone(world), emitted=[];let steps=0,waitTicks=0;
   const tx={state,pack,world,commandId:command.id,
     emit(type,payload,visibility='public'){assert(++steps<=200,'Event reaction limit exceeded');const event={id:`${command.id}.${emitted.length}`,type,payload:clone(payload),tick:state.tick,visibility:clone(visibility)};emitted.push(event);return event;},
@@ -172,10 +216,11 @@ export function execute(world,command,pack,registry) {
   const handler=base[command.type]||mods.map(m=>m.commands?.[command.type]).find(Boolean);assert(handler,`Unsupported command: ${command.type}`); handler(tx,command.args);
   const authored=command.type==='core.scene'&&command.args.activityId?(pack.activities||[]).find(a=>a.id===command.args.activityId):null;
   const invitation=command.type==='world.acceptHangout'?pack.daypart.hangouts.find(h=>h.char===command.args.char):null;
+  const phoneOffer=command.type==='social.acceptPhoneOffer'?(pack.phoneMessages||[]).find(m=>m.id===command.args.message)?.offer:null;
   const invitationLocation=invitation&&pack.locations.find(l=>l.name===invitation.where||l.id===invitation.where)?.id;
-  const route=command.type==='core.scene'||invitation?routeBetween(pack,world.actors[pack.playerId].location,invitationLocation||command.args.location||world.actors[pack.playerId].location,world.flags):null;
+  const route=command.type==='core.scene'||invitation||phoneOffer?routeBetween(pack,world.actors[pack.playerId].location,invitationLocation||phoneOffer?.location||command.args.location||world.actors[pack.playerId].location,world.flags):null;
   const travelCost=route?route.length-1:0;
-  const cost=command.type==='core.waitUntil'?waitTicks:command.type==='world.nextDaypart'?pack.daypart.interval-state.tick%pack.daypart.interval:invitation?route?travelCost+1:0:command.type==='core.scene'&&!route?0:authored?travelCost+authored.duration:command.type==='core.scene'&&command.args.activity==='rest'?travelCost+(pack.daypart?.interval||4)-state.tick%(pack.daypart?.interval||4):command.type==='core.scene'?travelCost+(command.args.activity==='continue'?0:1):pack.durations?.[command.type]??(command.type==='core.inspect'?0:1);assert(Number.isInteger(cost)&&cost>=0&&cost<=100,'Invalid action duration');
+  const cost=command.type==='core.waitUntil'?waitTicks:command.type==='world.nextDaypart'?pack.daypart.interval-state.tick%pack.daypart.interval:invitation||phoneOffer?route?travelCost+1:0:command.type==='core.scene'&&!route?0:authored?travelCost+authored.duration:command.type==='core.scene'&&command.args.activity==='rest'?travelCost+(pack.daypart?.interval||4)-state.tick%(pack.daypart?.interval||4):command.type==='core.scene'?travelCost+(command.args.activity==='continue'?0:1):pack.durations?.[command.type]??(command.type==='core.inspect'?0:1);assert(Number.isInteger(cost)&&cost>=0&&cost<=100,'Invalid action duration');
   if(cost){const before=state.tick;tx.set(['tick'],before+cost);tx.emit('core.timeAdvanced',{from:before,to:state.tick,sceneCast:state.scene?.characters||[]},[]);}
   for(let i=0;i<emitted.length;i++){const e=emitted[i];if(e.type==='core.patch')continue;for(const m of mods)m.react?.(tx,e);}
   tx.set(['revision'],world.revision+1);
@@ -183,7 +228,7 @@ export function execute(world,command,pack,registry) {
   state.events.push(...emitted);state.turns[command.id]=turn;return {state,turn,duplicate:false};
 }
 export function actions(world,pack,registry){
-  if(world.modules['story.scenes']?.pending)return resolveModules(pack,registry).flatMap(m=>m.actions?.(world,pack)||[]).filter(a=>['story.choose','story.leave'].includes(a.type)).map((a,i)=>{try{execute(world,{...a,id:`preview-choice-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry);return {...a,enabled:true};}catch(e){return {...a,enabled:false,reason:e.message};}});
+  if(world.modules['story.scenes']?.pending)return resolveModules(pack,registry).flatMap(m=>m.actions?.(world,pack)||[]).filter(a=>['story.choose','story.leave','social.withdrawConsent'].includes(a.type)).map((a,i)=>{try{execute(world,{...a,id:`preview-choice-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry);return {...a,enabled:true};}catch(e){return {...a,enabled:false,reason:e.message};}});
   const loc=pack.locations.find(l=>l.id===world.actors[pack.playerId].location);
   const list=[{label:'Look around',type:'core.inspect',args:{}},{label:'Wait',type:'core.wait',args:{}},...(world.scene?[{label:'End conversation',type:'core.endScene',args:{}}]:[]),...loc.exits.map(e=>({label:`Go to ${pack.locations.find(l=>l.id===e.to).name}`,type:'core.move',args:{to:e.to}})),...resolveModules(pack,registry).flatMap(m=>m.actions?.(world,pack)||[])];
   return list.map((a,i)=>{try{execute(world,{...a,id:`preview-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry);return {...a,enabled:true};}catch(e){return {...a,enabled:false,reason:e.message};}});

@@ -50,7 +50,7 @@ On Windows, extract the ZIP into a writable folder and double-click **Start-Desk
 
 Electron is a window around the same local game server and builder. It does not supply an AI model: start Bionic's OpenAI-compatible server and choose its endpoint and loaded model in **AI settings**. Use **Test connection** and **Test story scene** before playing.
 
-A setting-independent, single-player AI game harness. Includes two small playable fixtures, an offline demo writer, a configurable chat-completions adapter, and an experimental SillyTavern extension build.
+A modular, single-player AI narrative-game framework. Its primary product target is an adult eroge/dating sim with optional NSFW scenes, character-specific romance difficulty, consent-aware intimacy, casual and long-form routes, and persistent social consequences. Adult systems remain optional so the same engine can run non-adult and non-romance packs. The repository also includes playable fixtures, an offline demo writer, a configurable chat-completions adapter, and an experimental SillyTavern extension build.
 
 ## Playtest with a local LLM (1.0)
 

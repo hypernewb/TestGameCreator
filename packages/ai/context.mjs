@@ -6,6 +6,12 @@ import {statValue} from '../modules/stats.mjs';
 import {datingContext} from '../modules/dating.mjs';
 import {playerStatements,stripPlaceholders,mentionsPlayer} from './memory.mjs';
 import {romanceNetworkContext} from '../modules/romance-network.mjs';
+import {intimacyContext} from '../modules/intimacy.mjs';
+import {gossipContext} from '../modules/gossip.mjs';
+import {romanceTempoContext} from '../modules/romance-tempo.mjs';
+import {phoneContext} from '../modules/phone.mjs';
+import {endingsContext} from '../modules/endings.mjs';
+import {feedContext} from '../modules/feed.mjs';
 function visibleTo(v,actor){return v==='public'||Array.isArray(v)&&v.includes(actor);}
 export function selectLore(s,p,actorId,query='',budget=1200){
  const location=s.actors[actorId].location,results=[],index=query?loreIndex(p):null;
@@ -42,6 +48,12 @@ export function contextFor(s,p,actorId=p.playerId,turn=null,query='',opts={}){
  const relationshipProgression=s.modules['social.progression']?Object.entries(s.modules['social.progression'].states).filter(([character])=>actorId===p.playerId||character===actorId).map(([character,state])=>({character,state})):[];
  const dating=s.modules['social.dating']?datingContext(s,p,actorId):[];
  const romanceNetwork=s.modules['social.romance-network']?romanceNetworkContext(s,p,actorId):null;
+ const intimacy=s.modules['social.intimacy']?intimacyContext(s,p,actorId):[];
+ const rumors=s.modules['social.gossip']?gossipContext(s,actorId):[];
+ const romanceTempo=s.modules['social.romance-tempo']?romanceTempoContext(s,p,actorId):[];
+ const phone=s.modules['social.phone']?phoneContext(s,p,actorId):null;
+ const unlockedEndings=s.modules['story.endings']?endingsContext(s,p):[];
+ const socialFeed=s.modules['social.feed']?feedContext(s,p,actorId):[];
  const objects=(p.objects||[]).filter(o=>o.location===location).map(({id,name,description,tags})=>({id,name,description,tags}));
  const recentActions=s.events.filter(e=>e.type!=='core.patch'&&canSee(e.visibility)&&e.payload.text).slice(-10).map(e=>({source:e.id,tick:e.tick,type:e.type,text:e.payload.text}));
  const clock=calendarFor(s.tick,p),{day,weekday,week}=clock,part=clock.daypart;
@@ -50,6 +62,6 @@ export function contextFor(s,p,actorId=p.playerId,turn=null,query='',opts={}){
  const backgroundCharacters=p.actors.filter(a=>a.id!==actorId&&s.actors[a.id].location!==location&&new RegExp(keyPattern(a.name,false),'iu').test(query)).map(a=>({id:a.id,name:a.name,pronouns:a.pronouns,description:a.description||'',traits:a.traits||[],voice:a.voice||'',rule:absentNote(a.name)}));
  const npcRelationships=Object.entries(s.modules['social.npc']?.pairs||{}).filter(([key])=>key.split('|').every(id=>s.actors[id]?.location===location)).map(([key,value])=>({characters:key.split('|'),...value}));
  return {money:s.modules['world.economy']?.balance??null,npcRelationships,promptVersion:'0.8',gameProject:p.gameProject||null,scriptedScene:scriptedScene?{id:sceneId,beat:s.modules['story.scenes']?.pendingBeat||'opening',title:scriptedScene.title,opening:sceneBeat.opening,stage:sceneBeat.stage||[],choices:sceneBeat.choices.map(c=>({id:c.id,label:c.label}))}:null,sceneWaiting:s.modules['story.scenes']?.waiting||null,sceneHistory:s.modules['story.scenes']?.history.slice(-5)||[],plans:(s.modules['story.scenes']?.plans||[]).filter(x=>x.status==='pending').sort((a,b)=>a.deadlineTick-b.deadlineTick),characterStats,relationshipProgression,actor:{id:actorId,name:own.name,pronouns:own.pronouns,style:own.style||'Natural and concise',goal:own.goal||'',traits:own.traits||[],backstory:own.backstory||'',likes:own.likes||[],dislikes:own.dislikes||[],voice:own.voice||'',year:own.year||null,major:own.major||null,dorm:own.dorm||null,appearance:own.appearance||'',relationshipToPlayer:s.modules['social.relationships']?.edges[`${actorId}--${p.playerId}`]??null},location:p.locations.find(l=>l.id===location),present:p.actors.filter(a=>s.actors[a.id].location===location).map(a=>({id:a.id,name:a.name,pronouns:a.pronouns,description:a.description||'',traits:a.traits||[],voice:a.voice||''})),backgroundCharacters,objects,items,carried,equipped,nearbyBonds,tick:s.tick,calendar:p.calendar,date:clock.date,day,week,weekday,daypart:part,activeEvents,
-  dating,romanceNetwork,facts:(p.facts||[]).filter(f=>canSee(f.knownBy)&&!(p.facts||[]).some(n=>n.supersedes===f.id&&canSee(n.knownBy))).map(f=>({id:f.id,text:f.text})),generatedFacts:generatedFactTrace.selected.map(({id,subject,text,source,reason})=>({id,subject,text,source,reason})),generatedFactTrace,lorebook:lore.selected,loreTrace:lore,
+  dating,romanceTempo,romanceNetwork,phone,socialFeed,unlockedEndings,intimacy,rumors,facts:(p.facts||[]).filter(f=>canSee(f.knownBy)&&!(p.facts||[]).some(n=>n.supersedes===f.id&&canSee(n.knownBy))).map(f=>({id:f.id,text:f.text})),generatedFacts:generatedFactTrace.selected.map(({id,subject,text,source,reason})=>({id,subject,text,source,reason})),generatedFactTrace,lorebook:lore.selected,loreTrace:lore,
   memories:[...selected.map(m=>({source:m.source,text:m.text,promise:m.promise,kind:m.kind})),...ledger.map(m=>({source:m.source,text:m.text})),...(s.modules['story.scenes']?.memories||[]).filter(m=>canSee(m.knownBy)).slice(-8).map(m=>({source:`scene:${m.scene}`,text:m.text,character:m.character}))],dialogue:Object.values(s.turns).filter(t=>t.status==='complete'&&t.events.some(e=>e.type==='social.spoke'&&canSee(e.visibility))).slice(-6).map(t=>({source:t.id,text:t.narrative})),recentActions,outcomes:(turn?.events||[]).filter(e=>canSee(e.visibility)).map(e=>({type:e.type,...e.payload}))};
 }

@@ -15,11 +15,12 @@ export function messageTokens(messages,ratio=1){return messages.reduce((n,m)=>n+
 /**
  * Tokens to hold back for the model's reply. max_tokens is only a ceiling: real replies are usually a few hundred
  * tokens, and reserving the full ceiling costs a small window almost half its prompt. Once enough replies have been
- * seen, reserve 1.5× the longest recent one (at least `floor`); until then, the full ceiling.
+ * seen, reserve 1.5× the longest recent one (at least `floor`); until then, the ceiling or a fifth of `window`, whichever is
+ * smaller, so a 4k window does not spend its first turns holding back 44% for a reply that never comes.
  */
-export function replyReserve(usage,maxTokens=1800,floor=512,samples=5){
+export function replyReserve(usage,maxTokens=1800,floor=512,samples=5,window=Infinity){
  const seen=(usage||[]).slice(-30).map(u=>u?.tokens?.completion_tokens).filter(n=>n>0);
- return seen.length<samples?maxTokens:Math.min(maxTokens,Math.max(floor,Math.ceil(Math.max(...seen)*1.5)));
+ return seen.length<samples?Math.min(maxTokens,Math.max(floor,Math.ceil(window/5))):Math.min(maxTokens,Math.max(floor,Math.ceil(Math.max(...seen)*1.5)));
 }
 export function calibrate(calibration,estimated,actual){
  const previous=calibration||{ratio:1,samples:0};

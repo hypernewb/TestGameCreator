@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "id": "template.campus-adult",
+  "version": "0.1.0",
+  "title": "Campus Nights Template",
+  "subtitle": "Adult campus romance template",
+  "playerId": "player",
+  "calendar": "Term",
+  "modules": {
+    "social.conversation": "0.1.0",
+    "social.relationships": "0.1.0",
+    "world.schedule": "0.1.0",
+    "items.inventory": "0.1.0",
+    "world.economy": "0.1.0",
+    "social.dating": "0.1.0",
+    "social.intimacy": "0.1.0",
+    "social.phone": "0.1.0",
+    "social.feed": "0.1.0",
+    "story.endings": "0.1.0",
+    "story.timed-events": "0.1.0"
+  },
+  "locations": [
+    {
+      "id": "dorm",
+      "name": "Dorm Lounge",
+      "description": "An adults-only residence lounge.",
+      "exits": [
+        {
+          "to": "cafe"
+        }
+      ]
+    },
+    {
+      "id": "cafe",
+      "name": "Campus Cafe",
+      "description": "A late-night student cafe.",
+      "exits": [
+        {
+          "to": "dorm"
+        }
+      ]
+    }
+  ],
+  "actors": [
+    {
+      "id": "player",
+      "name": "You",
+      "age": 21,
+      "location": "dorm",
+      "identityTags": [
+        "adult"
+      ]
+    },
+    {
+      "id": "alex",
+      "name": "Alex",
+      "age": 22,
+      "location": "dorm",
+      "identityTags": [
+        "adult"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "coffee",
+      "name": "Special coffee",
+      "owner": "cafe",
+      "shop": true,
+      "price": 8
+    }
+  ],
+  "schedules": [
+    {
+      "actor": "alex",
+      "period": 4,
+      "stops": [
+        {
+          "at": 1,
+          "location": "cafe"
+        },
+        {
+          "at": 3,
+          "location": "dorm"
+        }
+      ]
+    }
+  ],
+  "initialMoney": 15,
+  "economySettings": {
+    "debtLimit": 10
+  },
+  "services": [
+    {
+      "id": "private-study",
+      "name": "Reserve private study room",
+      "location": "dorm",
+      "price": 10,
+      "result": "A private room is reserved."
+    }
+  ],
+  "wageRules": [
+    {
+      "id": "tutor-pay",
+      "event": "core.inspected",
+      "match": {
+        "location": "cafe"
+      },
+      "amount": 8,
+      "cooldown": 3
+    }
+  ],
+  "datingProfiles": [
+    {
+      "character": "alex",
+      "initialChemistry": 20,
+      "initialPhase": "crush",
+      "agreements": [
+        "casual",
+        "monogamous"
+      ],
+      "thresholds": {
+        "crush": 10,
+        "date": 25,
+        "exclusive": 60
+      },
+      "preferences": [],
+      "signals": []
+    }
+  ],
+  "intimacySettings": {
+    "difficulty": "easy",
+    "contentLevel": "explicit",
+    "privateLocations": [
+      "dorm"
+    ],
+    "aftercareOptions": []
+  },
+  "intimacyCategories": [
+    {
+      "id": "casual",
+      "name": "Casual encounter",
+      "privacy": "private",
+      "casual": true,
+      "resolution": "direct",
+      "requiresAgreement": []
+    }
+  ],
+  "intimacyProfiles": [
+    {
+      "character": "alex",
+      "openness": 85,
+      "casual": true,
+      "consentPolicy": "threshold",
+      "allowedCategories": [
+        "casual"
+      ],
+      "blockedCategories": [],
+      "interests": []
+    }
+  ],
+  "phoneContacts": [
+    "alex"
+  ],
+  "phoneMessages": [
+    {
+      "id": "late-study",
+      "character": "alex",
+      "text": "Want to study together tonight?",
+      "trigger": {
+        "event": "core.inspected",
+        "match": {
+          "location": "dorm"
+        }
+      },
+      "replies": [
+        {
+          "id": "flirt",
+          "text": "Only if we get distracted."
+        }
+      ],
+      "offer": {
+        "location": "dorm",
+        "expiresIn": 2
+      }
+    }
+  ],
+  "feedPosts": [
+    {
+      "id": "cafe-post",
+      "author": "alex",
+      "text": "Coffee after class?",
+      "trigger": {
+        "event": "core.inspected",
+        "match": {
+          "location": "cafe"
+        }
+      },
+      "reactions": [
+        "like",
+        "flirt"
+      ]
+    }
+  ],
+  "timedEvents": [
+    {
+      "id": "late-party",
+      "name": "Residence party",
+      "startTick": 1,
+      "endTick": 3,
+      "location": "dorm",
+      "character": "alex",
+      "missedRecap": "The residence party ended without you."
+    }
+  ],
+  "endings": [
+    {
+      "id": "casual-campus",
+      "name": "Keep meeting after class",
+      "character": "alex",
+      "requires": {
+        "intimacyCounts": {
+          "alex": 1
+        }
+      }
+    }
+  ]
+}

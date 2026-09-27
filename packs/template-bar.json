@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "id": "template.after-hours-bar",
+  "version": "0.1.0",
+  "title": "After Hours Template",
+  "subtitle": "Adult bar romance template",
+  "playerId": "player",
+  "calendar": "Night",
+  "modules": {
+    "social.conversation": "0.1.0",
+    "social.relationships": "0.1.0",
+    "world.schedule": "0.1.0",
+    "items.inventory": "0.1.0",
+    "world.economy": "0.1.0",
+    "social.dating": "0.1.0",
+    "social.intimacy": "0.1.0",
+    "social.phone": "0.1.0",
+    "social.feed": "0.1.0",
+    "story.endings": "0.1.0",
+    "story.timed-events": "0.1.0"
+  },
+  "locations": [
+    {
+      "id": "bar",
+      "name": "Velvet Bar",
+      "description": "An adults-only nightspot.",
+      "exits": [
+        {
+          "to": "flat"
+        }
+      ]
+    },
+    {
+      "id": "flat",
+      "name": "Upstairs Flat",
+      "description": "A private apartment.",
+      "exits": [
+        {
+          "to": "bar"
+        }
+      ]
+    }
+  ],
+  "actors": [
+    {
+      "id": "player",
+      "name": "You",
+      "age": 25,
+      "location": "bar",
+      "identityTags": [
+        "adult"
+      ]
+    },
+    {
+      "id": "morgan",
+      "name": "Morgan",
+      "age": 27,
+      "location": "bar",
+      "identityTags": [
+        "adult"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "cocktail",
+      "name": "Signature cocktail",
+      "owner": "bar",
+      "shop": true,
+      "price": 12
+    }
+  ],
+  "schedules": [
+    {
+      "actor": "morgan",
+      "period": 4,
+      "stops": [
+        {
+          "at": 1,
+          "location": "bar"
+        },
+        {
+          "at": 3,
+          "location": "flat"
+        }
+      ]
+    }
+  ],
+  "initialMoney": 20,
+  "economySettings": {
+    "debtLimit": 15
+  },
+  "services": [
+    {
+      "id": "private-booth",
+      "name": "Reserve private booth",
+      "location": "bar",
+      "price": 15,
+      "result": "A secluded booth is reserved."
+    }
+  ],
+  "wageRules": [
+    {
+      "id": "bar-shift",
+      "event": "core.inspected",
+      "match": {
+        "location": "bar"
+      },
+      "amount": 12,
+      "cooldown": 3
+    }
+  ],
+  "datingProfiles": [
+    {
+      "character": "morgan",
+      "initialChemistry": 25,
+      "initialPhase": "crush",
+      "agreements": [
+        "casual",
+        "open"
+      ],
+      "thresholds": {
+        "crush": 10,
+        "date": 25,
+        "exclusive": 65
+      },
+      "preferences": [],
+      "signals": []
+    }
+  ],
+  "intimacySettings": {
+    "difficulty": "easy",
+    "contentLevel": "explicit",
+    "privateLocations": [
+      "flat"
+    ],
+    "aftercareOptions": []
+  },
+  "intimacyCategories": [
+    {
+      "id": "hookup",
+      "name": "After-hours hookup",
+      "privacy": "private",
+      "casual": true,
+      "resolution": "direct",
+      "requiresAgreement": []
+    }
+  ],
+  "intimacyProfiles": [
+    {
+      "character": "morgan",
+      "openness": 90,
+      "casual": true,
+      "consentPolicy": "threshold",
+      "allowedCategories": [
+        "hookup"
+      ],
+      "blockedCategories": [],
+      "interests": []
+    }
+  ],
+  "phoneContacts": [
+    "morgan"
+  ],
+  "phoneMessages": [
+    {
+      "id": "closing-time",
+      "character": "morgan",
+      "text": "Stay after closing?",
+      "trigger": {
+        "event": "core.inspected",
+        "match": {
+          "location": "bar"
+        }
+      },
+      "replies": [
+        {
+          "id": "yes",
+          "text": "Save me a seat."
+        }
+      ],
+      "offer": {
+        "location": "bar",
+        "expiresIn": 2
+      }
+    }
+  ],
+  "feedPosts": [
+    {
+      "id": "shift-post",
+      "author": "morgan",
+      "text": "Last call is never the end of the night.",
+      "trigger": {
+        "event": "core.inspected",
+        "match": {
+          "location": "bar"
+        }
+      },
+      "reactions": [
+        "like",
+        "flirt"
+      ]
+    }
+  ],
+  "timedEvents": [
+    {
+      "id": "last-call",
+      "name": "Last call",
+      "startTick": 1,
+      "endTick": 3,
+      "location": "bar",
+      "character": "morgan",
+      "missedRecap": "Last call passed while you were away."
+    }
+  ],
+  "endings": [
+    {
+      "id": "after-hours",
+      "name": "An ongoing arrangement",
+      "character": "morgan",
+      "requires": {
+        "intimacyCounts": {
+          "morgan": 1
+        }
+      }
+    }
+  ]
+}

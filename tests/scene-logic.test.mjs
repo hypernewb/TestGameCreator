@@ -63,7 +63,21 @@ test('failed conversation attempt cannot generate a fictional arrival; unresolve
 
 test('narrator repairs an explicit off-stage entrance even when hidden in narration',async()=>{
  const p=pack(),provider=new CompatibleProvider({endpoint:'http://localhost:1234/v1/chat/completions',model:'test'});let calls=0;provider.complete=async()=>JSON.stringify({lines:[{speaker:'',text:++calls===1?'Brin peeks in, smiling.':'The room remains quiet.'}]});
- const c={stagedCast:[],absentCharacters:[{id:'brin',name:'Brin'}],sceneHistory:[],location:p.locations[0]};const r=await provider.generateScene(c,p);assert.equal(calls,2);assert.equal(r.lines[0].text,'The room remains quiet.');
+ const c={stagedCast:[],absentCharacters:[{id:'brin',name:'Brin'}],sceneHistory:[],location:p.locations[0]};const r=await provider.generateScene(c,p);assert.equal(calls,2);assert.equal(r.lines[0].text,'The room remains quiet.');assert.equal(r.lintTrace[0].check,'attendance');assert.equal(r.lintTrace[0].resolved,true);
+});
+
+test('narrator repairs a line that leaks a fact outside its knownBy',async()=>{
+ const p=pack(),provider=new CompatibleProvider({endpoint:'http://localhost:1234/v1/chat/completions',model:'test'});let calls=0;
+ provider.complete=async()=>++calls===1?JSON.stringify({lines:[{speaker:'brin',text:'The vault code is 4471, easy.'}]}):JSON.stringify({lines:[{speaker:'brin',text:'I have no idea what the code is.'}]});
+ const c={stagedCast:['ada','brin'],knownFacts:[{id:'f1',subject:'ada',text:'Ada knows the vault code',quote:'The vault code is 4471',knownBy:['player','ada']}],sceneHistory:[],location:p.locations[0]};
+ const r=await provider.generateScene(c,p);assert.equal(calls,2);assert.equal(r.lines[0].text,'I have no idea what the code is.');assert.equal(r.lintTrace[0].check,'knowledge');assert.equal(r.lintTrace[0].resolved,true);
+});
+
+test('narrator repairs explicit prose when the content level is set to fade',async()=>{
+ const p=pack();p.intimacySettings={contentLevel:'fade'};const provider=new CompatibleProvider({endpoint:'http://localhost:1234/v1/chat/completions',model:'test'});let calls=0;
+ provider.complete=async()=>++calls===1?JSON.stringify({lines:[{speaker:'ada',text:'She thrusts closer, breathless.'}]}):JSON.stringify({lines:[{speaker:'ada',text:'The scene fades to morning.'}]});
+ const c={stagedCast:['ada'],sceneHistory:[],location:p.locations[0]};
+ const r=await provider.generateScene(c,p);assert.equal(calls,2);assert.equal(r.lines[0].text,'The scene fades to morning.');assert.equal(r.lintTrace[0].check,'content');assert.equal(r.lintTrace[0].resolved,true);
 });
 
 test('scene summary persists across continuation, closing settles once, and replay agrees',async()=>{

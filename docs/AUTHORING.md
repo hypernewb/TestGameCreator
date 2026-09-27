@@ -42,7 +42,7 @@ A location has `id`, `name`, `description`, `exits`. Each exit has `to` and opti
 
 An actor has `id`, `name`, starting `location`, and optionally public `description`, private speaking `style`, and `goal`. Age is narrative data rather than a core mechanic; the bundled cast is described as adult.
 
-A fact has `id`, `text`, and `knownBy` (either `"public"` or an array of actor IDs). Use `supersedes` to replace an older fact. Filtering happens before retrieval. This is a simple authored fact system; dynamic rumor propagation and a separate belief simulator are not implemented yet.
+A fact has `id`, `text`, and `knownBy` (either `"public"` or an array of actor IDs). Use `supersedes` to replace an older fact. Filtering happens before retrieval. Facts remain authoritative authored knowledge. The optional `social.gossip` module separately models source-linked, expiring rumors and per-character belief; a believed rumor does not silently become a fact.
 
 A quest has `id`, `name`, `hint`, and `any`: an array of `{event,match}` alternatives. A matching committed event completes it once. `unlock` sets a named flag. Arbitrary expressions and scripts are not evaluated. This first release supports event matching rather than the design's full all/any/not/query condition language.
 
@@ -83,6 +83,21 @@ Register it in `packages/modules/index.mjs`, enable its exact version in the pac
 The context builder selects character-visible facts, up to six older promises, recent memories, and recent accepted dialogue. It does not implement embeddings or generative memory summarization. Extremely large authored biographies/facts are not token-budgeted yet; keep packs compact.
 
 Narrative prose can still contradict facts even when game state is protected. Use the live-model evaluation fixtures before claiming narrative consistency.
+
+## Adult eroge and route authoring
+
+The primary game target is an adult eroge/dating sim with optional NSFW narration. Enable `social.dating` for attraction and relationship agreements, `social.intimacy` for adult consent and encounter state, and `social.romance-tempo` only for characters who benefit from ranked pacing or gift rules. Adult packs must give every intimacy participant an explicit age of at least 18.
+
+Route structure is per character:
+
+- **Long route:** add a romance-tempo profile with `advancement: "scene"`; every advanced rank names an authored scripted scene.
+- **Short route:** use `advancement: "automatic"`; thresholds advance without rank-up scenes.
+- **Casual encounter:** omit romance tempo entirely, author a dating profile with appropriate eligibility, and use an intimacy profile with `casual: true`. Set the category to `resolution: "direct"` for a committed encounter without a scripted scene, or `resolution: "scene"` for a bespoke choice sequence.
+- **Not available:** omit dating/intimacy profiles or author a hard eligibility boundary.
+
+The global intimacy difficulty (`easy`, `normal`, or `realistic`) establishes a baseline, while character openness, categories, agreements, eligibility, and route tempo create individual variation. Easy or promiscuous characters can require less courtship, but no score, gift, difficulty, or narration bypasses adult validation, explicit consent, withdrawal, hard boundaries, or privacy rules. Use `fade`, `suggestive`, or `explicit` content level independently of mechanical difficulty.
+
+Phone messages and feed posts should react to committed events. A feed reaction emits `social.feedReacted`; make it affect chemistry only by adding an explicit dating signal. Phone meetup offers reuse physical travel and schedule attendance. Ending definitions likewise inspect committed state rather than generated prose. Focused Studio panels are available for romance tempo, phone, feed, and endings; their nested rule objects currently use local JSON fields.
 
 ## Saving and migrations
 

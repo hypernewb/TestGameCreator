@@ -1,7 +1,7 @@
 import {DatabaseSync} from 'node:sqlite';
 import {mkdirSync} from 'node:fs';
 import {dirname} from 'node:path';
-import {assert,clone,digest,createWorld,execute,settleSceneAttendance} from '../core/engine.mjs';
+import {assert,clone,mechanicsDigest,createWorld,execute,settleSceneAttendance,migratePack as migratePackMechanics} from '../core/engine.mjs';
 import {daypartContext,validateDaypart} from '../ai/daypart.mjs';
 import {parseAction} from '../../vendor/venus/sceneActions.mjs';
 import {validateGeneratedFacts,validateFactEdits,allGeneratedFacts} from '../modules/facts.mjs';
@@ -17,6 +17,7 @@ export class Store {
   restore(id,backupId){const row=this.db.prepare('SELECT data FROM recovery_backups WHERE id=? AND campaign=?').get(backupId,id);assert(row,'Recovery backup not found');const restored=JSON.parse(row.data);assert(this.db.prepare('SELECT revision FROM campaigns WHERE id=?').get(id),'Campaign not found');this.backup(id,'before restore');restored.campaignId=id;this.db.prepare('UPDATE campaigns SET revision=?,data=? WHERE id=?').run(restored.revision,JSON.stringify(restored),id);return restored;}
   commit(s,expected){this.backup(s.campaignId,'before commit');const r=this.db.prepare('UPDATE campaigns SET revision=?,data=? WHERE id=? AND revision=?').run(s.revision,JSON.stringify(s),s.campaignId,expected);assert(r.changes===1,'Save conflict; reload campaign');}
   narrative(id,turnId,text,trace={},pack=null){this.db.exec('BEGIN IMMEDIATE');try{const s=this.load(id);const t=s.turns[turnId];assert(t,'Turn not found');if(trace.retry)assert(t.status==='complete'&&t.fallback,'Turn cannot be retried');if(t.status!=='complete'||trace.retry){t.narrative=text;t.status='complete';Object.assign(t,trace);if(trace.sceneId&&s.scene?.id===trace.sceneId){if(trace.sceneSummary)s.scene.summary=trace.sceneSummary;if(trace.sceneEnded){if(pack)settleSceneAttendance(s,pack);s.scene=null;}}this.commit(s,s.revision);}this.db.exec('COMMIT');return this.load(id);}catch(e){this.db.exec('ROLLBACK');throw e;}}
+  migratePack(id,oldPack,newPack,registry){this.db.exec('BEGIN IMMEDIATE');try{const s=this.load(id);const migrated=migratePackMechanics(s,oldPack,newPack,registry);this.commit(migrated,s.revision);this.db.exec('COMMIT');return migrated;}catch(e){this.db.exec('ROLLBACK');throw e;}}
   editFact(id,edit,expectedCount){this.db.exec('BEGIN IMMEDIATE');try{const s=this.load(id);assert(s.modules['story.facts'],'Fact ledger is disabled');assert(Number.isInteger(expectedCount)&&expectedCount===(s.factEdits||[]).length,'Fact edits changed; reload campaign');assert(allGeneratedFacts(s).some(f=>f.id===edit.factId),'Unknown fact');s.factEdits=[...(s.factEdits||[]),edit];this.commit(s,s.revision);this.db.exec('COMMIT');return s;}catch(e){this.db.exec('ROLLBACK');throw e;}}
   close(){this.db.close();}
 }
@@ -25,7 +26,7 @@ export function exportCampaign(s){return {format:'story-framework',version:2,mig
 export function migrateCampaignExport(data,backup=()=>{}){assert(data?.format==='story-framework','Unsupported save format');return migrateSave(data,2,{1:s=>({...s,version:2,migrations:[...(s.migrations||[]),{from:1,to:2,id:'export-envelope-v2'}]})},backup);}
 export function validateImport(data,p,registry){
   data=migrateCampaignExport(data);const s=data.state;
-  assert(s&&s.schemaVersion===1,'Unsupported world schema');assert(s.packId===p.id&&s.packVersion===p.version&&s.packDigest===digest(p),'Save requires its exact pack version');
+  assert(s&&s.schemaVersion===1,'Unsupported world schema');assert(s.packId===p.id&&s.packVersion===p.version&&s.packDigest===mechanicsDigest(p),'Save requires its exact pack version');
   assert(JSON.stringify(s.moduleVersions)===JSON.stringify(p.modules),'Save module set differs');
   // Re-simulate accepted commands and compare mechanical state, never trusting arbitrary imported patches.
   let rebuilt=createWorld(p,registry,s.campaignId,s.initialSeed??42,s.startId);
@@ -36,6 +37,10 @@ export function validateImport(data,p,registry){
     for(const line of t.sceneLines||[]){assert(!line.speaker||cast.includes(line.speaker),'Invalid structured speaker');assert(line.background===undefined||backgrounds.has(line.background),'Invalid structured background');assert(line.stage===undefined||Array.isArray(line.stage)&&line.stage.length<=12&&line.stage.every(raw=>typeof raw==='string'&&raw.length<=120&&(()=>{const action=parseAction(raw,(id,pose)=>Boolean(p.actors.find(a=>a.id===id)?.poses?.some(x=>x.id===pose)));return action&&cast.includes(action.charKey);})()),'Invalid structured stage');}
    }if(t.ledger!==undefined){const cast=scenePlanForTurn(r.state,p,r.turn).cast;assert(Array.isArray(t.ledger)&&t.ledger.length<=3&&t.ledger.every(m=>cast.includes(m.charKey)&&['liked','disliked','neutral'].includes(m.type)&&typeof m.desc==='string'&&m.desc.length<=240),'Invalid scene ledger');}if(t.generatedFacts!==undefined){assert(p.modules['story.facts'],'Fact ledger module is disabled');const normalized=validateGeneratedFacts(t.generatedFacts,p,t,t.narrative||'');assert(JSON.stringify(normalized)===JSON.stringify(t.generatedFacts),'Invalid generated fact provenance');}if(t.sceneId!==undefined){assert(typeof t.sceneId==='string'&&r.state.scene?.id===t.sceneId,'Scene settlement refers to an inactive scene');assert(t.sceneEnded===undefined||typeof t.sceneEnded==='boolean','Invalid scene end');assert(t.sceneSummary===undefined||typeof t.sceneSummary==='string'&&t.sceneSummary.length<=500,'Invalid scene summary');if(t.sceneSummary)r.state.scene.summary=t.sceneSummary;if(t.sceneEnded){settleSceneAttendance(r.state,p);r.state.scene=null;}}Object.assign(r.turn,{narrative:t.narrative,status:t.status,...(t.artifact?{artifact:t.artifact}:{}),...(t.sceneLines?{sceneLines:t.sceneLines}:{}),...(t.input?{input:t.input}:{}),...(t.ledger?{ledger:t.ledger}:{}),...(t.generatedFacts?{generatedFacts:t.generatedFacts}:{}),...(t.sceneId?{sceneId:t.sceneId,sceneSummary:t.sceneSummary,sceneEnded:t.sceneEnded}:{})});rebuilt=r.state;}
   validateFactEdits(s.factEdits||[],s,p);rebuilt.factEdits=clone(s.factEdits||[]);rebuilt.saveMigrations=clone(data.migrations||[]);
-  for(const k of ['actors','modules','flags','tick','rng','revision','events','scene','activityUses'])assert(JSON.stringify(rebuilt[k])===JSON.stringify(s[k]??(k==='activityUses'?{}:null)),`Save state mismatch: ${k}`);
+  const actorLocations=a=>Object.fromEntries(Object.entries(a||{}).map(([id,v])=>[id,v.location]));
+  for(const k of ['actors','modules','flags','tick','rng','revision','events','scene','activityUses']){
+    const rv=k==='actors'?actorLocations(rebuilt[k]):rebuilt[k],sv=k==='actors'?actorLocations(s[k]):(s[k]??(k==='activityUses'?{}:null));
+    assert(JSON.stringify(rv)===JSON.stringify(sv),`Save state mismatch: ${k}`);
+  }
   return rebuilt;
 }

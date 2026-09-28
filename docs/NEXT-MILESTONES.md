@@ -4,7 +4,7 @@ This roadmap is ordered by player risk and dependency, not by novelty. AI narrat
 
 **Current priority: the Fun tier (F1–F12) comes before all remaining P1–P4 work.** Correctness and recovery are in good shape, but there is no game yet: across all packs there are about 13 scripted scenes and 28 choices, and no pack has a goal, a deadline, or a played intimate scene. The rationale and the games each milestone borrows from are in [FUN-PASS.md](FUN-PASS.md).
 
-**Module freeze:** no new modules or module versions until the vertical slice (F1) passes the [fun gate](#fun-gate). Fixes to existing modules, and extensions that a Fun milestone explicitly calls for, are allowed.
+**Module freeze lifted (2026-09-28).** New modules and module versions are allowed again. A new module should make a measurable [fun gate](#fun-gate) number better (dead turns, run length, payoff timing) on at least one showcase pack.
 
 ## Current baseline
 

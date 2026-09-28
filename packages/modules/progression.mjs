@@ -21,5 +21,8 @@ export const progression={id:'social.progression',version:'0.1.0',coreApi:'0.1.0
  },
  init:p=>({states:Object.fromEntries((p.relationshipProgressions||[]).map(x=>[x.character,x.initial]))}),
  react(tx,event){for(const graph of tx.pack.relationshipProgressions||[]){const current=tx.state.modules['social.progression'].states[graph.character],transition=graph.transitions.find(t=>t.from===current&&t.event===event.type&&Object.entries(t.match||{}).every(([key,value])=>event.payload[key]===value)&&!progressionRequirements(t.requires,tx.state,tx.pack,graph.character).length);if(transition)setRelationshipState(tx,graph.character,transition.to,event.type);}},
- panel(s,p){return {title:'Relationship states',lines:Object.entries(s.modules['social.progression'].states).map(([character,state])=>`${s.actors[character].name}: ${p.relationshipStates.find(x=>x.id===state)?.name||state}`)};}
+ panel(s,p){const lines=[];for(const graph of p.relationshipProgressions||[]){const current=s.modules['social.progression'].states[graph.character],name=s.actors[graph.character].name;lines.push(`${name}: ${p.relationshipStates.find(x=>x.id===current)?.name||current}`);
+  // Creator diagnostics: why hasn't this character advanced? Each unmet transition lists its blockers.
+  for(const t of (graph.transitions||[]).filter(t=>t.from===current).slice(0,6)){const reasons=progressionRequirements(t.requires,s,p,graph.character);lines.push(`  ${t.event} → ${p.relationshipStates.find(x=>x.id===t.to)?.name||t.to}: ${reasons.length?`blocked (${reasons.join('; ')})`:'requirements met, waiting for the event'}`);}}
+  return {title:'Relationship states',lines};}
 };

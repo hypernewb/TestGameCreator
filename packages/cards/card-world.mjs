@@ -57,7 +57,7 @@ export function seedPack(raw,input,{locationCount=4,id}={}){
  const pack={schemaVersion:1,id:id||`card.${slug(name)||'character'}`,version:'0.1.0',title:str(out.title,'title',120,name),subtitle:`Built around ${name}`,calendar:'Day',accent:'#a9c59b',playerId:'player',
   gameProject:{premise,setting:str(out.setting,'setting',600,card('scenario')||premise),writingStyle:typeof out.writingStyle==='string'&&out.writingStyle.trim()?cut(out.writingStyle.trim(),300):'Present tense; grounded character dialogue; describe only what the player can perceive.',presentation:'visual-novel',conversationStyle:'continuous',calendar:{startDate:'',startWeekday:'Monday'},ai:{...AI}},
   startOptions:[{id:'opening',title:'A New Beginning',description:premise,playerLocation:out.playerLocation,tick:0}],
-  modules:Object.fromEntries(MODULES.map(m=>[m,'0.1.0'])),locations,actors:[{id:'player',name:'You',location:out.playerLocation}],items:[],objects:[],facts:[],lorebook:[],scriptedScenes:[],schedules:[],timedEvents:[]};
+  modules:Object.fromEntries(MODULES.map(m=>[m,m==='items.inventory'?'0.2.0':'0.1.0'])),locations,actors:[{id:'player',name:'You',location:out.playerLocation}],items:[],objects:[],facts:[],lorebook:[],scriptedScenes:[],schedules:[],timedEvents:[]};
  if(!cast.length){const {pack:next,actorId}=importCard(pack,input,{location:out.characterLocation});validatePack(next,registry);return {pack:next,actorId,actorIds:[actorId]};}
  let {pack:next,actorId}=importCard(pack,input,{location:cast[0].location,id:slug(cast[0].name)||undefined});
  const taken=new Set(next.actors.map(a=>a.id)),actorIds=[actorId];

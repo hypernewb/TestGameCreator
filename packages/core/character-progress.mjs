@@ -28,3 +28,26 @@ export function characterProgress(s,p,{test=false}={}){
   const rank=tempo?.ranks?.[tempoState?.rank||0],nextRank=tempo?.ranks?.[(tempoState?.rank||0)+1],trustScene=(p.scriptedScenes||[]).filter(scene=>scene.when?.trust?.[id]>t).toSorted((x,y)=>x.when.trust[id]-y.when.trust[id])[0],hearts=tempo?Math.min(tempo.ranks.length,Math.max(1,(tempoState?.rank||0)+1)):d?({available:0,crush:1,dating:2,exclusive:3,rejected:0,broken:0}[d.phase]??0):Math.min(5,Math.floor(t/20)),heartMax=tempo?.ranks?.length||(d?3:5),teaser=nextRank?`Next: ${nextRank.name}${nextRank.scene?` — ${p.scriptedScenes?.find(x=>x.id===nextRank.scene)?.title||'a new scene'}`:''}`:trustScene?`Next: ${trustScene.title} — keep spending time together`:tempo?'Route complete':'Keep interacting to see where this relationship goes.';
   return {id,name:a.name,portrait:a.portrait||null,description:a.description||'',pronouns:a.pronouns||'',location:at===here||showLocations?place(at):null,availability,next,stage:rank?.name||(d?cap(d.phase||'available'):band(t)),progress:{hearts,max:heartMax,teaser},stats,recent,memories,promises,preferences};});
 }
+
+// "What could I pursue now?" — a player-facing lead sheet: offered storylets, then everyone worth approaching
+// with the concrete hook attached (unread invitation, live event, where they are when visibility allows).
+export function leadLines(s,p,available=[]){
+ const me=p.playerId,here=s.actors[me].location,phone=s.modules['social.phone'],timed=s.modules['story.timed-events'];
+ const showLocations=p.gameProject?.characterLocationVisibility==='always',showSchedules=p.gameProject?.characterScheduleVisibility==='always';
+ const interval=p.daypart?.interval||4,lines=[];
+ for(const card of available.filter(a=>a.type==='story.startOfferedScene'&&a.storylet))lines.push(`${card.storylet.title} — ${card.storylet.who.join(', ')||'anyone'} · ${card.storylet.where}${card.enabled?'':' (not yet' + (card.disabledReason?`: ${card.disabledReason})`:')')}`);
+ for(const a of p.actors.filter(a=>a.id!==me)){
+  const bits=[];
+  if(s.scene?.characters?.includes(a.id))bits.push('with you now');
+  else if(s.actors[a.id].location===here)bits.push('here');
+  else if(showLocations)bits.push(`at ${p.locations.find(l=>l.id===s.actors[a.id].location)?.name||s.actors[a.id].location}`);
+  else bits.push('away');
+  if(showSchedules){const schedule=p.modules['world.schedule']&&(p.schedules||[]).find(x=>x.actor===a.id);
+   if(schedule)for(let tick=s.tick+1,loc=s.actors[a.id].location;tick<=s.tick+interval*3;tick++){const to=scheduleDestination(p,schedule,tick);if(to&&to!==loc){const c=calendarFor(tick,p);bits.push(`${p.locations.find(l=>l.id===to)?.name||to} ${c.daypart.toLowerCase()}`);break;}}}
+  if(phone){const thread=phone.threads[a.id]||[],unread=thread.filter(x=>!x.read).length,offer=thread.find(x=>x.offer?.status==='pending'&&x.offer.expiresTick>=s.tick);
+   if(offer)bits.push('asked to meet you');else if(unread)bits.push(`${unread} unread message${unread>1?'s':''}`);}
+  if(timed&&(p.timedEvents||[]).some(e=>e.character===a.id&&s.tick>=e.startTick&&s.tick<=e.endTick&&!['attended','missed'].includes(timed.status[e.id]||'')))bits.push('event happening now');
+  lines.push(`${a.name} — ${bits.join(' · ')}`);
+ }
+ return lines;
+}

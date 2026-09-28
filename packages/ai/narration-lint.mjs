@@ -92,7 +92,22 @@ function assertFreshBeats(value,context){
   for(const gram of shingles(line.text))seen.add(gram);
  }
 }
-const CHECKS=[['attendance',assertSceneBoundaries],['knowledge',assertKnowledgeLeaks],['content',assertContentLevel],['time',assertDaypart],['calendar',assertWeekday],['player-agency',assertPlayerInterior],['touch-stage',assertStageTouch],['speech',assertCastSpeaks],['repeat',assertFresh],['paraphrase',assertFreshNarration],['beats',assertFreshBeats]];
+// Last open agency frontier from the small-model runs: during a typed activity the narrator scripts the player
+// performing engine-owned transactions the turn never committed ("you buy a round", "you pocket the tip jar").
+// Purchases, transfers and signatures are the engine's decisions; the player only said what they said. Soft,
+// like speech: one rewrite is requested, and the verb the player themselves typed is always allowed.
+const PLAYER_TRANSACTION=/\byou (buy|purchase|order|pay for|pay|steal|sell|sign|trade|swap|pocket|swipe|snag|smuggle|hand over|give)\b/iu;
+function assertPlayerTransactions(value,context){
+ if(!context.typedActivity)return;
+ const said=String(context.playerAction||'').toLocaleLowerCase();
+ for(const line of value.lines){
+  if(line.speaker)continue;
+  const m=line.text.match(PLAYER_TRANSACTION);if(!m)continue;
+  if(said.includes(m[1].toLocaleLowerCase()))continue;
+  throw Object.assign(Error(`Do not narrate "you ${m[1]} ..." during a typed activity: purchases, sales, trades and item transfers are committed by the engine, not by prose. Describe the scene or have a character speak instead`),{soft:true});
+ }
+}
+const CHECKS=[['attendance',assertSceneBoundaries],['knowledge',assertKnowledgeLeaks],['content',assertContentLevel],['time',assertDaypart],['calendar',assertWeekday],['player-agency',assertPlayerInterior],['player-transactions',assertPlayerTransactions],['touch-stage',assertStageTouch],['speech',assertCastSpeaks],['repeat',assertFresh],['paraphrase',assertFreshNarration],['beats',assertFreshBeats]];
 export function lintScene(value,context,pack){
  for(const [check,run] of CHECKS){
   try{run(value,context,pack);}

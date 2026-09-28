@@ -7,6 +7,17 @@ export const NPC_SIMULATION={everySlots:1,maxGroups:8,maxGroupSize:3,runInsPerDa
 export const npcSimulation=p=>({...NPC_SIMULATION,...(p.npcSimulation||{})});
 const names=(s,ids)=>{const n=ids.map(id=>s.actors[id].name);return n.length<2?n.join(''):`${n.slice(0,-1).join(', ')} and ${n.at(-1)}`;};
 const fill=(text,vars)=>text.replace(/\{(\w+)\}/g,(m,k)=>vars[k]??m);
+// Authored NPC–NPC dialogue: group matches beat pair matches beat a generic `any` pool. Lines rotate by slot so
+// repeated hangouts do not repeat the same exchange, and up to four lines are spoken per encounter.
+export function npcDialogueFor(p,members,groupId,slot,who,placeName){
+ const entries=p.npcDialogue||[];if(!entries.length)return null;
+ const usable=x=>Array.isArray(x.lines)&&x.lines.length?x:null;
+ const byGroup=entries.filter(x=>x.group!==undefined&&x.group===groupId&&usable(x)),byPair=members.length>=2?entries.filter(x=>Array.isArray(x.pair)&&x.pair.every(id=>members.includes(id))&&usable(x)):[],any=entries.filter(x=>x.any&&usable(x));
+ const entry=byGroup.length?byGroup[slot%byGroup.length]:byPair.length?byPair[slot%byPair.length]:any.length?any[slot%any.length]:null;
+ if(!entry)return null;
+ const vars={a:who[0]||'',b:who[1]||'',names:who.join(' and '),location:placeName},start=slot%entry.lines.length;
+ return Array.from({length:Math.min(4,entry.lines.length)},(_,i)=>fill(entry.lines[(start+i)%entry.lines.length],vars));
+}
 // Authored cliques first (in pack order), then whoever is left rotates into one ad-hoc hangout. Pure and seed-free.
 export function formGroups(p,location,residents,slot,size){
  const free=new Set(residents),groups=[];
@@ -30,6 +41,8 @@ export const npcSocial={
   const sim=p.npcSimulation||{},int=(k,lo,hi)=>assert(sim[k]===undefined||Number.isInteger(sim[k])&&sim[k]>=lo&&sim[k]<=hi,`npcSimulation.${k} must be an integer from ${lo} to ${hi}`);
   assert(sim&&typeof sim==='object'&&!Array.isArray(sim),'npcSimulation must be an object');int('everySlots',1,12);int('maxGroups',0,8);int('maxGroupSize',2,6);int('runInsPerDay',0,6);
   assert(sim.runInChance===undefined||typeof sim.runInChance==='number'&&sim.runInChance>=0&&sim.runInChance<=1,'npcSimulation.runInChance must be from 0 to 1');
+  const groupIds=new Set((p.npcGroups||[]).map(g=>g.id)),dialogue=new Set();assert(Array.isArray(p.npcDialogue||[]),'npcDialogue: expected an array');
+  for(const d of p.npcDialogue||[]){const selectors=[d.group!==undefined,d.pair!==undefined,d.any===true].filter(Boolean).length;assert(selectors===1,'npcDialogue: exactly one of group, pair or any');if(d.group!==undefined)assert(groupIds.has(d.group),'npcDialogue.group: unknown npcGroup');if(d.pair!==undefined)assert(Array.isArray(d.pair)&&d.pair.length===2&&new Set(d.pair).size===2&&d.pair.every(id=>npc.has(id)),'npcDialogue.pair: two distinct NPCs');assert(Array.isArray(d.lines)&&d.lines.length>=1&&d.lines.length<=6&&d.lines.every(l=>typeof l==='string'&&l.trim()&&l.length<=160),'npcDialogue.lines: 1–6 lines of up to 160 characters');dialogue.add(d);}
  },
  init(p){return {pairs:Object.fromEntries((p.initialNpcRelationships||[]).map(x=>[pairKeyOf(x.a,x.b),{affinity:x.affinity}])),friendships:[],lastSlot:-1,runIns:{day:-1,count:0}};},
  react(tx,e){
@@ -56,8 +69,10 @@ export const npcSocial={
    const witnesses=g.ref===here?[me,...present(here)]:present(g.ref),moves=[];
    for(let i=0;i<g.members.length;i++)for(let j=i+1;j<g.members.length;j++){const pair=pairs[pairKeyOf(g.members[i],g.members[j])];if(pair?.encounter)moves.push({a:g.members[i],b:g.members[j],positive:pair.encounter.positive,affinity:pair.affinity});}
    const positive=moves.filter(x=>x.positive).length*2>=moves.length,who=names(s,g.members),authored=(p.npcGroups||[]).find(x=>x.id===g.group);
-   const text=g.runIn?fill(authored?.runInText||'{names} are here together, deep in conversation.',{names:who,location:place(g.ref)}):undefined;
-   tx.emit(g.runIn?'social.npcRunIn':'social.npcEncounter',{slot,kind:g.kind,group:g.group||null,location:g.ref,place:place(g.ref),members:g.members,names:who,witnesses,positive,pairs:moves,...(text?{text}:{})},witnesses);
+   const dialogue=npcDialogueFor(p,g.members,g.group,slot,g.members.map(id=>s.actors[id].name),place(g.ref));
+   const summary=g.runIn?fill(authored?.runInText||'{names} are here together, deep in conversation.',{names:who,location:place(g.ref)}):undefined;
+   const text=[...(summary?[summary]:[]),...(dialogue||[])].join('\n')||undefined;
+   tx.emit(g.runIn?'social.npcRunIn':'social.npcEncounter',{slot,kind:g.kind,group:g.group||null,location:g.ref,place:place(g.ref),members:g.members,names:who,witnesses,positive,pairs:moves,...(dialogue?{dialogue}:{}),...(text?{text}:{})},witnesses);
   }
   for(const f of fresh)if(f.text)tx.emit('social.npcFriendship',{a:f.a,b:f.b,slot,location:f.location,text:f.text},[f.a,f.b]);
   tx.emit('social.npcSettled',{slot,groups,friends:fresh},[]);

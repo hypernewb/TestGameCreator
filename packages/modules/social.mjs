@@ -41,6 +41,10 @@ export function parseInvite(s,p,text){
  return loc&&loc.id!==here?{character,to:loc.id}:null;
 }
 const definition=(id,extra)=>({id,version:'0.1.0',coreApi:'0.1.0',requires:[],...extra});
+const LATER=/\bwhat are you up to later\b|\bwhere will you be\b|\bwhat are your plans\b/;
+// The next place this character's schedule takes them away from where they are now, with a daypart for the player.
+export function laterStop(s,p,id){if(!p.modules['world.schedule'])return null;const schedule=(p.schedules||[]).find(r=>r.actor===id);if(!schedule)return null;const now=calendarFor(s.tick,p),from=s.actors[id].location;
+ for(let tick=s.tick+1;tick<=s.tick+(p.daypart?.interval||4)*3*7;tick++){const to=scheduleDestination(p,schedule,tick);if(to&&to!==from){const c=calendarFor(tick,p),name=p.locations.find(l=>l.id===to)?.name||to;return {location:to,tick,name,when:c.day===now.day?(c.daypart===now.daypart?'soon':`this ${c.daypart.toLowerCase()}`):c.day===now.day+1?`tomorrow ${c.daypart.toLowerCase()}`:`on ${c.weekday}`};}}return null;}
 export const conversation=definition('social.conversation',{
   init:()=>({memories:[]}),
   react(tx,e){if(e.type!=='social.spoke'||e.payload.source!=='scene')return;const participants=[tx.pack.playerId,e.payload.target];tx.set(['modules','social.conversation','memories'],[...tx.state.modules['social.conversation'].memories,{id:e.id,source:e.id,tick:tx.state.tick,knownBy:participants,text:e.payload.text,promise:e.payload.promise,topic:e.payload.utterance.toLowerCase()}]);},
@@ -57,6 +61,13 @@ export const conversation=definition('social.conversation',{
     const text=`You tell ${target.name}: “${utterance}”`;
     const e=tx.emit('social.spoke',{actor:p.playerId,target:a.target,location:target.location,utterance,promise,repeat,text},visibility);
     tx.set(['modules','social.conversation','memories'],[...s.modules['social.conversation'].memories,{id:e.id,source:e.id,tick:s.tick,knownBy:visibility,text,promise,topic:utterance.toLocaleLowerCase()}]);
+    // Asking about something the author wrote down about them is how the player learns it: a fact, not flavour.
+    const said=utterance.toLocaleLowerCase(),known=s.modules['social.conversation'].learned?.[a.target]||[],actor=p.actors.find(x=>x.id===a.target);
+    const learn=[...[].concat(actor?.likes||[]).map(x=>({topic:String(x),kind:'like'})),...[].concat(actor?.dislikes||[]).map(x=>({topic:String(x),kind:'dislike'}))].find(x=>!known.includes(x.topic)&&said.includes(x.topic.toLocaleLowerCase()));
+    if(learn){tx.set(['modules','social.conversation','learned'],{...s.modules['social.conversation'].learned,[a.target]:[...known,learn.topic]});tx.emit('social.topicLearned',{character:a.target,...learn,text:`You learn ${target.name} ${learn.kind==='like'?'loves':"can't stand"} ${learn.topic}.`},visibility);}
+    // "What are you up to later?" once a day: they tell you where their day takes them next, so there is somewhere to be.
+    const day=calendarFor(s.tick,p).day;
+    if(LATER.test(said)&&s.modules['social.conversation'].hinted?.[a.target]!==day){const next=laterStop(s,p,a.target);if(next){tx.set(['modules','social.conversation','hinted'],{...s.modules['social.conversation'].hinted,[a.target]:day});tx.emit('social.hintGiven',{character:a.target,...next,text:`${target.name} will be at ${next.name} ${next.when}.`},visibility);}}
   },
   // Invitations are committed here, not by dialogue: an accepted one moves both characters and opens a scene at the destination.
   'social.invite'(tx,a){const {state:s,pack:p}=tx;assert(safeKey(a.character)&&safeKey(a.to),'Invalid invitation');const d=inviteDecision(s,p,a.character,a.to),npc=s.actors[a.character],seen=[p.playerId,a.character];
@@ -73,8 +84,10 @@ export const conversation=definition('social.conversation',{
     // how a route stalls on "Things are fine."
     const inConversation=s.scene&&s.scene.location===me?s.scene.characters:[],topic=id=>{const actor=p.actors.find(a=>a.id===id);if(!actor)return null;const said=new Set((s.modules['social.conversation'].memories||[]).filter(m=>m.knownBy.includes(id)).flatMap(m=>String(m.topic||'').match(/\p{L}{5,}/gu)||[])),fresh=sentence=>{const words=sentence.toLowerCase().match(/\p{L}{5,}/gu)||[];return words.length&&words.filter(w=>!said.has(w)).length/words.length>=0.5;};
       return [...[].concat(actor.likes||[]).map(x=>({label:`what ${x} means to them`,text:`What is it you love about ${x}?`,key:String(x)})),...[].concat(actor.dislikes||[]).map(x=>({label:`why they can't stand ${x}`,text:`Why can't you stand ${x}?`,key:String(x)})),...String(actor.backstory||'').split(/(?<=[.!?])\s+/u).filter(fresh).map(()=>({label:'something from their past',text:'How did that come about?',key:''}))].find(seed=>String(seed.key).toLowerCase().match(/\p{L}{5,}/gu)?.every(w=>!said.has(w))??true)||null;};
-    const speak=id=>{if(!inConversation.includes(id))return {label:`Talk to ${s.actors[id].name}`,type:'social.speak',args:{target:id,text:'How are things going?'}};const seed=topic(id);return {label:seed?`Ask ${s.actors[id].name} about ${seed.label}`:`Keep talking to ${s.actors[id].name}`,type:'social.speak',args:{target:id,text:seed?seed.text:'Go on.'}};};
-    return [...here.map(speak),...here.flatMap(id=>homes.filter(l=>inviteDecision(s,p,id,l.id).ok).map(l=>({label:`Invite ${s.actors[id].name} back to ${l.name}`,type:'social.invite',args:{character:id,to:l.id}})))];},
+    const speak=id=>{if(!inConversation.includes(id))return {label:`Talk to ${s.actors[id].name}`,type:'social.speak',args:{target:id,text:'How are things going?'}};const seed=topic(id);if(seed)return {label:`Ask ${s.actors[id].name} about ${seed.label}`,type:'social.speak',args:{target:id,text:seed.text}};
+      // Out of authored topics: one "later" question a day, then no canned button (typing still works).
+      return s.modules['social.conversation'].hinted?.[id]!==calendarFor(s.tick,p).day&&laterStop(s,p,id)?{label:`Ask ${s.actors[id].name} what they're up to later`,type:'social.speak',args:{target:id,text:'What are you up to later?'}}:null;};
+    return [...here.map(speak).filter(Boolean),...here.flatMap(id=>homes.filter(l=>inviteDecision(s,p,id,l.id).ok).map(l=>({label:`Invite ${s.actors[id].name} back to ${l.name}`,type:'social.invite',args:{character:id,to:l.id}})))];},
   panel(s){return {title:'Shared memories',lines:s.modules['social.conversation'].memories.slice(-5).map(m=>m.text)};}
 });
 export const relationships=definition('social.relationships',{

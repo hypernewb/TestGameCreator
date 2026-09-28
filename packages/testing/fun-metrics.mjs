@@ -36,6 +36,7 @@ export function funMetrics(state,pack,{seconds:measured={}}={}){
   if(CHOICE.has(t.command)){m.choices++;mark('firstChoice',i,t.command);}if(t.input)m.typed++;
   for(const e of t.events){const p=e.payload||{},scene=p.scene;
    if(!NOISE.has(e.type))live=true;
+   if(e.type==='social.spoke'&&t.input&&!p.repeat)fresh=true; // the player's own new words are never a dead turn
    if(scene&&['story.sceneSelected','story.sceneStarted','story.choiceResolved','story.sceneResumed','story.incident'].includes(e.type)){if(!seen.scenes.has(scene)){seen.scenes.add(scene);fresh=true;}const beat=`${scene}.${p.beat||'opening'}`;if(!seen.beats.has(beat)){seen.beats.add(beat);fresh=true;}}
    const place=e.type==='core.moved'?p.to:e.type==='core.sceneStarted'?p.location:null;if(place&&!seen.places.has(place)){seen.places.add(place);fresh=true;}
    for(const who of e.type==='core.sceneStarted'?p.characters||[]:[])if(!seen.people.has(who)){seen.people.add(who);fresh=true;}

@@ -33,7 +33,7 @@ test('each pairing gets the right names, pronouns, speakers, conditions and effe
 
 test('in play the variant matching the present cast fires, and the template plays only once',()=>{
  let s=createWorld(pack,registry,'rs');s=structuredClone(s);Object.assign(s,{tick:7});s.actors.player.location='market';s.actors.juno.location='bar';s.actors.priya.location='bar';s.actors.theo.location='canal';s.modules['social.relationships'].edges['juno--player']=5;
- s.modules['story.scenes'].completed=base.scriptedScenes.map(x=>x.id);// past the authored bar scenes, so only the template competes
+ s.modules['story.scenes'].completed=base.scriptedScenes.filter(x=>!x.template).map(x=>x.id);// past the authored bar scenes, so only the template competes
  const cmd=(s,type,args)=>execute(s,{type,args,id:`c${s.revision}`,actorId:'player',expectedRevision:s.revision},pack,registry).state;
  s=cmd(s,'core.move',{to:'bar'});const m=s.modules['story.scenes'];
  assert.equal(m.pending,'seen-together.juno.priya','Theo is at the canal, so only the Juno/Priya pairing can play');

@@ -6,13 +6,14 @@ import {registry} from '../packages/modules/index.mjs';
 import {analyzeSceneGraphs} from '../packages/modules/scenes.mjs';
 const pack=JSON.parse(readFileSync(new URL('../packs/after-hours.json',import.meta.url)));
 // Days 2-14 storylets. Route tests skip them (leave, not complete) so they exercise one thread at a time; harness(p,[ids]) keeps the listed ones.
-const side=new Set(['juno-limes','juno-dream','juno-flea','theo-busking','theo-notebook','theo-song','juno-flea-ask','juno-no-show','theo-song-ask','theo-no-show','priya-books','priya-tips','rowdy-regular','open-mic-heckler','theo-request','friday-rush','staff-drinks','juno-needles','priya-candid','juno-text','theo-voicenote']);
+const side=new Set(['juno-limes','juno-dream','juno-flea','theo-busking','theo-notebook','theo-song','juno-flea-ask','juno-no-show','theo-song-ask','theo-no-show','priya-books','priya-tips','rowdy-regular','open-mic-heckler','theo-request','friday-rush','staff-drinks','juno-needles','priya-candid','juno-text','theo-voicenote','till-short','ex-at-the-bar','market-shakedown','landlord-inspection','crate-digging','pub-quiz','market-hustle','study-slate','after-work-drinks','stock-windfall']);
 function harness(p,keep=[]){const skip=true;let s=createWorld(p,registry,'test');const run=(type,args)=>{const r=execute(s,{id:`t${s.revision}`,actorId:p.playerId,type,args,expectedRevision:s.revision},p,registry);s=r.state;return r;};
  return {get state(){return s;},act(type,args={}){const r=run(type,args);while(skip&&side.has(s.modules['story.scenes'].pending)&&!keep.includes(s.modules['story.scenes'].pending))run('story.leave',{scene:s.modules['story.scenes'].pending});return r;}};}
 const ev=(r,type)=>r.turn.events.find(e=>e.type===type);
 const stat=(h,id)=>h.state.modules['character.stats'].values[`player--${id}`];
 const doing=(h,id,location='bar')=>{const who=pack.activities.find(a=>a.id===id).character,go=()=>h.act('core.scene',{text:id,location,characters:[who].filter(Boolean),activity:'other',activityId:id});
  for(let i=0;i<24;i++){try{return go();}catch(e){if(!/isn't there right now/.test(e.message))throw e;h.state.actors[who].location!==location&&h.state.actors.player.location===location?h.act('core.waitUntil',{actor:who}):h.act('core.wait');}}return go();};
+const waitTo=(h,tick)=>{while(h.state.tick<tick){const p=h.state.modules['story.scenes'].pending;if(p)h.act('story.leave',{scene:p});else h.act('core.wait');}};
 const choice=(h,id)=>actions(h.state,pack,registry).find(a=>a.args?.choice===id);
 
 test('after-hours pack validates and every scene graph is reachable',()=>{
@@ -69,24 +70,26 @@ const toBed=(h,c)=>{h.act('social.invite',{character:c,to:'flat'});h.act('social
 test('rung 4: a kiss starts dating, the invite and the ask are buttons, Nerve shapes the night and aftercare is heard',()=>{
  const h=harness(pack);h.act('core.move',{to:'bar'});assert.equal(named(h,/^Invite Juno/),undefined,'no invite home before there is trust or a date');
  const fresh=harness(pack);junoKissed(fresh);const g=fresh;assert.equal(g.state.modules['social.dating'].characters.juno.phase,'dating');
- assert.equal(named(g,/^Ask Juno/),undefined,'the ask waits for somewhere private');
+ assert.equal(named(g,/^Ask Juno:/),undefined,'the ask waits for somewhere private');
  const invite=named(g,/^Invite Juno back to Your flat$/);assert.deepEqual(invite.args,{character:'juno',to:'flat'});
  g.act(invite.type,invite.args);assert.equal(g.state.actors.juno.location,'flat');
  const ask=named(g,/^Ask Juno: Take it to bed\?$/);assert.ok(ask);g.act(ask.type,ask.args);
  assert.ok(named(g,/^Stop: Take it to bed with Juno$/),'stopping is always offered once she says yes');
  const r=g.act('social.beginIntimacy',{character:'juno',category:'first-night'});assert.ok(ev(r,'story.sceneStarted'));assert.equal(g.state.modules['story.scenes'].pending,'juno-night');
  const lead=choice(g,'take-lead');assert.match(lead.label,/^\[Nerve · Bold ✓\]/);assert.deepEqual(lead.check.modifiers.map(m=>m.label),['Leather jacket']);assert.match(choice(g,'stop').label,/^Say you want to stop here$/);
- g.act('story.choose',{scene:'juno-night',choice:'take-lead'});
- const j=intim(g,'juno');assert.equal(j.encounters.at(-1).outcome,'positive');assert.deepEqual(j.knownInterests,['juno-lead']);assert.equal(sat(g,'juno'),60);assert.equal(g.state.flags['juno-night'],true);
+ g.act('story.choose',{scene:'juno-night',choice:'take-lead'});assert.equal(g.state.modules['story.scenes'].pendingBeat,'check-in');assert.equal(intim(g,'juno').encounters.length,0,'one choice is not the whole night');
+ assert.match(choice(g,'stop').label,/stop/i,'the check-in offers a stop too');g.act('story.choose',{scene:'juno-night',choice:'ask-her'});assert.equal(g.state.modules['story.scenes'].pendingBeat,'peak');
+ g.act('story.choose',{scene:'juno-night',choice:'contest'});
+ const j=intim(g,'juno');assert.equal(j.encounters.at(-1).outcome,'positive');assert.deepEqual(j.knownInterests,['juno-lead','juno-contest']);assert.equal(sat(g,'juno'),63);assert.equal(g.state.flags['juno-night'],true);
  assert.equal(named(g,/^Stop:/),undefined,'nothing left to stop');
- const space=named(g,/^Afterwards with Juno: Give some space$/);g.act(space.type,space.args);assert.equal(sat(g,'juno'),68,'Juno likes being let go');assert.equal(intim(g,'juno').pendingAftercare,null);
+ const space=named(g,/^Afterwards with Juno: Give some space$/);g.act(space.type,space.args);assert.equal(sat(g,'juno'),63+8,'Juno likes being let go');assert.equal(intim(g,'juno').pendingAftercare,null);
  assert.deepEqual(replay(createWorld(pack,registry,'test'),g.state.events).modules,g.state.modules);
 });
 
 test('rung 4: stopping is never checked, always honoured, and ends the scene either way',()=>{
  const a=harness(pack);junoKissed(a);toBed(a,'juno');
  const r=a.act('story.choose',{scene:'juno-night',choice:'stop'});assert.equal(ev(r,'story.checkResolved'),undefined);assert.equal(ev(r,'social.intimacyCompleted'),undefined);
- assert.equal(intim(a,'juno').active,null);assert.equal(intim(a,'juno').consent['first-night'].status,'withdrawn');assert.equal(a.state.modules['story.scenes'].pending,null);assert.equal(named(a,/^Ask Juno/),undefined,'no re-asking after a stop');
+ assert.equal(intim(a,'juno').active,null);assert.equal(intim(a,'juno').consent['first-night'].status,'withdrawn');assert.equal(a.state.modules['story.scenes'].pending,null);assert.equal(named(a,/^Ask Juno:/),undefined,'no re-asking after a stop');
  const b=harness(pack);junoKissed(b);toBed(b,'juno');const stop=named(b,/^Stop: Take it to bed with Juno$/);
  const w=b.act(stop.type,stop.args);assert.ok(ev(w,'story.sceneDismissed'));assert.equal(b.state.modules['story.scenes'].pending,null);assert.equal(intim(b,'juno').active,null);assert.equal(b.state.flags['juno-night'],undefined);
 });
@@ -97,22 +100,21 @@ test('Theo: Empathy reads him, a skipped goodbye costs more than it does with Ju
  doing(h,'walk-theo-home');h.act('story.choose',{scene:'theo-canal',choice:'kiss-him'});assert.equal(h.state.modules['social.dating'].characters.theo.phase,'dating');
  toBed(h,'theo');assert.equal(h.state.modules['story.scenes'].pending,'theo-night');
  const read=choice(h,'read-him');assert.match(read.label,/^\[Empathy · [A-Za-z]+ ✓\]/);assert.deepEqual(read.check.modifiers.map(m=>m.label),['He trusted you with the song']);
- h.act('story.choose',{scene:'theo-night',choice:'read-him'});assert.equal(sat(h,'theo'),62);assert.deepEqual(intim(h,'theo').knownInterests,['theo-slow']);
- for(let i=0;i<3;i++)h.act('core.wait');assert.ok(h.state.events.some(e=>e.type==='social.aftercareMissed'));assert.equal(sat(h,'theo'),54);
+ for(const c of ['read-him','ask','slow'])h.act('story.choose',{scene:'theo-night',choice:c});assert.equal(sat(h,'theo'),63);assert.deepEqual(intim(h,'theo').knownInterests,['theo-slow','theo-tender']);
+ for(let i=0;i<3;i++)h.act('core.wait');assert.ok(h.state.events.some(e=>e.type==='social.aftercareMissed'));assert.equal(sat(h,'theo'),63-8);
 });
 
-test('last call: day 14 evening at the bar ends the trial and unlocks endings from what happened',()=>{
- const h=harness(pack);junoKissed(h);h.act('social.invite',{character:'juno',to:'flat'});h.act('core.move',{to:'bar'});
- while(h.state.tick<164){const p=h.state.modules['story.scenes'].pending;if(p)h.act('story.leave',{scene:p});else h.act('core.wait');}
- h.act('core.inspect');assert.equal(h.state.modules['story.scenes'].pending,'last-call');h.act('story.leave',{scene:'last-call'});while(h.state.modules['story.scenes'].pending)h.act('story.leave',{scene:h.state.modules['story.scenes'].pending});
- h.act('core.inspect');assert.equal(h.state.modules['story.scenes'].pending,'last-call','walking away does not lose the finale');
+const toLastCall=h=>{for(let i=0;i<400&&h.state.modules['story.scenes'].pending!=='last-call';i++){const p=h.state.modules['story.scenes'].pending;if(p)h.act('story.leave',{scene:p});else h.act('core.wait');}assert.equal(h.state.modules['story.scenes'].pending,'last-call');};
+test('last call: day 14 evening finds you wherever you are, ends the trial and unlocks endings from what happened',()=>{
+ const h=harness(pack);junoKissed(h);h.act('social.invite',{character:'juno',to:'flat'});
+ toLastCall(h);assert.ok(h.state.tick>=212);h.act('story.leave',{scene:'last-call'});while(h.state.modules['story.scenes'].pending)h.act('story.leave',{scene:h.state.modules['story.scenes'].pending});
+ h.act('core.wait');assert.equal(h.state.modules['story.scenes'].pending,'last-call','walking away does not lose the finale');
  h.act('story.choose',{scene:'last-call',choice:'stay-on'});
- assert.deepEqual(h.state.modules['story.endings'].unlocked,['juno-last-one-out','regular']);
+ assert.deepEqual(h.state.modules['story.endings'].unlocked,['juno-last-one-out']);
  const end=named(h,/^Choose ending: Last one out$/);h.act(end.type,end.args);assert.equal(h.state.modules['story.endings'].selected,'juno-last-one-out');
- const early=harness(pack);early.act('core.move',{to:'bar'});early.act('story.leave',{scene:'first-night'});early.act('core.inspect');assert.notEqual(early.state.modules['story.scenes'].pending,'last-call');
+ const early=harness(pack);waitTo(early,198);assert.ok(!early.state.events.some(e=>e.type==='story.sceneStarted'&&e.payload.scene==='last-call'),'not before day 16 evening');
 });
 
-const waitTo=(h,tick)=>{while(h.state.tick<tick){const p=h.state.modules['story.scenes'].pending;if(p)h.act('story.leave',{scene:p});else h.act('core.wait');}};
 const plan=(h,id)=>(h.state.modules['story.scenes'].plans||[]).filter(x=>x.id===id).at(-1)?.status;
 const chem=(h,c)=>h.state.modules['social.dating'].characters[c].chemistry;
 
@@ -162,11 +164,11 @@ test('another night is its own scene: it repeats, asks for more than the first, 
  const night=()=>{for(let i=0;i<40&&intim(g,'juno').cooldownUntil>g.state.tick;i++)g.act('core.wait');const at=g.state.actors.juno.location;if(g.state.actors.player.location!==at)g.act('core.move',{to:at});
   if(at!=='flat'){const inv=named(g,/^Invite Juno back to Your flat$/);assert.ok(inv,'invite offered');g.act(inv.type,inv.args);}
   const ask=named(g,/^Ask Juno: Take it to bed\?$/);assert.ok(ask,'ask offered');g.act(ask.type,ask.args);g.act('social.beginIntimacy',{character:'juno',category:'first-night'});return g.state.modules['story.scenes'].pending;};
- assert.equal(night(),'juno-night');g.act('story.choose',{scene:'juno-night',choice:'take-lead'});assert.equal(g.state.flags['juno-led'],true);
+ assert.equal(night(),'juno-night');for(const c of ['take-lead','yes','contest'])g.act('story.choose',{scene:'juno-night',choice:c});assert.equal(g.state.flags['juno-led'],true);
  const aftercare=()=>{const a=named(g,/^Afterwards with Juno: Give some space$/);if(a)g.act(a.type,a.args);};aftercare();
  assert.equal(night(),'juno-again','the first night never replays');
  const surprise=choice(g,'surprise-her');assert.match(surprise.label,/^\[Nerve · Fearless [✓✗]\]/);assert.ok(surprise.check.modifiers.some(m=>m.label==='She knows you mean it'));
- const before=sat(g,'juno');g.act('story.choose',{scene:'juno-again',choice:'let-her-lead'});assert.equal(sat(g,'juno'),before+2,'a familiar night is good, not new');aftercare();
+ const before=sat(g,'juno');g.act('story.choose',{scene:'juno-again',choice:'let-her-lead'});assert.equal(sat(g,'juno'),before+2+2,'a familiar night is good, not new; the style she likes still counts');aftercare();
  assert.equal(night(),'juno-again','repeatable');g.act('story.choose',{scene:'juno-again',choice:'stop'});
  assert.equal(g.state.modules['story.scenes'].completed.filter(x=>x==='juno-again').length,1,'completed once, not per repeat');
  assert.deepEqual(replay(createWorld(pack,registry,'test'),g.state.events).modules,g.state.modules);
@@ -239,4 +241,57 @@ test('world generation: each new game hides the finds in different authored spot
  for(let n=0;n<20;n++){const w=createWorld(pack,registry,'h'+n,n*104729),st=w.modules['world.objects'].stash;for(const i of hidden){assert.ok(i.hideIn.includes(st[i.id]));assert.equal(w.modules['items.inventory'].owners[i.id],pack.objects.find(o=>o.id===st[i.id]).location,'item sits where its hiding spot is');}}
  const h=harness(pack),empty=pack.objects.find(o=>hidden.some(i=>i.hideIn.includes(o.id))&&!Object.values(h.state.modules['world.objects'].stash).includes(o.id)&&!o.reveals);
  if(empty){let q;while((q=h.state.modules['story.scenes'].pending))h.act('story.leave',{scene:q});if(h.state.actors.player.location!==empty.location)h.act('core.move',{to:empty.location});const r=h.act('world.explore',{target:empty.id,mode:'search_take'});assert.ok(r.turn.events.some(e=>e.type==='world.searchedEmpty'),'an empty candidate spot says so');}
+});
+
+const placed=(tick,flags={})=>{const s=createWorld(pack,registry,'hand');Object.assign(s.flags,flags);s.modules['story.scenes'].pending=null;s.tick=tick;const h=tick%12;s.actors.juno.location=h<6?'market':'bar';s.actors.theo.location=h<8?'canal':'bar';return s;};
+const handsAt=s=>[...new Set(pack.locations.flatMap(l=>{const t=structuredClone(s);t.actors.player.location=l.id;return actions(t,pack,registry).filter(a=>a.type==='story.startOfferedScene'&&a.enabled!==false&&a.args.scene.startsWith('hand-')).map(a=>a.args.scene);}))];
+
+test('F2: every daypart of the run holds 2-4 hand offers, whichever route you are on',()=>{
+ const routes={fresh:{},juno:{'juno-flirt':true,'juno-banter':true},theo:{'theo-opened':true,'theo-close':true},'juno kissed':{'juno-kissed':true,'juno-flirt':true,'juno-charged':true},'theo kissed':{'theo-kissed':true,'theo-opened':true,'theo-close':true,'theo-charged':true}};
+ for(const [route,flags] of Object.entries(routes))for(let day=1;day<18;day++)for(const h of [1,6,9]){if(day===17&&h===9)continue;const n=handsAt(placed(day*12+h,flags)).length;assert.ok(n>=2&&n<=4,`${route} day ${day} tick ${h}: ${n} hand offers`);}
+});
+
+const nights=pack.scriptedScenes.filter(s=>s.trigger.event==='social.intimacyStarted');
+test('F5: an intimate scene is several beats, and every beat before the end offers an unchecked stop that withdraws consent',()=>{
+ for(const id of ['juno-night','theo-night'])assert.ok(nights.find(s=>s.id===id).beats.length>=2,`${id} has an escalation and a peak`);
+ for(const s of nights)for(const [at,choices] of [['opening',s.choices],...(s.beats||[]).map(b=>[b.id,b.choices])]){const stop=choices.find(c=>c.effects?.some(e=>e.type==='intimacyConsent'&&e.status==='withdrawn'));assert.ok(stop,`${s.id}/${at} can stop`);assert.equal(stop.check,undefined,`${s.id}/${at} stop is never checked`);assert.equal(stop.next,undefined,`${s.id}/${at} stop ends the scene`);}
+});
+
+test('F5: stopping at the check-in is honoured mid-night; a mismatched opening ends the night early and awkwardly',()=>{
+ const a=harness(pack);junoKissed(a);toBed(a,'juno');a.act('story.choose',{scene:'juno-night',choice:'let-her-lead'});assert.equal(a.state.modules['story.scenes'].pendingBeat,'check-in');
+ const r=a.act('story.choose',{scene:'juno-night',choice:'stop'});assert.equal(ev(r,'social.intimacyCompleted'),undefined);assert.equal(a.state.modules['story.scenes'].pending,null);assert.equal(intim(a,'juno').consent['first-night'].status,'withdrawn');
+ const b=harness(pack);junoKissed(b);toBed(b,'juno');const before=sat(b,'juno');b.act('story.choose',{scene:'juno-night',choice:'go-slow'});
+ assert.equal(b.state.modules['story.scenes'].pending,null,'no check-in or peak after a mismatch');assert.equal(intim(b,'juno').encounters.at(-1).outcome,'awkward');assert.ok(sat(b,'juno')<before);
+});
+
+test('F7: ranking a stat up unlocks a perk card that hands you something usable',()=>{
+ const s=placed(9);s.actors.player.location='bar';assert.equal(actions(s,pack,registry).find(a=>a.args?.scene==='perk-quiz')?.enabled,false,'shown, locked, with a hint below the rank');
+ s.modules['character.stats'].values['player--wit']=4;const card=actions(s,pack,registry).find(a=>a.args?.scene==='perk-quiz');assert.ok(card?.enabled);
+ let t=execute(s,{id:'p1',actorId:pack.playerId,type:card.type,args:card.args,expectedRevision:s.revision},pack,registry).state;
+ t=execute(t,{id:'p2',actorId:pack.playerId,type:'story.choose',args:{scene:'perk-quiz',choice:'play'},expectedRevision:t.revision},pack,registry).state;
+ assert.equal(t.modules['items.inventory'].owners['quiz-pen'],'player');assert.deepEqual(pack.items.find(i=>i.id==='quiz-pen').statBonus,{wit:2});
+ for(const perk of pack.scriptedScenes.filter(x=>x.id.startsWith('perk-')))assert.ok(perk.offerHint&&perk.when.stats?.length,`${perk.id} is gated on a rank and says so`);
+});
+
+test('F1: the run ends by itself after last call, on the best ending the story earned',()=>{
+ const h=harness(pack);junoKissed(h);toLastCall(h);h.act('story.choose',{scene:'last-call',choice:'stay-on'});
+ for(let i=0;i<10&&!h.state.modules['story.endings'].selected;i++){const p=h.state.modules['story.scenes'].pending;if(p)h.act('story.leave',{scene:p});else if(h.state.scene)h.act('core.endScene');else h.act('core.wait');}assert.ok(h.state.tick<=pack.run.days*12,'time stops at the end of the trial');
+ assert.equal(h.state.modules['story.endings'].selected,'juno-last-one-out');
+});
+test('F3: a conversation still open when time runs out closes on that turn, and the ending follows',()=>{
+ const p={...pack,scriptedScenes:pack.scriptedScenes.filter(x=>x.id!=='last-call')},h=harness(p),end=p.run.days*12,clear=()=>{let q;while((q=h.state.modules['story.scenes'].pending))h.act('story.leave',{scene:q});};
+ waitTo(h,end-2);clear();h.state.actors.player.location='bar';h.act('core.scene',{text:'Hi Priya.',location:'bar',characters:['priya'],activity:'talk'});clear();
+ h.act('core.scene',{text:'One more?',location:'bar',characters:['priya'],activity:'continue'});
+ assert.equal(h.state.tick,end-1);assert.ok(h.state.scene,'talking costs no time, so the scene stays open before the deadline');assert.equal(h.state.modules['story.endings'].selected,null);
+ const r=h.act('core.wait');assert.equal(h.state.tick,end);assert.equal(h.state.scene,null);
+ assert.match(ev(r,'core.sceneEnded').payload.text,/^Time is up. Priya says goodbye./);assert.equal(h.state.modules['story.endings'].selected,'regular');
+});
+test('F2: ordinary attention warms a crush once: the first gift a love interest gets pays chemistry, the second does not',()=>{
+ const h=harness(pack),chem=()=>h.state.modules['social.dating'].characters.juno.chemistry;h.state.actors.player.location=h.state.actors.juno.location;const start=chem();
+ h.act('items.give',{item:'black-shirt',target:'juno'});assert.equal(chem(),start+2);h.act('items.give',{item:'leather-jacket',target:'juno'});assert.equal(chem(),start+2);
+ assert.equal(start,7,'a little spark to start from');for(const c of ['juno','theo'])assert.deepEqual(pack.datingProfiles.find(d=>d.character===c).signals.filter(s=>s.id.startsWith('warm-')).map(s=>s.repeatable||false),[false,false,false,false,false]);
+});
+test('F2: an activity with someone is only offered while they are here',()=>{
+ const h=harness(pack),offered=()=>actions(h.state,pack,registry).some(a=>a.args?.activityId==='market-run');h.state.actors.player.location='market';h.state.actors.juno.location='bar';
+ assert.ok(!offered(),'Juno is at the bar, so no market run');h.state.actors.juno.location='market';assert.ok(offered());
 });

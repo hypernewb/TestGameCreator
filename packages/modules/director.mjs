@@ -93,7 +93,7 @@ function react(tx,event){
  if(crossed>0){
   quiet=tension<settings.activeThreshold?current.quiet+crossed:0;
   const st=tx.state.modules['story.scenes'],dayOk=cal.day!==current.lastDay||current.firedToday<settings.maxPerDay;
-  const ready=st&&!st.pending&&tx.state.tick>=settings.firstTick&&dayOk;
+  const ready=st&&!st.pending&&tx.state.tick>=settings.firstTick&&dayOk&&!(tx.state.run&&tx.state.tick>=tx.state.run.endTick);
   // An eventful daypart also forgets the tease: the pressure released elsewhere, the armed beat returns to the deck.
   const armed=tension<settings.activeThreshold?current.armed:null;
   // Randy's whim: even an eventful daypart can turn on a low roll, the way a storyteller interrupts a good streak.

@@ -44,14 +44,15 @@ export function releaseScene(tx){
  tx.set(['scene'],null);
 }
 // A continuous scene also ends from the NPC's side: they run out of time after the pack's exchange budget, or leave when a
-// boundary is crossed (a declined advance, a sharp loss of trust). Scripted scenes hold the scene open until they resolve.
-export function sceneLifecycle(tx,world,emitted,exchange){
+// boundary is crossed (a declined advance, a sharp loss of trust), or the run reaches its last tick. Scripted scenes hold the scene open until they resolve.
+export function sceneLifecycle(tx,world,emitted,exchange,continuous=true){
  const s=tx.state,pack=tx.pack,scene=s.scene;if(!scene||scene.id!==world.scene.id||s.modules['story.scenes']?.pending||!scene.characters.length)return;
- const cast=scene.characters,hurt=emitted.find(e=>cast.includes(e.payload?.actor??e.payload?.character)&&(e.type==='social.consentDeclined'||e.type==='social.relationshipChanged'&&e.payload.toward===pack.playerId&&Number.isInteger(e.payload.old)&&e.payload.value-e.payload.old<=-5));
+ const closing=s.run&&s.tick>=s.run.endTick;if(!continuous&&!closing)return;
+ const cast=scene.characters,hurt=continuous&&emitted.find(e=>cast.includes(e.payload?.actor??e.payload?.character)&&(e.type==='social.consentDeclined'||e.type==='social.relationshipChanged'&&e.payload.toward===pack.playerId&&Number.isInteger(e.payload.old)&&e.payload.value-e.payload.old<=-5));
  const count=(scene.exchanges||0)+(exchange?1:0),cap=pack.gameProject?.sceneTurns??12;
- if(!hurt&&count<cap){if(exchange)tx.set(['scene','exchanges'],count);return;}
+ if(!hurt&&!closing&&count<cap){if(exchange)tx.set(['scene','exchanges'],count);return;}
  const who=hurt?(hurt.payload.actor??hurt.payload.character):cast[0],name=s.actors[who].name,reason=hurt?'boundary':'schedule';
- releaseScene(tx);tx.emit('core.sceneEnded',{reason,character:who,characters:cast,text:hurt?`${name} has had enough for now and leaves.`:`${name} has somewhere to be and says goodbye.`},[pack.playerId,...cast]);
+ releaseScene(tx);tx.emit('core.sceneEnded',{reason,character:who,characters:cast,text:hurt?`${name} has had enough for now and leaves.`:closing?`Time is up. ${name} says goodbye.`:`${name} has somewhere to be and says goodbye.`},[pack.playerId,...cast]);
 }
 export function travel(tx,pack,from,to,player){const route=routeBetween(pack,from,to,tx.state.flags);if(!route){tx.emit('core.travelBlocked',{from,to,text:`You cannot reach ${pack.locations.find(l=>l.id===to).name} from here.`},[player]);return null;}for(let i=1;i<route.length;i++){tx.set(['actors',player,'location'],route[i]);tx.emit('core.moved',{actor:player,from:route[i-1],to:route[i],text:`You go to ${pack.locations.find(l=>l.id===route[i]).name}.`},[player]);}return route;}
 export function meetingArrival(tx,world,pack,id,to,arrival){if(tx.state.actors[id].location===to)return true;const location=scheduledLocation(world,pack,id,arrival);if(location!==to){const at=nextArrivalTick(pack,id,to,arrival);const when=at===null?'':` They are scheduled back at ${pack.locations.find(l=>l.id===to).name} from ${calendarFor(at,pack).weekday} ${calendarFor(at,pack).daypart}.`;tx.emit('world.meetingUnavailable',{character:id,location:to,nextArrival:at,text:`${tx.state.actors[id].name} is not at ${pack.locations.find(l=>l.id===to).name} when you arrive.${when}`},[pack.playerId]);return false;}tx.set(['actors',id,'location'],to);tx.emit('world.actorArrived',{actor:id,location:to,text:`${tx.state.actors[id].name} arrives at ${pack.locations.find(l=>l.id===to).name}.`},[pack.playerId,id]);return true;}
@@ -280,7 +281,7 @@ export function execute(world,command,pack,registry) {
   let reacted=0;const react=()=>{for(;reacted<emitted.length;reacted++){const e=emitted[reacted];if(e.type==='core.patch')continue;for(const m of mods)m.react?.(tx,e);}};
   const closes=continuous&&world.scene&&!state.scene&&!['world.nextDaypart','core.waitUntil'].includes(command.type)&&!(command.type==='core.scene'&&command.args.activity==='rest'),boundary=(Math.floor(world.tick/interval)+1)*interval;
   advance(kept&&!['core.wait','core.waitUntil'].includes(command.type)?0:opened?travelCost:soloClosed?Math.max(travelCost,boundary-state.tick):closes?Math.max(cost,boundary-state.tick):cost);react();
-  if(continuous&&world.scene)sceneLifecycle(tx,world,emitted,kept&&!['core.wait','core.waitUntil'].includes(command.type));
+  if(continuous&&world.scene)sceneLifecycle(tx,world,emitted,kept&&!['core.wait','core.waitUntil'].includes(command.type));else if(world.scene){sceneLifecycle(tx,world,emitted,false,false);react();}
   // The period is spent once, when its scene closes: whoever ended it, the clock moves to the next morning, afternoon or evening.
   if(continuous&&world.scene&&!state.scene&&!['world.nextDaypart','core.waitUntil'].includes(command.type)&&!(command.type==='core.scene'&&command.args.activity==='rest')){advance(boundary-state.tick);react();}
   tx.set(['revision'],world.revision+1);
@@ -291,7 +292,7 @@ export function execute(world,command,pack,registry) {
 export const effectSummary=(pack,effects=[])=>effects.flatMap(e=>e.type==='stat'?[`${e.delta>0?'+':''}${e.delta} ${pack.statDefinitions?.find(d=>d.id===e.stat)?.name||e.stat}`]:e.type==='trust'?[`${pack.actors.find(a=>a.id===e.character)?.name||e.character} trust ${e.delta>0?'+':''}${e.delta}`]:e.type==='money'?[`${e.delta<0?'-':'+'}${Math.abs(e.delta)}`]:e.type==='item'?[pack.items?.find(i=>i.id===e.id)?.name||e.id]:[]).join(' · ');
 // A training activity's daily uses: repeated practice on the same day would otherwise be free stat income.
 const activityDayCount=(world,pack,id)=>{const uses=(world.activityDayUses||{})[id];return uses&&uses.day===calendarFor(world.tick,pack).day?uses.count:0;};
-function activityActions(world,pack,loc){return (pack.activities||[]).filter(a=>a.location===loc.id&&(!a.requiresFlag||world.flags[a.requiresFlag])&&!(a.once&&(world.activityUses||{})[a.id])&&(!a.perDay||activityDayCount(world,pack,a.id)<a.perDay)).map(a=>({label:a.name,type:'core.scene',args:{text:a.name,location:a.location,characters:a.character?[a.character]:[],activity:'other',activityId:a.id,itemAction:'',itemId:'',itemTarget:''},storylet:{title:a.name,who:a.character?[pack.actors.find(c=>c.id===a.character)?.name||a.character]:[],where:loc.name,timeCost:a.duration,hint:effectSummary(pack,a.effects)||a.description||''}}));}
+function activityActions(world,pack,loc){return (pack.activities||[]).filter(a=>a.location===loc.id&&(!a.character||world.actors[a.character]?.location===loc.id)&&(!a.requiresFlag||world.flags[a.requiresFlag])&&!(a.once&&(world.activityUses||{})[a.id])&&(!a.perDay||activityDayCount(world,pack,a.id)<a.perDay)).map(a=>({label:a.name,type:'core.scene',args:{text:a.name,location:a.location,characters:a.character?[a.character]:[],activity:'other',activityId:a.id,itemAction:'',itemId:'',itemTarget:''},storylet:{title:a.name,who:a.character?[pack.actors.find(c=>c.id===a.character)?.name||a.character]:[],where:loc.name,timeCost:a.duration,hint:effectSummary(pack,a.effects)||a.description||''}}));}
 export function actions(world,pack,registry){
   if(world.modules['story.endings']?.selected)return [];
   if(world.modules['story.scenes']?.pending)return resolveModules(pack,registry).flatMap(m=>m.actions?.(world,pack)||[]).filter(a=>['story.choose','story.leave','social.withdrawConsent'].includes(a.type)).map((a,i)=>{try{execute(world,{...a,id:`preview-choice-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry);return {...a,enabled:true};}catch(e){return {...a,enabled:false,reason:e.message};}});

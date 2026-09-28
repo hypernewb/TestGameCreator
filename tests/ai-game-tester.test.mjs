@@ -9,7 +9,7 @@ test('headless AI tester exposes only playable text state and picks a safe fallb
 
 test('headless AI tester metrics count typed play, authored choices, dead turns and repetition',()=>{
  const metrics=runMetrics([{kind:'input',command:'story.respond',from:0,to:0,seconds:2,fallback:false,clarification:false},{kind:'action',command:'story.choose',from:0,to:4,seconds:1,fallback:false,clarification:false},{kind:'action',command:'core.inspect',from:4,to:4,seconds:1,fallback:true,clarification:false}],0,4);
- assert.deepEqual({...metrics,averageSeconds:undefined},{turns:3,startTick:0,endTick:4,ticksPlayed:4,typed:1,authoredChoices:1,fallbacks:1,clarifications:0,deadTurns:1,maxConsecutiveSameDecision:3,commandCounts:{'story.respond':1,'story.choose':1,'core.inspect':1},nearDuplicates:[],calendarConflicts:0,averageSeconds:undefined});assert.equal(metrics.averageSeconds,1.33);
+ assert.deepEqual({...metrics,averageSeconds:undefined},{turns:3,startTick:0,endTick:4,ticksPlayed:4,typed:1,authoredChoices:1,fallbacks:1,clarifications:0,deadTurns:1,maxConsecutiveSameDecision:3,maxConsecutiveSpeak:0,commandCounts:{'story.respond':1,'story.choose':1,'core.inspect':1},nearDuplicates:[],calendarConflicts:0,averageSeconds:undefined});assert.equal(metrics.averageSeconds,1.33);
 });
 
 test('conversation turns that stay in the scene are not dead turns',()=>{

@@ -226,10 +226,10 @@ test('the world is populated: searching finds gear, a found key wakes the jukebo
 test('what you say matters: topics they care about earn trust, repeats wear thin, rudeness costs, and small talk pays once a day',()=>{
  const h=harness(pack),trust=()=>h.state.modules['social.relationships'].edges['juno--player']||0,clear=()=>{let q;while((q=h.state.modules['story.scenes'].pending))h.act('story.leave',{scene:q});},say=text=>{clear();return h.act('social.speak',{target:'juno',text});};clear();
  if(h.state.actors.player.location!=='bar')h.act('core.move',{to:'bar'});for(let i=0;i<24&&h.state.actors.juno.location!=='bar';i++)h.act('core.wait');
- const start=trust();say('hi');const base=trust();assert.equal(base,start+1,'first chat of the day +1');say('hi again');assert.equal(trust(),base,'second chat same day adds nothing');
- say('Tell me about your mum and this place');assert.equal(trust(),base+2,'her family is a topic she cares about');
- say('Was your mum strict?');assert.equal(trust(),base+3,'asking again is worth half');say('And your mum?');assert.equal(trust(),base+3,'third time is worth nothing');
- say('Shut up, Juno');assert.equal(trust(),base,'rudeness costs 3');
+ const start=trust();say('hi');const base=trust();assert.equal(base,start,'generic small talk earns nothing');say('hi again');assert.equal(trust(),base,'still nothing on a repeat');
+ say('Tell me about your mum and the history of this place');assert.equal(trust(),base+3,'her family is a topic she cares about: daily bump +1 and reaction +2');
+ say('Was your mum strict?');assert.equal(trust(),base+4,'asking again is worth half');say('And your mum?');assert.equal(trust(),base+4,'third time is worth nothing');
+ say('Shut up, Juno');assert.equal(trust(),base+1,'rudeness costs 3');
  assert.ok(pack.dialogueReactions.some(r=>r.character==='theo')&&pack.dialogueReactions.some(r=>r.character==='priya'));
 });
 

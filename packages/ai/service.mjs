@@ -50,7 +50,7 @@ export function sceneFallback(turn){
 import {scenePlanForTurn} from '../core/scene-plan.mjs';
 import {guardSceneLines,stripStateSyntax,dropRepeats,dropAdvances,dropStock} from './untrusted-output.mjs';
 import {beatDirection} from './beats.mjs';
-import {parseInvite} from '../modules/social.mjs';
+import {parseInvite,isRepeat} from '../modules/social.mjs';
 import {resolveSceneLocation} from '../../vendor/venus/sceneClassifier.mjs';
 // Kept for callers of the old name: the transcript is now whole and budgeted per turn instead of capped at six.
 export const recentSceneHistory=sceneTranscript;
@@ -112,8 +112,13 @@ export class GameService {
         if(!movementRequested&&!activityRequested&&!soloRequested){verdict.location=currentLocation;verdict.characters=addressed.length?addressed:liveCast;verdict.activity='talk';}
         const rule=(pack.activities||[]).find(a=>a.id===verdict.activityId),location=rule?.location||verdict.location||(verdict.activity==='rest'?pack.daypart?.introLocation||pack.startOptions?.[0]?.playerLocation||null:verdict.activity==='meet'&&verdict.characters.length?world.actors[verdict.characters[0]].location:null);if(movementRequested&&!location)return {clarification:`Where do you want to go? Try ${pack.locations.map(l=>l.name).join(', ')}.`,state:world};proposal={type:'core.scene',args:{text:request.input.trim(),location,characters:rule?.character?[...new Set([...verdict.characters,rule.character])]:verdict.characters,activity:verdict.activity,activityId:rule?.id||'',itemAction:verdict.itemAction||'',itemId:verdict.itemId||'',itemTarget:verdict.itemTarget||''}};}
     }
-    assert(proposal,'Missing command');if(!['core.scene','story.respond','social.invite','items.equip','items.unequip'].includes(proposal.type))proposal=parseIntent(proposal,available);
+    // social.speak is validated by its own command (target exists, co-located, text bounds); running it through
+    // parseIntent would demand a suggestion button, breaking typed conversation once the authored topics run dry.
+    assert(proposal,'Missing command');if(!['core.scene','story.respond','social.invite','social.speak','items.equip','items.unequip'].includes(proposal.type))proposal=parseIntent(proposal,available);
     if(proposal.type==='clarify')return {clarification:proposal.args.question,state:world};
+    // Re-asking something the person already heard costs their patience in life and a tick here: answer for free
+    // (0-tick clarification, no turn committed) instead of charging for a deflection the model has to invent.
+    if(proposal.type==='social.speak'&&request.input!==undefined&&pack.modules['social.conversation']){const heard=(world.modules['social.conversation'].memories||[]).filter(x=>x.knownBy.includes(proposal.args.target)).map(x=>x.topic);if(isRepeat(proposal.args.text,heard))return {clarification:`You already said that to ${world.actors[proposal.args.target].name}, and they have nothing new to add. Try a different topic.`,state:world};}
     assert(!signal?.aborted,'Cancelled before commit');
     const result=execute(world,{...proposal,id:request.id,actorId:pack.playerId,expectedRevision:request.expectedRevision},pack,this.registry);
     if(request.input!==undefined)result.turn.input=request.input;

@@ -6,6 +6,8 @@ This roadmap is ordered by player risk and dependency, not by novelty. AI narrat
 
 **Module freeze lifted (2026-09-28).** New modules and module versions are allowed again. A new module should make a measurable [fun gate](#fun-gate) number better (dead turns, run length, payoff timing) on at least one showcase pack.
 
+**Conversation economy shipped (2026-09-29), from the AI-playtest findings.** Trust from talk is now novelty-weighted: generic small talk earns nothing (a three-content-word floor the code documented but never enforced), substantive new content pays the once-a-day bump, and repeats never pay. Re-asking something a character already heard is a free 0-tick clarification instead of a paid deflection, and typed conversation no longer breaks with "unavailable action" once the suggestion buttons run dry. The playtest harness gained a `maxConsecutiveSpeak` gate so interview-mode runs fail QA.
+
 ## Current baseline
 
 Product direction: the first full deliverable is an adult eroge/dating sim with optional NSFW narration. Romance difficulty and route length are authored per character: long scene-gated routes, automatic short routes, casual encounters, and non-romance characters may coexist. Consent and 18+ validation remain mandatory regardless of route difficulty.

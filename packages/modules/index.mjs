@@ -22,7 +22,9 @@ import {endings} from './endings.mjs';
 import {feed} from './feed.mjs';
 import {timedEvents} from './timed-events.mjs';
 import {director} from './director.mjs';
-export const registry=Object.fromEntries([conversation,relationships,schedule,quests,inventory,abilities,objects,daypart,worldEvents,scenes,facts,equipment,bonds,npcSocial,economy,stats,progression,dating,romanceNetwork,intimacy,gossip,romanceTempo,phone,feed,endings,timedEvents,director].map(m=>[m.id,m]));
+import {moments} from './moments.mjs';
+import {calendarWorld} from './calendar.mjs';
+export const registry=Object.fromEntries([conversation,relationships,schedule,quests,inventory,abilities,objects,daypart,worldEvents,scenes,facts,equipment,bonds,npcSocial,economy,stats,progression,dating,romanceNetwork,intimacy,gossip,romanceTempo,phone,feed,endings,timedEvents,director,moments,calendarWorld].map(m=>[m.id,m]));
 const descriptions={
  'social.conversation':['Character conversation','Enables conversations with characters who share the player’s location.'],
  'social.relationships':['Relationships','Tracks trust changes from recorded conversations.'],
@@ -50,6 +52,8 @@ const descriptions={
  'story.endings':['Route endings','Unlocks and commits authored endings from deterministic romance, intimacy, scene, and flag requirements.'],
  'social.feed':['Social feed','Adds persistent event-triggered posts, unread state, and authored reactions.'],
  'story.timed-events':['Timed events','Adds missable tick-window events, attendance checks, and deterministic missed-event recaps.'],
- 'story.director':['Drama director','Watches story tension and fires authored complication scenes when play goes quiet: Left 4 Dead pacing, RimWorld storyteller presets, deck-style cooldowns.']
+ 'world.moments':['Ambient moments','Small things between scenes: found cash, stat nudges, characters dropping in, and chance hooks for authored scenes on moves, waits and exploring.'],
+ 'story.director':['Drama director','Watches story tension and fires authored complication scenes when play goes quiet: Left 4 Dead pacing, RimWorld storyteller presets, deck-style cooldowns.'],
+ 'world.calendar':['Holidays, closures, weather','Adds authored holidays, location closures, and daily weather with conditions for scenes, shops, activities, and schedules.']
 };
 export const moduleCatalog=Object.fromEntries(Object.values(registry).map(m=>[m.id,{id:m.id,version:m.version,requires:m.requires||[],title:descriptions[m.id][0],description:descriptions[m.id][1],group:m.id.split('.')[0]}]));

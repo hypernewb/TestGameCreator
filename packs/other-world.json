@@ -9,7 +9,7 @@
   "accent": "#b2a5ef",
   "modules": {
     "social.conversation": "0.1.0",
-    "items.inventory": "0.1.0",
+    "items.inventory": "0.2.0",
     "story.quests": "0.1.0",
     "powers.abilities": "0.1.0",
     "world.objects": "0.1.0",

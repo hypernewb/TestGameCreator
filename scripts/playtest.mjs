@@ -36,7 +36,8 @@ try{
     const id=randomUUID(),t0=Date.now(),r=await api('/api/action',{campaignId:s.campaignId,id,expectedRevision:s.revision,input}),sec=(Date.now()-t0)/1000;seconds[id]=sec;
     const row={i,input,sec,expect:!!expect};rows.push(row);
     if(r.error){row.error=r.error;s=(await api('/api/load',{id:s.campaignId})).state||s;console.log(`${String(i).padStart(2)} ${sec.toFixed(1).padStart(4)}  ERROR ${r.error.slice(0,80)}`);continue;}
-    s=r.state;const turn=Object.values(s.turns).sort((a,b)=>(a.tick??0)-(b.tick??0)).at(-1),rep=reportOf(turn);
+    s=r.state;if(r.clarification){row.cmd='clarify';console.log(`${String(i).padStart(2)} ${sec.toFixed(1).padStart(4)}  CLARIFY ${r.clarification.slice(0,70)}  <- ${input.slice(0,40)}`);continue;}
+    const turn=Object.values(s.turns).sort((a,b)=>(a.tick??0)-(b.tick??0)).at(-1),rep=reportOf(turn);
     const text=typeof turn.narrative==='string'?turn.narrative:JSON.stringify(turn.narrative??'');
     Object.assign(row,{used:rep?.used,budget:rep?.budget,cut:rep?.cut?.length??0,over:!!rep?.overBudget,cmd:turn.command?.type??(r.clarification?'clarify':'-'),fallback:turn.fallback?turn.failureReason||'yes':'',echo:echoOf(text,input,prev),pass:expect?expect.test(text):null});prev=text;
     const rc=row.pass===null?'  ':row.pass?'ok':'NO';

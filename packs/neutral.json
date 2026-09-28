@@ -1,6 +1,6 @@
 {
   "schemaVersion":1,"id":"sample.neutral","version":"0.1.0","title":"The Workshop Errand","subtitle":"Social systems · shared memories · schedules","playerId":"player","calendar":"Shift","accent":"#a9c59b",
-  "modules":{"social.conversation":"0.1.0","social.relationships":"0.1.0","world.schedule":"0.1.0","items.inventory":"0.1.0","story.quests":"0.1.0"},
+  "modules":{"social.conversation":"0.1.0","social.relationships":"0.1.0","world.schedule":"0.1.0","items.inventory":"0.2.0","story.quests":"0.1.0"},
   "durations":{"core.inspect":0,"social.speak":1},
   "locations":[
     {"id":"hub","name":"Hub","description":"Late light falls through the tall windows. A message on the desk asks for a missing notebook. Bring it to Ada, or meet her in the Meeting Room to explain the delay.","background":"assets/hub.svg","exits":[{"to":"workshop"},{"to":"meeting"}]},

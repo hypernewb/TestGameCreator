@@ -3,12 +3,14 @@ import {spokenLine} from '../../vendor/venus/sceneText.mjs';
 import {changeMoney} from '../modules/economy.mjs';
 import {changeStat} from '../modules/stats.mjs';
 import {validateConditions} from '../modules/conditions.mjs';
+import {heldBy,transfer} from '../modules/inventory.mjs';
+import {closedReason,holidayOf} from '../modules/calendar.mjs';
 export const CORE_API = '0.1.0';
 export const clone = x => structuredClone(x);
 export function assert(ok, message) { if (!ok) throw new Error(message); }
 export function safeKey(s) { return typeof s === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,99}$/.test(s) && !['__proto__','constructor','prototype'].includes(s); }
 export function routeBetween(pack,from,to,flags={}) { const queue=[[from]],seen=new Set([from]);while(queue.length){const path=queue.shift(),at=path.at(-1);if(at===to)return path;for(const e of pack.locations.find(l=>l.id===at)?.exits||[])if(!seen.has(e.to)&&(!e.flag||flags[e.flag])){seen.add(e.to);queue.push([...path,e.to]);}}return null; }
-export function scheduleDestination(pack,schedule,tick) {const exception=(pack.scheduleExceptions||[]).find(x=>x.actor===schedule.actor&&tick>=x.startTick&&tick<=x.endTick);if(exception)return exception.location;for(const stop of schedule.stops||[])if(tick%schedule.period===stop.at)return stop.location;const interval=pack.daypart?.interval||4;if(tick%interval===0){const clock=calendarFor(tick,pack);for(const stop of schedule.weekly||[])if(stop.weekday===clock.weekday&&stop.daypart===clock.daypart)return stop.location;}return null;}
+export function scheduleDestination(pack,schedule,tick) {const exception=(pack.scheduleExceptions||[]).find(x=>x.actor===schedule.actor&&tick>=x.startTick&&tick<=x.endTick);if(exception)return exception.location;for(const stop of schedule.stops||[])if(tick%schedule.period===stop.at)return stop.location;const interval=pack.daypart?.interval||4;if(tick%interval===0){const clock=calendarFor(tick,pack);for(const stop of schedule.weekly||[])if(stop.weekday===clock.weekday&&stop.daypart===clock.daypart&&!(stop.skipHolidays&&holidayOf(pack,clock)))return stop.location;}return null;}
 export function scheduledLocation(world,pack,id,arrivalTick) {if(!pack.modules['world.schedule'])return world.actors[id].location;let at=world.actors[id].location;for(let tick=world.tick+1;tick<=arrivalTick;tick++)for(const schedule of pack.schedules||[])if(schedule.actor===id)at=scheduleDestination(pack,schedule,tick)||at;return at;}
 // First tick after fromTick on which this actor's schedule places them at `location`
 // (or null if none within the horizon). Deterministic: depends only on pack and ticks.
@@ -66,13 +68,15 @@ export function mechanicsShape(pack) {
   schemaVersion:pack.schemaVersion,id:pack.id,version:pack.version,modules:pack.modules,playerId:pack.playerId,
   locations:pack.locations.map(l=>({id:l.id,exits:(l.exits||[]).map(e=>pick(e,['to','flag']))})),
   actors:pack.actors.map(a=>({id:a.id,location:a.location})),
-  items:(pack.items||[]).map(i=>pick(i,['id','shop','hidden'])),
+  items:(pack.items||[]).map(i=>pick(i,['id','shop','hidden','stack','stock','restock','use'])),
   activities:(pack.activities||[]).map(a=>pick(a,['id','location','duration','once','perDay','requiresFlag','requiresItem','character','minTrust','effects'])),
   schedules:pack.schedules||[],daypart:pack.daypart||null,run:pack.run||null,
   scriptedScenes:(pack.scriptedScenes||[]).map(scene=>({id:scene.id,offer:scene.offer,timeCost:scene.timeCost,repeatable:scene.repeatable,priority:scene.priority,tension:scene.tension,trigger:scene.trigger,when:scene.when,allowInput:scene.allowInput,pages:(scene.pages||[]).map(page=>pick(page,['speaker','stage','background'])),choices:(scene.choices||[]).map(choice=>pick(choice,['id','next','waitFor','when','check','effects'])),beats:(scene.beats||[]).map(beat=>({id:beat.id,allowInput:beat.allowInput,pages:(beat.pages||[]).map(page=>pick(page,['speaker','stage','background'])),choices:(beat.choices||[]).map(choice=>pick(choice,['id','next','waitFor','when','check','effects']))}))})),
   endings:(pack.endings||[]).map(ending=>pick(ending,['id','character','priority','requires'])),storyVariables:(pack.storyVariables||[]).map(variable=>pick(variable,['id','initial'])),
   ...(pack.directorProfile?{directorProfile:pack.directorProfile}:{}),
+  ...(pack.moments?{moments:pack.moments.map(m=>pick(m,['id','kind','location','on','character','when','effects','maxUses','cooldown','stay','weight']))}:{}),...(pack.momentsProfile?{momentsProfile:pack.momentsProfile}:{}),
   initialRelationships:pack.initialRelationships||[],
+  ...(pack.recipes?{recipes:pack.recipes}:{}),...(pack.calendar?{calendar:pack.calendar}:{}),
   startOptions:(pack.startOptions||[]).map(s=>pick(s,['id','playerLocation','tick'])),
  };
 }
@@ -91,7 +95,7 @@ export function describeMechanicsChange(oldPack,newPack) {
    else if(JSON.stringify(bx)!==JSON.stringify(ax))changes.push(`${kind}.${id}: changed`);
   }
  }
- for(const key of ['schedules','daypart','initialRelationships','startOptions','directorProfile'])if(JSON.stringify(a[key])!==JSON.stringify(b[key]))changes.push(`${key}: changed`);
+ for(const key of ['schedules','daypart','initialRelationships','startOptions','directorProfile','recipes','calendar'])if(JSON.stringify(a[key])!==JSON.stringify(b[key]))changes.push(`${key}: changed`);
  return changes;
 }
 // Applies a mechanics change to an existing world: re-validates the new pack, then records the change so
@@ -202,11 +206,11 @@ export function execute(world,command,pack,registry) {
         assert(args.location===activity.location,'Activity location does not match its authored place');
         assert(!activity.character||cast.includes(activity.character),'Required character is not in this scene');
         assert(!activity.requiresFlag||tx.state.flags[activity.requiresFlag],'Activity requires a world flag');
-        assert(!activity.requiresItem||tx.state.modules['items.inventory']?.owners[activity.requiresItem]===pack.playerId,'Activity requires an item');
+        assert(!activity.requiresItem||heldBy(tx.state,activity.requiresItem,pack.playerId)>0,'Activity requires an item');
         assert(activity.minTrust===undefined||(tx.state.modules['social.relationships']?.edges[`${activity.character}--${pack.playerId}`]||0)>=activity.minTrust,'Character is not ready for this activity');
         assert(!activity.once||!(tx.state.activityUses||{})[activity.id],'Activity has already been completed');
         assert(!activity.perDay||activityDayCount(tx.state,pack,activity.id)<activity.perDay,`You have had enough of that for today: ${activity.name}.`);
-        for(const effect of activity.effects||[])if(effect.type==='item')assert(tx.state.modules['items.inventory'].owners[effect.id]===activity.location,'Activity item is no longer available here');
+        for(const effect of activity.effects||[])if(effect.type==='item')assert(heldBy(tx.state,effect.id,activity.location)>0,'Activity item is no longer available here');
       }
       if(args.activity==='continue')assert(tx.state.scene&&args.location===tx.state.scene.location&&JSON.stringify(cast)===JSON.stringify(tx.state.scene.characters),'No matching scene to continue');
       const from=tx.state.actors[pack.playerId].location,to=args.location||from;
@@ -227,6 +231,9 @@ export function execute(world,command,pack,registry) {
         }
       }
       if(args.activity!=='continue'&&tx.state.scene)releaseScene(tx);
+      // A closed place refuses new scenes (the player may finish whatever is already open inside); the
+      // check answers before any travel, so being turned away costs nothing.
+      if(pack.modules['world.calendar']&&args.activity!=='continue'&&args.activity!=='rest'&&from!==to){const path=routeBetween(pack,from,to,tx.state.flags);if(path){const closed=closedReason(pack,tx.state,tx.state.tick+path.length-1,to);assert(!closed,`${pack.locations.find(l=>l.id===to)?.name||to} is closed today${closed&&closed!=='closed'?`: ${closed}`:''}.`);}}
       const route=travel(tx,pack,from,to,pack.playerId);if(!route)return;
       const periodRemaining=interval-world.tick%interval,routeTicks=route.length-1;
       const duration=continuous&&args.activity!=='rest'?0:activity?activity.duration:args.activity==='rest'?(continuous?Math.max(0,periodRemaining-routeTicks):periodRemaining):args.activity==='continue'?0:1;
@@ -247,7 +254,7 @@ export function execute(world,command,pack,registry) {
         for(const effect of activity.effects||[]){
           if(effect.type==='flag')tx.set(['flags',effect.id],effect.value);
           if(effect.type==='trust'){const key=`${effect.character}--${pack.playerId}`,old=tx.state.modules['social.relationships'].edges[key]||0;tx.set(['modules','social.relationships','edges',key],Math.max(0,Math.min(100,old+effect.delta)));const value=tx.state.modules['social.relationships'].edges[key];tx.emit('social.relationshipChanged',{actor:effect.character,toward:pack.playerId,old,value,delta:value-old,text:`${tx.state.actors[effect.character].name}: Trust ${old} → ${value}`},[pack.playerId,effect.character]);}
-          if(effect.type==='item'){tx.set(['modules','items.inventory','owners',effect.id],pack.playerId);tx.emit('items.transferred',{item:effect.id,from:to,to:pack.playerId,text:`You receive ${pack.items.find(i=>i.id===effect.id).name}.`},[pack.playerId]);}
+          if(effect.type==='item')transfer(tx,pack.items.find(i=>i.id===effect.id),to,pack.playerId,1,`You receive ${pack.items.find(i=>i.id===effect.id).name}.`);
           if(effect.type==='money')changeMoney(tx,effect.delta);
           if(effect.type==='stat')changeStat(tx,pack.playerId,effect.stat,effect.delta,`activity ${activity.id}`);
         }
@@ -256,10 +263,9 @@ export function execute(world,command,pack,registry) {
       if(args.itemAction){
         assert(pack.modules['items.inventory']&&['take','place','give'].includes(args.itemAction),'Inventory action unavailable');
         const item=(pack.items||[]).find(i=>i.id===args.itemId);assert(item,'Unknown item');
-        const owners=tx.state.modules['items.inventory'].owners;const inScope=args.itemAction==='take'?pack.items.filter(i=>owners[i.id]===to&&(!i.shop||!pack.modules['world.economy'])&&(!i.hidden||tx.state.modules['world.objects']?.discovered.includes(i.id))):pack.items.filter(i=>owners[i.id]===pack.playerId);const named=args.text.toLowerCase().includes(item.name.toLowerCase())||args.text.toLowerCase().includes(item.id.replaceAll('-',' '));assert(named||(inScope.length===1&&inScope[0].id===item.id),'Please name the item you intend to use.');const from=owners[item.id];let owner;
-        if(args.itemAction==='take'){assert(!item.shop||!pack.modules['world.economy'],'Buy this item at its shop');assert(from===to,'Item is not at this location');assert(!item.hidden||tx.state.modules['world.objects']?.discovered.includes(item.id),'Item has not been discovered');owner=pack.playerId;}
-        else {assert(from===pack.playerId,'You do not own that item');if(args.itemAction==='place')owner=to;else{assert(cast.includes(args.itemTarget)&&tx.state.actors[args.itemTarget]?.location===to,'Recipient is not in this scene');owner=args.itemTarget;}}
-        tx.set(['modules','items.inventory','owners',item.id],owner);tx.emit('items.transferred',{item:item.id,from,to:owner,text:`${args.itemAction==='take'?'You take':args.itemAction==='give'?'You give':'You place'} ${item.name}.`},[pack.playerId,...cast]);
+        const inScope=args.itemAction==='take'?pack.items.filter(i=>heldBy(tx.state,i.id,to)>0&&(!i.shop||!pack.modules['world.economy'])&&(!i.hidden||tx.state.modules['world.objects']?.discovered.includes(i.id))):pack.items.filter(i=>heldBy(tx.state,i.id,pack.playerId)>0);const named=args.text.toLowerCase().includes(item.name.toLowerCase())||args.text.toLowerCase().includes(item.id.replaceAll('-',' '));assert(named||(inScope.length===1&&inScope[0].id===item.id),'Please name the item you intend to use.');
+        if(args.itemAction==='take'){assert(!item.shop||!pack.modules['world.economy'],'Buy this item at its shop');assert(heldBy(tx.state,item.id,to)>0,'Item is not at this location');assert(!item.hidden||tx.state.modules['world.objects']?.discovered.includes(item.id),'Item has not been discovered');transfer(tx,item,to,pack.playerId,1,`You take ${item.name}.`);}
+        else {assert(heldBy(tx.state,item.id,pack.playerId)>0,'You do not own that item');if(args.itemAction==='place')transfer(tx,item,pack.playerId,to,1,`You place ${item.name}.`);else{assert(cast.includes(args.itemTarget)&&tx.state.actors[args.itemTarget]?.location===to,'Recipient is not in this scene');transfer(tx,item,pack.playerId,args.itemTarget,1,`You give ${item.name}.`);}}
       }
       // A solo activity is the period's complete action: with no conversation partner to keep the scene
       // open, close it in this same deterministic turn while preserving its sceneStarted event for narration.
@@ -292,7 +298,7 @@ export function execute(world,command,pack,registry) {
 export const effectSummary=(pack,effects=[])=>effects.flatMap(e=>e.type==='stat'?[`${e.delta>0?'+':''}${e.delta} ${pack.statDefinitions?.find(d=>d.id===e.stat)?.name||e.stat}`]:e.type==='trust'?[`${pack.actors.find(a=>a.id===e.character)?.name||e.character} trust ${e.delta>0?'+':''}${e.delta}`]:e.type==='money'?[`${e.delta<0?'-':'+'}${Math.abs(e.delta)}`]:e.type==='item'?[pack.items?.find(i=>i.id===e.id)?.name||e.id]:[]).join(' · ');
 // A training activity's daily uses: repeated practice on the same day would otherwise be free stat income.
 const activityDayCount=(world,pack,id)=>{const uses=(world.activityDayUses||{})[id];return uses&&uses.day===calendarFor(world.tick,pack).day?uses.count:0;};
-function activityActions(world,pack,loc){return (pack.activities||[]).filter(a=>a.location===loc.id&&(!a.character||world.actors[a.character]?.location===loc.id)&&(!a.requiresFlag||world.flags[a.requiresFlag])&&!(a.once&&(world.activityUses||{})[a.id])&&(!a.perDay||activityDayCount(world,pack,a.id)<a.perDay)).map(a=>({label:a.name,type:'core.scene',args:{text:a.name,location:a.location,characters:a.character?[a.character]:[],activity:'other',activityId:a.id,itemAction:'',itemId:'',itemTarget:''},storylet:{title:a.name,who:a.character?[pack.actors.find(c=>c.id===a.character)?.name||a.character]:[],where:loc.name,timeCost:a.duration,hint:effectSummary(pack,a.effects)||a.description||''}}));}
+function activityActions(world,pack,loc){return (pack.activities||[]).filter(a=>a.location===loc.id&&(!a.character||world.actors[a.character]?.location===loc.id)&&(!a.requiresFlag||world.flags[a.requiresFlag])&&!(a.once&&(world.activityUses||{})[a.id])&&(!a.perDay||activityDayCount(world,pack,a.id)<a.perDay)&&!closedReason(pack,world,world.tick,a.location)).map(a=>({label:a.name,type:'core.scene',args:{text:a.name,location:a.location,characters:a.character?[a.character]:[],activity:'other',activityId:a.id,itemAction:'',itemId:'',itemTarget:''},storylet:{title:a.name,who:a.character?[pack.actors.find(c=>c.id===a.character)?.name||a.character]:[],where:loc.name,timeCost:a.duration,hint:effectSummary(pack,a.effects)||a.description||''}}));}
 export function actions(world,pack,registry){
   if(world.modules['story.endings']?.selected)return [];
   if(world.modules['story.scenes']?.pending)return resolveModules(pack,registry).flatMap(m=>m.actions?.(world,pack)||[]).filter(a=>['story.choose','story.leave','social.withdrawConsent'].includes(a.type)).map((a,i)=>{try{execute(world,{...a,id:`preview-choice-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry);return {...a,enabled:true};}catch(e){return {...a,enabled:false,reason:e.message};}});

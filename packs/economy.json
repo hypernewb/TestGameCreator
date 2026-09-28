@@ -11,9 +11,9 @@
     "social.conversation": "0.1.0",
     "social.relationships": "0.1.0",
     "world.schedule": "0.1.0",
-    "items.inventory": "0.1.0",
+    "items.inventory": "0.2.0",
     "story.quests": "0.1.0",
-    "world.economy": "0.1.0"
+    "world.economy": "0.2.0"
   },
   "durations": {
     "core.inspect": 0,

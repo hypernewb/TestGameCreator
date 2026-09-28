@@ -15,6 +15,7 @@ import {phoneContext} from '../modules/phone.mjs';
 import {endingsContext} from '../modules/endings.mjs';
 import {feedContext} from '../modules/feed.mjs';
 import {directorContext} from '../modules/director.mjs';
+import {heldBy} from '../modules/inventory.mjs';
 function visibleTo(v,actor){return v==='public'||Array.isArray(v)&&v.includes(actor);}
 // Tick of each timed entry's latest fresh keyed activation, read from committed turn traces newest-first and only as far
 // back as the longest sticky+cooldown window, so timers are a pure function of saved state and replay identically.
@@ -53,8 +54,8 @@ export function contextFor(s,p,actorId=p.playerId,turn=null,query='',opts={}){
  const ledger=[],turnList=Object.values(s.turns);for(let i=turnList.length-1;i>=0&&ledger.length<8;i--){const t=turnList[i];if(t.status!=='complete')continue;const own=(t.ledger||[]).filter(m=>(m.charKey===actorId||actorId===p.playerId)&&aboutPlayer(m.desc)).map(m=>{const name=p.actors.find(a=>a.id===m.charKey)?.name||m.charKey;return {source:`ledger:${t.id}`,text:`${name} ${m.type}: ${stripPlaceholders(m.desc,'the player',name)}`,knownBy:[p.playerId,m.charKey],tick:t.events[0]?.tick||0};});ledger.unshift(...own);}ledger.splice(0,Math.max(0,ledger.length-8));
  const lore=selectLore(s,p,actorId,query,opts.wide?Infinity:1200);
  const generatedFactTrace=selectGeneratedFacts(s,p,actorId,query,opts.wide?Infinity:650);
- const items=(p.items||[]).filter(i=>s.modules['items.inventory']?.owners[i.id]===location&&(!i.hidden||s.modules['world.objects']?.discovered.includes(i.id))).map(i=>({id:i.id,name:i.name}));
- const carried=(p.items||[]).filter(i=>s.modules['items.inventory']?.owners[i.id]===p.playerId).map(i=>({id:i.id,name:i.name,...(query.toLowerCase().includes(i.name.toLowerCase())?{description:i.description||''}:{})}));
+ const items=(p.items||[]).filter(i=>heldBy(s,i.id,location)>0&&(!i.hidden||s.modules['world.objects']?.discovered.includes(i.id))).map(i=>({id:i.id,name:i.name}));
+ const carried=(p.items||[]).filter(i=>heldBy(s,i.id,p.playerId)>0).map(i=>({id:i.id,name:i.name,...(query.toLowerCase().includes(i.name.toLowerCase())?{description:i.description||''}:{})}));
  const equipped=p.equipmentSlots&&s.modules['items.equipment']?Object.entries(s.modules['items.equipment'].slots).filter(([,id])=>id).map(([slot,id])=>{const item=p.items.find(i=>i.id===id);return {slot,id,name:item?.name||id,description:item?.description||''};}):[];
  const nearbyBonds=p.relationshipDimensions&&s.modules['social.bonds']?p.actors.filter(a=>a.id!==p.playerId&&s.actors[a.id].location===location||a.id===actorId&&a.id!==p.playerId).map(a=>({character:a.id,values:Object.fromEntries(p.relationshipDimensions.map(d=>[d.id,s.modules['social.bonds'].values[`${a.id}--${d.id}--${p.playerId}`]||0]))})):[];
  const characterStats=s.modules['character.stats']?p.actors.filter(a=>a.id===actorId||a.id===p.playerId||s.actors[a.id].location===location).map(a=>({character:a.id,values:Object.fromEntries((p.statDefinitions||[]).filter(d=>d.visibility==='public'||a.id===actorId||actorId===p.playerId&&d.visibility==='player').map(d=>[d.id,statValue(s,a.id,d.id)]))})).filter(a=>Object.keys(a.values).length):[];

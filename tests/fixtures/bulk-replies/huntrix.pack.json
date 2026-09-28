@@ -1,0 +1,125 @@
+{
+ "schemaVersion": 1,
+ "id": "card.rumi-mira-zoey",
+ "version": "0.1.0",
+ "title": "HUNTR/X: Festive Vigil",
+ "subtitle": "Built around Rumi & Mira & Zoey",
+ "calendar": "Day",
+ "accent": "#a9c59b",
+ "playerId": "player",
+ "gameProject": {
+  "premise": "You arrive at HUNTR/X's holiday bash, eager to bond with your favorite idols while they protect you from unseen dangers.",
+  "setting": "A lavishly decorated Christmas venue glitters with festive charm, hiding the latent magic and mystery of its owners. The air hums with anticipation as they gather around you.",
+  "writingStyle": "Warm yet enigmatic, blending cozy holiday vibes with subtle supernatural undertones. Thoughts should focus on emotions and unspoken dynamics.",
+  "presentation": "visual-novel",
+  "conversationStyle": "continuous",
+  "calendar": {
+   "startDate": "",
+   "startWeekday": "Monday"
+  },
+  "ai": {
+   "intent": "Interpret the player’s words as a single supported intention. Use only listed actions and exact targets. Ask for clarification when needed; never invent results.",
+   "scene": "Narrate the committed result in a vivid but concise way. Use only supplied lore, character knowledge, and outcomes. Do not change mechanics.",
+   "daypart": "Write a daypart introduction as a short scene, then write one in-character meeting invitation for every eligible character. Do not make off-screen characters appear."
+  }
+ },
+ "startOptions": [
+  {
+   "id": "opening",
+   "title": "A New Beginning",
+   "description": "You arrive at HUNTR/X's holiday bash, eager to bond with your favorite idols while they protect you from unseen dangers.",
+   "playerLocation": "entrance-hallway",
+   "tick": 0
+  }
+ ],
+ "modules": {
+  "social.conversation": "0.1.0",
+  "social.relationships": "0.1.0",
+  "story.scenes": "0.1.0",
+  "story.facts": "0.1.0",
+  "items.inventory": "0.2.0",
+  "world.objects": "0.1.0",
+  "world.schedule": "0.1.0",
+  "story.timed-events": "0.1.0"
+ },
+ "locations": [
+  {
+   "id": "entrance-hallway",
+   "name": "Entrance Hallway",
+   "description": "A grand foyer draped in red and gold ribbons, leading into the heart of the celebration. The scent of pine and baking cookies lingers invitingly.",
+   "exits": [
+    {
+     "to": "main-party-room"
+    }
+   ]
+  },
+  {
+   "id": "main-party-room",
+   "name": "Main Party Room",
+   "description": "The centerpiece of festivities, filled with twinkling lights, a majestic tree, and piles of gifts. The air buzzes with joy and excitement.",
+   "exits": [
+    {
+     "to": "entrance-hallway"
+    },
+    {
+     "to": "kitchen-bar"
+    },
+    {
+     "to": "backyard-porch"
+    }
+   ]
+  },
+  {
+   "id": "kitchen-bar",
+   "name": "Kitchen Bar Area",
+   "description": "A bustling hub of activity where drinks and treats are prepared. The warm glow of the stove casts a cozy light over the space.",
+   "exits": [
+    {
+     "to": "main-party-room"
+    }
+   ]
+  },
+  {
+   "id": "backyard-porch",
+   "name": "Backyard Porch",
+   "description": "A secluded outdoor spot framed by twinkling lights and snow-dusted evergreens. A perfect place to catch a breath of fresh air.",
+   "exits": [
+    {
+     "to": "main-party-room"
+    }
+   ]
+  }
+ ],
+ "actors": [
+  {
+   "id": "player",
+   "name": "You",
+   "location": "entrance-hallway"
+  },
+  {
+   "id": "rumi",
+   "name": "Rumi",
+   "location": "main-party-room",
+   "description": "She greets you with a radiant smile, her lavender braid swaying as she waves from behind the tree."
+  },
+  {
+   "id": "mira",
+   "name": "Mira",
+   "location": "main-party-room",
+   "description": "Leaning against the wall nearby, she watches you with amused interest, her pink hair catching the lights."
+  },
+  {
+   "id": "zoey",
+   "name": "Zoey",
+   "location": "kitchen-bar",
+   "description": "Dancing playfully between tables, she pauses to wink at you before bounding away again."
+  }
+ ],
+ "items": [],
+ "objects": [],
+ "facts": [],
+ "lorebook": [],
+ "scriptedScenes": [],
+ "schedules": [],
+ "timedEvents": []
+}

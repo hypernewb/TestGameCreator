@@ -1,0 +1,125 @@
+{
+  "locations": [
+    {
+      "id": "gift-corner",
+      "name": "Gift Corner",
+      "description": "A plush armchair nestles beside the tree, piled high with wrapped boxes bearing your name. The wrapping paper sparkles with silver and gold foil.",
+      "exits": [
+        "main-party-room"
+      ]
+    },
+    {
+      "id": "stage-area",
+      "name": "Performance Stage",
+      "description": "A small raised platform is set up near the kitchen, complete with microphones and a backdrop of festive lights. It looks ready for a surprise performance.",
+      "exits": [
+        "main-party-room"
+      ]
+    }
+  ],
+  "characters": [
+    {
+      "id": "guest",
+      "name": "You",
+      "location": "gift-corner",
+      "pronouns": "they/them",
+      "description": "A curious fan, overwhelmed by the sudden attention and mystery surrounding this exclusive invitation.",
+      "style": "Casual streetwear with a touch of personal flair - maybe a favorite band tee under an open jacket.",
+      "goal": "To understand why you were chosen for this special occasion and what it means for your fandom journey.",
+      "traits": ["eager", "intrigued", "slightly nervous"],
+      "backstory": "A devoted fan who's followed the group since their debut, always amazed by their talents both on and off stage. This private invite feels like a dream come true...and maybe more than that.",
+      "likes": ["surprises", "mystery", "being included in secrets"],
+      "dislikes": ["feeling left out", "not knowing the full picture"],"voice": "Enthusiastic but thoughtful, prone to asking probing questions when excited."},{
+      "id": "rumi-festive",
+      "name": "Rumi (Christmas Edition)",
+      "location": "stage-area",
+      "pronouns": "she/her",
+      "description": "Clad in a red cropped sweater with white trim and matching plaid skirt, Rumi commands the space with an air of festive authority.",
+      "style": "Festive chic - think holiday sweaters, cozy cardigans, and cute boots. Always polished even when trying to blend in.",
+      "goal": "To ensure tonight goes smoothly and that you feel special enough to remember this forever.",
+      "traits": ["charismatic", "protective", "organized"],
+      "backstory": "The leader of HUNTR/X, balancing her public persona with secret duties. Tonight is about creating a magical memory for you despite the chaos around them.",
+      "likes": ["planning surprises", "making people feel loved", "control in chaos"],
+      "dislikes": ["being disorganized", "watching you get hurt or upset"],
+      "voice": "Warm and authoritative, with an undercurrent of playful teasing. Always ready to take charge when needed."}
+  ],
+  "scenes": [
+    {
+      "id": "scene-opening-surprise",
+      "title": "Santa's Surprise!",
+      "opening": "You pause mid-step as the air crackles with static electricity. A low rumble vibrates in your chest, followed by a flash of white light.",
+      "trigger": {"event":"core.inspected","match":{"location":"gift-corner"}},"pages":[{
+        "text": "*With a wink and a grin,* 'Merry Christmas!' *they sing together, emerging from behind the tree clad in matching red-and-white holiday ensembles. Rumi leads them forward, hands on her hips as she surveys the scene.* 'Took you long enough to arrive,' *Zoey complains playfully, punching your arm lightly.* 'But hey, we forgive you! Welcome to the party.'",
+        "speaker": "HUNTR/X",
+        "stage": ["show:rumi-festive","show:mira-festive","show:zoey-festive"]},{
+        "text": "*Rumi steps closer, eyes glinting with amusement.* 'Gifts are under the tree. Open them when you're ready.' *She gestures expansively to the room.* 'And don't worry about missing anything - we've got this covered.'",
+        "speaker": "Rumi-festive",
+        "stage": []},{
+        "text": "*With a wink and a grin,* "
+      }],
+      "stage": ["show:rumi-festive","show:mira-festive","show:zoey-festive","hide:guest"],
+      "choices": [
+        {
+          "id": "open_gifts",
+          "label": "Open the presents now",
+          "result": "scene-opening-gifts","effects": []},{
+          "id": "ask_about_performance",
+          "label": "Ask about their surprise performance",
+          "result": "scene-opening-performance","effects": []}
+      ]
+    },{
+      "id": "scene-opening-gifts",
+      "title": "Unwrapping Wonders",
+      "opening": "Heart racing, you begin unwrapping the gifts, each one a treasure trove of thoughtful surprises. The room fills with laughter and delighted exclamations as your eyes widen at the contents.",
+      "trigger": {"event":"core.inspected","match":{"location":"gift-corner"}},"pages":[{
+        "text": "*Oh wow...this is so sweet! They really went all out for me.*"},{
+        "text": "*Rumi watches you with a soft smile, pride shining in her eyes. Mira joins in, offering praise and encouragement as you unwrap each gift. Zoey dances around the room, ready to cheer on every discovery.*",
+        "speaker": "HUNTR/X",
+        "stage": []}],"stage": ["show:rumi-festive","show:mira-festive","show:zoey-festive","hide:guest"],
+      "choices": [
+        {
+          "id": "thank_them_gratefully",
+          "label": "Express gratitude for the thoughtful gifts",
+          "result": "scene-opening-gratitude","effects": []},{
+          "id": "playful_joke",
+          "label": "Make a lighthearted joke about the amount of wrapping paper",
+          "result": "scene-opening-humor","effects": []}
+      ]
+    },{
+      "id": "scene-opening-performance",
+      "title": "Surprise Entertainment",
+      "opening": "Just as you finish opening your last gift, a hushed whisper spreads through the room. Turning quickly, you find HUNTR/X waiting in the wings, ready to launch into their favorite holiday song.",
+      "trigger": {"event":"core.inspected","match":{"location":"stage-area"}},"pages":[{
+        "text": "*A hush falls over the room as they take their positions. Rumi steps forward, microphone in hand.* "
+      }],
+      "stage": ["show:rumi-festive","show:mira-festive","show:zoey-festive","hide:guest"],
+      "choices": [
+        {
+          "id": "watch_entertainement",
+          "label": "Watch the performance with rapt attention",
+          "result": "scene-opening-performance-continue","effects": []},{
+          "id": "comment_on_voices",
+          "label": "Comment on how beautiful their voices sound together",
+          "result": "scene-opening-appreciation","effects": []}
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "magic_glow",
+      "name": "Enchanted Lights",
+      "day": 24,
+      "daypart": "Evening",
+      "location": "main-party-room",
+      "attendedText": "*As the song reaches its crescendo, golden sparks dance around you like fireflies. For a moment, time seems to stand still as magic saturates the air.*",
+      "missedRecap": "*Later that night, you dream of flying through starlit skies with your favorite idols by your side - a fleeting glimpse into the enchanting world they inhabit.*"
+    },{
+      "id": "secret_message",
+      "name": "Hidden Note",
+      "day": 24,
+      "daypart": "Morning",
+      "location": "entrance-hallway",
+      "attendedText": "*Tucked inside your favorite gift is a handwritten note: 'To my special someone - Enjoy this magical day. Keep shining bright! ❤️'","missedRecap": "*As the sun rises over snow-dusted rooftops, you wake with a smile on your face, grateful for the warmth and wonder shared between you.*"
+    }
+  ]
+}

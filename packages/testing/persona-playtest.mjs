@@ -13,12 +13,12 @@ export const PERSONAS={
  achiever:{'story.choose':90,'story.startOfferedScene':60,'social.speak':20,romantic:30,'core.waitUntil':15,'items.give':8,'core.move':15,fresh:25,'core.scene':55,'world.explore':12,'world.use':15,'core.endScene':5,'core.inspect':2,'core.wait':3,'items.equip':10,'items.take':6,'items.place':1,'story.leave':1}
 };
 
-export function runPersonaPlaytest(pack,registry,{turns=150,seed=42,persona='romancer',startId}={}){
+export function runPersonaPlaytest(pack,registry,{turns=150,seed=42,persona='romancer',startId,onTurn}={}){
  const want=PERSONAS[persona]||PERSONAS.romancer,roll=rng(seed),romantic=new Set((pack.datingProfiles||[]).map(d=>d.character)),used=new Map(),visited=new Set(),recent=[],errors=[];
  let state=createWorld(pack,registry,`persona-${persona}-${seed}`,seed,startId);
  for(let turn=0;turn<turns&&!state.modules?.['story.endings']?.selected;turn++){
   const here=state.actors[pack.playerId]?.location;visited.add(here);
-  const enabled=actions(state,pack,registry).filter(x=>x.enabled),pull=planPull(state,pack);if(!enabled.length){errors.push({turn,message:'No enabled action.'});break;}
+  const enabled=actions(state,pack,registry).filter(x=>x.enabled),pull=planPull(state,pack);if(!enabled.length){errors.push({turn,message:'No enabled action.'});break;}onTurn?.(state,enabled);
   const weigh=a=>{const sig=`${a.type}:${JSON.stringify(a.args)}`,to=a.args?.target||a.args?.character||a.args?.to;let w=want[a.type]??5;
    if(romantic.has(to)&&want.romantic)w=Math.max(w,want.romantic);if(a.type==='core.move'&&!visited.has(to))w=Math.max(w,want.fresh);if(a.cue)w=Math.max(w,want['story.startOfferedScene']);
    if(a.type==='core.move'&&pull.go.has(to)&&to!==here)w=Math.max(w,150);if(pull.wait&&['world.nextDaypart','core.wait'].includes(a.type))w=Math.max(w,60);

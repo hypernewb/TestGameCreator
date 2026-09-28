@@ -76,7 +76,7 @@ export function recentlySurfaced(world,turnId,window=8){
  return seen;
 }
 
-const profileOf=a=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',description:a.description||'',personality:a.personality||'',traits:a.traits||[],voice:a.voice||'',style:a.style||'',examples:a.examples||[],goal:a.goal||'',backstory:a.backstory||'',likes:a.likes||[],dislikes:a.dislikes||[]});
+const profileOf=a=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',description:a.description||'',personality:a.personality||'',behavior:a.behavior||{},traits:a.traits||[],voice:a.voice||'',style:a.style||'',examples:a.examples||[],goal:a.goal||'',backstory:a.backstory||'',likes:a.likes||[],dislikes:a.dislikes||[]});
 const compactProfile=a=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',personality:clip(a.personality||a.description||'',240),traits:a.traits||[],voice:a.voice||'',style:a.style||'',examples:(a.examples||[]).slice(0,2)});
 
 /**

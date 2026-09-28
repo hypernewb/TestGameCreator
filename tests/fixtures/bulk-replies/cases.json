@@ -1,0 +1,4 @@
+[
+ {"name":"qwen 9b copies the card cast as festive variants, a guest 'You', and a band name as speaker","reply":"huntrix-copies.txt","pack":"huntrix.pack.json","counts":{"locationCount":2,"characterCount":2,"sceneCount":3,"eventCount":2},
+  "expect":{"locations":2,"characters":0,"scenes":3,"events":2,"skipped":["characters: guest","characters: rumi-festive"],"dropped":0}}
+]

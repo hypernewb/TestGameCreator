@@ -12,7 +12,7 @@ const custom={...registry,[probe.id]:probe};
 const pack=(profile={},complications,opportunities)=>{
  const p=JSON.parse(readFileSync(new URL('../packs/neutral.json',import.meta.url)));delete p.modules['world.schedule'];
  p.modules['story.scenes']='0.1.0';p.modules['story.director']='0.1.0';p.modules['test.probe']='0.1.0';
- p.modules['world.economy']='0.1.0';p.modules['character.stats']='0.1.0';
+ p.modules['world.economy']='0.2.0';p.modules['character.stats']='0.1.0';
  p.items=[...p.items,{id:'coin',name:'Brass token',owner:'workshop'}];
  p.activities=[{id:'shift',name:'Work a shift',description:'Four ticks of honest work.',location:'hub',duration:4}];
  p.statDefinitions=[{id:'wit',name:'Wit',min:0,max:10,visibility:'public'}];

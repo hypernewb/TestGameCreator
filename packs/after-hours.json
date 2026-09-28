@@ -12,14 +12,17 @@
   "story.scenes": "0.1.0",
   "story.director": "0.1.0",
   "character.stats": "0.1.0",
-  "items.inventory": "0.1.0",
+  "items.inventory": "0.2.0",
   "items.equipment": "0.1.0",
   "social.dating": "0.1.0",
   "social.intimacy": "0.1.0",
   "story.endings": "0.1.0",
   "world.schedule": "0.1.0",
-  "world.economy": "0.1.0",
-  "world.objects": "0.1.0"
+  "world.economy": "0.2.0",
+  "world.objects": "0.1.0",
+  "world.moments": "0.1.0",
+  "social.romance-tempo": "0.2.0",
+  "social.phone": "0.1.0"
  },
  "locations": [
   {
@@ -478,6 +481,46 @@
     "wit": 2
    },
    "description": "Chewed. Lucky. Returns right answers at a better rate than chance."
+  },
+  {
+   "id": "good-limes",
+   "name": "Bag of good limes",
+   "owner": "market",
+   "shop": true,
+   "price": 4,
+   "description": "Seville, waxed, the ones Juno swears by."
+  },
+  {
+   "id": "swallow-brooch",
+   "name": "Enamel swallow brooch",
+   "owner": "market",
+   "shop": true,
+   "price": 14,
+   "description": "Flea-stall find. The blue has chipped exactly right."
+  },
+  {
+   "id": "bronze-strings",
+   "name": "Set of bronze strings",
+   "owner": "market",
+   "shop": true,
+   "price": 9,
+   "description": "Theo has been playing on the same set since spring."
+  },
+  {
+   "id": "songbook",
+   "name": "Dog-eared songbook",
+   "owner": "market",
+   "shop": true,
+   "price": 6,
+   "description": "Standards, pencilled chord changes in three hands."
+  },
+  {
+   "id": "garage-roses",
+   "name": "Garage-forecourt roses",
+   "owner": "market",
+   "shop": true,
+   "price": 5,
+   "description": "Cellophane, a price sticker, sincere intentions."
   }
  ],
  "activities": [
@@ -7725,6 +7768,147 @@
      "witness": "priya"
     }
    }
+  },
+  {
+   "id": "swan-standoff",
+   "title": "Right of way",
+   "opening": "A swan has planted itself across the towpath and is looking at you like you owe it money. A kid on the bridge is filming.",
+   "trigger": {
+    "event": "world.moment",
+    "match": {
+     "moment": "swan-hook"
+    }
+   },
+   "when": {
+    "location": "canal",
+    "flags": {
+     "last-call": false
+    }
+   },
+   "choices": [
+    {
+     "id": "stare",
+     "label": "Stare it down",
+     "result": "The swan blinks first. The kid on the bridge cheers. Somewhere, a legend is born.",
+     "effects": [
+      {
+       "type": "stat",
+       "stat": "nerve",
+       "delta": 1
+      }
+     ],
+     "check": {
+      "stat": "nerve",
+      "target": 6,
+      "fail": {
+       "result": "The swan wins. You take the long way round, pursued by a small child's laughter.",
+       "effects": []
+      }
+     }
+    },
+    {
+     "id": "sandwich",
+     "label": "Offer it half your sandwich",
+     "result": "It accepts the sandwich with terrible dignity and lets you pass.",
+     "effects": [
+      {
+       "type": "stat",
+       "stat": "empathy",
+       "delta": 1
+      }
+     ],
+     "check": {
+      "stat": "empathy",
+      "target": 5,
+      "fail": {
+       "result": "It takes the sandwich, and then your pride.",
+       "effects": []
+      }
+     }
+    },
+    {
+     "id": "detour",
+     "label": "Take the long way round",
+     "result": "Discretion. The swan watches you go."
+    }
+   ]
+  },
+  {
+   "id": "lost-wallet",
+   "title": "Finders",
+   "opening": "A fat wallet on the cobbles by the flower stall: cash, a library card, and a photo of a very old dog.",
+   "trigger": {
+    "event": "world.moment",
+    "match": {
+     "moment": "wallet-hook"
+    }
+   },
+   "when": {
+    "location": "market",
+    "flags": {
+     "last-call": false
+    }
+   },
+   "choices": [
+    {
+     "id": "track",
+     "label": "Track down the owner",
+     "result": "Library card, dog, flower stall: you find him at the cheese van. He insists on a reward and will not hear otherwise.",
+     "effects": [
+      {
+       "type": "money",
+       "delta": 20
+      },
+      {
+       "type": "stat",
+       "stat": "wit",
+       "delta": 1
+      }
+     ],
+     "check": {
+      "stat": "wit",
+      "target": 6,
+      "fail": {
+       "result": "You hand it in at the market office. The clerk looks at you like you took something.",
+       "effects": [
+        {
+         "type": "stat",
+         "stat": "empathy",
+         "delta": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "pocket",
+     "label": "Pocket the cash, post the wallet",
+     "result": "Forty quid richer. The dog in the photo keeps looking at you.",
+     "effects": [
+      {
+       "type": "money",
+       "delta": 40
+      },
+      {
+       "type": "flag",
+       "id": "kept-wallet",
+       "value": true
+      }
+     ]
+    },
+    {
+     "id": "office",
+     "label": "Hand it in",
+     "result": "Done. You feel correct, if unrewarded.",
+     "effects": [
+      {
+       "type": "flag",
+       "id": "honest-wallet",
+       "value": true
+      }
+     ]
+    }
+   ]
   }
  ],
  "intimacySettings": {
@@ -8237,5 +8421,603 @@
  "run": {
   "days": 18,
   "defaultEnding": "regular"
- }
+ },
+ "moments": [
+  {
+   "id": "canal-note",
+   "kind": "find",
+   "location": "canal",
+   "text": "A soggy note is snagged in the reeds. {amount}, once it dries.",
+   "effects": [
+    {
+     "type": "money",
+     "delta": 15,
+     "max": 30
+    }
+   ],
+   "maxUses": 2
+  },
+  {
+   "id": "coat-pocket",
+   "kind": "find",
+   "location": "flat",
+   "text": "Last winter's coat pocket gives up {amount} and a bus ticket.",
+   "effects": [
+    {
+     "type": "money",
+     "delta": 10,
+     "max": 20
+    }
+   ],
+   "maxUses": 1
+  },
+  {
+   "id": "beer-mat-tip",
+   "kind": "find",
+   "location": "bar",
+   "text": "Someone has tucked {amount} under a beer mat with \"for the new one\" on it.",
+   "effects": [
+    {
+     "type": "money",
+     "delta": 5,
+     "max": 15
+    }
+   ],
+   "maxUses": 2
+  },
+  {
+   "id": "market-change",
+   "kind": "find",
+   "location": "market",
+   "text": "The fruit seller swears she short-changed you last week and presses {amount} into your hand.",
+   "effects": [
+    {
+     "type": "money",
+     "delta": 5,
+     "max": 10
+    }
+   ],
+   "maxUses": 1
+  },
+  {
+   "id": "towpath-nerve",
+   "kind": "find",
+   "location": "canal",
+   "text": "A cyclist nearly clips you on the towpath. You don't even flinch.",
+   "effects": [
+    {
+     "type": "stat",
+     "stat": "nerve",
+     "delta": 1
+    }
+   ],
+   "maxUses": 2
+  },
+  {
+   "id": "haggle-wit",
+   "kind": "find",
+   "location": "market",
+   "text": "You talk a stallholder down to half price on a lamp you don't want, purely on principle.",
+   "effects": [
+    {
+     "type": "stat",
+     "stat": "wit",
+     "delta": 1
+    }
+   ],
+   "maxUses": 2
+  },
+  {
+   "id": "regular-empathy",
+   "kind": "find",
+   "location": "bar",
+   "text": "A regular tells you about his divorce in full. You listen properly, which is rarer than it sounds.",
+   "effects": [
+    {
+     "type": "stat",
+     "stat": "empathy",
+     "delta": 1
+    }
+   ],
+   "maxUses": 2
+  },
+  {
+   "id": "mirror-charm",
+   "kind": "find",
+   "location": "flat",
+   "text": "You practise your smile in the hall mirror until it stops looking like a threat.",
+   "effects": [
+    {
+     "type": "stat",
+     "stat": "charm",
+     "delta": 1
+    }
+   ],
+   "maxUses": 2
+  },
+  {
+   "id": "juno-towpath",
+   "kind": "encounter",
+   "character": "juno",
+   "location": "canal",
+   "text": "{name} jogs past on the towpath, doubles back, and falls into step with you.",
+   "line": "Don't tell anyone I jog. It ruins the mystique.",
+   "stay": 2,
+   "maxUses": 2,
+   "when": {
+    "minTick": 6
+   }
+  },
+  {
+   "id": "theo-records",
+   "kind": "encounter",
+   "character": "theo",
+   "location": "market",
+   "text": "{name} is at the record stall, pretending not to have seen you, then very obviously seeing you.",
+   "line": "I was — this is — hi. Do you like Coltrane?",
+   "stay": 2,
+   "maxUses": 2,
+   "when": {
+    "minTick": 6
+   }
+  },
+  {
+   "id": "priya-bench",
+   "kind": "encounter",
+   "character": "priya",
+   "location": "canal",
+   "text": "{name} is on a bench with a textbook and a thermos, and waves you over.",
+   "line": "Quiz me. Please. Anything on tort law.",
+   "stay": 2,
+   "maxUses": 2,
+   "when": {
+    "minTick": 6
+   }
+  },
+  {
+   "id": "priya-coffee",
+   "kind": "encounter",
+   "character": "priya",
+   "location": "market",
+   "text": "{name} is queueing at the coffee van and buys you one without asking.",
+   "line": "You look like a flat white. That is a compliment.",
+   "stay": 2,
+   "maxUses": 2,
+   "when": {
+    "minTick": 6
+   }
+  },
+  {
+   "id": "juno-doorstep",
+   "kind": "encounter",
+   "character": "juno",
+   "location": "flat",
+   "text": "{name} is sitting on your front step with two coffees.",
+   "line": "I was in the area. I am never in the area.",
+   "stay": 2,
+   "maxUses": 2,
+   "when": {
+    "datingPhases": {
+     "juno": "dating"
+    }
+   }
+  },
+  {
+   "id": "theo-doorstep",
+   "kind": "encounter",
+   "character": "theo",
+   "location": "flat",
+   "text": "{name} is on your doorstep holding a cassette like a bouquet.",
+   "line": "I made you a tape. People still do that. I do that.",
+   "stay": 2,
+   "maxUses": 2,
+   "when": {
+    "datingPhases": {
+     "theo": "dating"
+    }
+   }
+  },
+  {
+   "id": "buzz-juno",
+   "kind": "find",
+   "text": "Your phone buzzes.",
+   "location": [
+    "flat",
+    "bar",
+    "canal"
+   ],
+   "maxUses": 1,
+   "when": {
+    "charactersAt": {
+     "juno": "market"
+    },
+    "minTick": 10
+   }
+  },
+  {
+   "id": "buzz-theo",
+   "kind": "find",
+   "text": "Your phone buzzes.",
+   "location": [
+    "flat",
+    "bar",
+    "market"
+   ],
+   "maxUses": 1,
+   "when": {
+    "charactersAt": {
+     "theo": "canal"
+    },
+    "minTick": 10
+   }
+  },
+  {
+   "id": "buzz-priya",
+   "kind": "find",
+   "text": "Your phone buzzes.",
+   "location": [
+    "flat",
+    "market",
+    "canal"
+   ],
+   "maxUses": 1,
+   "when": {
+    "charactersAt": {
+     "priya": "bar"
+    },
+    "minTick": 20
+   }
+  },
+  {
+   "id": "swan-hook",
+   "kind": "scene",
+   "location": "canal",
+   "text": "",
+   "maxUses": 1,
+   "weight": 2,
+   "when": {
+    "minTick": 4
+   }
+  },
+  {
+   "id": "wallet-hook",
+   "kind": "scene",
+   "location": "market",
+   "text": "",
+   "maxUses": 1,
+   "weight": 2,
+   "when": {
+    "minTick": 4
+   }
+  }
+ ],
+ "momentsProfile": {
+  "chancePercent": 30,
+  "dryStepPercent": 15,
+  "perDay": 4,
+  "cooldown": 12,
+  "generate": false
+ },
+ "romanceTempoProfiles": [
+  {
+   "character": "juno",
+   "advancement": "automatic",
+   "ranks": [
+    {
+     "id": "regular",
+     "name": "Regular",
+     "points": 0,
+     "ceiling": 40
+    },
+    {
+     "id": "friend",
+     "name": "Friend",
+     "points": 15,
+     "ceiling": 80
+    },
+    {
+     "id": "close",
+     "name": "Close",
+     "points": 40,
+     "ceiling": 100
+    }
+   ],
+   "gifts": {
+    "periodTicks": 12,
+    "limitPerPeriod": 1,
+    "repeatDecayPercent": 50,
+    "preferences": [
+     {
+      "item": "good-limes",
+      "reaction": "loved",
+      "points": 6,
+      "chemistry": 2
+     },
+     {
+      "item": "swallow-brooch",
+      "reaction": "liked",
+      "points": 4,
+      "chemistry": 1
+     },
+     {
+      "item": "garage-roses",
+      "reaction": "disliked",
+      "points": -2
+     },
+     {
+      "item": "songbook",
+      "reaction": "neutral",
+      "points": 1
+     }
+    ]
+   },
+   "signals": [
+    {
+     "id": "texted-back",
+     "event": "social.messageReplied",
+     "match": {
+      "character": "juno"
+     },
+     "points": 2,
+     "cooldownTicks": 6
+    },
+    {
+     "id": "showed-up",
+     "event": "social.phoneOfferAccepted",
+     "match": {
+      "character": "juno"
+     },
+     "points": 4
+    }
+   ],
+   "neglect": {
+    "afterTicks": 36,
+    "fuseTicks": 12,
+    "minPoints": 15
+   },
+   "jealousy": {
+    "preset": "secure"
+   }
+  },
+  {
+   "character": "theo",
+   "advancement": "automatic",
+   "ranks": [
+    {
+     "id": "regular",
+     "name": "Regular",
+     "points": 0,
+     "ceiling": 40
+    },
+    {
+     "id": "friend",
+     "name": "Friend",
+     "points": 15,
+     "ceiling": 80
+    },
+    {
+     "id": "close",
+     "name": "Close",
+     "points": 40,
+     "ceiling": 100
+    }
+   ],
+   "gifts": {
+    "periodTicks": 12,
+    "limitPerPeriod": 1,
+    "repeatDecayPercent": 50,
+    "preferences": [
+     {
+      "item": "bronze-strings",
+      "reaction": "loved",
+      "points": 6,
+      "chemistry": 2
+     },
+     {
+      "item": "rare-vinyl",
+      "reaction": "loved",
+      "points": 8,
+      "chemistry": 3
+     },
+     {
+      "item": "songbook",
+      "reaction": "liked",
+      "points": 4,
+      "chemistry": 1
+     },
+     {
+      "item": "garage-roses",
+      "reaction": "liked",
+      "points": 3
+     },
+     {
+      "item": "good-limes",
+      "reaction": "neutral",
+      "points": 1
+     }
+    ]
+   },
+   "signals": [
+    {
+     "id": "texted-back",
+     "event": "social.messageReplied",
+     "match": {
+      "character": "theo"
+     },
+     "points": 2,
+     "cooldownTicks": 6
+    },
+    {
+     "id": "showed-up",
+     "event": "social.phoneOfferAccepted",
+     "match": {
+      "character": "theo"
+     },
+     "points": 4
+    }
+   ],
+   "neglect": {
+    "afterTicks": 36,
+    "fuseTicks": 12,
+    "minPoints": 15
+   },
+   "jealousy": {
+    "preset": "relaxed"
+   }
+  }
+ ],
+ "phoneContacts": [
+  "juno",
+  "theo",
+  "priya"
+ ],
+ "phoneMessages": [
+  {
+   "id": "juno-limes",
+   "character": "juno",
+   "text": "Market run. The lime man is flirting with me for a discount again. Come be my bodyguard?",
+   "trigger": {
+    "event": "world.moment",
+    "match": {
+     "moment": "buzz-juno"
+    }
+   },
+   "replies": [
+    {
+     "id": "coming",
+     "text": "Two minutes. Hold the limes."
+    },
+    {
+     "id": "tease",
+     "text": "Let him. We need the discount."
+    }
+   ],
+   "offer": {
+    "location": "market",
+    "expiresIn": 3
+   }
+  },
+  {
+   "id": "theo-lock",
+   "character": "theo",
+   "text": "Playing by the lock. The duck is back. I need a second opinion on the bridge verse.",
+   "trigger": {
+    "event": "world.moment",
+    "match": {
+     "moment": "buzz-theo"
+    }
+   },
+   "replies": [
+    {
+     "id": "coming",
+     "text": "Save me the good bit of wall."
+    },
+    {
+     "id": "duck",
+     "text": "The duck is a harsh critic. Good luck."
+    }
+   ],
+   "offer": {
+    "location": "canal",
+    "expiresIn": 3
+   }
+  },
+  {
+   "id": "priya-cover",
+   "character": "priya",
+   "text": "Can you come and exist near the bar for an hour? Juno is in a Mood and I have a chapter to finish.",
+   "trigger": {
+    "event": "world.moment",
+    "match": {
+     "moment": "buzz-priya"
+    }
+   },
+   "replies": [
+    {
+     "id": "yes",
+     "text": "On it. Bring the chapter."
+    },
+    {
+     "id": "no",
+     "text": "Tell her I said hi. From a safe distance."
+    }
+   ],
+   "offer": {
+    "location": "bar",
+    "expiresIn": 4
+   }
+  },
+  {
+   "id": "juno-thanks",
+   "character": "juno",
+   "text": "Found your present. Don't make a habit of being nice, people will talk.",
+   "trigger": {
+    "event": "social.giftReceived",
+    "match": {
+     "character": "juno"
+    }
+   },
+   "replies": [
+    {
+     "id": "talk",
+     "text": "Let them."
+    },
+    {
+     "id": "modest",
+     "text": "It was nothing. It was a little bit something."
+    }
+   ]
+  },
+  {
+   "id": "theo-thanks",
+   "character": "theo",
+   "text": "I've put it where I can see it from the piano. Is that weird. It's weird.",
+   "trigger": {
+    "event": "social.giftReceived",
+    "match": {
+     "character": "theo"
+    }
+   },
+   "replies": [
+    {
+     "id": "not-weird",
+     "text": "Not weird. Play me something about it."
+    }
+   ]
+  },
+  {
+   "id": "juno-quiet",
+   "character": "juno",
+   "text": "You gone quiet on me, or just busy being mysterious?",
+   "trigger": {
+    "event": "social.neglectWarning",
+    "match": {
+     "character": "juno"
+    }
+   },
+   "replies": [
+    {
+     "id": "sorry",
+     "text": "Busy. Missing the bar, though. Missing you, a bit."
+    }
+   ]
+  },
+  {
+   "id": "theo-quiet",
+   "character": "theo",
+   "text": "Wrote a verse about someone who stopped coming to the bar. Hypothetically.",
+   "trigger": {
+    "event": "social.neglectWarning",
+    "match": {
+     "character": "theo"
+    }
+   },
+   "replies": [
+    {
+     "id": "sorry",
+     "text": "Hypothetically, they're coming tonight."
+    }
+   ]
+  }
+ ]
 }

@@ -2,6 +2,7 @@ import {assert,safeKey} from '../core/engine.mjs';
 import {calendarFor,WEEKDAYS,PERIODS} from '../../public/calendar.mjs';
 import {bondKey} from './bonds.mjs';
 import {statValue} from './stats.mjs';
+import {heldBy} from './inventory.mjs';
 
 // One deterministic condition language (`when`) shared by scripted scenes, scene choices and lorebook entries.
 // Every check reads committed world state only, so a gate can never be satisfied by model prose.
@@ -29,7 +30,9 @@ export function validateExtraConditions(when,p,label){
  for(const r of when.bonds||[])assert(p.modules['social.bonds']&&actorIds.has(r.character)&&dimensions.has(r.dimension)&&Number.isInteger(r.min)&&r.min>=0&&r.min<=100,`${label}.bonds: invalid requirement`);
  for(const r of when.stats||[])assert(p.modules['character.stats']&&[p.playerId,...actorIds].includes(r.character)&&stats.has(r.stat)&&[r.min,r.max].filter(x=>x!==undefined).length>0&&[r.min,r.max].filter(x=>x!==undefined).every(Number.isInteger),`${label}.stats: invalid requirement`);
  for(const [character,state] of Object.entries(when.relationshipStates||{}))assert(p.modules['social.progression']&&actorIds.has(character)&&states.has(state),`${label}.relationshipStates: invalid requirement`);
- for(const [character,phase] of Object.entries(when.datingPhases||{}))assert(p.modules['social.dating']&&(p.datingProfiles||[]).some(x=>x.character===character)&&['available','crush','dating','exclusive','rejected','broken'].includes(phase),`${label}.datingPhases: invalid requirement`);
+ for(const [id,phase] of Object.entries(when.datingPhases||{}))assert(p.modules['social.dating']&&(p.datingProfiles||[]).some(x=>x.character===id)&&['available','crush','dating','exclusive','rejected','broken'].includes(phase),`${label}.datingPhases: invalid requirement`);
+ if(when.weather!==undefined)assert(p.modules['world.calendar']&&(p.calendar?.weather||[]).some(k=>k.id===when.weather),`${label}.weather: unknown weather kind (needs world.calendar)`);
+ if(when.holiday!==undefined)assert(p.modules['world.calendar']&&typeof when.holiday==='boolean',`${label}.holiday: expected a boolean (needs world.calendar)`);
 }
 
 export function conditionReasons(when,state,pack,pages=[]){
@@ -43,12 +46,14 @@ export function conditionReasons(when,state,pack,pages=[]){
   if(when.minTick!==undefined&&state.tick<when.minTick)reasons.push(`Tick ${state.tick}; starts at ${when.minTick}`);
   if(when.maxTick!==undefined&&state.tick>when.maxTick)reasons.push(`Tick ${state.tick}; ended at ${when.maxTick}`);
   for(const [id,value] of Object.entries(when.flags||{}))if(Boolean(state.flags[id])!==value)reasons.push(`Flag ${id}: ${Boolean(state.flags[id])}; needs ${value}`);
-  for(const id of when.items||[])if(state.modules['items.inventory']?.owners[id]!==pack.playerId)reasons.push(`Item ${id} is not carried`);
+  for(const id of when.items||[])if(heldBy(state,id,pack.playerId)<1)reasons.push(`Item ${id} is not carried`);
   for(const id of when.equipped||[])if(!Object.values(state.modules['items.equipment']?.slots||{}).includes(id))reasons.push(`Item ${id} is not equipped`);
   for(const requirement of when.bonds||[]){const actual=state.modules['social.bonds']?.values[bondKey(requirement.character,requirement.dimension,pack.playerId)]||0;if(actual<requirement.min)reasons.push(`${requirement.character} ${requirement.dimension}: ${actual}; needs ${requirement.min}`);}
   for(const requirement of when.stats||[]){const actual=statValue(state,requirement.character,requirement.stat);if(requirement.min!==undefined&&actual<requirement.min)reasons.push(`${requirement.character} ${requirement.stat}: ${actual}; needs ${requirement.min}`);if(requirement.max!==undefined&&actual>requirement.max)reasons.push(`${requirement.character} ${requirement.stat}: ${actual}; maximum ${requirement.max}`);}
   for(const [character,required] of Object.entries(when.relationshipStates||{})){const actual=state.modules['social.progression']?.states[character];if(actual!==required)reasons.push(`${character} relationship: ${actual||'none'}; needs ${required}`);}
   for(const [character,required] of Object.entries(when.datingPhases||{})){const actual=state.modules['social.dating']?.characters[character]?.phase;if(actual!==required)reasons.push(`${character} dating phase: ${actual||'none'}; needs ${required}`);}
+  if(when.weather!==undefined&&state.modules['world.calendar']?.weather!==when.weather)reasons.push(`Weather: ${state.modules['world.calendar']?.weather||'none'}; needs ${when.weather}`);
+  if(when.holiday!==undefined&&Boolean(state.modules['world.calendar']?.holiday)!==when.holiday)reasons.push(when.holiday?'Today is not a holiday; needs one':'Today is a holiday; needs none');
   for(const [id,min] of Object.entries(when.trust||{})){const actual=state.modules['social.relationships']?.edges[`${id}--${pack.playerId}`]||0;if(actual<min)reasons.push(`Trust with ${id}: ${actual}; needs ${min}`);}
   for(const id of when.completedScenes||[])if(!(state.modules['story.scenes']?.completed||[]).includes(id))reasons.push(`Scene ${id} not completed yet`);
   for(const [id,required] of Object.entries(when.plans||{})){const actual=(state.modules['story.scenes']?.plans||[]).filter(x=>x.id===id).at(-1)?.status||'none';if(actual!==required)reasons.push(`Plan ${id}: ${actual}; needs ${required}`);}

@@ -71,12 +71,13 @@ test('a sharp trust drop makes the NPC leave the scene',()=>{
 
 test('a model-proposed ending in a continuous pack runs core.endScene and advances time',async()=>{
  const p=pack();let calls=0;
- const provider={name:'probe',async generateScene(ctx){calls++;return ctx.scenePhase==='closing'?{lines:[{speaker:'ada',text:'See you around.'}]}:calls===1?{lines:[{speaker:'ada',text:'Hello there.'}]}:{lines:[{speaker:'ada',text:'I should get going.'}],end_scene:true};}};
+ // The model's own farewell closes the scene; the automatic end turn costs no extra model call.
+ const provider={name:'probe',async generateScene(){calls++;return calls===1?{lines:[{speaker:'ada',text:'Hello there.'}]}:{lines:[{speaker:'ada',text:'I should get going.'}],end_scene:true};}};
  const store=new Store();store.insert(createWorld(p,registry,'natural'));const service=new GameService(store,{[p.id]:p},registry,provider);
  try{
   await service.act('natural',{id:'open',expectedRevision:0,command:{type:'core.scene',args:talk('Hi Ada.')}});
   const r=await service.act('natural',{id:'bye',expectedRevision:1,command:{type:'core.scene',args:talk('Nice talking.','continue')}});
-  assert.equal(r.state.scene,null);assert.equal(r.state.tick,4);assert.equal(r.turn.id,'bye');assert.match(r.turn.narrative,/See you around/);
+  assert.equal(r.state.scene,null);assert.equal(r.state.tick,4);assert.equal(r.turn.id,'bye');assert.match(r.turn.narrative,/I should get going/);assert.equal(calls,2);
   const end=r.state.turns['bye-end'];assert.equal(end.status,'complete');assert.equal(end.events.find(e=>e.type==='core.sceneEnded').payload.reason,'natural');
  }finally{store.close();}
 });

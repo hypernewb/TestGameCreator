@@ -1,4 +1,5 @@
 import {assert} from '../core/engine.mjs';
+import {heldBy,transfer} from './inventory.mjs';
 // World generation at new-game time: each item with hideIn:[objectIds] lands in one candidate, chosen by the campaign seed (same seed, same world).
 export function placeHidden(p,seed=42){let n=seed>>>0;const out={};for(const i of p.items||[])if(i.hideIn?.length){n=(Math.imul(n,1664525)+1013904223)>>>0;out[i.id]=i.hideIn[Math.floor(n/4294967296*i.hideIn.length)];}return out;}
 const stashed=(s,o)=>Object.entries(s.modules['world.objects'].stash||{}).filter(([,obj])=>obj===o.id).map(([id])=>id),searchable=(p,o)=>o.reveals?.length||(p.items||[]).some(i=>i.hideIn?.includes(o.id));
@@ -10,13 +11,13 @@ export const objects={id:'world.objects',version:'0.1.0',coreApi:'0.1.0',require
    const m=s.modules['world.objects'];if(!m.examined.includes(o.id))tx.set(['modules','world.objects','examined'],[...m.examined,o.id]);tx.emit('world.objectExamined',{object:o.id,location:o.location,text:`You examine ${o.name}. ${o.description}`},[p.playerId]);
    const found=[...(o.reveals||[]),...stashed(s,o)];if(a.mode==='search_take'&&!found.length)tx.emit('world.searchedEmpty',{object:o.id,location:o.location,text:`You search ${o.name} but find nothing.`},[p.playerId]);
    for(const id of found){if(!s.modules['world.objects'].discovered.includes(id)){tx.set(['modules','world.objects','discovered'],[...s.modules['world.objects'].discovered,id]);tx.emit('world.itemDiscovered',{object:o.id,item:id,location:o.location,text:`You discover ${p.items.find(i=>i.id===id).name}.`},[p.playerId]);}
-    if(a.mode==='search_take'&&s.modules['items.inventory'].owners[id]===o.location){tx.set(['modules','items.inventory','owners',id],p.playerId);tx.emit('items.transferred',{item:id,from:o.location,to:p.playerId,text:`You take ${p.items.find(i=>i.id===id).name}.`},[p.playerId]);}}
+    if(a.mode==='search_take'&&heldBy(s,id,o.location)>0){transfer(tx,p.items.find(i=>i.id===id),o.location,p.playerId,1,`You take ${p.items.find(i=>i.id===id).name}.`);}}
   },
-  'world.use'(tx,a){const {state:s,pack:p}=tx,o=(p.objects||[]).find(o=>o.id===a.target);assert(o&&o.location===s.actors[p.playerId].location,'That object is not here');assert(o.effectFlag,'This object has no configured use');assert(!s.flags[o.effectFlag],'It has already been used');if(o.requiresItem)assert(s.modules['items.inventory'].owners[o.requiresItem]===p.playerId,'You need the required item');tx.set(['flags',o.effectFlag],true);tx.emit('world.objectUsed',{object:o.id,location:o.location,text:o.useText||`You use ${o.name}.`},[p.playerId]);}
+  'world.use'(tx,a){const {state:s,pack:p}=tx,o=(p.objects||[]).find(o=>o.id===a.target);assert(o&&o.location===s.actors[p.playerId].location,'That object is not here');assert(o.effectFlag,'This object has no configured use');assert(!s.flags[o.effectFlag],'It has already been used');if(o.requiresItem)assert(heldBy(s,o.requiresItem,p.playerId)>0,'You need the required item');tx.set(['flags',o.effectFlag],true);tx.emit('world.objectUsed',{object:o.id,location:o.location,text:o.useText||`You use ${o.name}.`},[p.playerId]);}
  },
  // A button that can no longer change anything is a dead turn waiting to happen (Disco Elysium greys out read orbs):
  // Examine goes once examined, Search once nothing findable is left in it. Both commands stay valid for typed input.
- actions(s,p){const loc=s.actors[p.playerId].location,m=s.modules['world.objects'],owners=s.modules['items.inventory']?.owners||{},seen=o=>m.examined.includes(o.id),left=o=>[...(o.reveals||[]),...stashed(s,o)].some(id=>owners[id]===o.location);
+ actions(s,p){const loc=s.actors[p.playerId].location,m=s.modules['world.objects'],seen=o=>m.examined.includes(o.id),left=o=>[...(o.reveals||[]),...stashed(s,o)].some(id=>heldBy(s,id,o.location)>0);
   return (p.objects||[]).filter(o=>o.location===loc).flatMap(o=>[...(seen(o)?[]:[{label:`Examine ${o.name}`,type:'world.explore',args:{target:o.id,mode:'inspect'}}]),...(searchable(p,o)&&(!seen(o)||left(o))?[{label:`Search ${o.name} and take finds`,type:'world.explore',args:{target:o.id,mode:'search_take'}}]:[]),...(o.effectFlag?[{label:`Use ${o.name}`,type:'world.use',args:{target:o.id}}]:[])]);},
  panel(s,p){return {title:'Nearby objects',lines:(p.objects||[]).filter(o=>o.location===s.actors[p.playerId].location).map(o=>o.name)};}
 };

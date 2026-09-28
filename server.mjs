@@ -23,6 +23,8 @@ import {modelIdsOf} from './vendor/venus/openaiResponse.mjs';
 import {runPlaytestSuite} from './packages/testing/playtest-audit.mjs';
 import {normalizeCandidate,messagesFor} from './packages/ai/bulk-authoring.mjs';
 import {importCard,actorToCard} from './packages/cards/character-card.mjs';
+import {reviewProposal,regenerateEntry,applyReviewed} from './packages/ai/proposal-review.mjs';
+import {characterMessages,normalizeCharacter,characterResponseFormat} from './packages/ai/character-authoring.mjs';
 // Moments the player should notice this turn: check results with the numbers, rank-ups, endings and kept or broken plans.
 const turnHighlights=(events=[],p)=>events.filter(e=>['story.checkResolved','character.statChanged','story.endingUnlocked','story.endingChosen','story.planKept','story.planBroken'].includes(e.type)&&e.payload.text&&(e.type!=='character.statChanged'||e.payload.character===p.playerId)).map(e=>({type:e.type,rankUp:Boolean(e.payload.rankUp),passed:e.payload.passed,text:e.type==='story.checkResolved'?`${e.payload.text} (${e.payload.value} vs ${e.payload.target})`:e.payload.text}));
 const endedView=(s,p)=>{const id=s.modules['story.endings']?.selected,e=id&&(p.endings||[]).find(x=>x.id===id);return e?{name:e.name,text:e.text||`${e.name} begins.`}:null;};
@@ -106,6 +108,12 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider()}={})
       // Character Card V1/V2/V3 (JSON, or a PNG data URL with chara/ccv3 chunks) → a new actor + character lore in the draft.
       if(path==='/api/studio/import-card'&&req.method==='POST'){const d=readDraft(body.id);assert(body.card&&(typeof body.card==='object'||typeof body.card==='string'&&body.card.length<=4900000),'Character card required');const png=typeof body.card==='string'&&body.card.match(/^data:image\/png;base64,([A-Za-z0-9+/=]+)$/);const {pack,actorId}=importCard(d.pack,png?Buffer.from(png[1],'base64'):body.card,{id:body.actorId||undefined,location:body.location||undefined});d.pack=pack;d.updated=new Date().toISOString();writeFileSync(draftFile(d.id),JSON.stringify(d,null,2));return send({...d,actorId});}
       if(path==='/api/studio/export-card'&&req.method==='GET'){const d=readDraft(url.searchParams.get('id'));return send(actorToCard(d.pack,url.searchParams.get('actor'),{version:url.searchParams.get('version')==='2'?2:3}));}
+      if(path==='/api/studio/ai-character'&&req.method==='POST'){
+        assert(service.provider instanceof CompatibleProvider,'Connect a local AI model in AI settings before generating a character');assert(body.pack&&typeof body.pack==='object','Project data required');assert(typeof body.brief==='string'&&body.brief.trim()&&body.brief.length<=6000,'Enter a character brief (maximum 6,000 characters)');
+        const options={name:body.name,pronouns:body.pronouns,age:body.age,location:body.location},request=characterMessages(body.pack,body.brief,options);let raw,character;
+        for(let attempt=0;attempt<2;attempt++){raw=await service.provider.complete(request.messages,undefined,characterResponseFormat());try{character=normalizeCharacter(raw,body.pack,options);break;}catch(error){if(attempt)throw error;request.messages.push({role:'assistant',content:typeof raw==='string'?raw:JSON.stringify(raw)},{role:'user',content:`Return a complete corrected character JSON object. Validation failed: ${error.message}`});}}
+        return send({character,provider:service.provider.name});
+      }
       if(path==='/api/studio/ai-scene'&&req.method==='POST'){
         assert(service.provider instanceof CompatibleProvider,'Connect a local AI model in AI settings before drafting a scene');
         assert(body.pack&&typeof body.pack==='object'&&!Array.isArray(body.pack),'Project data required');validatePack(body.pack,registry);
@@ -113,6 +121,15 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider()}={})
         const counts={characterCount:0,sceneCount:1},messages=messagesFor(body.pack,body.brief.trim(),counts);let raw,candidate;
         for(let attempt=0;attempt<2;attempt++){raw=await service.provider.complete(messages,undefined,{type:'json_object'});try{candidate=normalizeCandidate(raw,body.pack,counts);break;}catch(error){if(attempt)throw error;messages.push({role:'assistant',content:raw},{role:'user',content:`Return a complete corrected JSON candidate. Validation failed: ${error.message}`});}}
         return send({scene:candidate.scenes[0],provider:service.provider.name});
+      }
+      // AI proposal review (packages/ai/proposal-review.mjs): the editor's current pack + a proposal file; nothing is saved here.
+      if(path.startsWith('/api/studio/proposal/')&&req.method==='POST'){
+        assert(body.pack&&typeof body.pack==='object'&&!Array.isArray(body.pack),'Project data required');assert(body.proposal&&typeof body.proposal==='object','Proposal file required');
+        if(path==='/api/studio/proposal/review')return send(reviewProposal(body.pack,body.proposal,{play:body.play!==false}));
+        if(path==='/api/studio/proposal/apply')return send({pack:applyReviewed(body.pack,body.proposal,{force:body.force===true})});
+        if(path==='/api/studio/proposal/regenerate'){assert(service.provider instanceof CompatibleProvider,'Connect a local AI model in AI settings before regenerating');
+          const ask=(messages,schema)=>service.provider.complete(messages,undefined,schema?{type:'json_schema',json_schema:{name:'answer',schema}}:{type:'json_object'});
+          const r=await regenerateEntry(ask,body.pack,body.proposal,{kind:String(body.kind),index:Number(body.index),note:typeof body.note==='string'?body.note:''});return send({...r,review:reviewProposal(body.pack,r.proposal,{play:false})});}
       }
       if(path==='/api/studio/validate'&&req.method==='POST'){validatePack(body.pack,registry);return send({ok:true});}
       if(path==='/api/studio/playtest'&&req.method==='POST'){validatePack(body.pack,registry);const turns=Math.max(5,Math.min(200,Number(body.turns)||50));return send(runPlaytestSuite(body.pack,registry,{turns}));}

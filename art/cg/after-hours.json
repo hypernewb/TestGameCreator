@@ -1,0 +1,21 @@
+{
+  "pack": "showcase.after-hours",
+  "size": [1216, 832],
+  "steps": 28,
+  "scale": 5,
+  "style": "visual novel cg, contemporary romance, painterly anime illustration, clean linework, warm low-key lighting, terracotta brass and walnut palette, detailed background, cinematic composition",
+  "negative": "text, logo, watermark, signature, speech bubble, username, lowres, blurry, jpeg artifacts, bad anatomy, bad hands, extra fingers, missing fingers, extra limbs, multiple views, chibi, 3d, photorealistic, neon, sci-fi, child, loli, shota, underage",
+  "characters": {
+    "juno": "girl, adult woman, 29 years old, bartender, short black hair, asymmetrical bob with shaved undercut side, sharp dark eyes, silver hoop earrings, tattooed forearms, black waistcoat over white shirt, sleeves rolled up, lean athletic build",
+    "theo": "boy, adult man, 28 years old, pianist, messy dark brown curly hair, light stubble, gentle tired brown eyes, tall lean build, grey knit sweater, sleeves pushed up, silver ring",
+    "priya": "girl, adult woman, 34 years old, bar manager, south asian, long black hair in a low bun, reading glasses, charcoal blazer over black top, gold stud earrings, composed deadpan expression"
+  },
+  "cgs": [
+    {"id": "first-night", "scene": "first-night", "seed": 118204,
+     "prompt": "1girl, solo, pov, across the bar counter, low-lit cocktail bar, brass fixtures, back bar shelves of bottles, amber light, night",
+     "cast": [{"id": "juno", "action": "leaning on the bar counter, sliding a cocktail glass toward viewer, teasing smirk, looking at viewer"}]},
+    {"id": "theo-piano", "scene": "theo-piano", "seed": 227519,
+     "prompt": "1boy, solo, battered upright piano in a dim cocktail bar, late night, single warm lamp, empty tables, bottles in soft bokeh",
+     "cast": [{"id": "theo", "action": "sitting at the upright piano, playing, eyes half closed, three-quarter side view, absorbed, faint smile"}]}
+  ]
+}

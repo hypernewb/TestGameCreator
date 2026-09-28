@@ -1,5 +1,6 @@
 data/
 node_modules/
+.tools/
 .env
 model-evaluation-results.json
 ui-*.png

@@ -2,31 +2,44 @@ import {matchedLoreKeys, keyPattern, absentNote} from '../../vendor/venus/lorebo
 import {calendarFor} from '../../public/calendar.mjs';
 import {selectGeneratedFacts} from '../modules/facts.mjs';
 import {loreIndex,bm25Score} from './retrieval.mjs';
+import {conditionReasons} from '../modules/conditions.mjs';
 import {statValue} from '../modules/stats.mjs';
 import {datingContext} from '../modules/dating.mjs';
 import {playerStatements,stripPlaceholders,mentionsPlayer} from './memory.mjs';
 import {romanceNetworkContext} from '../modules/romance-network.mjs';
 import {intimacyContext} from '../modules/intimacy.mjs';
 import {gossipContext} from '../modules/gossip.mjs';
+import {npcMemoriesFor} from '../modules/npc-social.mjs';
 import {romanceTempoContext} from '../modules/romance-tempo.mjs';
 import {phoneContext} from '../modules/phone.mjs';
 import {endingsContext} from '../modules/endings.mjs';
 import {feedContext} from '../modules/feed.mjs';
+import {directorContext} from '../modules/director.mjs';
 function visibleTo(v,actor){return v==='public'||Array.isArray(v)&&v.includes(actor);}
+// Tick of each timed entry's latest fresh keyed activation, read from committed turn traces newest-first and only as far
+// back as the longest sticky+cooldown window, so timers are a pure function of saved state and replay identically.
+function lastActivations(s,ids,floor){const last={};if(!ids.size)return last;const turns=Object.values(s.turns);for(let i=turns.length-1;i>=0;i--){const t=turns[i],a=t.loreActivations,tick=a?.tick??t.events?.[0]?.tick??0;if(tick<floor)break;for(const id of a?.ids||[])if(ids.has(id)&&last[id]===undefined)last[id]=a.tick;}return last;}
+// Lore is gated by world state first (`when`, `delay`); tags/text only choose among entries the state supports.
+// `sticky` keeps a keyed entry for N ticks after it fires; `cooldown` then blocks keyed re-activation for N ticks
+// (SillyTavern World Info timers, counted in game ticks instead of chat messages).
 export function selectLore(s,p,actorId,query='',budget=1200){
- const location=s.actors[actorId].location,results=[],index=query?loreIndex(p):null;
- for(const entry of p.lorebook||[]){if(!visibleTo(entry.knownBy,actorId))continue;
+ const location=s.actors[actorId].location,results=[],omitted=[],index=query?loreIndex(p):null,now=s.tick,book=p.lorebook||[];
+ const timed=book.filter(e=>e.sticky||e.cooldown),last=lastActivations(s,new Set(timed.map(e=>e.id)),now-Math.max(0,...timed.map(e=>(e.sticky||0)+(e.cooldown||0))));
+ for(const entry of book){if(!visibleTo(entry.knownBy,actorId))continue;
+  if(entry.delay&&now<entry.delay){omitted.push({id:entry.id,reason:`delay: until tick ${entry.delay}`});continue;}
+  const blocked=entry.when?conditionReasons(entry.when,s,p):[];if(blocked.length){omitted.push({id:entry.id,reason:`when: ${blocked[0]}`});continue;}
   const matched=matchedLoreKeys(entry.tags||[],query);
   const scopeMatch=entry.scope==='world'||entry.scope==='location'&&entry.location===location||entry.scope==='character'&&entry.character===actorId;
   // BM25 relevance can surface an entry whose tags the player never typed; a tag hit still outranks it.
   const text=index?bm25Score(index,entry.id,query):{score:0,matched:[]},textMatch=text.score>=1;
-  if(!scopeMatch&&!matched.length&&!textMatch)continue;
-  const score=matched.length*10+Math.min(9,Math.round(text.score*2))+(entry.location===location?5:0)+(entry.character===actorId?5:0);
-  results.push({...entry,score,reason:matched.length?`tag: ${matched.join(', ')}`:textMatch?`text: ${text.matched.slice(0,3).join(', ')}`:entry.scope==='location'?'current location':entry.scope==='character'?'character':'world'});
+  const since=last[entry.id]===undefined?Infinity:now-last[entry.id],stuck=since<(entry.sticky||0),cooling=!stuck&&since<(entry.sticky||0)+(entry.cooldown||0),fresh=(matched.length||textMatch)&&!stuck&&!cooling;
+  if(!scopeMatch&&!fresh&&!stuck){if(cooling&&(matched.length||textMatch))omitted.push({id:entry.id,reason:`cooldown: until tick ${last[entry.id]+(entry.sticky||0)+entry.cooldown}`});continue;}
+  const score=(fresh?matched.length*10+Math.min(9,Math.round(text.score*2)):stuck?10:0)+(entry.location===location?5:0)+(entry.character===actorId?5:0);
+  results.push({...entry,score,fresh,reason:fresh&&matched.length?`tag: ${matched.join(', ')}`:fresh?`text: ${text.matched.slice(0,3).join(', ')}`:stuck?`sticky: ${entry.sticky-since} tick(s) left`:entry.scope==='location'?'current location':entry.scope==='character'?'character':'world'});
  }
  results.sort((a,b)=>b.score-a.score||a.id.localeCompare(b.id));let used=0;
- const selected=[],omitted=[];for(const e of results){const length=e.text.length;if(used+length<=budget){selected.push({id:e.id,text:e.text,reason:e.reason,score:e.score});used+=length;}else omitted.push({id:e.id,reason:'budget'});}
- return {selected,omitted,budget,used};
+ const selected=[],activated=[];for(const e of results){const length=e.text.length;if(used+length<=budget){selected.push({id:e.id,text:e.text,reason:e.reason,score:e.score});if(e.fresh)activated.push(e.id);used+=length;}else omitted.push({id:e.id,reason:'budget'});}
+ return {selected,omitted,budget,used,activated,tick:now};
 }
 // opts.wide gathers every candidate so a caller-side allocator (context-budget.mjs) can decide what fits.
 export function contextFor(s,p,actorId=p.playerId,turn=null,query='',opts={}){
@@ -61,7 +74,8 @@ export function contextFor(s,p,actorId=p.playerId,turn=null,query='',opts={}){
  const sceneId=s.modules['story.scenes']?.pending,scriptedScene=(p.scriptedScenes||[]).find(x=>x.id===sceneId),sceneBeat=scriptedScene?.beats?.find(b=>b.id===s.modules['story.scenes']?.pendingBeat)||scriptedScene;
  const backgroundCharacters=p.actors.filter(a=>a.id!==actorId&&s.actors[a.id].location!==location&&new RegExp(keyPattern(a.name,false),'iu').test(query)).map(a=>({id:a.id,name:a.name,pronouns:a.pronouns,description:a.description||'',traits:a.traits||[],voice:a.voice||'',rule:absentNote(a.name)}));
  const npcRelationships=Object.entries(s.modules['social.npc']?.pairs||{}).filter(([key])=>key.split('|').every(id=>s.actors[id]?.location===location)).map(([key,value])=>({characters:key.split('|'),...value}));
- return {money:s.modules['world.economy']?.balance??null,npcRelationships,promptVersion:'0.8',gameProject:p.gameProject||null,scriptedScene:scriptedScene?{id:sceneId,beat:s.modules['story.scenes']?.pendingBeat||'opening',title:scriptedScene.title,opening:sceneBeat.opening,stage:sceneBeat.stage||[],choices:sceneBeat.choices.map(c=>({id:c.id,label:c.label}))}:null,sceneWaiting:s.modules['story.scenes']?.waiting||null,sceneHistory:s.modules['story.scenes']?.history.slice(-5)||[],plans:(s.modules['story.scenes']?.plans||[]).filter(x=>x.status==='pending').sort((a,b)=>a.deadlineTick-b.deadlineTick),characterStats,relationshipProgression,actor:{id:actorId,name:own.name,pronouns:own.pronouns,style:own.style||'Natural and concise',goal:own.goal||'',traits:own.traits||[],backstory:own.backstory||'',likes:own.likes||[],dislikes:own.dislikes||[],voice:own.voice||'',year:own.year||null,major:own.major||null,dorm:own.dorm||null,appearance:own.appearance||'',relationshipToPlayer:s.modules['social.relationships']?.edges[`${actorId}--${p.playerId}`]??null},location:p.locations.find(l=>l.id===location),present:p.actors.filter(a=>s.actors[a.id].location===location).map(a=>({id:a.id,name:a.name,pronouns:a.pronouns,description:a.description||'',traits:a.traits||[],voice:a.voice||''})),backgroundCharacters,objects,items,carried,equipped,nearbyBonds,tick:s.tick,calendar:p.calendar,date:clock.date,day,week,weekday,daypart:part,activeEvents,
-  dating,romanceTempo,romanceNetwork,phone,socialFeed,unlockedEndings,intimacy,rumors,facts:(p.facts||[]).filter(f=>canSee(f.knownBy)&&!(p.facts||[]).some(n=>n.supersedes===f.id&&canSee(n.knownBy))).map(f=>({id:f.id,text:f.text})),generatedFacts:generatedFactTrace.selected.map(({id,subject,text,source,reason})=>({id,subject,text,source,reason})),generatedFactTrace,lorebook:lore.selected,loreTrace:lore,
+ const npcFriendshipMemories=actorId!==p.playerId?npcMemoriesFor(s,actorId):[];
+ return {money:s.modules['world.economy']?.balance??null,npcRelationships,...(npcFriendshipMemories.length?{npcFriendshipMemories}:{}),promptVersion:'0.8',gameProject:p.gameProject||null,scriptedScene:scriptedScene?{id:sceneId,beat:s.modules['story.scenes']?.pendingBeat||'opening',title:scriptedScene.title,opening:sceneBeat.opening,stage:sceneBeat.stage||[],choices:sceneBeat.choices.map(c=>({id:c.id,label:c.label}))}:null,sceneWaiting:s.modules['story.scenes']?.waiting||null,sceneHistory:s.modules['story.scenes']?.history.slice(-5)||[],plans:(s.modules['story.scenes']?.plans||[]).filter(x=>x.status==='pending').sort((a,b)=>a.deadlineTick-b.deadlineTick),characterStats,relationshipProgression,actor:{id:actorId,name:own.name,pronouns:own.pronouns,style:own.style||'Natural and concise',goal:own.goal||'',traits:own.traits||[],backstory:own.backstory||'',likes:own.likes||[],dislikes:own.dislikes||[],voice:own.voice||'',year:own.year||null,major:own.major||null,dorm:own.dorm||null,appearance:own.appearance||'',relationshipToPlayer:s.modules['social.relationships']?.edges[`${actorId}--${p.playerId}`]??null},location:p.locations.find(l=>l.id===location),present:p.actors.filter(a=>s.actors[a.id].location===location).map(a=>({id:a.id,name:a.name,pronouns:a.pronouns,description:a.description||'',traits:a.traits||[],voice:a.voice||''})),backgroundCharacters,objects,items,carried,equipped,nearbyBonds,tick:s.tick,calendar:p.calendar,date:clock.date,day,week,weekday,daypart:part,activeEvents,
+  dating,romanceTempo,romanceNetwork,phone,socialFeed,unlockedEndings,intimacy,rumors,director:directorContext(s,p),facts:(p.facts||[]).filter(f=>canSee(f.knownBy)&&!(p.facts||[]).some(n=>n.supersedes===f.id&&canSee(n.knownBy))).map(f=>({id:f.id,text:f.text})),generatedFacts:generatedFactTrace.selected.map(({id,subject,text,source,reason})=>({id,subject,text,source,reason})),generatedFactTrace,lorebook:lore.selected,loreTrace:lore,
   memories:[...selected.map(m=>({source:m.source,text:m.text,promise:m.promise,kind:m.kind})),...ledger.map(m=>({source:m.source,text:m.text})),...(s.modules['story.scenes']?.memories||[]).filter(m=>canSee(m.knownBy)).slice(-8).map(m=>({source:`scene:${m.scene}`,text:m.text,character:m.character}))],dialogue:Object.values(s.turns).filter(t=>t.status==='complete'&&t.events.some(e=>e.type==='social.spoke'&&canSee(e.visibility))).slice(-6).map(t=>({source:t.id,text:t.narrative})),recentActions,outcomes:(turn?.events||[]).filter(e=>canSee(e.visibility)).map(e=>({type:e.type,...e.payload}))};
 }

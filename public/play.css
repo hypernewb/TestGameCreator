@@ -1,0 +1,12 @@
+/* Runtime additions on top of ui-showcase.css: title screen, long choice lists, up to three characters. */
+.title-screen{position:absolute;z-index:8;inset:0;overflow:auto;padding:8vh 7vw;background:linear-gradient(90deg,#16110ef2 0,#16110ecc 55%,#16110e55)}
+.title-screen .menu-list{margin:0 0 28px}.title-screen .menu-list p{color:#e7d9c6}
+.classic-link{color:var(--brass);font:700 13px var(--sans)}
+.choices{max-height:70vh;overflow:auto}
+.choices button small{display:block;margin-top:4px;font:600 12px var(--sans);opacity:.75}
+.choices button:disabled{opacity:.5;cursor:not-allowed}.choices button:disabled:hover{padding-left:17px;background:#ead9bc;color:var(--ink)}
+.choices details{margin-top:10px;color:#e7d9c6}.choices summary{cursor:pointer;padding:6px 7px;font:700 13px var(--sans)}
+.choices .choices__back{justify-content:center;background:transparent;color:var(--brass);border:1px solid #c09a5577;font:700 12px var(--sans)}
+.character--slot1{left:6%}.character--slot2{left:50%;transform:translateX(-50%)}.character--slot3{right:6%}
+.character--slot1,.character--slot2,.character--slot3{height:min(70vh,700px)}
+.character[data-speaking=false]{filter:drop-shadow(0 18px 24px #100a0780) brightness(.82)}

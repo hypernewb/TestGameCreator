@@ -74,12 +74,26 @@ export function playerStatements(state,pack,actorId,{keep=40,statements=4}={}){
   out.push({source:turn.id,tick:turn.events?.[0]?.tick||0,kind:c.kind,said:c.said,listener:cast.map(nameOf).join(' and ')});
  }
  out.sort((a,b)=>a.tick-b.tick);
+ // A correction replaces what it corrects: after "actually my favorite color is red", the older "…is teal" clause leaves
+ // every prompt, or a small model recalls whichever of the two it reads first. Other clauses of that disclosure stay.
+ const seen=new Set();
+ for(const m of [...out].reverse()){if(m.kind!=='disclosure')continue;const parts=clauses(m.said),kept=parts.filter(c=>{const s=slotOf(c);if(!s)return true;const old=seen.has(s);seen.add(s);return !old;});
+  if(kept.length<parts.length)m.kept=kept.join(', ');}
  const lasting=out.filter(m=>m.kind==='promise'||m.kind==='disclosure').slice(-keep),plain=out.filter(m=>m.kind==='statement').slice(-statements);
  const chosen=new Set([...lasting,...plain]);
  // Once this character has heard the player's name, later memories use it: "Mara promised Ada…" reads as a person.
  let known=player;
  return out.flatMap(m=>{const label=known;if(player==='the player'&&m.kind==='disclosure')known=disclosedName(m.said)||known;
-  return chosen.has(m)&&m.said?[{source:m.source,kind:m.kind,promise:m.kind==='promise',text:memoryText(m.kind,m.said,m.listener,label)}]:[];});
+  const said=m.kept??m.said;return chosen.has(m)&&said?[{source:m.source,kind:m.kind,promise:m.kind==='promise',text:memoryText(m.kind,said,m.listener,label)}]:[];});
+}
+const clauses=said=>String(said).split(/,\s*(?:(?:and|but)\s+)?|;\s*|\s+(?:and|but)\s+(?=(?:my|i|i'm|im|i've)\b)/iu).map(c=>c.trim()).filter(Boolean);
+/** What a first-person clause states about the player ("favorite color", "name", "live"), or '' when it is not a restatable fact. */
+export function slotOf(clause){
+ const c=String(clause).toLowerCase().replace(/[’]/g,"'").replace(/favourite/g,'favorite').replace(/colour/g,'color');
+ if(/\b(?:call me|i go by)\b/.test(c))return 'name';
+ const my=/\bmy ((?:[a-z']+\s+){0,2}?[a-z']+) (?:is|are)\b(?!\s+not\b)/.exec(c);if(my)return my[1];
+ const verb=/\bi (live|grew up|work|study)\b/.exec(c);if(verb)return verb[1];
+ return /\bi(?:'m| am|m)\s+\d{1,3}\b/.test(c)?'age':'';
 }
 
 const NOT_A_NAME=new Set('not just only still also really so very here back the a an whatever anything'.split(' '));

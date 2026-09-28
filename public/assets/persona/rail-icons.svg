@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute"><defs>
+<symbol id="icon-log" viewBox="0 0 24 24"><path d="M3 5h18v2H3zM3 11h18v2H3zM3 17h12v2H3z"/></symbol>
+<symbol id="icon-auto" viewBox="0 0 24 24"><path d="M5 4l14 8-14 8z"/></symbol>
+<symbol id="icon-skip" viewBox="0 0 24 24"><path d="M3 5l8 7-8 7zM13 5l8 7-8 7z"/></symbol>
+<symbol id="icon-pref" viewBox="0 0 24 24"><path d="M4 6h10v2H4zM17 5v4h2V5zM4 15h4v-4H4zM11 13v4h9v-2h-7v-2zM4 20h10v-2H4zM17 15v4h2v-4z"/></symbol>
+<symbol id="icon-cast" viewBox="0 0 24 24"><path d="M12 3a4 4 0 110 8 4 4 0 010-8zM4 21c0-4.4 3.6-8 8-8s8 3.6 8 8z"/></symbol>
+<symbol id="icon-bg" viewBox="0 0 24 24"><path d="M4 4h16v16H4zm3 12l4-5 3 3 3-4 3 4V6H7z"/></symbol>
+</defs></svg>

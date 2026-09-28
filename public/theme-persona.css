@@ -1,0 +1,59 @@
+/* Venus/Persona theme: additive, opt-in reskin toggled via body.theme-persona (public/theme.mjs). Game screens only — never linked from studio.html. Palette leans Venus-University plum/paper/rose; shapes lean Persona half-pills and archways over P5's diagonal clip-paths. */
+body.theme-persona{--vu-paper:#f3ece0;--vu-paper-line:#d8c9ae;--vu-ink:#221c2c;--vu-plum:#2c2138;--vu-plum-soft:#3a2c4a;--vu-rose:#d9557c;--vu-rose-dark:#a83a5c;--vu-gold:#e3b04f;--vu-cream:#f6f0e6;--vu-display:Georgia,'Times New Roman',serif;--vu-mono:'SFMono-Regular',Consolas,monospace;--pill:999px;--tile:14px}
+.vn-rail button svg{display:none}
+body.theme-persona .vn-rail button svg{display:inline-block;width:14px;height:14px;vertical-align:-2px;margin-right:5px;fill:currentColor}
+body.theme-persona{background:var(--vu-ink)}
+body.theme-persona button,body.theme-persona .button{font:600 13px/1 system-ui,sans-serif;letter-spacing:.4px;background:var(--vu-plum);color:var(--vu-cream);border:1px solid var(--vu-plum-soft);border-radius:10px var(--pill) var(--pill) 10px;padding:9px 16px}
+body.theme-persona button:hover,body.theme-persona .button:hover{background:var(--vu-rose);border-color:var(--vu-rose)}
+body.theme-persona button:disabled{opacity:.4}
+body.theme-persona button:focus-visible,body.theme-persona input:focus-visible,body.theme-persona summary:focus-visible{outline:2px solid var(--vu-gold);outline-offset:2px}
+body.theme-persona input,body.theme-persona select{background:var(--vu-plum);color:var(--vu-cream);border:1px solid var(--vu-plum-soft);border-radius:var(--pill)}
+body.theme-persona textarea{background:var(--vu-plum);color:var(--vu-cream);border:1px solid var(--vu-plum-soft);border-radius:var(--tile)}
+
+/* Header */
+body.theme-persona header{background:var(--vu-ink);border-bottom:3px solid var(--vu-rose)}
+body.theme-persona .brand{font-family:var(--vu-display);font-style:italic;color:var(--vu-cream);letter-spacing:.5px}
+body.theme-persona .brand span{color:var(--vu-gold);font-family:var(--vu-mono);font-style:normal}
+body.theme-persona .badge{background:var(--vu-plum);color:var(--vu-cream);border:1px solid var(--vu-rose);border-radius:var(--pill);font-family:var(--vu-mono);font-weight:400}
+
+/* Welcome / campaign picker */
+body.theme-persona main#welcome .eyebrow{color:var(--vu-rose);font-family:var(--vu-mono)}
+body.theme-persona main#welcome h1{font-family:var(--vu-display);font-style:italic;color:var(--vu-cream)}
+body.theme-persona .pack-card{background:var(--vu-plum);border:1px solid var(--vu-plum-soft);border-radius:18px;position:relative;transform:rotate(-.8deg);box-shadow:6px 7px 0 var(--vu-ink)}
+body.theme-persona .pack-card h2{font-family:var(--vu-display);font-style:italic;color:var(--vu-rose)}
+body.theme-persona .pack-card::before{content:'';position:absolute;top:16px;left:0;width:5px;height:28px;background:var(--vu-gold);border-radius:0 4px 4px 0}
+
+/* VN dialogue layer: reading surfaces get the half-pill-flat-right "paper" shape, actions get half-pill-flat-left */
+body.theme-persona.visual-novel #scene::after{content:'';position:absolute;inset:auto 0 0 0;height:58%;background:linear-gradient(to bottom,transparent,rgba(34,25,44,.5) 45%,rgba(20,15,26,.9));pointer-events:none;z-index:3}
+body.theme-persona.visual-novel .vn-hud{background:var(--vu-ink);border-left:4px solid var(--vu-rose);color:var(--vu-cream);border-radius:0 var(--tile) var(--tile) 0;font-family:var(--vu-mono)}
+body.theme-persona.visual-novel .vn-rail button{background:color-mix(in srgb,var(--vu-plum) 88%,transparent);border:1px solid var(--vu-plum-soft);color:var(--vu-cream);border-radius:var(--tile)}
+body.theme-persona.visual-novel .vn-rail button:hover{background:var(--vu-rose);border-color:var(--vu-rose)}
+body.theme-persona.visual-novel .vn-rail button.active{background:var(--vu-gold)!important;color:var(--vu-ink)!important;border-color:var(--vu-gold)!important}
+body.theme-persona.visual-novel .vn-dialogue{background:var(--vu-paper) repeating-linear-gradient(112deg,rgba(34,28,44,.035) 0 2px,transparent 2px 7px);color:var(--vu-ink);border:1px solid var(--vu-paper-line);border-radius:52px 16px 30px 40px;box-shadow:7px 8px 0 var(--vu-rose-dark)}
+body.theme-persona.visual-novel .vn-speaker{background:var(--vu-rose);color:var(--vu-cream);font-family:var(--vu-display);font-style:italic;border-radius:40% 60% 55% 45%/60% 45% 60% 40%;transform:rotate(-1.2deg);box-shadow:3px 4px 0 var(--vu-rose-dark)}
+body.theme-persona.visual-novel .vn-speaker img{border:2px solid var(--vu-cream);border-radius:50% 50% 8px 8px}
+body.theme-persona.visual-novel #vn-next{background:var(--vu-rose);color:var(--vu-cream);font-family:var(--vu-mono);padding:5px 14px 5px 16px;clip-path:polygon(9px 0,100% 0,100% 100%,9px 100%,0 50%)}
+body.theme-persona.visual-novel #vn-progress{font-family:var(--vu-mono);color:#8a7d6a}
+body.theme-persona.visual-novel #vn-actions button{background:var(--vu-cream);color:var(--vu-ink);border:1px solid var(--vu-paper-line);border-radius:10px var(--pill) var(--pill) 10px}
+body.theme-persona.visual-novel #vn-actions button:hover{background:var(--vu-gold)}
+body.theme-persona.visual-novel #input-form .input-row{border:1px solid var(--vu-paper-line);border-radius:var(--pill);box-shadow:4px 5px 0 var(--vu-rose-dark)}
+body.theme-persona.visual-novel #send{background:var(--vu-rose);color:var(--vu-cream);border-radius:10px var(--pill) var(--pill) 10px}
+body.theme-persona.visual-novel .vn-alert{border:1px solid var(--vu-gold);background:var(--vu-plum);color:var(--vu-gold);border-radius:var(--tile)}
+body.theme-persona.visual-novel .vn-alert button{background:var(--vu-gold);color:var(--vu-ink)}
+body.theme-persona.visual-novel #background{filter:brightness(.78) saturate(1.05)}
+
+/* Phone / hangout messages keep a cleaner campus-app card look, tinted to the theme */
+body.theme-persona.visual-novel #vn-phone{background:color-mix(in srgb,var(--vu-ink) 95%,transparent);border:1px solid var(--vu-rose);border-radius:var(--tile)}
+body.theme-persona.visual-novel .vn-message{background:var(--vu-paper);color:var(--vu-ink);border-radius:14px}
+body.theme-persona.visual-novel .vn-message button{background:var(--vu-rose);color:var(--vu-cream);border-radius:var(--pill)}
+
+/* Dialogs */
+body.theme-persona dialog{background:var(--vu-ink);color:var(--vu-cream);border:1px solid var(--vu-rose);border-radius:var(--tile)}
+body.theme-persona dialog::backdrop{background:#000c}
+body.theme-persona dialog h2{font-family:var(--vu-display);font-style:italic;color:var(--vu-rose)}
+body.theme-persona #ai-dialog{border-color:var(--vu-rose)}
+body.theme-persona .ai-presets button,body.theme-persona .ai-controls button{border-radius:10px var(--pill) var(--pill) 10px}
+body.theme-persona .memory-card{background:var(--vu-plum);border:1px solid var(--vu-plum-soft);border-radius:var(--tile)}
+body.theme-persona .memory-card strong,body.theme-persona aside h2{color:var(--vu-rose)}
+
+body.theme-persona footer{border-top-color:var(--vu-rose);color:var(--vu-cream)}

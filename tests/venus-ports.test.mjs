@@ -55,6 +55,16 @@ test('compatible provider emits complete sanitized-preview candidates from an SS
  const seen=[],context={stagedCast:['ada'],absentCharacters:[],sceneHistory:[],playerAction:'Continue',location:p.locations[0]};const result=await provider.generateScene(context,p,null,lines=>seen.push(...lines));assert.deepEqual(result.lines.map(x=>x.text),['First page.','Second page.']);assert.deepEqual(seen.map(x=>x.text),['First page.','Second page.']);
 });
 
+test('compatible provider never previews a rejected scene draft',async()=>{
+ const p=JSON.parse(readFileSync(new URL('../packs/neutral.json',import.meta.url))),answers=[{lines:[{speaker:'',text:'Your heart pounds with anticipation.'}]},{lines:[{speaker:'',text:'You cross the workshop and inspect the shelves.'}]}];let call=0;
+ const provider=new CompatibleProvider({endpoint:'http://localhost:1234/v1/chat/completions',model:'stream',fetchImpl:async()=>new Response(JSON.stringify({choices:[{message:{content:JSON.stringify(answers[call++])},finish_reason:'stop'}]}),{headers:{'Content-Type':'application/json'}})});
+ const seen=[],context={daypart:'Afternoon',stagedCast:[],absentCharacters:[],sceneHistory:[],knownFacts:[],spokenBefore:[],playerAction:'Inspect the workshop.',location:p.locations[0]};
+ const result=await provider.generateScene(context,p,null,lines=>seen.push(...lines));
+ assert.deepEqual(result.lines.map(x=>x.text),['You cross the workshop and inspect the shelves.']);
+ assert.deepEqual(seen.map(x=>x.text),['You cross the workshop and inspect the shelves.']);
+ assert.equal(result.lintTrace[0].check,'player-agency');
+});
+
 test('NPC social module develops off-screen relationships reproducibly and exports cleanly',()=>{
  const p=JSON.parse(readFileSync(new URL('../packs/npc-social.json',import.meta.url)));let s=createWorld(p,registry,'npc-social-test',42);
  for(let i=0;i<4;i++)s=execute(s,{id:'wait-'+i,type:'core.wait',args:{},actorId:p.playerId,expectedRevision:s.revision},p,registry).state;

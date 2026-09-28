@@ -13,9 +13,11 @@ Local-first interactive fiction engine: deterministic world state + modules, wit
 - Dense one-liner style: short names, chained expressions, few comments. Match surrounding code; don't reformat files.
 - Pure functions over state; modules never mutate state outside `execute`.
 - New behaviour needs a test in `tests/`. Keep prompts small: every token added to context must justify itself on the `minimal` preset.
+- Module freeze: no new modules until the F1 vertical slice passes the fun gate (`docs/NEXT-MILESTONES.md`). Fun-tier work (F1–F12) comes before P1–P4.
 
 ## Safety rules
-- NEVER open or write `data/campaigns.sqlite` or `data/ai-settings.json` (the user's real campaign). Scripts and experiments use `:memory:` or a temp-dir DB (`createApp({dataPath})` puts ai-settings.json next to that DB).
+- Creating/writing campaigns in the real `data/campaigns.sqlite` is allowed (the user has authorized this). Bulk-destructive ops on it (deleting/wiping campaigns, dropping tables) still need to go through a reviewable script and a heads-up in chat, not an ad hoc inline command.
+- NEVER open or write `data/ai-settings.json` (the user's real AI connection settings). Scripts and experiments use `:memory:` or a temp-dir DB (`createApp({dataPath})` puts ai-settings.json next to that DB).
 - Other Claude sessions may be editing this repo at the same time. Before committing, check `git status`/`git diff`. Only stage files you changed yourself (`git add <paths>`, never `-A`), and don't revert changes you didn't make.
 - Commit only when asked.
 

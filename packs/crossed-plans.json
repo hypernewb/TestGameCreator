@@ -1,0 +1,660 @@
+{
+  "schemaVersion": 1,
+  "id": "sample.crossed-plans",
+  "version": "1.0.0",
+  "title": "Crossed Plans",
+  "subtitle": "A short story about two promises that cannot both be kept",
+  "playerId": "player",
+  "calendar": "Hour",
+  "accent": "#b96f4a",
+  "gameProject": {
+    "premise": "Two important people need the player during the same narrow window.",
+    "setting": "A contemporary city on the evening of Mina's first gallery opening and Rowan's unexpected departure news.",
+    "writingStyle": "Grounded present-tense visual novel dialogue. Characters speak directly; narration is reserved for visible action and environment.",
+    "presentation": "visual-novel",
+    "conversationStyle": "continuous",
+    "calendar": {"startWeekday": "Monday", "startDate": ""},
+    "ai": {
+      "intent": "Interpret the player's words as one grounded action or spoken response without inventing results.",
+      "scene": "Continue the active conversation naturally. Give characters initiative, preserve their boundaries, and let them leave when the interaction has run its course.",
+      "daypart": "Open the next part of the day with only characters who are physically available."
+    }
+  },
+  "modules": {
+    "social.conversation": "0.1.0",
+    "social.relationships": "0.1.0",
+    "world.schedule": "0.1.0",
+    "story.scenes": "0.1.0",
+    "story.timed-events": "0.1.0",
+    "story.endings": "0.1.0",
+    "social.bonds": "0.1.0"
+  },
+  "durations": {
+    "core.inspect": 1,
+    "social.speak": 1
+  },
+  "locations": [
+    {
+      "id": "bedroom",
+      "owner": "player",
+      "name": "Your Bedroom",
+      "aliases": ["my room", "my bedroom", "bedroom", "home"],
+      "description": "Two messages glow on your phone. Mina needs help hanging her first gallery show. Rowan is waiting on the observatory roof with news that cannot wait.",
+      "background": "assets/showcase/bedroom.png",
+      "exits": [
+        {
+          "to": "square"
+        }
+      ]
+    },
+    {
+      "id": "square",
+      "name": "Old Town Square",
+      "aliases": ["town square", "square"],
+      "description": "The gallery lies east and the observatory west. There is time to keep one promise, but not both.",
+      "background": "assets/hub.svg",
+      "exits": [
+        {
+          "to": "bedroom"
+        },
+        {
+          "to": "gallery"
+        },
+        {
+          "to": "rooftop"
+        }
+      ]
+    },
+    {
+      "id": "gallery",
+      "name": "Lantern Gallery",
+      "aliases": ["gallery", "Mina's gallery"],
+      "description": "Frames wait against exposed brick walls. Mina keeps checking the door while pretending to study the labels.",
+      "background": "assets/workshop.svg",
+      "exits": [
+        {
+          "to": "square"
+        }
+      ]
+    },
+    {
+      "id": "rooftop",
+      "name": "Observatory Rooftop",
+      "aliases": ["roof", "rooftop", "observatory"],
+      "description": "The city lights gather below the old telescope. Rowan has brought two paper cups and a sealed acceptance letter.",
+      "background": "assets/observatory.svg",
+      "exits": [
+        {
+          "to": "square"
+        }
+      ]
+    }
+  ],
+  "actors": [
+    {
+      "id": "player",
+      "name": "You",
+      "location": "bedroom"
+    },
+    {
+      "id": "mina",
+      "name": "Mina",
+      "location": "bedroom",
+      "description": "An emerging illustrator opening her first independent show.",
+      "style": "Careful, perceptive, and wry when nervous",
+      "goal": "Open the exhibition without pretending the occasion means less than it does.",
+      "traits": [
+        "observant",
+        "self-reliant",
+        "quietly sentimental"
+      ],
+      "voice": "Short modern sentences with dry warmth.",
+      "backstory": "Started drawing on the backs of bus transfers during a two-hour commute. Spent three years on commissions and café menus to afford this show.",
+      "likes": ["cheap felt-tip pens", "the quiet hour before people arrive", "honest criticism"],
+      "dislikes": ["being called brave", "people who talk about exposure instead of paying"],
+      "pronouns": "she/her",
+      "examples": [
+        "The lighting guy called me 'the artist.' I nearly turned around to look for her.",
+        "It's fine. It's a wall. I've stared at walls before."
+      ],
+      "conversationStarters": [
+        "What part of the opening are you most worried about?",
+        "Tell me what still needs to be done. I can help.",
+        "Which piece in the show means the most to you?"
+      ],
+      "portrait": "assets/showcase/test-character.png",
+      "poses": [
+        {
+          "id": "neutral",
+          "image": "assets/showcase/test-character.png"
+        }
+      ]
+    },
+    {
+      "id": "rowan",
+      "name": "Rowan",
+      "location": "rooftop",
+      "description": "Your longtime friend, leaving the city sooner than either of you expected.",
+      "style": "Direct, restless, and sincere beneath casual jokes",
+      "goal": "Tell the player face to face about the two-year fellowship abroad that starts next month.",
+      "traits": [
+        "loyal",
+        "impulsive",
+        "afraid of sentimental goodbyes"
+      ],
+      "voice": "Plain speech, quick jokes, then sudden honesty.",
+      "backstory": "Grew up three streets from the player and spent clear nights on this roof with the old telescope. Applied for a two-year observatory fellowship abroad on a whim; it starts next month.",
+      "likes": ["terrible vending-machine coffee", "star charts", "dumb bets"],
+      "dislikes": ["long goodbyes", "being asked to stay"],
+      "pronouns": "he/him",
+      "examples": [
+        "So. Good news, weird news. The weird news is also the good news.",
+        "Don't do the face. I'm serious. Okay, I'm mostly serious."
+      ],
+      "conversationStarters": [
+        "What did you need to tell me in person?",
+        "How soon are you leaving?",
+        "What do you want to do with the time we have left?"
+      ]
+    }
+  ],
+  "timedEvents": [
+    {
+      "id": "mina-opening",
+      "name": "Help Mina open the gallery",
+      "startTick": 3,
+      "endTick": 4,
+      "location": "gallery",
+      "character": "mina",
+      "attendedFlag": "mina-attended",
+      "missedFlag": "mina-missed",
+      "attendedText": "You arrive before the doors open. Mina lets out a breath she has been holding.",
+      "missedRecap": "The gallery opened without you. Mina stopped watching the door once the first guests arrived."
+    },
+    {
+      "id": "rowan-news",
+      "name": "Meet Rowan on the rooftop",
+      "startTick": 3,
+      "endTick": 4,
+      "location": "rooftop",
+      "character": "rowan",
+      "attendedFlag": "rowan-attended",
+      "missedFlag": "rowan-missed",
+      "attendedText": "Rowan hands you a cooling paper cup and finally opens the acceptance letter.",
+      "missedRecap": "Rowan watched the last light leave the rooftops, then sent you a photograph of the acceptance letter instead."
+    }
+  ],
+  "scriptedScenes": [
+    {
+      "id": "two-messages",
+      "title": "Two messages",
+      "opening": "Mina waits by the door while your phone lights with Rowan’s message.",
+      "trigger": {
+        "event": "core.inspected",
+        "match": {
+          "location": "bedroom"
+        }
+      },
+      "when": {
+        "location": "bedroom"
+      },
+      "pages": [
+        {
+          "speaker": "mina",
+          "text": "I know the timing is awful. I could use one person in the gallery who knows how hard this was."
+        },
+        {
+          "speaker": "",
+          "text": "Your phone lights again. Rowan asks you to meet on the observatory roof before the news becomes public."
+        }
+      ],
+      "choices": [
+        {
+          "id": "promise-both",
+          "label": "Promise both of them you will come",
+          "result": "You send two reassuring replies. For a moment, the impossible schedule feels like a later problem.",
+          "effects": [
+            {
+              "type": "flag",
+              "id": "double-promised",
+              "value": true
+            },
+            {
+              "type": "plan",
+              "id": "promise-mina",
+              "character": "mina",
+              "plan": "Attend Mina's gallery opening",
+              "deadlineTick": 4,
+              "visibility": [
+                "player",
+                "mina"
+              ]
+            },
+            {
+              "type": "plan",
+              "id": "promise-rowan",
+              "character": "rowan",
+              "plan": "Meet Rowan on the rooftop",
+              "deadlineTick": 4,
+              "visibility": [
+                "player",
+                "rowan"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "admit-conflict",
+          "label": "Tell them the plans conflict",
+          "result": "You tell them both the truth. Neither reply is cheerful, but neither has been misled.",
+          "effects": [
+            {
+              "type": "flag",
+              "id": "conflict-disclosed",
+              "value": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mina-turning-point",
+      "title": "Before the doors open",
+      "opening": "Mina looks from you to the last crooked frame. Relief softens her careful expression.",
+      "trigger": {
+        "event": "story.timedEventAttended",
+        "match": {
+          "event": "mina-opening"
+        }
+      },
+      "when": {
+        "location": "gallery"
+      },
+      "stage": [
+        "show:mina",
+        "sprite:mina,neutral"
+      ],
+      "pages": [
+        {
+          "speaker": "mina",
+          "text": "You came. I had a speech prepared for when you didn't."
+        }
+      ],
+      "choices": [
+        {
+          "id": "make-room",
+          "label": "Help her straighten the final wall",
+          "result": "You work beside Mina until the first visitor enters. She asks you to stay near her for the opening toast.",
+          "effects": [
+            {
+              "type": "flag",
+              "id": "mina-chosen",
+              "value": true
+            },
+            {
+              "type": "trust",
+              "character": "mina",
+              "delta": 10
+            },
+            {
+              "type": "memory",
+              "character": "mina",
+              "text": "The player chose to stand beside Mina when her first gallery show opened."
+            },
+            {
+              "type": "bond",
+              "character": "mina",
+              "dimension": "love",
+              "delta": 10
+            },
+            {
+              "type": "bond",
+              "character": "mina",
+              "dimension": "lust",
+              "delta": 2
+            }
+          ]
+        },
+        {
+          "id": "be-honest",
+          "label": "Tell her someone else is waiting",
+          "result": "Mina appreciates the truth, even though she asks you to stay through the opening.",
+          "effects": [
+            {
+              "type": "flag",
+              "id": "mina-chosen",
+              "value": true
+            },
+            {
+              "type": "trust",
+              "character": "mina",
+              "delta": 5
+            },
+            {
+              "type": "bond",
+              "character": "mina",
+              "dimension": "love",
+              "delta": 5
+            },
+            {
+              "type": "bond",
+              "character": "mina",
+              "dimension": "lust",
+              "delta": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rowan-turning-point",
+      "title": "The letter",
+      "opening": "Rowan taps the envelope against the railing until you take it from their hand.",
+      "trigger": {
+        "event": "story.timedEventAttended",
+        "match": {
+          "event": "rowan-news"
+        }
+      },
+      "when": {
+        "location": "rooftop"
+      },
+      "pages": [
+        {
+          "speaker": "rowan",
+          "text": "Six months away. Maybe longer. I couldn't let you hear it from somebody else."
+        }
+      ],
+      "choices": [
+        {
+          "id": "celebrate",
+          "label": "Celebrate before talking about goodbye",
+          "result": "You raise the paper cups to the future Rowan earned. The goodbye can have its own hour.",
+          "effects": [
+            {
+              "type": "flag",
+              "id": "rowan-chosen",
+              "value": true
+            },
+            {
+              "type": "trust",
+              "character": "rowan",
+              "delta": 10
+            },
+            {
+              "type": "memory",
+              "character": "rowan",
+              "text": "The player celebrated Rowan's acceptance before asking what the departure would change."
+            },
+            {
+              "type": "bond",
+              "character": "rowan",
+              "dimension": "love",
+              "delta": 10
+            },
+            {
+              "type": "bond",
+              "character": "rowan",
+              "dimension": "lust",
+              "delta": 2
+            }
+          ]
+        },
+        {
+          "id": "ask-why",
+          "label": "Ask why they waited to tell you",
+          "result": "The difficult question lands cleanly. Rowan admits that leaving felt real only after telling you.",
+          "effects": [
+            {
+              "type": "flag",
+              "id": "rowan-chosen",
+              "value": true
+            },
+            {
+              "type": "trust",
+              "character": "rowan",
+              "delta": 5
+            },
+            {
+              "type": "bond",
+              "character": "rowan",
+              "dimension": "love",
+              "delta": 5
+            },
+            {
+              "type": "bond",
+              "character": "rowan",
+              "dimension": "lust",
+              "delta": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+    "id": "mina-aftermath",
+    "title": "The empty place",
+    "allowInput": false,
+      "opening": "A photograph from the gallery arrives after the opening. There is an empty place beside Mina in every frame.",
+      "trigger": {
+        "event": "story.timedEventMissed",
+        "match": {
+          "event": "mina-opening"
+        }
+      },
+      "pages": [
+      {
+        "speaker": "",
+        "text": "Mina’s message reads, “It went well. I wish you had told me I should stop waiting.”"
+        }
+      ],
+      "choices": [
+        {
+          "id": "apologize",
+          "label": "Apologize without making an excuse",
+          "result": "Mina does not forgive you immediately, but she answers. The conversation can continue another day.",
+          "effects": [
+            {
+              "type": "trust",
+              "character": "mina",
+              "delta": -4
+            },
+            {
+              "type": "bond",
+              "character": "mina",
+              "dimension": "love",
+              "delta": -4
+            }
+          ]
+        },
+        {
+          "id": "stay-silent",
+          "label": "Leave the message unanswered",
+          "result": "The unread reply box becomes its own answer.",
+          "effects": [
+            {
+              "type": "trust",
+              "character": "mina",
+              "delta": -10
+            },
+            {
+              "type": "bond",
+              "character": "mina",
+              "dimension": "love",
+              "delta": -10
+            }
+          ]
+        }
+      ]
+    },
+    {
+    "id": "rowan-aftermath",
+    "title": "News by photograph",
+    "allowInput": false,
+      "opening": "Rowan's photograph shows the letter pinned beneath one paper cup. The other cup is gone.",
+      "trigger": {
+        "event": "story.timedEventMissed",
+        "match": {
+          "event": "rowan-news"
+        }
+      },
+      "pages": [
+      {
+        "speaker": "",
+        "text": "Rowan’s message reads, “I got in. That was the news. You can say something tomorrow.”"
+        }
+      ],
+      "choices": [
+        {
+          "id": "call-now",
+          "label": "Call now and accept their anger",
+          "result": "Rowan answers on the fourth ring. You listen before trying to explain.",
+          "effects": [
+            {
+              "type": "trust",
+              "character": "rowan",
+              "delta": -4
+            },
+            {
+              "type": "bond",
+              "character": "rowan",
+              "dimension": "love",
+              "delta": -4
+            }
+          ]
+        },
+        {
+          "id": "wait",
+          "label": "Wait until tomorrow",
+          "result": "The silence lengthens into something you will both remember.",
+          "effects": [
+            {
+              "type": "trust",
+              "character": "rowan",
+              "delta": -10
+            },
+            {
+              "type": "bond",
+              "character": "rowan",
+              "dimension": "love",
+              "delta": -10
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "endings": [
+    {
+      "id": "stay-for-the-opening",
+      "name": "Stay for the opening",
+      "character": "mina",
+      "text": "You stay beside Mina as the gallery fills. Choosing the room you are in becomes the beginning of a more honest relationship.",
+      "requires": {
+        "flags": {
+          "mina-chosen": true,
+          "rowan-missed": true
+        },
+        "completedScenes": [
+          "mina-turning-point",
+          "rowan-aftermath"
+        ]
+      }
+    },
+    {
+      "id": "watch-the-city-change",
+      "name": "Watch the city change",
+      "character": "rowan",
+      "text": "You remain on the rooftop until the city lights come on. Rowan's departure is real now, but so is the promise to meet it honestly.",
+      "requires": {
+        "flags": {
+          "rowan-chosen": true,
+          "mina-missed": true
+        },
+        "completedScenes": [
+          "rowan-turning-point",
+          "mina-aftermath"
+        ]
+      }
+    }
+  ],
+  "showRawCharacterStats": true,
+  "initialRelationships": [
+    {
+      "character": "mina",
+      "trust": 45
+    },
+    {
+      "character": "rowan",
+      "trust": 45
+    }
+  ],
+  "relationshipDimensions": [
+    {
+      "id": "love",
+      "name": "Love"
+    },
+    {
+      "id": "lust",
+      "name": "Lust"
+    }
+  ],
+  "dialogueReactions": [
+    {
+      "id": "honest-with-mina",
+      "character": "mina",
+      "phrases": ["tell you the truth", "plans conflict", "be honest with you"],
+      "trustDelta": 3,
+      "bonds": {"love": 2},
+      "cooldownTicks": 3
+    },
+    {
+      "id": "dismiss-mina",
+      "character": "mina",
+      "phrases": ["not important", "stop bothering me", "don't care about your gallery"],
+      "trustDelta": -5,
+      "bonds": {"love": -3},
+      "cooldownTicks": 3
+    },
+    {
+      "id": "support-rowan",
+      "character": "rowan",
+      "phrases": ["proud of you", "you earned this", "support you"],
+      "trustDelta": 3,
+      "bonds": {"love": 2},
+      "cooldownTicks": 3
+    }
+  ],
+  "initialBonds": [
+    {
+      "character": "mina",
+      "dimension": "love",
+      "value": 20
+    },
+    {
+      "character": "mina",
+      "dimension": "lust",
+      "value": 5
+    },
+    {
+      "character": "rowan",
+      "dimension": "love",
+      "value": 20
+    },
+    {
+      "character": "rowan",
+      "dimension": "lust",
+      "value": 5
+    }
+  ],
+  "schedules": [
+    {
+      "actor": "mina",
+      "period": 100,
+      "stops": [
+        {"at": 0, "location": "bedroom"},
+        {"at": 3, "location": "gallery"}
+      ]
+    }
+  ]
+}

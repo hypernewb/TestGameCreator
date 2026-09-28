@@ -7,7 +7,7 @@ export function textOf(content){
 }
 
 export function completionOf(body){
- if(body?.error)throw Error(body.error.message||'Model server rejected the request');
+ if(body?.error)throw Error(body.error.message||body.error.type||body.error.code||(typeof body.error==='string'?body.error:`Model server rejected the request (${JSON.stringify(body).slice(0,200)})`));
  const choice=body?.choices?.[0],reason=choice?.finish_reason;
  if(reason&&reason!=='stop'){
   if(reason==='length')throw Error('Model ran out of output tokens before finishing. Try a non-reasoning instruct model or increase its output limit.');

@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "id": "sample.bedroom-vertical-slice",
+  "version": "0.1.0",
+  "title": "Bedroom — UI Vertical Slice",
+  "subtitle": "A focused scene for testing dialogue, choices, free text, history, and preferences",
+  "playerId": "player",
+  "calendar": "Day",
+  "accent": "#9c5139",
+  "modules": {
+    "social.conversation": "0.1.0",
+    "social.relationships": "0.1.0",
+    "story.scenes": "0.1.0"
+  },
+  "durations": {"core.inspect": 0, "social.speak": 1},
+  "locations": [{
+    "id": "bedroom",
+    "name": "Your Bedroom",
+    "description": "Morning light spills across the floorboards. Your half-packed bag rests near the desk, and Mina waits by the window for an answer.",
+    "background": "assets/showcase/bedroom.png",
+    "exits": []
+  }],
+  "actors": [
+    {"id": "player", "name": "You", "location": "bedroom"},
+    {
+      "id": "mina",
+      "name": "Mina",
+      "location": "bedroom",
+      "description": "A thoughtful university student carrying a worn black backpack.",
+      "style": "Warm, observant, and gently teasing",
+      "examples": [
+        "You're doing the thing where you pretend you're not tired.",
+        "Sit. I'm not making tea for someone who hovers."
+      ],
+      "goal": "Make sure the player is ready to leave without rushing them.",
+      "traits": ["observant", "patient", "quietly funny"],
+      "voice": "Natural modern speech, short sentences, dry warmth.",
+      "portrait": "assets/showcase/test-character.png",
+      "poses": [{"id": "neutral", "image": "assets/showcase/test-character.png"}]
+    }
+  ],
+  "initialRelationships": [{"character": "mina", "trust": 52}],
+  "scriptedScenes": [{
+    "id": "morning-question",
+    "title": "One last thing",
+    "opening": "Mina shifts the strap of her backpack and studies the half-packed room.",
+    "trigger": {"event": "social.spoke", "match": {"target": "mina"}},
+    "when": {"location": "bedroom"},
+    "pages": [
+      {"speaker": "mina", "text": "You keep looking around like the room might remind you what you forgot.", "stage": ["show:mina", "sprite:mina,neutral"]},
+      {"speaker": "mina", "text": "So—are you ready, or do you need another minute?"}
+    ],
+    "choices": [
+      {"id": "ready", "label": "Tell her you’re ready", "result": "You shoulder your bag. Mina smiles, relieved that you finally made the decision.", "effects": [{"type": "trust", "character": "mina", "delta": 3}, {"type": "memory", "character": "mina", "text": "The player chose to leave the bedroom with Mina instead of delaying."}]},
+      {"id": "minute", "label": "Ask for one more minute", "result": "Mina nods and turns toward the window, giving you space without making a fuss.", "effects": [{"type": "memory", "character": "mina", "text": "The player asked Mina for a quiet minute before leaving."}]}
+    ],
+    "stage": ["show:mina", "sprite:mina,neutral"]
+  }]
+}

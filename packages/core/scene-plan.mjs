@@ -10,5 +10,6 @@ export function scenePlanForTurn(world,pack,turn){
   const id=turn.command.args.target;if(world.actors[id]?.location===location)cast=[id];source='social.spoke';
  }
  cast=[...new Set(cast)].filter(id=>id!==pack.playerId&&world.actors[id]?.location===location&&pack.actors.some(a=>a.id===id));
- return {cast,location,source,actor:cast[0]||pack.playerId,sceneId:world.scene?.id||null,started:Boolean(sceneEvent||hangout),continuing:sceneEvent?.type==='core.sceneContinued'};
+ // The speaker slate is the only set of IDs that may voice a line this beat; narration stays unattributed.
+ return {cast,speakers:[...cast],location,source,actor:cast[0]||pack.playerId,sceneId:world.scene?.id||null,started:Boolean(sceneEvent||hangout),continuing:sceneEvent?.type==='core.sceneContinued'};
 }

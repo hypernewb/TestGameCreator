@@ -11,10 +11,10 @@ export function resolveSceneLocation(pack,raw){
  if(!text)return null;
  const stripped=text.replace(/^(?:the|a|an)\s+/i,'');
  for(const candidate of [text,stripped]){
-  const exact=pack.locations.find(l=>l.id===candidate||l.name.toLowerCase()===candidate.toLowerCase());
+  const exact=pack.locations.find(l=>l.id===candidate||l.name.toLowerCase()===candidate.toLowerCase()||(l.aliases||[]).some(alias=>alias.toLowerCase()===candidate.toLowerCase()));
   if(exact)return exact.id;
  }
- const matches=pack.locations.filter(l=>new RegExp(keyPattern(l.name,false),'iu').test(text));
+ const matches=pack.locations.filter(l=>[l.name,...l.aliases||[]].some(name=>new RegExp(keyPattern(name,false),'iu').test(text)));
  return matches.length===1?matches[0].id:null;
 }
 export function sceneFormat(pack){
@@ -27,7 +27,7 @@ export function sceneFormat(pack){
 }
 export function sceneMessages(input,pack,world){
  const roster=pack.actors.filter(a=>a.id!==pack.playerId).map(a=>`${a.id} — ${a.name}`).join('\n');
- const locations=pack.locations.map(l=>`${l.id} — ${l.name}: ${l.description||''}`).join('\n');
+ const locations=pack.locations.map(l=>`${l.id} — ${l.name}${l.aliases?.length?` (also: ${l.aliases.join(', ')})`:''}: ${l.description||''}`).join('\n');
  const previous=Object.values(world.turns).at(-1);
  return [{role:'system',content:[
   'Read the player’s proposed next scene. Identify who is actually in that scene, who is merely mentioned, its destination, and the activity. Do not invent IDs. A request to go meet a named person puts that person in characters. Buying a present for them puts them in mentionedOnly. Return one JSON object.',

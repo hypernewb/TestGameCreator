@@ -1,0 +1,30 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "start",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "start"
+      ],
+      "port": 3000
+    },
+    {
+      "name": "iso",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "C:\\Users\\ckx19\\AppData\\Local\\Temp\\claude\\C--Users-ckx19-story-framework\\d5ecb27a-e5fa-46e2-90e3-56f3873b25c2\\scratchpad\\iso-server.mjs"
+      ],
+      "port": 3017
+    },
+    {
+      "name": "iso-f10",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "C:\\Users\\ckx19\\AppData\\Local\\Temp\\claude\\C--Users-ckx19-story-framework\\ca11aa10-7ba3-4375-9296-0bada72b5851\\scratchpad/iso-f10.mjs"
+      ],
+      "port": 3019
+    }
+  ]
+}

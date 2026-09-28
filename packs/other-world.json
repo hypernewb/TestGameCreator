@@ -87,6 +87,10 @@
       "location": "sanctuary",
       "description": "An adult keeper of the sanctuary.",
       "style": "Patient and restrained",
+      "examples": [
+        "The gate remembers everyone who passes. It is in no hurry to forget you.",
+        "Rest, if you can. The night here is long, but it is not unkind."
+      ],
       "goal": "See the lost compass safely returned.",
       "traits": [
         "patient",

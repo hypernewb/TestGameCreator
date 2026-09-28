@@ -1,7 +1,8 @@
 import {assert} from '../core/engine.mjs';
+import {placeHidden} from './objects.mjs';
 export const inventory={id:'items.inventory',version:'0.1.0',coreApi:'0.1.0',requires:[],
-  validate(p){const holders=new Set([...p.actors,...p.locations].map(x=>x.id));for(const i of p.items||[])assert(holders.has(i.owner),`items.${i.id}.owner: unknown`);},
-  init:p=>({owners:Object.fromEntries((p.items||[]).map(i=>[i.id,i.owner]))}),
+  validate(p){const holders=new Set([...p.actors,...p.locations].map(x=>x.id));for(const i of p.items||[])assert(holders.has(i.owner)||(i.hideIn&&i.owner===undefined),`items.${i.id}.owner: unknown`);},
+  init:(p,o={})=>{const spots=placeHidden(p,o.seed),at=Object.fromEntries((p.objects||[]).map(x=>[x.id,x.location]));return {owners:Object.fromEntries((p.items||[]).map(i=>[i.id,spots[i.id]?at[spots[i.id]]:i.owner]))};},
   commands:{
     'items.take'(tx,a){const {state:s,pack:p}=tx;const item=p.items.find(i=>i.id===a.item);assert(item,'Unknown item');assert(!item.shop||!p.modules['world.economy'],'Buy this item at its shop');assert(s.modules['items.inventory'].owners[a.item]===s.actors[p.playerId].location,'That item is not available here');assert(!item.hidden||s.modules['world.objects']?.discovered.includes(item.id),'That item has not been discovered');tx.set(['modules','items.inventory','owners',a.item],p.playerId);tx.emit('items.transferred',{item:a.item,from:s.actors[p.playerId].location,to:p.playerId,text:`Picked up ${item.name}.`},[p.playerId]);},
     'items.place'(tx,a){const {state:s,pack:p}=tx;const item=p.items.find(i=>i.id===a.item);assert(item,'Unknown item');assert(s.modules['items.inventory'].owners[a.item]===p.playerId,'You do not own that item');const loc=s.actors[p.playerId].location;tx.set(['modules','items.inventory','owners',a.item],loc);tx.emit('items.transferred',{item:a.item,from:p.playerId,to:loc,text:`You place ${item.name} here.`},[p.playerId]);},

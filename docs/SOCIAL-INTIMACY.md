@@ -38,6 +38,19 @@ After completion, an optional aftercare window opens. The creator defines neutra
 
 Categories also declare `open`, `discreet`, or `secret` handling. Exposure is based only on actors actually present at the encounter location. A witnessed discreet or secret encounter emits `social.intimacyExposed` with explicit witnesses, allowing dating-maintenance rules, gossip scenes, or promises to react without omniscient jealousy.
 
+## Planned: encounter beats, ladder and visible progress (F5–F7)
+
+Right now the middle of an encounter is a black box: once `social.beginIntimacy` passes, the narrator writes the scene and a `completeIntimacy` effect or `defaultOutcome` closes it. The player makes no decisions during the scene, and a small model writes much the same scene every time. See [FUN-PASS.md](FUN-PASS.md) and milestones F5–F7 in [NEXT-MILESTONES.md](NEXT-MILESTONES.md).
+
+- **Beat skeleton (F5).** A category may declare `beats` (for example opening → escalation → check-in → peak → aftermath). Each beat offers 2–3 authored choices such as pace, lead or follow, or which interest to explore. Choices are scored against `stylePreferences` and `interests`; a poor match lowers satisfaction and can end the scene early. `packages/ai/beats.mjs` gives the narrator one concrete instruction per beat. `resolution: "direct"` stays available for short encounters.
+- **In-character check-in.** The check-in beat is written in the character's voice, but it is backed by the same consent state as today: `social.withdrawConsent` stays available at every beat, and a decline or withdrawal ends the scene through the existing path. Beats never grant or extend consent.
+- **Preferences learned through play.** Choosing well or badly at a beat can call `discoverIntimacyInterest`, so players learn preferences from how the character responds rather than from a list.
+- **Ladder and escalation (F7).** Routes author rungs of smaller payoffs before and after the first explicit scene. `styleExperience` and romance-tempo ranks unlock new categories, beats or locations, so repeat encounters escalate instead of resetting.
+- **Visible progress (F6).** Player-facing text shows hearts or ranks and an in-character hint instead of `intimacyEligibility` reasons such as `attraction 34 needs 50`. Raw reasons stay in the creator view.
+- **Character identity.** Each romanceable character should author 2–3 interests, one boundary that matters to the story, who usually leads, and intimate-scene voice examples. Profiles made only of `openness` and `casual` give the narrator nothing specific to voice.
+
+Fade and suggestive `contentLevel`s use the same beats and choices with non-explicit prose, so mechanics stay identical across content levels.
+
 ## Honest disclosure
 
 The player may proactively disclose a discreet or secret encounter to another current partner. Each disclosure is written onto that encounter once, including the listener, tick, active relationship agreement, honesty effect, and boundary effect. The listener receives `social.encounterDisclosed`; unrelated characters do not receive the encounter in their AI context.
@@ -47,3 +60,5 @@ Creators configure satisfaction changes per agreement. A monogamous partner migh
 ## Design references
 
 The separation between character preferences, relationship boundaries, and encounter pacing follows useful patterns from [The Sims 4 romance and attraction settings](https://help.ea.com/en/articles/the-sims/the-sims-4/gender-romance-attraction-guide/) and the daily-life relationship structure described by the [Love & Sex wiki](https://wiki.andrealphusgames.com/wiki/Love_%26_Sex). The stable authored profile versus runtime context split is also compatible with [SillyTavern's character and context model](https://docs.sillytavern.app/). Most importantly, the design treats consent as ongoing and withdrawable, consistent with the discussion of player agency in [Designing Dating Games](https://affinity-games.com/wp-content/uploads/2021/03/DatingGamesprepubproof.pdf).
+
+The planned encounter beats borrow player-led pacing from Koikatsu / Honey Select, authored encounter menus from Trials in Tainted Space and Degrees of Lewdity, the earned payoff of HuniePop, and in-character consent check-ins from Baldur's Gate 3. The escalation ladder follows Being a DIK, Summertime Saga and Persona's confidant ranks.

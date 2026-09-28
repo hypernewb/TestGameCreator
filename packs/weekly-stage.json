@@ -91,10 +91,16 @@
     },
     {
       "id": "ada",
+      "pronouns": "she/her",
       "name": "Ada",
       "location": "hub",
       "description": "An adult project coordinator with a precise manner.",
       "style": "Measured and practical",
+      "examples": [
+        "I don't need it perfect. I need it finished. Perfect is a bonus.",
+        "Good. Then we have forty minutes, not an hour. Let's use them.",
+        "That's... actually rather lovely. Don't tell anyone I said so."
+      ],
       "goal": "Recover her notebook or agree a revised plan.",
       "traits": [
         "precise",
@@ -114,10 +120,15 @@
     },
     {
       "id": "brin",
+      "pronouns": "he/him",
       "name": "Brin",
       "location": "workshop",
       "description": "An adult maker with an easy smile.",
       "style": "Warm and direct",
+      "examples": [
+        "Look at this joint. No glue, no screws. Took me three tries and one splinter.",
+        "Honestly? I'd rather build it wrong once than talk about it for an hour."
+      ],
       "goal": "Finish the workshop project.",
       "traits": [
         "warm",
@@ -147,6 +158,10 @@
       "location": "meeting",
       "description": "An adult organizer reviewing the agenda.",
       "style": "Brief and observant",
+      "examples": [
+        "You skipped item four.",
+        "Sawdust on your sleeve. Busy morning?"
+      ],
       "goal": "Keep the meeting useful.",
       "traits": [
         "observant",

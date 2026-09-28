@@ -1,0 +1,379 @@
+{
+  "generatedAt": "2026-09-28T12:13:25.766Z",
+  "pack": {
+    "id": "showcase.after-hours",
+    "title": "After Hours"
+  },
+  "model": "qwen/qwen3.8-27b",
+  "contextWindow": 8192,
+  "requestedDays": 1,
+  "tickTargetReached": true,
+  "qualityGates": {
+    "pass": true,
+    "failures": []
+  },
+  "reachedTarget": true,
+  "incompleteReason": "",
+  "metrics": {
+    "turns": 9,
+    "startTick": 0,
+    "endTick": 13,
+    "ticksPlayed": 13,
+    "typed": 3,
+    "authoredChoices": 3,
+    "fallbacks": 0,
+    "clarifications": 0,
+    "deadTurns": 0,
+    "maxConsecutiveSameDecision": 1,
+    "commandCounts": {
+      "core.move": 1,
+      "story.choose": 3,
+      "core.scene": 5
+    },
+    "nearDuplicates": [],
+    "calendarConflicts": 0,
+    "averageSeconds": 3.19
+  },
+  "modelUsage": {
+    "requests": {
+      "tester": 9,
+      "game": 4,
+      "critique": 1,
+      "total": 14
+    },
+    "responses": 14,
+    "tokens": 30751
+  },
+  "ending": null,
+  "fun": {
+    "turns": 9,
+    "timing": "measured",
+    "minutes": 0.5,
+    "choices": 3,
+    "typed": 3,
+    "deadTurns": 2,
+    "longestDeadStreak": 2,
+    "freshTurns": 4,
+    "firstChoice": {
+      "turn": 2,
+      "minutes": 0,
+      "via": "story.choose"
+    },
+    "firstSpark": {
+      "turn": 2,
+      "minutes": 0,
+      "via": "social.attractionChanged"
+    },
+    "firstPayoff": null,
+    "firstDrama": {
+      "turn": 7,
+      "minutes": 0.5,
+      "via": "story.incident"
+    },
+    "firstCg": {
+      "turn": 1,
+      "minutes": 0,
+      "via": "first-night"
+    },
+    "deadByCommand": {
+      "core.scene": 2
+    },
+    "choicesPer10": 60,
+    "deadRatio": 0.22,
+    "freshRatio": 0.44,
+    "storylets": {
+      "seen": 4,
+      "total": 47
+    },
+    "storyletIds": [
+      "first-night",
+      "juno-shift",
+      "till-short",
+      "juno-after-close"
+    ],
+    "repeatedProse": 0,
+    "nearDuplicates": [],
+    "ending": null
+  },
+  "funGates": [
+    {
+      "id": "first-choice",
+      "value": 0,
+      "need": "≤ 2 min",
+      "pass": true
+    },
+    {
+      "id": "first-payoff",
+      "value": null,
+      "need": "≤ 15 min",
+      "pass": null
+    },
+    {
+      "id": "dead-turns",
+      "value": 0.22,
+      "need": "≤ 10%",
+      "pass": false
+    },
+    {
+      "id": "run-length",
+      "value": null,
+      "need": "30–45 min to an ending",
+      "pass": null
+    },
+    {
+      "id": "drama",
+      "value": 1,
+      "need": "a complication or witness fires",
+      "pass": true
+    },
+    {
+      "id": "repeated-prose",
+      "value": 0,
+      "need": "≤ 10% of narrated turns",
+      "pass": true
+    }
+  ],
+  "unmetIntents": [],
+  "transcript": [
+    {
+      "turn": 1,
+      "clock": "Day 1 Monday Morning",
+      "decision": "Go to The Velvet Room",
+      "kind": "action",
+      "command": "core.move",
+      "narrative": "Travelled to The Velvet Room.\nYour first night at the Velvet Room.\nA low-lit cocktail bar with a battered upright piano and a staff room with a window nobody remembers is there.\nJuno and Theo and Priya are here.\nYour first night at the Velvet Room.\nPriya: You're the new barback. Juno trains you, Theo plays, I sign the cheques. Nobody dates anybody. That's a joke. Mostly.\nJuno: Can you carry a crate and keep your mouth shut? Because the last one could do neither.",
+      "results": [
+        "Travelled to The Velvet Room.",
+        "Your first night at the Velvet Room."
+      ],
+      "from": 0,
+      "to": 1,
+      "seconds": 0.03,
+      "requestId": "3a50a01a-cd64-4ecd-8723-34159d6b8cd5",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 2,
+      "clock": "Day 1 Monday Morning",
+      "decision": "[Empathy · Attentive ✗] Ask the pianist what he's playing",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "You ask while he's mid-phrase. He answers politely and switches to a standard.\nEmpathy check failed.\nAttraction with Theo changed.\nTheo: Chemistry 5 → 6 (he was glad to be asked)\nYour Empathy rose to Attentive.",
+      "results": [
+        "Empathy check failed.",
+        "Attraction with Theo changed.",
+        "Theo: Chemistry 5 → 6 (he was glad to be asked)",
+        "Your Empathy rose to Attentive.",
+        "You ask while he's mid-phrase. He answers politely and switches to a standard."
+      ],
+      "from": 1,
+      "to": 2,
+      "seconds": 0.01,
+      "requestId": "5330bf27-8bbd-4a57-9501-7753aa536b58",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 3,
+      "clock": "Day 1 Monday Morning",
+      "decision": "Work a shift with Juno",
+      "kind": "action",
+      "command": "core.scene",
+      "narrative": "Four hours of orders, spills and Juno correcting your pour. Forty in tips and wages.\nYour Charm rose to Likable.\nJuno: Trust 20 → 22\nBalance: $100.\nThree deep at the bar, and Juno is enjoying watching you drown.\nJuno: Two negronis, an old fashioned, and stop looking at me like I'm the emergency exit.",
+      "results": [
+        "Work a shift with Juno",
+        "Your Charm rose to Likable.",
+        "Juno: Trust 20 → 22",
+        "Balance: $100.",
+        "Four hours of orders, spills and Juno correcting your pour. Forty in tips and wages.",
+        "Three deep at the bar, and Juno is enjoying watching you drown."
+      ],
+      "from": 2,
+      "to": 6,
+      "seconds": 0.04,
+      "requestId": "bfd40478-f306-44ef-8f32-6e9e135107ce",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 4,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "[Charm · Likable ✓] Flirt back without missing an order",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "\"You'd make a lovely emergency exit.\" You slide the negronis out on time. Juno's grin lasts the rest of the shift.\nCharm check passed.\nAttraction with Juno changed.\nJuno: Chemistry 5 → 13",
+      "results": [
+        "Charm check passed.",
+        "Attraction with Juno changed.",
+        "Juno: Chemistry 5 → 13",
+        "\"You'd make a lovely emergency exit.\" You slide the negronis out on time. Juno's grin lasts the rest of the shift."
+      ],
+      "from": 6,
+      "to": 7,
+      "seconds": 0.01,
+      "requestId": "649a7698-4782-4bba-9d53-ac5762673226",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 5,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "You've got a good eye for a pour, Juno. I was hoping you'd notice I was trying to keep up, not just drowning.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Juno sets down the empty shaker with a sharp clink.\nJuno: You're not drowning. You're just slow.\nJuno: I like slow. It means you're actually thinking instead of just guessing.\nShe leans back against the counter, arms crossed, watching the door as a new customer steps in, then looks back at you with a challenging tilt of her head.\nJuno: Next round is a sour. No recipe. Make it taste like something I wouldn't spit out.\nJuno: Go on. Impress me.",
+      "results": [
+        "You've got a good eye for a pour, Juno. I was hoping you'd notice I was trying to keep up, not just drowning."
+      ],
+      "from": 7,
+      "to": 7,
+      "seconds": 9.27,
+      "requestId": "521aaee1-a32d-4768-b454-e2718b41315b",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 6,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "I pull the lemon from the rack, twist the peel over the glass to release the oils, then squeeze the juice in. I top it with gin and a splash of simple syrup, shake it hard, and double-strain it over a large cube. I slide it across the bar, meeting her gaze. \"How's that for something you wouldn't spit out?\"",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Juno picks up the glass by the stem, tilting it to watch the large ice cube rotate slowly inside. She brings it to her nose, inhaling the sharp citrus oils, then takes a slow, deliberate sip. She sets the glass down with a soft thud.\nJuno: Not bad. The peel oils are a little loud, but the gin holds up.\nShe reaches behind the bar and pulls out a clean shaker, setting it in front of you with a clatter. The metal gleams under the low light of the bar.\nJuno: Now make it again. But this time, use the orange bitters from the left rack. And don't drop the shaker. I'm not cleaning up your mess twice.",
+      "results": [
+        "I pull the lemon from the rack, twist the peel over the glass to release the oils, then squeeze the juice in. I top it with gin and a splash of simple syrup, shake it hard, and double-strain it over a large cube. I slide it across the bar, meeting her gaze. \"How's that for something you wouldn't spit out?\""
+      ],
+      "from": 7,
+      "to": 7,
+      "seconds": 16.51,
+      "requestId": "fa757007-a30a-4104-8286-f0357401cb38",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 7,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "I watch the shaker she placed down, then pick it up. \"So, what's the challenge this time? Give me a base and I'll build something around it. Or are you just going to watch me guess again?\"",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Close is done and the till is forty short. Priya counts the drawer a third time, slowly, so everyone knows the maths is not the problem.",
+      "results": [
+        "I watch the shaker she placed down, then pick it up. \"So, what's the challenge this time? Give me a base and I'll build something around it. Or are you just going to watch me guess again?\"",
+        "The activity comes to a close.",
+        "The till is short and Priya is counting.",
+        "Close is done and the till is forty short. Priya counts the drawer a third time, slowly, so everyone knows the maths is not the problem."
+      ],
+      "from": 7,
+      "to": 8,
+      "seconds": 2.78,
+      "requestId": "15846a92-9a0e-46e3-9755-e8845686cda6",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 8,
+      "clock": "Day 1 Monday Evening",
+      "decision": "Top up the drawer from your tips",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "You slide twenty across without a word. Priya sees. She never mentions it, and she never forgets it either.\nBalance: $80.\nPriya: Trust 25 → 27",
+      "results": [
+        "Balance: $80.",
+        "Priya: Trust 25 → 27",
+        "You slide twenty across without a word. Priya sees. She never mentions it, and she never forgets it either."
+      ],
+      "from": 8,
+      "to": 9,
+      "seconds": 0.02,
+      "requestId": "f26db2bb-ae15-4da3-bd4d-ead24d30b8df",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 9,
+      "clock": "Day 1 Monday Evening",
+      "decision": "Stay after closing",
+      "kind": "action",
+      "command": "core.scene",
+      "narrative": "Chairs up, lights down, Juno counting the till.\nThe bar is dark except for the till light. Juno counts, slowly.\nJuno: You stayed. Nobody stays. So say whatever it is you've been not saying all week.",
+      "results": [
+        "Stay after closing",
+        "Chairs up, lights down, Juno counting the till.",
+        "The bar is dark except for the till light. Juno counts, slowly."
+      ],
+      "from": 9,
+      "to": 13,
+      "seconds": 0.08,
+      "requestId": "dd8204d0-4e7c-48b6-a968-5ff8856a322b",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    }
+  ],
+  "review": {
+    "strengths": [
+      "Strong character voice for Juno in Turn 3 and Turn 4, effectively establishing a 'tough mentor' dynamic through specific dialogue ('stop looking at me like I'm the emergency exit').",
+      "Good use of mechanical feedback in Turn 2 and Turn 4, clearly linking player actions (Empathy/Charm) to stat changes (Chemistry/Trust).",
+      "Effective pacing in Turn 3, condensing a 4-hour work shift into a single beat that advances both financial (Balance: $100) and social (Charm) states."
+    ],
+    "issues": [
+      {
+        "severity": "critical",
+        "layer": "content",
+        "evidence": "Turn 6 ends with Juno's dialogue cut off mid-sentence: 'But this time, use the orange bitters from'. Turn 7 then abruptly jumps to 'Close is done and the till is forty short' without resolving the cocktail challenge or the bitters instruction.",
+        "cause": "Narrative truncation/Generation error causing an unresolved activity scene.",
+        "concreteFix": "Ensure the model completes the dialogue instruction before allowing the scene to transition to the next state (closing time). Implement a check for incomplete sentences before closing the scene."
+      },
+      {
+        "severity": "high",
+        "layer": "content",
+        "evidence": "Turn 9: Juno says, 'So say whatever it is you've been not saying all week.' However, the transcript begins at Turn 1 ('Your first night at the Velvet Room').",
+        "cause": "Continuity error/Invented history. The NPC references a timeline that did not occur in the current session.",
+        "concreteFix": "Align NPC dialogue with the actual session history. If it is Day 1, Juno should reference 'tonight' or 'this shift,' not 'all week.'"
+      },
+      {
+        "severity": "high",
+        "layer": "content",
+        "evidence": "Turn 6: The game narrates the player's specific physical actions in detail: 'I pull the lemon... twist the peel... squeeze... shake it hard... double-strain it... meeting her gaze.'",
+        "cause": "Invented player reactions/Agency violation. The game is scripting the player's micro-actions rather than interpreting the player's intent.",
+        "concreteFix": "Refactor the prompt to describe the *result* of the player's action (e.g., 'Juno inspects the sour you prepared') rather than narrating the player's hand movements and gaze."
+      },
+      {
+        "severity": "medium",
+        "layer": "engine",
+        "evidence": "Turn 7: The scene closes with 'The till is short and Priya is counting.' Turn 8: Player tops up drawer. Turn 9: 'Juno counting the till.'",
+        "cause": "Continuity/Logic inconsistency. The entity responsible for the till changes between Priya (Turn 7) and Juno (Turn 9) within the same closing sequence.",
+        "concreteFix": "Standardize which character is responsible for the till in the 'Closing' scene state to maintain continuity."
+      },
+      {
+        "severity": "medium",
+        "layer": "content",
+        "evidence": "Turn 2: 'Empathy check failed.' followed by 'Theo: Chemistry 5 → 6 (he was glad to be asked)'.",
+        "cause": "Conflicting feedback. A 'failed' check usually implies a negative or neutral outcome, but the stat increase and parenthetical explanation indicate a positive reaction. This creates ambiguity about whether the player succeeded or failed.",
+        "concreteFix": "Align the success/failure label with the stat change. If Chemistry increases, the check should be 'Passed' or 'Success,' or the failure should result in a different outcome (e.g., 'He looks annoyed')."
+      },
+      {
+        "severity": "low",
+        "layer": "content",
+        "evidence": "Turn 1: 'Juno and Theo and Priya are here.' Turn 2: Player interacts with Theo. Turn 3: Player works with Juno. Turn 4: Player flirts with Juno. Theo disappears from the narrative entirely after Turn 2.",
+        "cause": "Unclear route leads/Character neglect. The game introduces three main characters but fails to provide a path to engage with Theo after the initial beat, potentially leaving a route unexplored or abandoned.",
+        "concreteFix": "Ensure that if a character is introduced in the opening scene, there is a subsequent opportunity or prompt to re-engage with them, or clearly signal if they are off-screen for the day."
+      }
+    ],
+    "prioritizedFixes": [
+      "Fix the truncated dialogue in Turn 6 to ensure the cocktail challenge is resolved before the scene closes.",
+      "Correct the continuity error in Turn 9 where Juno references 'all week' despite it being Day 1.",
+      "Remove the detailed narration of player physical actions in Turn 6 to respect player agency.",
+      "Resolve the inconsistency in who is counting the till (Priya vs. Juno) between Turns 7 and 9.",
+      "Clarify the feedback logic in Turn 2 so that a 'failed' check does not result in a positive stat increase without explanation."
+    ]
+  }
+}

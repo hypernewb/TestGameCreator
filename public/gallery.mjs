@@ -1,0 +1,23 @@
+// F10: scene gallery + skip-to-unseen. Pure helpers (tested in tests/gallery.test.mjs) plus the dialog that shows them.
+// Ren'Py keys read text by script line, not by playthrough: the same words are "read" in a replay, a new run or a repeat encounter.
+export const readKey=(packId,line)=>{const t=`${line?.speaker||''}|${line?.text||''}`;let h=2166136261;for(let i=0;i<t.length;i++)h=Math.imul(h^t.charCodeAt(i),16777619);return `${packId||''}:${(h>>>0).toString(36)}:${t.length}`;};
+const beatsOf=x=>[x,...(x.beats||[])],said=x=>beatsOf(x).flatMap(b=>[...(b.pages||[]).map(pg=>pg.speaker),...(b.choices||[]).flatMap(c=>[...(c.effects||[]),...(c.check?.fail?.effects||[])].map(e=>e.character))]);
+// A scene belongs to whoever it is most about: most lines spoken plus relationship effects. Storylets with nobody in particular go under "The city".
+export const routeOf=(x,p)=>{const n={};for(const id of said(x))if(id&&id!==p.playerId&&p.actors?.some(a=>a.id===id))n[id]=(n[id]||0)+1;return Object.entries(n).sort((a,b)=>b[1]-a[1])[0]?.[0]||'';};
+const runsOf=(s,id)=>{const out=[];for(const h of s.modules['story.scenes']?.history||[])if(h.scene===id){if(h.beat==='opening'||!out.length)out.push([]);out.at(-1).push(h);}return out;};
+export function galleryOf(s,p){const routes=new Map([...(p.datingProfiles||[]).map(d=>d.character),''].map(id=>[id,[]]));
+ for(const x of p.scriptedScenes||[]){const runs=runsOf(s,x.id).filter(r=>r.some(h=>h.status==='resolved')),r=routeOf(x,p);if(!routes.has(r))routes.set(r,[]);routes.get(r).push({id:x.id,title:x.title||x.id,cg:beatsOf(x).find(b=>b.cg)?.cg||null,unlocked:runs.length>0,plays:runs.length});}
+ return [...routes].filter(([,xs])=>xs.length).sort((a,b)=>(a[0]==='')-(b[0]==='')).map(([id,scenes])=>({route:id,name:p.actors?.find(a=>a.id===id)?.name||'The city',scenes,seen:scenes.filter(x=>x.unlocked).length}));}
+// Replay = the committed history re-read against the pack. It never builds a command, so it cannot commit anything.
+export function replayLines(s,p,id,run=-1){const x=(p.scriptedScenes||[]).find(x=>x.id===id),r=runsOf(s,id).filter(r=>r.some(h=>h.status==='resolved')).at(run);if(!x||!r)return [];
+ return r.flatMap(h=>{const b=h.beat==='opening'?x:x.beats?.find(b=>b.id===h.beat);if(!b)return [];const c=b.choices?.find(c=>c.id===h.choice),pic=b.cg||x.cg;
+  return [{speaker:'',text:b.opening||'',...(pic?{cg:pic}:{})},...(b.pages||[]),...(c?[{speaker:p.playerId,text:`▸ ${c.label}`},{speaker:'',text:h.passed===false&&c.check?.fail?.result||c.result||''}]:[])].filter(l=>l.text);});}
+
+const $=id=>document.getElementById(id),el=(tag,props={},...kids)=>{const e=Object.assign(document.createElement(tag),props);e.append(...kids.filter(Boolean));return e;};
+export function openGallery(data,{read=()=>new Set(),markRead=()=>{}}={}){const {state:s,pack:p}=data,dlg=$('gallery-dialog'),body=$('gallery-body');
+ const list=()=>{body.replaceChildren(...galleryOf(s,p).map(g=>el('section',{className:'gallery-route'},el('h3',{textContent:`${g.name} · ${g.seen}/${g.scenes.length}`}),el('div',{className:'gallery-grid'},...g.scenes.map(x=>{const b=el('button',{type:'button',className:'gallery-card'+(x.unlocked?'':' locked'),disabled:!x.unlocked});if(x.unlocked&&x.cg)b.append(el('img',{src:x.cg,alt:'',onerror(){this.src='assets/cg-placeholder.svg';}}));b.append(el('span',{textContent:x.unlocked?x.title+(x.plays>1?` ×${x.plays}`:''):'???'}));if(x.unlocked)b.onclick=()=>play(x);return b;})))));};
+ const play=x=>{const lines=replayLines(s,p,x.id);let i=0,skip=false,timer;const seen=read(),name=id=>p.actors?.find(a=>a.id===id)?.name||'';
+  const show=()=>{clearTimeout(timer);if(skip&&!(i<lines.length-1&&seen.has(readKey(p.id,lines[i+1]))))skip=false;const l=lines[i],cg=[...lines.slice(0,i+1)].reverse().find(l=>l.cg)?.cg;markRead(l);body.replaceChildren(el('div',{className:'gallery-replay'},cg?el('img',{src:cg,alt:'',onerror(){this.src='assets/cg-placeholder.svg';}}):null,el('p',{className:'muted',textContent:`${x.title} · replay · ${i+1}/${lines.length}${seen.has(readKey(p.id,l))?' · READ':''}`}),l.speaker?el('strong',{textContent:name(l.speaker)}):null,el('p',{textContent:l.text}),el('div',{className:'vn-menu-actions'},el('button',{type:'button',textContent:i<lines.length-1?'Next':'Back to gallery',onclick:next}),i<lines.length-1?el('button',{type:'button',textContent:skip?'Stop skipping':'Skip read',onclick(){skip=!skip;show();}}):null,el('button',{type:'button',textContent:'Close',onclick:list}))));
+   if(skip)timer=setTimeout(next,60);},next=()=>{if(i<lines.length-1){i++;show();}else list();};
+  dlg.onclose=()=>clearTimeout(timer);show();};
+ list();dlg.showModal();}

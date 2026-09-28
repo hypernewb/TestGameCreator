@@ -67,6 +67,8 @@ Visual novel view is now the default for all examples. Use **View: Visual novel*
 
 You can still configure an OpenAI-compatible endpoint through `STORY_ENDPOINT` and `STORY_MODEL` as described below. The in-app AI settings are for loopback servers only.
 
+For a text-only AI playtest that exercises the real engine, saves, prompts and narration without opening the UI, set `STORY_ENDPOINT`, `STORY_MODEL`, and (when required) `STORY_API_KEY`, then run `npm run playtest:ai -- --pack showcase.after-hours --days 4 --context 8192`. It writes a credential-free transcript and structured QA review under `artifacts/ai-playtests/`. Provider failures stop and mark the run incomplete instead of silently substituting a deterministic route.
+
 ## Venus University source integration (0.9)
 
 This personal build includes adapted **AGPL-3.0-only** source from Venus University's public snapshot: lore key matching and stage instruction parsing. Lore now recognizes complete aliases (including multiword aliases) on word boundaries; named off-screen characters are supplied as background context with an explicit absence rule. Scripted scenes can author `show:actor`, `hide:actor`, and `sprite:actor,pose` stage actions. The builder supports additional transparent pose images for each character and includes them in project exports. **The Workshop — Scripted Scene** demonstrates a pose change using original placeholder art.
@@ -120,6 +122,8 @@ The main input is now a conversational text box. Suggested actions are tucked un
 The daypart writer validates 3–5 narration lines, exactly one invitation per eligible character, and empty unused fields. It saves those messages separately from the committed time change; provider failure produces a deterministic fallback without advancing time twice.
 
 ## What to try
+
+**Crossed Plans:** Inspect the bedroom messages, then travel through the square to either the Lantern Gallery or Observatory Rooftop. The two appointments share a deadline, so attending one creates a missed-event aftermath for the other. Resolve both conversations to unlock one of two endings. Before choosing a route, open **Backups**, create a named checkpoint, and use **Branch from here** to play the other route without changing the first campaign.
 
 **The Workshop Errand (legacy fixture):** Go to Workshop → Take Notebook → Go to Hub → Give Notebook to Ada. Alternatively, go to Meeting Room and wait until Ada arrives at shift 4; speak to her there. The schedule repeats every 12 shifts. You can miss the meeting and recover later.
 

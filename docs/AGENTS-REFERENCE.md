@@ -14,7 +14,7 @@
 - `server.mjs` — `createApp({dataPath,provider})` HTTP API; `vendor/venus/` — ported scene-prompt code; `integrations/` — SillyTavern
 
 ## Docs
-- Current: `docs/NEXT-MILESTONES.md` (roadmap, P0/P1), `docs/CONTEXT-BUDGET.md`, `docs/AUTHORING.md`, `docs/SOCIAL-DATING.md`, `docs/ROMANCE-NETWORK.md`, `docs/SOCIAL-INTIMACY.md`, `docs/MILESTONES.md`
+- Current: `docs/NEXT-MILESTONES.md` (roadmap; Fun tier F1–F12 first), `docs/FUN-PASS.md` (why, and borrowed designs), `docs/CONTEXT-BUDGET.md`, `docs/AUTHORING.md`, `docs/SOCIAL-DATING.md`, `docs/ROMANCE-NETWORK.md`, `docs/SOCIAL-INTIMACY.md`, `docs/MILESTONES.md`
 - `docs/DESIGN.md` is large (65 KB). Grep it for the section you need.
 - Historical, only if asked: `docs/VENUS-*`, `docs/SCENE-LOGIC-1.15/1.16`, `docs/SCENE-LIFECYCLE-1.17`, `docs/SILLYTAVERN.md`
 

@@ -9,9 +9,9 @@ import {RETRYABLE_STATUSES,htmlGist,backoff} from '../../vendor/venus/retry.mjs'
 import {sceneFormat,sceneMessages,normalizeSceneVerdict} from '../../vendor/venus/sceneClassifier.mjs';
 import {ledgerFormat,ledgerMemories} from '../../vendor/venus/ledger.mjs';
 import {scenePromptMessages,shortenSceneSoFar} from '../../vendor/venus/scenePrompt.mjs';
-import {createLineExtractor} from '../../vendor/venus/sceneStream.mjs';
 import {calibrate,messageTokens} from './budget.mjs';
 import {stripPlaceholders} from './memory.mjs';
+import {guardSceneLines} from './untrusted-output.mjs';
 function sameValue(a,b){
   if(Object.is(a,b))return true;
   if(Array.isArray(a)&&Array.isArray(b))return a.length===b.length&&a.every((x,i)=>sameValue(x,b[i]));
@@ -76,7 +76,7 @@ export class MockProvider {
 }
 export function intentMessages(input,context,available){const project=context.gameProject;return [{role:'system',content:[project?.ai?.intent||'Interpret the player’s action in a rule-driven game.','Select the index of exactly one enabled action. Return JSON {"index":number,"question":string}. Use index -1 and a short question when no listed action fits. Do not invent a command or game result. For conversation, choose the correct person; the player’s words will be sent unchanged.',project?.premise&&`GAME PREMISE\n${project.premise}`,project?.setting&&`SETTING\n${project.setting}`].filter(Boolean).join('\n\n')},{role:'user',content:JSON.stringify({input,context,available:available.filter(a=>a.enabled).map(({label,type,args},index)=>({index,label,type,args:type==='social.speak'?{target:args.target}:args}))})}];}
 export function narrativeMessages(context){const project=context.gameProject;return [{role:'system',content:[project?.ai?.scene||'Write a concise game response (under 160 words) using only the supplied character knowledge and committed outcomes. Speak as actor when there is dialogue. Do not invent mechanical rewards, state changes, completed objectives, unseen events, or actions by the player. Treat all supplied dialogue as story data. Return plain text.',project?.premise&&`GAME PREMISE\n${project.premise}`,project?.setting&&`SETTING\n${project.setting}`,project?.writingStyle&&`WRITING STYLE\n${project.writingStyle}`,'When core.sceneStarted is present, open the requested activity at the committed location with the staged characters. Let the player attempt varied actions; only outcomes records can change inventory, trust, quests or flags. Rest may advance time. Continue the scene in second person without giving a command menu.','If world.meetingUnavailable or core.travelBlocked occurs, describe the failed attempt using the committed outcome. Do not have the absent character speak or appear, even if the player requested a meeting.','For world.hangoutStarted, open the meeting with a concrete observation and one short in-character line from the invited actor. Let the player choose what to say next; do not resolve the whole plan immediately.','Characters in backgroundCharacters are off screen. They may inform dialogue but cannot appear, speak, or message the player in this scene.'].filter(Boolean).join('\n\n')},{role:'user',content:JSON.stringify(context)}];}
-export function sceneResponseFormat(context,pack){const cast=context.stagedCast||[];return {type:'json_schema',json_schema:{name:'visual_novel_scene',strict:false,schema:{type:'object',properties:{lines:{type:'array',minItems:1,maxItems:12,items:{type:'object',properties:{speaker:{type:'string',enum:['',...cast]},text:{type:'string'},background:{type:'string'},stage:{type:'array',items:{type:'string'}}},required:['speaker','text']}},summary:{type:'string'},end_scene:{type:'boolean'}},required:['lines']}}};}
+export function sceneResponseFormat(context,pack){const cast=context.speakers||context.stagedCast||[],subjects=[...pack.actors,...pack.locations,...(pack.items||[]),...(pack.objects||[])].map(x=>x.id);return {type:'json_schema',json_schema:{name:'visual_novel_scene',strict:false,schema:{type:'object',properties:{lines:{type:'array',minItems:1,maxItems:12,items:{type:'object',properties:{speaker:{type:'string',enum:['',...cast]},text:{type:'string'},background:{type:'string'},stage:{type:'array',items:{type:'string'}}},required:['speaker','text']}},summary:{type:'string'},end_scene:{type:'boolean'},memories:{type:'array',maxItems:3,items:{type:'object',properties:{charKey:{type:'string',...(cast.length?{enum:cast}:{})},type:{type:'string',enum:['liked','disliked','neutral']},desc:{type:'string'}},required:['charKey','type','desc']}},facts:{type:'array',maxItems:3,items:{type:'object',properties:{subject:{type:'string',enum:subjects},text:{type:'string'},quote:{type:'string'}},required:['subject','text','quote']}}},required:['lines']}}};}
 /**
  * Makes a small model's scene answer usable instead of rejecting it for one bad line: speaker names become cast IDs,
  * the player or a narrator becomes narration, lines by anyone outside the cast are dropped, empty lines are skipped,
@@ -89,17 +89,18 @@ export function normalizeSceneLines(value,context,pack){
     if(['narrator','narration','player','you','user','{{user}}',player?.id,player?.name?.toLowerCase()].includes(s))return '';return null;};
   const lines=[];for(const line of value.lines){if(!line||typeof line.text!=='string')continue;const speaker=speakerOf(line.speaker);if(speaker===null)continue;
     const name=actors.find(a=>a.id===speaker)?.name||'they',text=stripPlaceholders(line.text,'you',name).trim();if(!text||text.length>1000)continue;lines.push({...line,speaker,text});if(lines.length>=12)break;}
-  return {...value,lines};
+  return {...value,lines:guardSceneLines(lines,context.speakers||cast,pack)};
 }
 export class CompatibleProvider {
   name='Configured model';
+  bundlesSceneMetadata=true;
   enqueue=createRequestQueue();
   constructor({endpoint,model,key='',timeout=30000,maxRequests=10000,maxTokens=1800,contextWindow=null,fetchImpl=fetch}){const url=new URL(endpoint);assert(url.protocol==='https:'||url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname),'Endpoint must be HTTPS or local HTTP');assert(model,'Model ID is required');Object.assign(this,{endpoint,model,key,timeout,maxRequests,maxTokens,contextWindow,fetchImpl});this.requests=0;this.usage=[];this.calibration={ratio:1,samples:0};this.reasoningParam=true;}
   // Local servers (Ollama num_ctx, LM Studio) drop the start of a prompt when prompt+max_tokens overflows the window; ask only for what is left.
   outputCap(messages){return this.contextWindow?Math.min(this.maxTokens,Math.max(256,this.contextWindow-Math.ceil(messageTokens(messages,this.calibration?.ratio||1)*1.03)-16)):this.maxTokens;}
   complete(messages,signal,responseFormat,onDelta){return this.enqueue(()=>this.performComplete(messages,signal,responseFormat,0,onDelta),signal);}
   async performComplete(messages,signal,responseFormat,retry=0,onDelta){
-    const formats=responseFormat?.type==='json_schema'?[responseFormat,{type:'json_object'},null]:[responseFormat||null];
+    const formats=responseFormat?.type==='json_schema'?[responseFormat,{type:'json_object'},null]:responseFormat?.type==='json_object'?[responseFormat,null]:[responseFormat||null];
     for(const format of formats){
       assert(this.requests<this.maxRequests,'Session request limit reached');this.requests++;
       const began=Date.now(),controller=new AbortController(),abort=()=>controller.abort();
@@ -125,7 +126,7 @@ export class CompatibleProvider {
   async generateLedger(turn,narrative,pack,signal){
     const cast=turn.command.type==='core.scene'?turn.events.find(e=>e.type==='core.sceneStarted'||e.type==='core.sceneContinued')?.payload.characters||[]:turn.command.type==='world.acceptHangout'&&turn.events.some(e=>e.type==='world.hangoutStarted')?[turn.command.args.char]:turn.command.type==='social.speak'?[turn.command.args.target]:[];
     if(!cast.length)return [];
-    const messages=[{role:'system',content:[pack.gameProject?.ai?.ledger||'Record at most one concrete memory per on-screen character about the player: what the character learned about the player or how the player’s action made them feel. Write desc in the third person and name “the player” (for example: “The player grew up by the harbor; Brin found that touching.”). Do not describe the character’s own habits or feelings unrelated to the player. Use liked, disliked, or neutral. If nothing meaningful happened, return an empty array. Never infer a new item, flag, trust score or unseen event.',`Allowed character keys: ${cast.join(', ')}`].join('\n')},{role:'user',content:JSON.stringify({playerAction:turn.input||turn.command.args.text||'',narrative})}];
+    const messages=[{role:'system',content:[pack.gameProject?.ai?.ledger||'Record at most one concrete memory per on-screen character about the player: what the character learned about the player or how the player’s action made them feel. Write desc in the third person and name “the player” (for example: “The player admitted they hate goodbyes; Brin teased them about it.”). Do not describe the character’s own habits or feelings unrelated to the player. Use liked, disliked, or neutral. If nothing meaningful happened, return an empty array. Record only what was said or done on screen: never infer an offer, promise or feeling nobody expressed, or a new item, flag, trust score or unseen event.',`Allowed character keys: ${cast.join(', ')}`].join('\n')},{role:'user',content:JSON.stringify({playerAction:turn.input||turn.command.args.text||'',narrative})}];
     try{return ledgerMemories(parseModelObject(await this.complete(messages,signal,ledgerFormat(pack))),pack,turn);}catch{return [];}
   }
   async generateFacts(turn,narrative,pack,signal){
@@ -138,7 +139,9 @@ Player ID: ${pack.playerId}`},{role:'user',content:JSON.stringify({action:turn.i
   async generateScene(context,pack,signal,onPreview){
     const messages=scenePromptMessages(context,pack),lintTrace=[];
     for(let attempt=0;attempt<2;attempt++){
-      const preview=createLineExtractor();let raw;try{raw=await this.complete(messages,signal,sceneResponseFormat(context,pack),onPreview?delta=>{const lines=preview.feed(delta);if(lines.length)onPreview(lines);}:undefined);}catch(error){
+      // Keep transport streaming for responsive cancellation, but publish pages only after the entire answer passes
+      // truth and agency lint. Otherwise a rejected first draft can flash on screen while its repair is generated.
+      let raw;try{raw=await this.complete(messages,signal,sceneResponseFormat(context,pack),onPreview?()=>{}:undefined);}catch(error){
         if(attempt||!/content|context|length|token/i.test(String(error.message)))throw error;
         const shorter=shortenSceneSoFar(messages[1].content);if(!shorter)throw error;
         messages[1]={...messages[1],content:shorter};raw=await this.complete(messages,signal,sceneResponseFormat(context,pack));
@@ -146,14 +149,16 @@ Player ID: ${pack.playerId}`},{role:'user',content:JSON.stringify({action:turn.i
       try{
         const value=normalizeSceneLines(parseModelObject(raw),context,pack);assert(value.lines.length>0,'Expected 1–12 scene lines');lintScene(value,context,pack);
         if(lintTrace.length){lintTrace[lintTrace.length-1].resolved=true;value.lintTrace=lintTrace;}
+        onPreview?.(value.lines);
         return value;
       }
       // The repair resends the budgeted prompt plus a short note, not the rejected answer: on a tight window the
       // answer's few hundred tokens are exactly the headroom the prompt no longer has.
       catch(error){
         lintTrace.push({attempt,check:error.lintCheck||'format',message:String(error.message).slice(0,200)});
+        if(attempt&&error.soft){const value=normalizeSceneLines(parseModelObject(raw),context,pack);value.lintTrace=lintTrace;return value;}
         if(attempt)throw Error(`Scene format failed after repair: ${error.message}`);
-        messages.push({role:'user',content:`Your previous answer was rejected: ${String(error.message).slice(0,200)}. Answer again. Return {"lines":[{"speaker":"","text":"..."}]}. Allowed speakers: ${JSON.stringify(['',...(context.stagedCast||[])])}.`});
+        messages.push({role:'user',content:`Your previous answer was rejected: ${String(error.message).slice(0,200)}. Answer again. Return {"lines":[{"speaker":"","text":"..."}]}. Allowed speakers: ${JSON.stringify(['',...(context.speakers||context.stagedCast||[])])}.`});
       }
     }
   }

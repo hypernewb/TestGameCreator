@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Bedroom UI Showcase</title>
+  <link rel="stylesheet" href="ui-showcase.css">
+</head>
+<body>
+  <main class="stage" aria-label="Visual novel UI showcase">
+    <img class="stage__background" src="assets/showcase/bedroom.png" alt="A bright student bedroom">
+    <div class="stage__wash"></div>
+    <div class="character-stage" aria-label="Characters in the scene">
+      <figure class="character character--right" data-character="mina">
+        <img src="assets/showcase/test-character.png" alt="Mina, carrying a shoulder bag">
+      </figure>
+    </div>
+
+    <header class="scene-header">
+      <div class="place-mark">
+        <span class="place-mark__index">01</span>
+        <div><small>STARTING LOCATION</small><strong>Your Bedroom</strong></div>
+      </div>
+      <div class="time-mark"><span>MON</span><strong>08:10</strong><small>MORNING</small></div>
+    </header>
+
+    <nav class="scene-nav" aria-label="Scene controls">
+      <button type="button" data-action="history"><svg aria-hidden="true"><use href="assets/showcase/ui-icons.svg#history"></use></svg>History</button>
+      <button type="button" data-action="auto"><svg aria-hidden="true"><use href="assets/showcase/ui-icons.svg#auto"></use></svg>Auto</button>
+      <button type="button" data-action="menu"><svg aria-hidden="true"><use href="assets/showcase/ui-icons.svg#menu"></use></svg>Menu</button>
+    </nav>
+
+    <section class="dialogue" aria-live="polite">
+      <div class="dialogue__edge"></div>
+      <div class="speaker"><small id="speaker-kind">INNER VOICE</small><strong id="speaker">You</strong></div>
+      <p id="line">Morning light spills across the floorboards. The room is quiet, but the first day waiting beyond that door feels anything but ordinary.</p>
+      <button class="continue" type="button" data-action="continue" aria-label="Continue">NEXT <span><svg aria-hidden="true"><use href="assets/showcase/ui-icons.svg#next"></use></svg></span></button>
+    </section>
+
+    <section class="choices" hidden aria-label="Choices">
+      <p>What will you do?</p>
+      <button type="button">Get dressed and leave for orientation <span>›</span></button>
+      <button type="button">Check the desk before heading out <span>›</span></button>
+      <button type="button">Stay in bed a little longer <span>›</span></button>
+    </section>
+
+    <form class="prompt-composer" id="prompt-composer">
+      <label for="player-prompt">Your action</label>
+      <input id="player-prompt" maxlength="500" autocomplete="off" placeholder="What do you say or do?">
+      <button type="submit"><span>Send</span><svg aria-hidden="true"><use href="assets/showcase/ui-icons.svg#send"></use></svg></button>
+    </form>
+
+    <div class="scene-status" id="scene-status" hidden role="status" aria-live="polite">
+      <span class="state-spinner" aria-hidden="true"></span>
+      <div><strong id="state-title">Writing the next moment…</strong><small id="state-detail">The story is responding to your action.</small></div>
+      <button type="button" data-action="retry" hidden><svg aria-hidden="true"><use href="assets/showcase/ui-icons.svg#retry"></use></svg>Retry</button>
+    </div>
+
+    <dialog id="game-menu" class="game-menu">
+      <form method="dialog" class="menu-shell">
+        <div class="menu-heading"><small>PAUSED</small><h1>Game Menu</h1><span>Your Bedroom · Monday Morning</span></div>
+        <div class="menu-list">
+          <button value="resume"><b>01</b><span>Return to story<small>Continue from the current scene</small></span><i>›</i></button>
+          <button value="save"><b>02</b><span>Save game<small>Record your progress</small></span><i>›</i></button>
+          <button value="load"><b>03</b><span>Load game<small>Return to an earlier save</small></span><i>›</i></button>
+          <button type="button" data-action="preferences"><b>04</b><span>Preferences<small>Text, audio and accessibility</small></span><i>›</i></button>
+          <button value="title"><b>05</b><span>Title screen<small>Leave the current session</small></span><i>›</i></button>
+        </div>
+        <button class="menu-close" value="resume">ESC &nbsp; Close</button>
+      </form>
+    </dialog>
+
+    <dialog id="history" class="history-panel">
+      <form method="dialog">
+        <header><div><small>STORY ARCHIVE</small><h2>History</h2></div><button value="close">Close ×</button></header>
+        <article><strong>You</strong><p>Morning light spills across the floorboards. The room is quiet, but the first day waiting beyond that door feels anything but ordinary.</p></article>
+        <article><strong>Narration</strong><p>A distant door closes somewhere down the hall. Pipes murmur inside the walls of the old residence.</p></article>
+      </form>
+    </dialog>
+
+    <dialog id="preferences" class="preferences-panel">
+      <form method="dialog">
+        <header>
+          <div><small>PLAYER SETTINGS</small><h2>Preferences</h2></div>
+          <button value="close" aria-label="Close preferences">Close ×</button>
+        </header>
+        <nav class="settings-tabs" aria-label="Preference categories">
+          <button type="button" class="active" aria-current="page">UI</button>
+          <button type="button" disabled>Audio</button>
+          <button type="button" disabled>Accessibility</button>
+        </nav>
+        <section class="settings-page" aria-labelledby="ui-font-label">
+          <div class="setting-copy">
+            <label id="ui-font-label" for="font-choice">Interface and dialogue font</label>
+            <small>Applied immediately and saved on this device.</small>
+          </div>
+          <select id="font-choice">
+            <option value="source">Source Sans 3</option>
+            <option value="noto">Noto Sans</option>
+            <option value="open">Open Sans</option>
+            <option value="lato">Lato</option>
+            <option value="custom" disabled>Uploaded font</option>
+          </select>
+          <div class="font-upload">
+            <label for="font-file">Upload your own font</label>
+            <input id="font-file" type="file" accept=".woff,.woff2,.ttf,.otf,font/woff,font/woff2,font/ttf,font/otf">
+            <small id="font-status">WOFF2, WOFF, TTF or OTF. Stored locally in this browser when possible.</small>
+          </div>
+          <div class="font-preview">
+            <small>LIVE PREVIEW</small>
+            <strong>The first morning of a new story.</strong>
+            <p>Dialogue should feel effortless to read, even during long scenes.</p>
+          </div>
+          <div class="state-preview">
+            <div><strong>Showcase states</strong><small>Preview edge cases before this design enters the game runtime.</small></div>
+            <div>
+              <button type="button" data-preview="normal">Normal</button>
+              <button type="button" data-preview="loading">Loading</button>
+              <button type="button" data-preview="error">Error</button>
+              <button type="button" data-preview="long">Long text</button>
+            </div>
+          </div>
+        </section>
+      </form>
+    </dialog>
+  </main>
+  <script type="module" src="ui-showcase.mjs"></script>
+</body>
+</html>

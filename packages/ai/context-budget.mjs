@@ -38,11 +38,22 @@ export function sceneTranscript(world,turn,cast,limit=120){
 }
 
 const castOf=t=>t.command.type==='social.speak'?[t.command.args.target]:t.command.type==='world.acceptHangout'?[t.command.args.char]:t.events.find(e=>e.type==='core.sceneStarted'||e.type==='core.sceneContinued')?.payload.characters||[];
-/** Closed scenes that involved anyone in the cast, oldest first, each with its model summary and event digest. */
+/** Closed scenes that involved anyone in the cast, oldest first, each with its model summary and event digest.
+ *  A scene whose last NPC line is a question the player never answered carries `unansweredQuestion`, so the next
+ *  conversation with that character can acknowledge the interruption instead of answering as if no time passed. */
 export function closedScenes(world,cast,pack=null){
  const turns=Object.values(world.turns),bySceneId=new Map();
  for(const t of turns)if(t.sceneId){if(!bySceneId.has(t.sceneId))bySceneId.set(t.sceneId,[]);bySceneId.get(t.sceneId).push(t);}
- return turns.filter(t=>t.sceneEnded&&t.sceneSummary&&castOf(t).some(id=>cast.includes(id))).map(t=>({source:t.id,text:t.sceneSummary,digest:sceneDigest(bySceneId.get(t.sceneId)||[t]),tick:t.events[0]?.tick??null,...(pack&&t.events[0]?(({day,week})=>({day,week}))(calendarFor(t.events[0].tick,pack)):{})}));
+ const hangingOf=sceneId=>{
+  const sceneTurns=bySceneId.get(sceneId)||[],last=sceneTurns.map(t=>Boolean(t.input)).lastIndexOf(true),
+   lines=(last<0?sceneTurns:sceneTurns.slice(last)).flatMap(t=>t.sceneLines||[]),
+   asked=[...lines].reverse().find(line=>line.speaker&&line.speaker!==pack?.playerId&&/\?\s*["'\u201d»]*\s*$/u.test(line.text)),
+   name=asked?pack?.actors.find(a=>a.id===asked.speaker)?.name:null;
+  return asked&&name?{by:name,text:String(asked.text).replace(/\s+/gu,' ').trim().slice(0,160)}:null;};
+ return turns.filter(t=>t.sceneEnded&&t.sceneSummary&&castOf(t).some(id=>cast.includes(id))).map(t=>{
+  const entry={source:t.id,text:t.sceneSummary,digest:sceneDigest(bySceneId.get(t.sceneId)||[t]),tick:t.events[0]?.tick??null,...(pack&&t.events[0]?(({day,week})=>({day,week}))(calendarFor(t.events[0].tick,pack)):{})},
+   unansweredQuestion=hangingOf(t.sceneId);
+  return unansweredQuestion?{...entry,unansweredQuestion}:entry;});
 }
 /**
  * Calendar roll-up of closed scenes: today's stay individual, earlier days this week merge per day, and earlier weeks
@@ -65,8 +76,8 @@ export function recentlySurfaced(world,turnId,window=8){
  return seen;
 }
 
-const profileOf=a=>({id:a.id,name:a.name,pronouns:a.pronouns,description:a.description||'',personality:a.personality||'',traits:a.traits||[],voice:a.voice||'',goal:a.goal||'',backstory:a.backstory||'',likes:a.likes||[],dislikes:a.dislikes||[]});
-const compactProfile=a=>({id:a.id,name:a.name,pronouns:a.pronouns,personality:clip(a.personality||a.description||'',240),traits:a.traits||[],voice:a.voice||''});
+const profileOf=a=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',description:a.description||'',personality:a.personality||'',traits:a.traits||[],voice:a.voice||'',style:a.style||'',examples:a.examples||[],goal:a.goal||'',backstory:a.backstory||'',likes:a.likes||[],dislikes:a.dislikes||[]});
+const compactProfile=a=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',personality:clip(a.personality||a.description||'',240),traits:a.traits||[],voice:a.voice||'',style:a.style||'',examples:(a.examples||[]).slice(0,2)});
 
 /**
  * Fits a scene context into the model's window. `render(context)` must return the prompt messages so the fixed
@@ -81,7 +92,7 @@ export function budgetSceneContext(context,pack,world,turnId,{window=8192,reply=
  const budget=Math.max(0,Math.floor(window*(1-margin))-reply),poolBudget=Math.max(0,budget-base);
  const items=[],add=(pool,tier,key,rank,pairs,extra={})=>{const levels=lods(pairs,ratio,promptView[pool]);if(levels.length)items.push({pool,tier,key,rank,lods:levels,...extra});};
  const actors=pack.actors.filter(a=>cast.includes(a.id));
- actors.forEach((a,i)=>add('castProfiles',1,`cast:${a.id}`,100-i,[['full',profileOf(a)],['compact',compactProfile(a)],['name',{id:a.id,name:a.name,pronouns:a.pronouns}]]));
+ actors.forEach((a,i)=>add('castProfiles',1,`cast:${a.id}`,100-i,[['full',profileOf(a)],['compact',compactProfile(a)],['name',{id:a.id,name:a.name,pronouns:a.pronouns||'they/them'}]]));
  const history=context.sceneHistory||[];
  // `verbatim` caps how many recent turns may stay word for word even when they fit: a small model given 25 full turns
  // loses track of which question it is answering, and does better with a short transcript plus one-line digests.
@@ -94,8 +105,10 @@ export function budgetSceneContext(context,pack,world,turnId,{window=8192,reply=
  // A memory sharing words with the action is flagged `relevant`; the prompt shows it beside PLAYER ACTION, where a
  // small model actually looks, instead of deep inside CURRENT STATE. Same tokens, moved.
  const names=pack.actors.map(a=>a.name);
- (context.memories||[]).forEach((m,i)=>{const r=relevance(m.text,context.playerAction||'',names),v=r?{...m,relevant:true}:m;add('memories',3,`memory:${m.source}:${i}`,(KIND[m.kind]??(m.character?6:5))+r+i/1000,[['full',v],['short',{...v,text:clip(m.text,140)}]]);});
- (context.lorebook||[]).forEach(e=>{const matched=/^(tag|text):/.test(e.reason||'')||e.reason==='current location'||e.reason==='character',rank=(e.score??0)+(matched?sticky(`lore:${e.id}`):stale(`lore:${e.id}`));add('lorebook',4,`lore:${e.id}`,rank,[['full',e],['short',{...e,text:clip(e.text,220)}]]);});
+ // The current turn's own statement is already PLAYER ACTION; recalled beside it, it reads as an echo the model repeats.
+ const current=m=>turnId&&String(m.source).split('.')[0]===turnId;
+ (context.memories||[]).forEach((m,i)=>{if(current(m))return;const r=relevance(m.text,context.playerAction||'',names),v=r?{...m,relevant:true}:m;add('memories',3,`memory:${m.source}:${i}`,(KIND[m.kind]??(m.character?6:5))+r+i/1000,[['full',v],['short',{...v,text:clip(m.text,140)}]]);});
+ (context.lorebook||[]).forEach(e=>{const matched=/^(tag|text|sticky):/.test(e.reason||'')||e.reason==='current location'||e.reason==='character',rank=(e.score??0)+(matched?sticky(`lore:${e.id}`):stale(`lore:${e.id}`));add('lorebook',4,`lore:${e.id}`,rank,[['full',e],['short',{...e,text:clip(e.text,220)}]]);});
  const recaps=recapGroups(context.pastScenes||[],context.day??null,context.week??null);
  recaps.forEach((g,i)=>{const head={source:g.source,...(g.period?{period:g.period}:{})},digest=sceneDigestOf(g.scenes),text=g.scenes.map(x=>x.text).join(' ');
   add('pastScenes',5,g.key,i,[['full',{...head,text,...(digest?{changes:digest}:{})}],['summary',{...head,text:g.period?g.scenes.map(x=>clip(x.text,160)).join(' '):text}],['digest',digest?{...head,changes:clip(digest,g.period?320:200)}:null]]);});

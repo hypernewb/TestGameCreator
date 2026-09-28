@@ -1,6 +1,7 @@
 import {assert} from '../core/engine.mjs';
 import {contextFor,selectLore} from './context.mjs';
 import {parseModelObject} from './json.mjs';
+import {stripStateSyntax} from './untrusted-output.mjs';
 import {calendarFor} from '../../public/calendar.mjs';
 export function daypartContext(s,p,turn){
  assert(p.daypart,'No daypart job in this world');const cfg=p.daypart,player=p.playerId;
@@ -14,6 +15,7 @@ export function daypartContext(s,p,turn){
  return {job:'daypart_intro',gameProject:p.gameProject||null,date:`${calendarDate}Week ${week} · ${weekday} · ${part}`,day,week,weekday,daypart:part,openingLocation:p.locations.find(l=>l.id===s.actors[player].location).name,openingDescription:p.locations.find(l=>l.id===s.actors[player].location).description||'',worldEvent:currentEvent,activeEvents:worldEvents,recently:playerContext.recentActions.slice(-5),lorebook:playerContext.lorebook,hangoutCandidates:active.map(h=>({...h,name:p.actors.find(a=>a.id===h.char).name,voice:p.actors.find(a=>a.id===h.char).voice||'',traits:p.actors.find(a=>a.id===h.char).traits||[]})),characters:loreByCharacter,backgroundOnly:(cfg.backgroundOnly||[]).map(id=>({id,name:p.actors.find(a=>a.id===id)?.name,description:p.actors.find(a=>a.id===id)?.description,rule:'Background information only; do not have this character appear or message the player.'})),presentOnScreen:[],rules:'Write 3–5 short lines in second person, present tense. Player alone at current location; no dialogue, date restatement, phone messages, or prompt to choose. Return one meeting invitation per eligible character, keyed exactly; no other invitations.'};
 }
 export function validateDaypart(raw,ctx){let out;try{out=parseModelObject(raw);}catch(e){throw new Error(`Daypart response must be JSON. ${e.message}`);}
+ if(Array.isArray(out?.lines))out.lines=out.lines.map(stripStateSyntax);for(const h of Array.isArray(out?.hangouts)?out.hangouts:[])if(h)h.text=stripStateSyntax(h.text);
  assert(out&&Array.isArray(out.lines)&&out.lines.length>=3&&out.lines.length<=5&&out.lines.every(x=>typeof x==='string'&&x.trim()&&x.length<=350),'Expected 3–5 short narration lines');
  const names=[...ctx.hangoutCandidates,...ctx.backgroundOnly].map(c=>c.name?.toLowerCase()).filter(Boolean);for(const line of out.lines)for(const name of names)assert(!line.toLowerCase().split(/[^a-z0-9]+/).includes(name),'Narration mentioned an off-screen character');
  assert(Array.isArray(out.hangouts)&&out.hangouts.length===ctx.hangoutCandidates.length,'Expected exactly one invitation per candidate');

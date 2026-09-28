@@ -13,7 +13,7 @@
     "world.schedule": "0.1.0",
     "items.inventory": "0.1.0",
     "story.quests": "0.1.0",
-    "social.npc": "0.1.0"
+    "social.npc": "0.2.0"
   },
   "durations": {
     "core.inspect": 0,

@@ -6,6 +6,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {createApp} from '../server.mjs';
+import {funMetrics,funGate,funLine,gateLine} from '../packages/testing/fun-metrics.mjs';
 const arg=(k,d)=>{const i=process.argv.indexOf('--'+k);return i<0?d:process.argv[i+1];},flag=k=>process.argv.includes('--'+k);
 const size=arg('size','minimal'),filler=+arg('filler',12),verbose=flag('verbose'),packId=arg('pack','sample.living-world');
 const endpoint=arg('endpoint',process.env.STORY_ENDPOINT||'http://localhost:1234/v1'),model=arg('model',process.env.STORY_MODEL||'qwen3.5-text-9b-nsfw-rp-roleplay-i1');
@@ -25,14 +26,14 @@ const {server,service}=createApp({dataPath:join(dir,'playtest.sqlite')});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const base=`http://127.0.0.1:${server.address().port}`;
 const api=async(p,b)=>(await fetch(base+p,b?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}:{})).json();
-const rows=[];let prev='';
+const rows=[],seconds={};let prev='',s,pack;
 try{
   await api('/api/ai/config',{mode:'local',endpoint,model});await api('/api/ai/context-size',{size});
-  let s=(await api('/api/new',{packId})).state;if(!s)throw new Error(`could not start pack ${packId}`);
+  s=(await api('/api/new',{packId})).state;if(!s)throw new Error(`could not start pack ${packId}`);pack=service.packs[packId];
   console.log(`playtest size=${size} model=${model} pack=${packId} turns=${plan.length}`);
   console.log(' #  sec  used/budget  cut over  cmd            recall echo  input');
   for(const [i,{input,expect}] of plan.entries()){
-    const t0=Date.now(),r=await api('/api/action',{campaignId:s.campaignId,id:randomUUID(),expectedRevision:s.revision,input}),sec=(Date.now()-t0)/1000;
+    const id=randomUUID(),t0=Date.now(),r=await api('/api/action',{campaignId:s.campaignId,id,expectedRevision:s.revision,input}),sec=(Date.now()-t0)/1000;seconds[id]=sec;
     const row={i,input,sec,expect:!!expect};rows.push(row);
     if(r.error){row.error=r.error;s=(await api('/api/load',{id:s.campaignId})).state||s;console.log(`${String(i).padStart(2)} ${sec.toFixed(1).padStart(4)}  ERROR ${r.error.slice(0,80)}`);continue;}
     s=r.state;const turn=Object.values(s.turns).sort((a,b)=>(a.tick??0)-(b.tick??0)).at(-1),rep=reportOf(turn);
@@ -46,4 +47,5 @@ try{
 const ok=rows.filter(r=>!r.error),peak=Math.max(0,...ok.map(r=>r.used??0)),rc=rows.filter(r=>r.expect),n=k=>ok.filter(r=>r[k]).length;
 const cal=service.provider?.calibration;
 console.log(`\nsummary: ${ok.length}/${rows.length} turns ok | recall ${rc.filter(r=>r.pass).length}/${rc.length} | over-budget ${n('over')} | fallbacks ${n('fallback')} | echoes ${n('echo')} | peak used ${peak}/${ok[0]?.budget??'?'} | avg ${(rows.reduce((a,r)=>a+r.sec,0)/Math.max(1,rows.length)).toFixed(1)}s/turn${cal?` | calib ${cal.ratio}x${cal.samples}`:''}`);
+if(s&&pack){const fm=funMetrics(s,pack,{seconds});console.log(funLine(fm));console.log(gateLine(funGate(fm)));}
 process.exit(0);

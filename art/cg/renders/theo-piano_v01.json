@@ -1,0 +1,79 @@
+{
+  "sheet": "art/cg/after-hours.json",
+  "cg": "theo-piano",
+  "scene": "theo-piano",
+  "seed": 227519,
+  "request": {
+    "input": "1boy, solo, battered upright piano in a dim cocktail bar, late night, single warm lamp, empty tables, bottles in soft bokeh, visual novel cg, contemporary romance, painterly anime illustration, clean linework, warm low-key lighting, terracotta brass and walnut palette, detailed background, cinematic composition",
+    "model": "nai-diffusion-4-5-full",
+    "action": "generate",
+    "parameters": {
+      "params_version": 3,
+      "width": 1216,
+      "height": 832,
+      "scale": 5,
+      "sampler": "k_euler_ancestral",
+      "steps": 28,
+      "n_samples": 1,
+      "ucPreset": 0,
+      "qualityToggle": true,
+      "dynamic_thresholding": false,
+      "cfg_rescale": 0,
+      "noise_schedule": "karras",
+      "legacy": false,
+      "legacy_v3_extend": false,
+      "legacy_uc": false,
+      "use_coords": false,
+      "prefer_brownian": true,
+      "deliberate_euler_ancestral_bug": false,
+      "seed": 227519,
+      "negative_prompt": "text, logo, watermark, signature, speech bubble, username, lowres, blurry, jpeg artifacts, bad anatomy, bad hands, extra fingers, missing fingers, extra limbs, multiple views, chibi, 3d, photorealistic, neon, sci-fi, child, loli, shota, underage",
+      "characterPrompts": [
+        {
+          "prompt": "boy, adult man, 28 years old, pianist, messy dark brown curly hair, light stubble, gentle tired brown eyes, tall lean build, grey knit sweater, sleeves pushed up, silver ring, sitting at the upright piano, playing, eyes half closed, three-quarter side view, absorbed, faint smile",
+          "uc": "",
+          "center": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "enabled": true
+        }
+      ],
+      "v4_prompt": {
+        "caption": {
+          "base_caption": "1boy, solo, battered upright piano in a dim cocktail bar, late night, single warm lamp, empty tables, bottles in soft bokeh, visual novel cg, contemporary romance, painterly anime illustration, clean linework, warm low-key lighting, terracotta brass and walnut palette, detailed background, cinematic composition",
+          "char_captions": [
+            {
+              "char_caption": "boy, adult man, 28 years old, pianist, messy dark brown curly hair, light stubble, gentle tired brown eyes, tall lean build, grey knit sweater, sleeves pushed up, silver ring, sitting at the upright piano, playing, eyes half closed, three-quarter side view, absorbed, faint smile",
+              "centers": [
+                {
+                  "x": 0.5,
+                  "y": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        "use_coords": false,
+        "use_order": true
+      },
+      "v4_negative_prompt": {
+        "caption": {
+          "base_caption": "text, logo, watermark, signature, speech bubble, username, lowres, blurry, jpeg artifacts, bad anatomy, bad hands, extra fingers, missing fingers, extra limbs, multiple views, chibi, 3d, photorealistic, neon, sci-fi, child, loli, shota, underage",
+          "char_captions": [
+            {
+              "char_caption": "",
+              "centers": [
+                {
+                  "x": 0.5,
+                  "y": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        "legacy_uc": false
+      }
+    }
+  }
+}

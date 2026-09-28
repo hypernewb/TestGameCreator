@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <symbol id="history" viewBox="0 0 24 24"><path d="M4 7h11M4 12h11M4 17h8M18 5v14l3-3"/></symbol>
+  <symbol id="auto" viewBox="0 0 24 24"><path d="m8 5 10 7-10 7Z"/></symbol>
+  <symbol id="menu" viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h14"/></symbol>
+  <symbol id="next" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+  <symbol id="send" viewBox="0 0 24 24"><path d="m4 5 16 7-16 7 3-7Zm3 7h13"/></symbol>
+  <symbol id="retry" viewBox="0 0 24 24"><path d="M19 8V4l-3 3a8 8 0 1 0 2 10M16 7h-5"/></symbol>
+  <symbol id="close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  <symbol id="book" viewBox="0 0 24 24"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H12v18H7.5A3.5 3.5 0 0 0 4 23Zm16 0A3.5 3.5 0 0 0 16.5 2H12v18h4.5a3.5 3.5 0 0 1 3.5 3Z"/></symbol>
+</svg>

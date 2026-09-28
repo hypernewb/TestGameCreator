@@ -1,0 +1,6 @@
+[mcp_servers.comfy-mcp]
+command = 'C:\Users\ckx19\story-framework\.tools\comfy-mcp\Scripts\comfy-mcp.exe'
+startup_timeout_sec = 120
+
+[mcp_servers.comfy-mcp.env]
+COMFY_BIN = 'C:\Users\ckx19\story-framework\.tools\comfy-mcp\Scripts\comfy.exe'

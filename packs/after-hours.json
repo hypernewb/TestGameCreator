@@ -1,0 +1,5329 @@
+{
+ "schemaVersion": 1,
+ "id": "showcase.after-hours",
+ "version": "0.1.0",
+ "title": "After Hours",
+ "subtitle": "Two weeks behind the bar at the Velvet Room",
+ "playerId": "player",
+ "calendar": "Night",
+ "modules": {
+  "social.conversation": "0.1.0",
+  "social.relationships": "0.1.0",
+  "story.scenes": "0.1.0",
+  "story.director": "0.1.0",
+  "character.stats": "0.1.0",
+  "items.inventory": "0.1.0",
+  "items.equipment": "0.1.0",
+  "social.dating": "0.1.0",
+  "social.intimacy": "0.1.0",
+  "story.endings": "0.1.0",
+  "world.schedule": "0.1.0",
+  "world.economy": "0.1.0",
+  "world.objects": "0.1.0"
+ },
+ "locations": [
+  {
+   "id": "flat",
+   "name": "Your flat",
+   "description": "A narrow flat above a launderette. The radiator ticks; your good clothes hang on the door.",
+   "exits": [
+    {
+     "to": "bar"
+    },
+    {
+     "to": "market"
+    },
+    {
+     "to": "canal"
+    }
+   ],
+   "owner": "player",
+   "background": "assets/after-hours/flat.svg"
+  },
+  {
+   "id": "bar",
+   "name": "The Velvet Room",
+   "description": "A low-lit cocktail bar with a battered upright piano and a staff room with a window nobody remembers is there.",
+   "exits": [
+    {
+     "to": "flat"
+    },
+    {
+     "to": "market"
+    },
+    {
+     "to": "canal"
+    }
+   ],
+   "background": "assets/after-hours/bar.svg"
+  },
+  {
+   "id": "market",
+   "name": "Hollis Street market",
+   "description": "Fruit stalls, a flea market on the car park end, and a coffee van that opens before anyone sane is awake.",
+   "exits": [
+    {
+     "to": "flat"
+    },
+    {
+     "to": "bar"
+    },
+    {
+     "to": "canal"
+    }
+   ],
+   "background": "assets/after-hours/market.svg"
+  },
+  {
+   "id": "canal",
+   "name": "The canal path",
+   "description": "A towpath under three bridges. Narrowboats, joggers, and one bridge with good acoustics.",
+   "exits": [
+    {
+     "to": "flat"
+    },
+    {
+     "to": "bar"
+    },
+    {
+     "to": "market"
+    }
+   ],
+   "background": "assets/after-hours/canal.svg"
+  }
+ ],
+ "actors": [
+  {
+   "id": "player",
+   "name": "You",
+   "age": 24,
+   "location": "flat",
+   "identityTags": [
+    "adult"
+   ]
+  },
+  {
+   "id": "juno",
+   "name": "Juno",
+   "age": 29,
+   "pronouns": "she/her",
+   "location": "bar",
+   "identityTags": [
+    "adult"
+   ],
+   "description": "Head bartender. Fast hands, faster mouth, keeps a strict line between work and everything else — until she doesn't.",
+   "style": "Teasing, competitive, rewards people who push back",
+   "goal": "Save enough to open her own place without owing anyone.",
+   "traits": [
+    "confident",
+    "competitive",
+    "private"
+   ],
+   "voice": "Clipped, amused, dares instead of asks.",
+   "likes": [
+    "being challenged",
+    "a clean bar top",
+    "people who don't flinch"
+   ],
+   "dislikes": [
+    "hesitation",
+    "coworkers who gossip"
+   ],
+   "examples": [
+    "You're slow. Cute, but slow.",
+    "Ask me properly or don't ask."
+   ]
+  },
+  {
+   "id": "theo",
+   "name": "Theo",
+   "age": 28,
+   "pronouns": "he/him",
+   "location": "bar",
+   "identityTags": [
+    "adult"
+   ],
+   "description": "The house pianist. Plays other people's songs for tips and his own only after midnight. Eight months out of a long relationship.",
+   "style": "Guarded, gentle, opens up to people who listen",
+   "goal": "Finish one song he isn't embarrassed by.",
+   "traits": [
+    "reserved",
+    "observant",
+    "romantic"
+   ],
+   "voice": "Soft, self-deprecating, long pauses.",
+   "likes": [
+    "being really heard",
+    "rain on the skylight",
+    "honesty"
+   ],
+   "dislikes": [
+    "being rushed",
+    "being lied to"
+   ],
+   "examples": [
+    "It's not finished. It might never be.",
+    "You were listening. Nobody listens."
+   ]
+  },
+  {
+   "id": "priya",
+   "name": "Priya",
+   "age": 34,
+   "pronouns": "she/her",
+   "location": "bar",
+   "identityTags": [
+    "adult"
+   ],
+   "description": "The bar manager. Sees everything from the staff-room window and trades in what she sees.",
+   "style": "Dry, fair, transactional",
+   "goal": "Keep the Velvet Room running and its staff out of trouble.",
+   "traits": [
+    "perceptive",
+    "pragmatic",
+    "gossipy"
+   ],
+   "voice": "Deadpan one-liners.",
+   "likes": [
+    "favours returned",
+    "a quiet Tuesday"
+   ],
+   "dislikes": [
+    "drama she didn't start"
+   ],
+   "examples": [
+    "I don't care who you kiss. I care who finds out."
+   ]
+  }
+ ],
+ "initialRelationships": [
+  {
+   "character": "juno",
+   "trust": 20
+  },
+  {
+   "character": "theo",
+   "trust": 20
+  },
+  {
+   "character": "priya",
+   "trust": 25
+  }
+ ],
+ "statDefinitions": [
+  {
+   "id": "charm",
+   "name": "Charm",
+   "min": 0,
+   "max": 20,
+   "visibility": "public",
+   "learnFromFailure": 1,
+   "ranks": [
+    {
+     "min": 0,
+     "name": "Awkward"
+    },
+    {
+     "min": 4,
+     "name": "Likable"
+    },
+    {
+     "min": 8,
+     "name": "Magnetic"
+    },
+    {
+     "min": 13,
+     "name": "Irresistible"
+    }
+   ]
+  },
+  {
+   "id": "nerve",
+   "name": "Nerve",
+   "min": 0,
+   "max": 20,
+   "visibility": "public",
+   "learnFromFailure": 1,
+   "ranks": [
+    {
+     "min": 0,
+     "name": "Shy"
+    },
+    {
+     "min": 4,
+     "name": "Steady"
+    },
+    {
+     "min": 8,
+     "name": "Bold"
+    },
+    {
+     "min": 13,
+     "name": "Fearless"
+    }
+   ]
+  },
+  {
+   "id": "wit",
+   "name": "Wit",
+   "min": 0,
+   "max": 20,
+   "visibility": "public",
+   "learnFromFailure": 1,
+   "ranks": [
+    {
+     "min": 0,
+     "name": "Slow"
+    },
+    {
+     "min": 4,
+     "name": "Sharp"
+    },
+    {
+     "min": 8,
+     "name": "Quick"
+    },
+    {
+     "min": 13,
+     "name": "Brilliant"
+    }
+   ]
+  },
+  {
+   "id": "empathy",
+   "name": "Empathy",
+   "min": 0,
+   "max": 20,
+   "visibility": "public",
+   "learnFromFailure": 1,
+   "ranks": [
+    {
+     "min": 0,
+     "name": "Distracted"
+    },
+    {
+     "min": 4,
+     "name": "Attentive"
+    },
+    {
+     "min": 8,
+     "name": "Warm"
+    },
+    {
+     "min": 13,
+     "name": "Intuitive"
+    }
+   ]
+  }
+ ],
+ "initialStats": [
+  {
+   "character": "player",
+   "stat": "charm",
+   "value": 3
+  },
+  {
+   "character": "player",
+   "stat": "nerve",
+   "value": 2
+  },
+  {
+   "character": "player",
+   "stat": "wit",
+   "value": 3
+  },
+  {
+   "character": "player",
+   "stat": "empathy",
+   "value": 3
+  }
+ ],
+ "equipmentSlots": [
+  "top",
+  "bottom",
+  "outer",
+  "shoes",
+  "accessory"
+ ],
+ "items": [
+  {
+   "id": "black-shirt",
+   "name": "Pressed black shirt",
+   "owner": "player",
+   "slot": "top",
+   "statBonus": {
+    "charm": 2
+   },
+   "description": "Makes you look like you belong behind the bar."
+  },
+  {
+   "id": "leather-jacket",
+   "name": "Leather jacket",
+   "owner": "player",
+   "slot": "outer",
+   "statBonus": {
+    "nerve": 2
+   },
+   "description": "Someone braver owned it first."
+  },
+  {
+   "id": "cufflinks",
+   "name": "Silver cufflinks",
+   "owner": "player",
+   "slot": "accessory",
+   "statBonus": {
+    "wit": 1
+   },
+   "description": "Fidgeting with them buys you a second to think."
+  },
+  {
+   "id": "dark-jeans",
+   "name": "Dark jeans",
+   "owner": "player",
+   "slot": "bottom",
+   "statBonus": {
+    "nerve": 1
+   },
+   "description": "Broken in, forgiving, fine for a double shift."
+  },
+  {
+   "id": "boots",
+   "name": "Scuffed boots",
+   "owner": "player",
+   "slot": "shoes",
+   "statBonus": {
+    "empathy": 1
+   },
+   "description": "Comfortable enough to stand in for four hours."
+  },
+  {
+   "id": "old-mixtape",
+   "name": "Unlabelled mixtape",
+   "hidden": true,
+   "slot": "accessory",
+   "statBonus": {
+    "nerve": 1
+   },
+   "description": "Side A is somebody's whole summer. Carrying it makes you braver, somehow.",
+   "hideIn": [
+    "floorboard",
+    "launderette-board",
+    "ice-machine"
+   ]
+  },
+  {
+   "id": "brass-key",
+   "name": "Little brass key",
+   "hidden": true,
+   "description": "Stamped VR-JB. Too small for a door.",
+   "hideIn": [
+    "lock-hut",
+    "bridge-graffiti",
+    "photo-wall"
+   ]
+  },
+  {
+   "id": "rare-vinyl",
+   "name": "Signed jazz single",
+   "owner": "market",
+   "hidden": true,
+   "slot": "accessory",
+   "statBonus": {
+    "charm": 1
+   },
+   "description": "A 1962 pressing, signed in green ink by a pianist nobody remembers except Theo."
+  },
+  {
+   "id": "lucky-coin",
+   "name": "Bent lucky coin",
+   "hidden": true,
+   "slot": "accessory",
+   "statBonus": {
+    "wit": 1
+   },
+   "description": "Someone hammered a heart into it. It turns up heads more than it should.",
+   "hideIn": [
+    "ice-machine",
+    "fortune-booth",
+    "bridge-graffiti"
+   ]
+  }
+ ],
+ "activities": [
+  {
+   "id": "bar-shift",
+   "name": "Work a shift with Juno",
+   "description": "Four hours of orders, spills and Juno correcting your pour. Forty in tips and wages.",
+   "location": "bar",
+   "duration": 4,
+   "character": "juno",
+   "phrases": [
+    "work a shift",
+    "work the bar",
+    "help juno",
+    "to work",
+    "get to work",
+    "start work",
+    "go to work",
+    "keep working",
+    "continue working",
+    "back to work",
+    "my shift",
+    "clock in"
+   ],
+   "effects": [
+    {
+     "type": "stat",
+     "stat": "charm",
+     "delta": 1
+    },
+    {
+     "type": "trust",
+     "character": "juno",
+     "delta": 2
+    },
+    {
+     "type": "money",
+     "delta": 40
+    }
+   ]
+  },
+  {
+   "id": "open-mic",
+   "name": "Do the open mic",
+   "description": "Five minutes on the tiny stage. Your hands shake; nobody throws anything.",
+   "location": "bar",
+   "duration": 4,
+   "phrases": [
+    "open mic",
+    "go on stage"
+   ],
+   "effects": [
+    {
+     "type": "stat",
+     "stat": "nerve",
+     "delta": 2
+    }
+   ]
+  },
+  {
+   "id": "crosswords",
+   "name": "Do the cryptic crossword",
+   "description": "An afternoon of anagrams and cold coffee.",
+   "location": "flat",
+   "duration": 4,
+   "perDay": 1,
+   "phrases": [
+    "crossword",
+    "puzzle"
+   ],
+   "effects": [
+    {
+     "type": "stat",
+     "stat": "wit",
+     "delta": 2
+    }
+   ]
+  },
+  {
+   "id": "stock-room",
+   "name": "Help Priya with the stock count",
+   "description": "Crates, clipboards and Priya's running commentary on everyone who works here.",
+   "location": "bar",
+   "duration": 4,
+   "character": "priya",
+   "phrases": [
+    "stock count",
+    "help priya"
+   ],
+   "effects": [
+    {
+     "type": "stat",
+     "stat": "empathy",
+     "delta": 1
+    },
+    {
+     "type": "trust",
+     "character": "priya",
+     "delta": 3
+    },
+    {
+     "type": "flag",
+     "id": "helped-priya",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": "listen-theo",
+   "name": "Sit by the piano",
+   "description": "You nurse one drink and listen to Theo play the whole set.",
+   "location": "bar",
+   "duration": 4,
+   "character": "theo",
+   "phrases": [
+    "listen to theo",
+    "sit by the piano"
+   ],
+   "effects": [
+    {
+     "type": "stat",
+     "stat": "empathy",
+     "delta": 2
+    },
+    {
+     "type": "trust",
+     "character": "theo",
+     "delta": 2
+    }
+   ]
+  },
+  {
+   "id": "stay-after-close",
+   "name": "Stay after closing",
+   "description": "Chairs up, lights down, Juno counting the till.",
+   "location": "bar",
+   "duration": 4,
+   "character": "juno",
+   "requiresFlag": "juno-flirt",
+   "phrases": [
+    "stay after closing",
+    "stay late"
+   ]
+  },
+  {
+   "id": "walk-theo-home",
+   "name": "Walk Theo home",
+   "description": "The long way, past the canal.",
+   "location": "bar",
+   "duration": 4,
+   "character": "theo",
+   "requiresFlag": "theo-close",
+   "phrases": [
+    "walk theo home"
+   ]
+  },
+  {
+   "id": "market-run",
+   "name": "Do the market run with Juno",
+   "description": "Limes, mint, ice, and Juno arguing prices she has already decided on.",
+   "location": "market",
+   "duration": 3,
+   "character": "juno",
+   "phrases": [
+    "market run",
+    "help juno shop"
+   ],
+   "effects": [
+    {
+     "type": "stat",
+     "stat": "wit",
+     "delta": 1
+    },
+    {
+     "type": "trust",
+     "character": "juno",
+     "delta": 2
+    }
+   ]
+  },
+  {
+   "id": "busk",
+   "name": "Busk with Theo",
+   "description": "An upturned hat, a borrowed tambourine, and strangers who walk past without looking.",
+   "location": "canal",
+   "duration": 4,
+   "character": "theo",
+   "phrases": [
+    "busk",
+    "busk with theo"
+   ],
+   "effects": [
+    {
+     "type": "stat",
+     "stat": "nerve",
+     "delta": 1
+    },
+    {
+     "type": "trust",
+     "character": "theo",
+     "delta": 2
+    }
+   ]
+  },
+  {
+   "id": "mirror-practice",
+   "name": "Rehearse lines in the mirror",
+   "description": "Twenty minutes of saying hard things to your own face until they come out easier.",
+   "location": "flat",
+   "duration": 2,
+   "perDay": 1,
+   "phrases": [
+    "rehearse",
+    "practise in the mirror",
+    "practice in the mirror"
+   ],
+   "effects": [
+    {
+     "type": "stat",
+     "stat": "nerve",
+     "delta": 1
+    }
+   ]
+  },
+  {
+   "id": "read-novel",
+   "name": "Read on the fire escape",
+   "description": "A paperback, a mug, the city humming below. You notice more about people afterwards.",
+   "location": "flat",
+   "duration": 3,
+   "perDay": 1,
+   "phrases": [
+    "read a book",
+    "fire escape"
+   ],
+   "effects": [
+    {
+     "type": "stat",
+     "stat": "empathy",
+     "delta": 1
+    }
+   ]
+  },
+  {
+   "id": "haggle",
+   "name": "Haggle at the stalls",
+   "description": "You talk a fishmonger down two quid and make him laugh doing it.",
+   "location": "market",
+   "duration": 2,
+   "phrases": [
+    "haggle",
+    "bargain"
+   ],
+   "effects": [
+    {
+     "type": "stat",
+     "stat": "charm",
+     "delta": 1
+    },
+    {
+     "type": "money",
+     "delta": 4
+    }
+   ]
+  },
+  {
+   "id": "feed-swans",
+   "name": "Watch the boats and feed the swans",
+   "description": "Narrowboats, a heron, and one swan with a clear grudge. You find yourself guessing at every passer-by's story.",
+   "location": "canal",
+   "duration": 2,
+   "phrases": [
+    "feed the swans",
+    "watch the boats"
+   ],
+   "effects": [
+    {
+     "type": "stat",
+     "stat": "empathy",
+     "delta": 1
+    }
+   ]
+  },
+  {
+   "id": "canal-quiz",
+   "name": "Join the quiz on the barge",
+   "description": "The barge café runs a quiz at dusk. Your team is two pensioners and a dog; you come second.",
+   "location": "canal",
+   "duration": 3,
+   "phrases": [
+    "quiz",
+    "barge"
+   ],
+   "effects": [
+    {
+     "type": "stat",
+     "stat": "wit",
+     "delta": 1
+    },
+    {
+     "type": "money",
+     "delta": 10
+    }
+   ]
+  },
+  {
+   "id": "jukebox-song",
+   "name": "Pick a song on the jukebox",
+   "description": "You feed it a coin and choose something that makes the regulars sing along.",
+   "location": "bar",
+   "duration": 1,
+   "requiresFlag": "jukebox-on",
+   "phrases": [
+    "jukebox",
+    "pick a song"
+   ],
+   "effects": [
+    {
+     "type": "stat",
+     "stat": "nerve",
+     "delta": 1
+    },
+    {
+     "type": "stat",
+     "stat": "charm",
+     "delta": 1
+    }
+   ]
+  }
+ ],
+ "durations": {
+  "story.leave": 0
+ },
+ "datingProfiles": [
+  {
+   "character": "juno",
+   "initialChemistry": 5,
+   "initialPhase": "available",
+   "agreements": [
+    "casual",
+    "monogamous"
+   ],
+   "thresholds": {
+    "crush": 15,
+    "date": 35,
+    "exclusive": 70
+   },
+   "preferences": [
+    {
+     "id": "bold",
+     "type": "stat",
+     "stat": "nerve",
+     "min": 8,
+     "weight": 10,
+     "visibility": "discoverable"
+    }
+   ],
+   "signals": []
+  },
+  {
+   "character": "theo",
+   "initialChemistry": 5,
+   "initialPhase": "available",
+   "agreements": [
+    "monogamous"
+   ],
+   "thresholds": {
+    "crush": 15,
+    "date": 35,
+    "exclusive": 70
+   },
+   "preferences": [
+    {
+     "id": "listener",
+     "type": "stat",
+     "stat": "empathy",
+     "min": 8,
+     "weight": 10,
+     "visibility": "discoverable"
+    }
+   ],
+   "signals": []
+  }
+ ],
+ "scriptedScenes": [
+  {
+   "id": "first-night",
+   "title": "First night",
+   "priority": 10,
+   "opening": "Your first night at the Velvet Room.",
+   "trigger": {
+    "event": "core.moved",
+    "match": {
+     "to": "bar"
+    }
+   },
+   "pages": [
+    {
+     "speaker": "priya",
+     "text": "You're the new barback. Juno trains you, Theo plays, I sign the cheques. Nobody dates anybody. That's a joke. Mostly."
+    },
+    {
+     "speaker": "juno",
+     "text": "Can you carry a crate and keep your mouth shut? Because the last one could do neither."
+    }
+   ],
+   "choices": [
+    {
+     "id": "banter",
+     "label": "Give Juno a line back",
+     "result": "\"I can do one of those. Your choice which.\" Juno actually laughs, then pretends she didn't.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": 5
+      },
+      {
+       "type": "flag",
+       "id": "juno-banter",
+       "value": true
+      }
+     ],
+     "check": {
+      "stat": "wit",
+      "target": 4,
+      "fail": {
+       "result": "Your comeback arrives about three seconds late. Juno pats your shoulder. \"We'll work on it.\"",
+       "effects": [
+        {
+         "type": "chemistry",
+         "character": "juno",
+         "delta": 2,
+         "reason": "she liked the effort"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "theo-song",
+     "label": "Ask the pianist what he's playing",
+     "result": "Theo stops mid-bar. \"Nobody asks. It's mine. It's not finished.\" He plays it again, slower, for you.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "theo",
+       "delta": 5
+      },
+      {
+       "type": "trust",
+       "character": "theo",
+       "delta": 3
+      },
+      {
+       "type": "flag",
+       "id": "theo-asked",
+       "value": true
+      }
+     ],
+     "check": {
+      "stat": "empathy",
+      "target": 4,
+      "fail": {
+       "result": "You ask while he's mid-phrase. He answers politely and switches to a standard.",
+       "effects": [
+        {
+         "type": "chemistry",
+         "character": "theo",
+         "delta": 1,
+         "reason": "he was glad to be asked"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "just-work",
+     "label": "Just get to work",
+     "result": "You carry crates. Priya nods once, which you gather is high praise.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "priya",
+       "delta": 3
+      }
+     ]
+    }
+   ],
+   "when": {
+    "flags": {
+     "last-call": false
+    }
+   },
+   "cg": "assets/generated/cg/first-night_v01.png"
+  },
+  {
+   "id": "juno-shift",
+   "title": "Saturday rush",
+   "opening": "Three deep at the bar, and Juno is enjoying watching you drown.",
+   "trigger": {
+    "event": "world.activityCompleted",
+    "match": {
+     "activity": "bar-shift"
+    }
+   },
+   "pages": [
+    {
+     "speaker": "juno",
+     "text": "Two negronis, an old fashioned, and stop looking at me like I'm the emergency exit."
+    }
+   ],
+   "choices": [
+    {
+     "id": "flirt-back",
+     "label": "Flirt back without missing an order",
+     "result": "\"You'd make a lovely emergency exit.\" You slide the negronis out on time. Juno's grin lasts the rest of the shift.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": 8
+      },
+      {
+       "type": "flag",
+       "id": "juno-flirt",
+       "value": true
+      }
+     ],
+     "check": {
+      "stat": "charm",
+      "target": 4,
+      "modifiers": [
+       {
+        "when": {
+         "flags": {
+          "juno-banter": true
+         }
+        },
+        "value": 1,
+        "label": "You already made her laugh"
+       }
+      ],
+      "fail": {
+       "result": "You try a line and pour tonic into the wrong glass. Juno fixes it without looking. \"Keep trying. Both things.\"",
+       "effects": [
+        {
+         "type": "flag",
+         "id": "juno-flirt",
+         "value": true
+        },
+        {
+         "type": "chemistry",
+         "character": "juno",
+         "delta": 3,
+         "reason": "the banter landed"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "head-down",
+     "label": "Keep your head down and pour",
+     "result": "You survive the rush. Juno says \"Not bad\" on the way out, which feels like a medal.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": 3
+      }
+     ]
+    }
+   ],
+   "when": {
+    "flags": {
+     "last-call": false
+    }
+   }
+  },
+  {
+   "id": "juno-after-close",
+   "title": "Chairs up",
+   "opening": "The bar is dark except for the till light. Juno counts, slowly.",
+   "trigger": {
+    "event": "world.activityCompleted",
+    "match": {
+     "activity": "stay-after-close"
+    }
+   },
+   "pages": [
+    {
+     "speaker": "juno",
+     "text": "You stayed. Nobody stays. So say whatever it is you've been not saying all week."
+    }
+   ],
+   "choices": [
+    {
+     "id": "say-it",
+     "label": "Tell her you've been thinking about her",
+     "result": "You say it plainly. Juno puts the cash bag down, comes around the bar, and stops close enough that it's a question.",
+     "next": "close",
+     "check": {
+      "stat": "nerve",
+      "target": 8,
+      "modifiers": [
+       {
+        "when": {
+         "flags": {
+          "juno-banter": true
+         }
+        },
+        "value": 2,
+        "label": "You've held your own with her"
+       },
+       {
+        "when": {
+         "flags": {
+          "juno-dream": true
+         }
+        },
+        "value": 2,
+        "label": "She told you about Last Orders"
+       }
+      ],
+      "fail": {
+       "result": "It comes out as a joke about the till. Juno laughs, but she looks at you a beat too long. \"Try that again sometime. Properly.\"",
+       "effects": [
+        {
+         "type": "flag",
+         "id": "juno-dare-owed",
+         "value": true
+        },
+        {
+         "type": "chemistry",
+         "character": "juno",
+         "delta": 3,
+         "reason": "the honesty landed"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "help-count",
+     "label": "Just help her count",
+     "result": "You count in silence. It's comfortable, which is almost worse.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": 2
+      }
+     ]
+    }
+   ],
+   "beats": [
+    {
+     "id": "close",
+     "opening": "Juno, very close, waiting to see what you do.",
+     "choices": [
+      {
+       "id": "kiss",
+       "label": "Kiss her",
+       "result": "She kisses you back like it's a competition she intends to win. Somewhere behind you, the staff-room light is on.",
+       "effects": [
+        {
+         "type": "chemistry",
+         "character": "juno",
+         "delta": 10
+        },
+        {
+         "type": "flag",
+         "id": "juno-kissed",
+         "value": true
+        },
+        {
+         "type": "datingPhase",
+         "character": "juno",
+         "to": "dating",
+         "reason": "kissed after close"
+        }
+       ]
+      },
+      {
+       "id": "rain-check",
+       "label": "\"Not here. Not yet.\"",
+       "result": "Juno nods, surprised, and — you think — pleased. \"Then I'll hold you to 'yet'.\"",
+       "effects": [
+        {
+         "type": "chemistry",
+         "character": "juno",
+         "delta": 4
+        },
+        {
+         "type": "flag",
+         "id": "juno-rain-check",
+         "value": true
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "when": {
+    "flags": {
+     "last-call": false
+    }
+   },
+   "cg": "assets/generated/cg/juno-after-close_v01.png"
+  },
+  {
+   "id": "juno-rematch",
+   "title": "Properly",
+   "opening": "Another close. Juno hasn't forgotten.",
+   "trigger": {
+    "event": "world.activityCompleted",
+    "match": {
+     "activity": "stay-after-close"
+    }
+   },
+   "when": {
+    "flags": {
+     "juno-dare-owed": true,
+     "last-call": false
+    },
+    "completedScenes": [
+     "juno-after-close"
+    ]
+   },
+   "pages": [
+    {
+     "speaker": "juno",
+     "text": "Well? You owe me a proper sentence."
+    }
+   ],
+   "choices": [
+    {
+     "id": "properly",
+     "label": "Say it properly this time",
+     "result": "You don't joke. Juno takes your collar and pulls you in, and doesn't let go for a long time.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": 10
+      },
+      {
+       "type": "flag",
+       "id": "juno-kissed",
+       "value": true
+      },
+      {
+       "type": "datingPhase",
+       "character": "juno",
+       "to": "dating",
+       "reason": "kissed after close"
+      }
+     ],
+     "check": {
+      "stat": "nerve",
+      "target": 8,
+      "modifiers": [
+       {
+        "when": {
+         "flags": {
+          "juno-dare-owed": true
+         }
+        },
+        "value": 2,
+        "label": "She's been waiting for this"
+       },
+       {
+        "when": {
+         "flags": {
+          "stepped-in": true
+         }
+        },
+        "value": 1,
+        "label": "You stepped in for her"
+       }
+      ],
+      "fail": {
+       "result": "You get halfway. Juno finishes the sentence for you, then kisses your cheek. \"Halfway counts. Barely.\"",
+       "effects": [
+        {
+         "type": "flag",
+         "id": "juno-cheek",
+         "value": true
+        },
+        {
+         "type": "chemistry",
+         "character": "juno",
+         "delta": 5,
+         "reason": "the patience paid off"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "not-yet",
+     "label": "Tell her you're not ready",
+     "result": "\"Fair.\" She means it. She also pours you a drink, which she never does.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": 3
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "theo-piano",
+   "title": "The unfinished song",
+   "opening": "Last set. Theo plays something that isn't on the list.",
+   "trigger": {
+    "event": "world.activityCompleted",
+    "match": {
+     "activity": "listen-theo"
+    }
+   },
+   "pages": [
+    {
+     "speaker": "theo",
+     "text": "Sorry. That one's not for tips. I don't know what it's for yet."
+    }
+   ],
+   "choices": [
+    {
+     "id": "name-it",
+     "label": "Tell him it sounds like missing someone",
+     "result": "Theo is quiet for a long time. \"Eight months,\" he says. \"You're the first person who heard it.\"",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "theo",
+       "delta": 8
+      },
+      {
+       "type": "flag",
+       "id": "theo-opened",
+       "value": true
+      },
+      {
+       "type": "flag",
+       "id": "theo-kind",
+       "value": true
+      },
+      {
+       "type": "memory",
+       "character": "theo",
+       "text": "The player heard the unfinished song and knew what it was about."
+      }
+     ],
+     "check": {
+      "stat": "empathy",
+      "target": 8,
+      "modifiers": [
+       {
+        "when": {
+         "flags": {
+          "theo-asked": true
+         }
+        },
+        "value": 2,
+        "label": "You asked about it on your first night"
+       }
+      ],
+      "fail": {
+       "result": "\"It's lovely,\" you say. Theo smiles the smile he gives tippers and closes the lid. Still — he saw you stay for the whole set.",
+       "effects": [
+        {
+         "type": "flag",
+         "id": "theo-opened",
+         "value": true
+        },
+        {
+         "type": "chemistry",
+         "character": "theo",
+         "delta": 3,
+         "reason": "the piece mattered to him"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "just-listen",
+     "label": "Say nothing; ask him to play it again",
+     "result": "He plays it again. You don't talk. When he stops, he looks at you like you passed a test you didn't know you were taking.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "theo",
+       "delta": 5
+      },
+      {
+       "type": "flag",
+       "id": "theo-opened",
+       "value": true
+      },
+      {
+       "type": "flag",
+       "id": "theo-kind",
+       "value": true
+      }
+     ]
+    }
+   ],
+   "when": {
+    "flags": {
+     "last-call": false
+    }
+   },
+   "cg": "assets/generated/cg/theo-piano_v01.png"
+  },
+  {
+   "id": "theo-last-song",
+   "title": "Last song",
+   "opening": "Closing time. Theo is still at the piano, not playing.",
+   "trigger": {
+    "event": "core.inspected",
+    "match": {
+     "location": "bar"
+    }
+   },
+   "when": {
+    "location": "bar",
+    "dayparts": [
+     "Evening"
+    ],
+    "flags": {
+     "theo-opened": true,
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "theo",
+     "text": "Stay for one more? I'll play it properly this time. The end's still wrong."
+    }
+   ],
+   "choices": [
+    {
+     "id": "sit-beside",
+     "label": "Sit beside him on the bench",
+     "result": "You sit. Your shoulder touches his. He plays the ending wrong on purpose so he can start again.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "theo",
+       "delta": 10
+      },
+      {
+       "type": "flag",
+       "id": "theo-close",
+       "value": true
+      }
+     ],
+     "check": {
+      "stat": "charm",
+      "target": 4,
+      "modifiers": [
+       {
+        "when": {
+         "flags": {
+          "theo-kind": true
+         }
+        },
+        "value": 1,
+        "label": "He trusts you"
+       }
+      ],
+      "fail": {
+       "result": "You hover, then take the stool beside the bench instead. Theo laughs softly. \"You can sit here, you know.\" Next time, you will.",
+       "effects": [
+        {
+         "type": "flag",
+         "id": "theo-close",
+         "value": true
+        },
+        {
+         "type": "chemistry",
+         "character": "theo",
+         "delta": 4,
+         "reason": "the company steadied him"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "goodnight",
+     "label": "Say goodnight",
+     "result": "\"Goodnight,\" Theo says, and plays the ending to the empty room.",
+     "effects": []
+    }
+   ]
+  },
+  {
+   "id": "theo-canal",
+   "title": "The long way",
+   "opening": "The canal path, streetlights on the water, Theo walking slower than he needs to.",
+   "trigger": {
+    "event": "world.activityCompleted",
+    "match": {
+     "activity": "walk-theo-home"
+    }
+   },
+   "pages": [
+    {
+     "speaker": "theo",
+     "text": "This is my door. I'm — not good at this part. I never know if I'm allowed to want things again."
+    }
+   ],
+   "choices": [
+    {
+     "id": "kiss-him",
+     "label": "Tell him he's allowed, and kiss him",
+     "result": "He kisses you like he's been composing it for weeks. When he pulls back, he's laughing. \"I think I've got the ending.\"",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "theo",
+       "delta": 12
+      },
+      {
+       "type": "flag",
+       "id": "theo-kissed",
+       "value": true
+      },
+      {
+       "type": "datingPhase",
+       "character": "theo",
+       "to": "dating",
+       "reason": "kissed on the canal path"
+      }
+     ],
+     "check": {
+      "stat": "nerve",
+      "target": 4,
+      "modifiers": [
+       {
+        "when": {
+         "flags": {
+          "theo-close": true
+         }
+        },
+        "value": 1,
+        "label": "You've sat this close before"
+       }
+      ],
+      "fail": {
+       "result": "You both lean in and both stop. Theo kisses your cheek instead, embarrassed and glad. \"Same time next week?\"",
+       "effects": [
+        {
+         "type": "flag",
+         "id": "theo-almost",
+         "value": true
+        },
+        {
+         "type": "chemistry",
+         "character": "theo",
+         "delta": 5,
+         "reason": "it meant something anyway"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "take-it-slow",
+     "label": "Tell him there's no rush",
+     "result": "Theo exhales like he's been holding it for eight months. \"Thank you. Really.\"",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "theo",
+       "delta": 6
+      },
+      {
+       "type": "trust",
+       "character": "theo",
+       "delta": 5
+      }
+     ]
+    }
+   ],
+   "when": {
+    "flags": {
+     "last-call": false
+    }
+   },
+   "cg": "assets/generated/cg/theo-canal_v01.png"
+  },
+  {
+   "id": "priya-saw",
+   "title": "The staff-room window",
+   "priority": 5,
+   "opening": "Priya is waiting by the ice machine.",
+   "trigger": {
+    "event": "core.inspected",
+    "match": {
+     "location": "bar"
+    }
+   },
+   "when": {
+    "location": "bar",
+    "flags": {
+     "juno-kissed": true,
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "priya",
+     "text": "Staff room has a window. I don't care who you kiss. Juno will care very much who knows."
+    }
+   ],
+   "choices": [
+    {
+     "id": "keep-quiet",
+     "label": "Ask Priya to keep it between you",
+     "result": "Priya weighs it. \"Fine. You owe me a Saturday.\" She means it, and she'll keep her word.",
+     "effects": [
+      {
+       "type": "flag",
+       "id": "priya-silent",
+       "value": true
+      },
+      {
+       "type": "trust",
+       "character": "priya",
+       "delta": 2
+      }
+     ],
+     "check": {
+      "stat": "charm",
+      "target": 8,
+      "modifiers": [
+       {
+        "when": {
+         "flags": {
+          "helped-priya": true
+         }
+        },
+        "value": 3,
+        "label": "You helped with the stock count"
+       }
+      ],
+      "fail": {
+       "result": "\"Sure,\" Priya says, in the tone of someone who has already told two people. By Thursday, the whole bar knows — Theo included.",
+       "effects": [
+        {
+         "type": "flag",
+         "id": "priya-talked",
+         "value": true
+        },
+        {
+         "type": "flag",
+         "id": "theo-heard",
+         "value": true
+        },
+        {
+         "type": "chemistry",
+         "character": "juno",
+         "delta": -4
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "no-secret",
+     "label": "Tell her it isn't a secret",
+     "result": "Priya shrugs. \"Your funeral.\" When Juno hears you said it out loud, she goes quiet for a whole shift.",
+     "effects": [
+      {
+       "type": "flag",
+       "id": "juno-public",
+       "value": true
+      },
+      {
+       "type": "flag",
+       "id": "theo-heard",
+       "value": true
+      },
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": -2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "theo-heard",
+   "title": "\"So. You and Juno.\"",
+   "opening": "Theo, between sets, not quite looking at you.",
+   "trigger": {
+    "event": "core.inspected",
+    "match": {
+     "location": "bar"
+    }
+   },
+   "when": {
+    "location": "bar",
+    "flags": {
+     "theo-heard": true,
+     "theo-opened": true,
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "theo",
+     "text": "Priya said something. I don't — you don't owe me anything. I'd just rather know."
+    }
+   ],
+   "choices": [
+    {
+     "id": "truth",
+     "label": "Tell him the truth",
+     "result": "Theo nods slowly. \"Thank you for not making me guess.\" It hurts him a little. It doesn't break anything.",
+     "effects": [
+      {
+       "type": "flag",
+       "id": "honest-with-theo",
+       "value": true
+      },
+      {
+       "type": "chemistry",
+       "character": "theo",
+       "delta": -2
+      },
+      {
+       "type": "trust",
+       "character": "theo",
+       "delta": 5
+      }
+     ]
+    },
+    {
+     "id": "deny",
+     "label": "Tell him it was nothing",
+     "result": "Theo believes you, and relaxes, and you'll have to live with that.",
+     "effects": [
+      {
+       "type": "flag",
+       "id": "lied-to-theo",
+       "value": true
+      }
+     ],
+     "check": {
+      "stat": "wit",
+      "target": 8,
+      "fail": {
+       "result": "You hesitate one second too long. Theo sees it. \"Right,\" he says, and goes back to the piano. He doesn't play the unfinished song that night.",
+       "effects": [
+        {
+         "type": "flag",
+         "id": "theo-hurt",
+         "value": true
+        },
+        {
+         "type": "chemistry",
+         "character": "theo",
+         "delta": -8
+        },
+        {
+         "type": "trust",
+         "character": "theo",
+         "delta": -10
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "juno-night",
+   "title": "Off the clock",
+   "opening": "Your flat. Juno kicks the door shut behind her and looks around like she is pricing the furniture.",
+   "trigger": {
+    "event": "social.intimacyStarted",
+    "match": {
+     "character": "juno"
+    }
+   },
+   "pages": [
+    {
+     "speaker": "juno",
+     "text": "House rules. If something's not good, you say so. I will. Nobody gets polite about it."
+    }
+   ],
+   "choices": [
+    {
+     "id": "take-lead",
+     "label": "Take the lead",
+     "result": "You don't wait for her to set the pace. Juno laughs, low and surprised, and lets you win for once. Later she admits it was the best shift she has had all year.",
+     "effects": [
+      {
+       "type": "completeIntimacy",
+       "character": "juno",
+       "category": "first-night",
+       "outcome": "positive"
+      },
+      {
+       "type": "satisfaction",
+       "character": "juno",
+       "delta": 10
+      },
+      {
+       "type": "flag",
+       "id": "juno-night",
+       "value": true
+      },
+      {
+       "type": "discoverIntimacyInterest",
+       "character": "juno",
+       "interest": "juno-lead"
+      },
+      {
+       "type": "flag",
+       "id": "juno-led",
+       "value": true
+      }
+     ],
+     "check": {
+      "stat": "nerve",
+      "target": 8,
+      "modifiers": [
+       {
+        "when": {
+         "flags": {
+          "juno-banter": true
+         }
+        },
+        "value": 2,
+        "label": "You know how she plays"
+       }
+      ],
+      "fail": {
+       "result": "You go for it and catch your elbow on the bookshelf. Juno laughs so hard she has to sit down, then pulls you down with her. It is clumsy and warm. \"Next time, mean it,\" she says, and you learn she wants you to.",
+       "effects": [
+        {
+         "type": "completeIntimacy",
+         "character": "juno",
+         "category": "first-night",
+         "outcome": "neutral"
+        },
+        {
+         "type": "satisfaction",
+         "character": "juno",
+         "delta": 3
+        },
+        {
+         "type": "flag",
+         "id": "juno-night",
+         "value": true
+        },
+        {
+         "type": "discoverIntimacyInterest",
+         "character": "juno",
+         "interest": "juno-lead"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "let-her-lead",
+     "label": "Let her set the pace",
+     "result": "Juno takes over the way she takes over a busy bar: fast, sure, a little showing off. It is good. She is watching to see if you will ever push back.",
+     "effects": [
+      {
+       "type": "completeIntimacy",
+       "character": "juno",
+       "category": "first-night",
+       "outcome": "positive"
+      },
+      {
+       "type": "satisfaction",
+       "character": "juno",
+       "delta": 5
+      },
+      {
+       "type": "flag",
+       "id": "juno-night",
+       "value": true
+      }
+     ]
+    },
+    {
+     "id": "stop",
+     "label": "Say you want to stop here",
+     "result": "Juno stops at once. \"Then we stop.\" She finds your kettle without asking and puts it on. It is not awkward; she makes sure of that.",
+     "effects": [
+      {
+       "type": "intimacyConsent",
+       "character": "juno",
+       "category": "first-night",
+       "status": "withdrawn"
+      },
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": 3
+      }
+     ]
+    }
+   ],
+   "when": {
+    "flags": {
+     "last-call": false
+    }
+   },
+   "cg": "assets/generated/cg/juno-night_v01.png"
+  },
+  {
+   "id": "theo-night",
+   "title": "Slow",
+   "opening": "Your flat, one lamp on. Theo sits on the edge of the bed with his jacket still on, which you decide is funny and not sad.",
+   "trigger": {
+    "event": "social.intimacyStarted",
+    "match": {
+     "character": "theo"
+    }
+   },
+   "pages": [
+    {
+     "speaker": "theo",
+     "text": "It's been a long time. I want this. Can we go slow? And if I go quiet, ask. I go quiet."
+    }
+   ],
+   "choices": [
+    {
+     "id": "read-him",
+     "label": "Go slow, and watch for when he goes quiet",
+     "result": "You catch every pause before it becomes a wall and ask with a look, not a question. Theo stops apologising somewhere in the second hour. Afterwards he hums something you haven't heard before.",
+     "effects": [
+      {
+       "type": "completeIntimacy",
+       "character": "theo",
+       "category": "first-night",
+       "outcome": "positive"
+      },
+      {
+       "type": "satisfaction",
+       "character": "theo",
+       "delta": 12
+      },
+      {
+       "type": "flag",
+       "id": "theo-night",
+       "value": true
+      },
+      {
+       "type": "discoverIntimacyInterest",
+       "character": "theo",
+       "interest": "theo-slow"
+      },
+      {
+       "type": "flag",
+       "id": "theo-read",
+       "value": true
+      }
+     ],
+     "check": {
+      "stat": "empathy",
+      "target": 8,
+      "modifiers": [
+       {
+        "when": {
+         "flags": {
+          "theo-kind": true
+         }
+        },
+        "value": 2,
+        "label": "He trusted you with the song"
+       },
+       {
+        "when": {
+         "flags": {
+          "theo-song-heard": true
+         }
+        },
+        "value": 1,
+        "label": "You heard the finished song"
+       }
+      ],
+      "fail": {
+       "result": "You misread a pause and ask if he's okay at exactly the wrong moment. Theo laughs into your shoulder. \"Yes. Ask again later, though.\" You do, and he tells you what he means by quiet.",
+       "effects": [
+        {
+         "type": "completeIntimacy",
+         "character": "theo",
+         "category": "first-night",
+         "outcome": "neutral"
+        },
+        {
+         "type": "satisfaction",
+         "character": "theo",
+         "delta": 4
+        },
+        {
+         "type": "flag",
+         "id": "theo-night",
+         "value": true
+        },
+        {
+         "type": "discoverIntimacyInterest",
+         "character": "theo",
+         "interest": "theo-slow"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "ask-him",
+     "label": "Ask him what he wants, out loud",
+     "result": "He has to think about it, and then he tells you, and saying it seems to cost him less each time. Slow, careful, good.",
+     "effects": [
+      {
+       "type": "completeIntimacy",
+       "character": "theo",
+       "category": "first-night",
+       "outcome": "positive"
+      },
+      {
+       "type": "satisfaction",
+       "character": "theo",
+       "delta": 6
+      },
+      {
+       "type": "flag",
+       "id": "theo-night",
+       "value": true
+      }
+     ]
+    },
+    {
+     "id": "stop",
+     "label": "Say you want to stop here",
+     "result": "\"Okay.\" Theo breathes out, and you both laugh at how relieved he sounds. He stays anyway, shoes off, jacket finally off, and falls asleep mid-sentence.",
+     "effects": [
+      {
+       "type": "intimacyConsent",
+       "character": "theo",
+       "category": "first-night",
+       "status": "withdrawn"
+      },
+      {
+       "type": "trust",
+       "character": "theo",
+       "delta": 3
+      }
+     ]
+    }
+   ],
+   "when": {
+    "flags": {
+     "last-call": false
+    }
+   },
+   "cg": "assets/generated/cg/theo-night_v01.png"
+  },
+  {
+   "id": "juno-again",
+   "title": "Regular",
+   "repeatable": true,
+   "opening": "Juno lets herself in this time. Her boots are off before the door shuts.",
+   "trigger": {
+    "event": "social.intimacyStarted",
+    "match": {
+     "character": "juno"
+    }
+   },
+   "pages": [
+    {
+     "speaker": "juno",
+     "text": "Same rules. And don't get comfortable. I get bored."
+    }
+   ],
+   "choices": [
+    {
+     "id": "surprise-her",
+     "label": "Surprise her",
+     "result": "You do something she hasn't seen coming, and for once Juno has nothing smart to say. She spends the rest of the night trying to get even.",
+     "effects": [
+      {
+       "type": "completeIntimacy",
+       "character": "juno",
+       "category": "first-night",
+       "outcome": "positive"
+      },
+      {
+       "type": "satisfaction",
+       "character": "juno",
+       "delta": 6
+      },
+      {
+       "type": "flag",
+       "id": "juno-led",
+       "value": true
+      }
+     ],
+     "check": {
+      "stat": "nerve",
+      "target": 13,
+      "modifiers": [
+       {
+        "when": {
+         "flags": {
+          "juno-led": true
+         }
+        },
+        "value": 3,
+        "label": "She knows you mean it"
+       },
+       {
+        "when": {
+         "flags": {
+          "juno-banter": true
+         }
+        },
+        "value": 2,
+        "label": "You know how she plays"
+       }
+      ],
+      "fail": {
+       "result": "You try the same move as last time and she sees it coming a mile off. \"Predictable,\" she says, and pins you anyway. It is still good. She is still waiting to be surprised.",
+       "effects": [
+        {
+         "type": "completeIntimacy",
+         "character": "juno",
+         "category": "first-night",
+         "outcome": "neutral"
+        },
+        {
+         "type": "satisfaction",
+         "character": "juno",
+         "delta": 2
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "let-her-lead",
+     "label": "Let her set the pace",
+     "result": "Fast and sure, like closing time. Good, familiar. Juno looks at you afterwards as if she is deciding something.",
+     "effects": [
+      {
+       "type": "completeIntimacy",
+       "character": "juno",
+       "category": "first-night",
+       "outcome": "positive"
+      },
+      {
+       "type": "satisfaction",
+       "character": "juno",
+       "delta": 2
+      }
+     ]
+    },
+    {
+     "id": "stop",
+     "label": "Say you want to stop here",
+     "result": "\"Fine by me.\" Juno pulls her boots back on and steals your last beer on the way out. \"Tomorrow, then. Or not. Your call.\"",
+     "effects": [
+      {
+       "type": "intimacyConsent",
+       "character": "juno",
+       "category": "first-night",
+       "status": "withdrawn"
+      },
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": 2
+      }
+     ]
+    }
+   ],
+   "when": {
+    "flags": {
+     "last-call": false
+    },
+    "completedScenes": [
+     "juno-night"
+    ]
+   }
+  },
+  {
+   "id": "theo-again",
+   "title": "Quiet",
+   "repeatable": true,
+   "opening": "Theo takes his jacket off at the door this time, and looks pleased with himself about it.",
+   "trigger": {
+    "event": "social.intimacyStarted",
+    "match": {
+     "character": "theo"
+    }
+   },
+   "pages": [
+    {
+     "speaker": "theo",
+     "text": "I've been thinking about it all day. Is that weird? I wrote half a verse about your ceiling."
+    }
+   ],
+   "choices": [
+    {
+     "id": "hear-him",
+     "label": "Let him say what he wants, in his own time",
+     "result": "You wait through the quiet instead of filling it, and what he asks for surprises both of you. Afterwards he is the one who talks, for an hour, about nothing.",
+     "effects": [
+      {
+       "type": "completeIntimacy",
+       "character": "theo",
+       "category": "first-night",
+       "outcome": "positive"
+      },
+      {
+       "type": "satisfaction",
+       "character": "theo",
+       "delta": 7
+      },
+      {
+       "type": "flag",
+       "id": "theo-read",
+       "value": true
+      }
+     ],
+     "check": {
+      "stat": "empathy",
+      "target": 13,
+      "modifiers": [
+       {
+        "when": {
+         "flags": {
+          "theo-read": true
+         }
+        },
+        "value": 3,
+        "label": "You learned his quiet"
+       },
+       {
+        "when": {
+         "flags": {
+          "theo-song-heard": true
+         }
+        },
+        "value": 1,
+        "label": "You heard the finished song"
+       }
+      ],
+      "fail": {
+       "result": "You wait a beat too long and he takes it for doubt. It takes a while to find each other again, but you do. \"Still learning me,\" he says. It sounds like a compliment.",
+       "effects": [
+        {
+         "type": "completeIntimacy",
+         "character": "theo",
+         "category": "first-night",
+         "outcome": "neutral"
+        },
+        {
+         "type": "satisfaction",
+         "character": "theo",
+         "delta": 2
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "ask-him",
+     "label": "Ask him what he wants, out loud",
+     "result": "He answers quicker than last time. Slow, careful, good, and he stays for breakfast.",
+     "effects": [
+      {
+       "type": "completeIntimacy",
+       "character": "theo",
+       "category": "first-night",
+       "outcome": "positive"
+      },
+      {
+       "type": "satisfaction",
+       "character": "theo",
+       "delta": 3
+      }
+     ]
+    },
+    {
+     "id": "stop",
+     "label": "Say you want to stop here",
+     "result": "\"Okay. Can I stay anyway?\" He does, and hums the half a verse into the pillow until he falls asleep.",
+     "effects": [
+      {
+       "type": "intimacyConsent",
+       "character": "theo",
+       "category": "first-night",
+       "status": "withdrawn"
+      },
+      {
+       "type": "trust",
+       "character": "theo",
+       "delta": 2
+      }
+     ]
+    }
+   ],
+   "when": {
+    "flags": {
+     "last-call": false
+    },
+    "completedScenes": [
+     "theo-night"
+    ]
+   }
+  },
+  {
+   "id": "juno-limes",
+   "title": "Lime prices",
+   "storylet": true,
+   "opening": "Juno is at the fruit stall with a crate under one arm, losing an argument she is pretending to win.",
+   "trigger": {
+    "event": "core.moved",
+    "match": {
+     "to": "market"
+    }
+   },
+   "when": {
+    "location": "market",
+    "minTick": 12,
+    "flags": {
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "juno",
+     "text": "Don't look at me like that. He charged me forty pence a lime. Forty. Help or go away."
+    }
+   ],
+   "choices": [
+    {
+     "id": "haggle",
+     "label": "Out-haggle the lime man",
+     "result": "You invent a competing stall two streets over. The lime man folds. Juno looks at you like you just did a card trick.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": 3
+      },
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": 2
+      },
+      {
+       "type": "flag",
+       "id": "juno-market",
+       "value": true
+      }
+     ],
+     "check": {
+      "stat": "wit",
+      "target": 4,
+      "fail": {
+       "result": "The lime man sees through you in one sentence. Juno laughs at you all the way back to the bar, which is somehow better.",
+       "effects": [
+        {
+         "type": "chemistry",
+         "character": "juno",
+         "delta": 1,
+         "reason": "she respects the nerve"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "carry",
+     "label": "Take the crate off her",
+     "result": "\"I had it.\" She lets you carry it anyway, and tells you which stallholders are crooks on the way back.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": 3
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "juno-dream",
+   "title": "Coffee van",
+   "storylet": true,
+   "opening": "The coffee van, before seven. Juno drinks hers black and fast, watching the empty shop across the road.",
+   "trigger": {
+    "event": "core.moved",
+    "match": {
+     "to": "market"
+    }
+   },
+   "when": {
+    "location": "market",
+    "minTick": 36,
+    "completedScenes": [
+     "juno-limes"
+    ],
+    "trust": {
+     "juno": 25
+    },
+    "flags": {
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "juno",
+     "text": "That place has been empty for a year. Good bones. Terrible landlord. Stop looking at me, I am not being sentimental."
+    }
+   ],
+   "choices": [
+    {
+     "id": "ask-name",
+     "label": "Ask what she would call it",
+     "result": "\"Last Orders.\" She says it too fast, so she has had the name for years. She tells you the whole menu before the coffee is finished.",
+     "effects": [
+      {
+       "type": "flag",
+       "id": "juno-dream",
+       "value": true
+      },
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": 6
+      },
+      {
+       "type": "memory",
+       "character": "juno",
+       "text": "Told the player about the empty shop on Hollis Street and her bar, Last Orders."
+      }
+     ],
+     "check": {
+      "stat": "empathy",
+      "target": 8,
+      "fail": {
+       "result": "You ask one question too many. \"It is a shop, not a feeling,\" Juno says, and changes the subject to lime prices.",
+       "effects": [
+        {
+         "type": "trust",
+         "character": "juno",
+         "delta": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "tease",
+     "label": "Call her a closet capitalist",
+     "result": "\"Open capitalist,\" she corrects, and steals the last of your coffee.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "juno-flea",
+   "title": "Flea market",
+   "opening": "Juno is already at the car-park end with two coffees. She hands you one without looking and points at a lamp.",
+   "trigger": {
+    "event": "core.moved",
+    "match": {
+     "to": "market"
+    }
+   },
+   "when": {
+    "location": "market",
+    "dayparts": [
+     "Morning"
+    ],
+    "plans": {
+     "juno-flea": "pending"
+    },
+    "flags": {
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "juno",
+     "text": "Rules. You don't talk, you don't smile, you don't want anything. I'll do the rest."
+    }
+   ],
+   "choices": [
+    {
+     "id": "work-it",
+     "label": "Break her rules and work the stallholders with her",
+     "result": "You play the soft touch to her hard sell. By ten you own a lamp, two stools and a mirror for less than the lamp was. Juno kisses you behind the coffee van like it is part of the haggle.",
+     "effects": [
+      {
+       "type": "planStatus",
+       "character": "juno",
+       "id": "juno-flea",
+       "plan": "Meet Juno at the flea market tomorrow morning",
+       "status": "kept"
+      },
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": 5
+      },
+      {
+       "type": "satisfaction",
+       "character": "juno",
+       "delta": 6
+      }
+     ],
+     "check": {
+      "stat": "charm",
+      "target": 8,
+      "fail": {
+       "result": "You smile at the lamp man. The price doubles. Juno buys it anyway, then makes you carry it home and tells everyone at the bar.",
+       "effects": [
+        {
+         "type": "planStatus",
+         "character": "juno",
+         "id": "juno-flea",
+         "plan": "Meet Juno at the flea market tomorrow morning",
+         "status": "kept"
+        },
+        {
+         "type": "satisfaction",
+         "character": "juno",
+         "delta": 2
+        },
+        {
+         "type": "chemistry",
+         "character": "juno",
+         "delta": 2,
+         "reason": "showing up counted"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "carry",
+     "label": "Keep quiet and carry",
+     "result": "You follow her rules. She wins every argument and you carry every prize. It is a very good morning.",
+     "effects": [
+      {
+       "type": "planStatus",
+       "character": "juno",
+       "id": "juno-flea",
+       "plan": "Meet Juno at the flea market tomorrow morning",
+       "status": "kept"
+      },
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": 3
+      },
+      {
+       "type": "satisfaction",
+       "character": "juno",
+       "delta": 4
+      }
+     ]
+    }
+   ],
+   "cg": "assets/generated/cg/juno-flea_v01.png"
+  },
+  {
+   "id": "theo-busking",
+   "title": "Under the bridge",
+   "storylet": true,
+   "opening": "Theo is under the middle bridge with a keyboard on a crate, playing to a duck.",
+   "trigger": {
+    "event": "core.moved",
+    "match": {
+     "to": "canal"
+    }
+   },
+   "when": {
+    "location": "canal",
+    "minTick": 12,
+    "flags": {
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "theo",
+     "text": "The acoustics are good here. The audience is, um. Discerning."
+    }
+   ],
+   "choices": [
+    {
+     "id": "harmony",
+     "label": "Sing the harmony",
+     "result": "You find the harmony on the second try. Two joggers stop. Theo is grinning so hard he misses a chord.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "theo",
+       "delta": 3
+      },
+      {
+       "type": "trust",
+       "character": "theo",
+       "delta": 2
+      },
+      {
+       "type": "flag",
+       "id": "theo-busked",
+       "value": true
+      }
+     ],
+     "check": {
+      "stat": "nerve",
+      "target": 4,
+      "fail": {
+       "result": "Your voice cracks on the first note and the duck leaves. Theo laughs so hard he has to stop playing, then plays it again so you can have another go.",
+       "effects": [
+        {
+         "type": "chemistry",
+         "character": "theo",
+         "delta": 2,
+         "reason": "playing together mattered"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "listen",
+     "label": "Drop a coin in the case and listen",
+     "result": "You sit on the wall. He plays the whole set to you and the duck and says thank you as if he means it.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "theo",
+       "delta": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "theo-notebook",
+   "title": "The notebook",
+   "storylet": true,
+   "opening": "Theo is on the towpath with a notebook full of crossed-out lines. He does not hide it this time.",
+   "trigger": {
+    "event": "core.moved",
+    "match": {
+     "to": "canal"
+    }
+   },
+   "when": {
+    "location": "canal",
+    "flags": {
+     "theo-opened": true,
+     "last-call": false
+    },
+    "completedScenes": [
+     "theo-busking"
+    ]
+   },
+   "pages": [
+    {
+     "speaker": "theo",
+     "text": "The bridge section. It needs a line and I've written forty. They're all about me. I'm sick of me."
+    }
+   ],
+   "choices": [
+    {
+     "id": "offer-line",
+     "label": "Offer him a line",
+     "result": "He reads it back twice, then writes it in ink. \"That's the one. That's annoying.\" It is the first time he has let anyone into a song.",
+     "effects": [
+      {
+       "type": "flag",
+       "id": "theo-cowrote",
+       "value": true
+      },
+      {
+       "type": "chemistry",
+       "character": "theo",
+       "delta": 4
+      },
+      {
+       "type": "memory",
+       "character": "theo",
+       "text": "The player wrote the missing line for the bridge section of the unfinished song."
+      }
+     ],
+     "check": {
+      "stat": "wit",
+      "target": 8,
+      "fail": {
+       "result": "Your line rhymes \"heart\" with \"art\". Theo writes it in the margin anyway, \"for morale\", and you both know it is going nowhere.",
+       "effects": [
+        {
+         "type": "trust",
+         "character": "theo",
+         "delta": 3
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "hand-back",
+     "label": "Hand the notebook back unread",
+     "result": "\"You can read it,\" he says. \"I know,\" you say. He keeps it open on his knee for the rest of the afternoon.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "theo",
+       "delta": 4
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "theo-song",
+   "title": "The finished song",
+   "opening": "Theo is under the middle bridge. No keyboard, no hat. He brought a guitar he doesn't play well.",
+   "trigger": {
+    "event": "core.moved",
+    "match": {
+     "to": "canal"
+    }
+   },
+   "when": {
+    "location": "canal",
+    "dayparts": [
+     "Afternoon"
+    ],
+    "plans": {
+     "theo-song": "pending"
+    },
+    "flags": {
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "theo",
+     "text": "Two years. It's finished. Don't say anything until the end. Actually, say something at the end."
+    }
+   ],
+   "choices": [
+    {
+     "id": "tell-him",
+     "label": "Tell him what you heard in it",
+     "result": "You tell him which line you felt in your chest and why. Theo puts the guitar down very carefully and kisses you like the song is still playing.",
+     "effects": [
+      {
+       "type": "planStatus",
+       "character": "theo",
+       "id": "theo-song",
+       "plan": "Hear Theo play the finished song at the canal tomorrow afternoon",
+       "status": "kept"
+      },
+      {
+       "type": "chemistry",
+       "character": "theo",
+       "delta": 6
+      },
+      {
+       "type": "satisfaction",
+       "character": "theo",
+       "delta": 6
+      },
+      {
+       "type": "flag",
+       "id": "theo-song-heard",
+       "value": true
+      }
+     ],
+     "check": {
+      "stat": "empathy",
+      "target": 8,
+      "modifiers": [
+       {
+        "when": {
+         "flags": {
+          "theo-cowrote": true
+         }
+        },
+        "value": 2,
+        "label": "Your line is in it"
+       }
+      ],
+      "fail": {
+       "result": "\"It's really nice,\" you say. Theo has heard \"nice\" before. He smiles anyway and plays it again, slower, until you hear it.",
+       "effects": [
+        {
+         "type": "planStatus",
+         "character": "theo",
+         "id": "theo-song",
+         "plan": "Hear Theo play the finished song at the canal tomorrow afternoon",
+         "status": "kept"
+        },
+        {
+         "type": "flag",
+         "id": "theo-song-heard",
+         "value": true
+        },
+        {
+         "type": "chemistry",
+         "character": "theo",
+         "delta": 3,
+         "reason": "the truth went down easy"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "just-listen",
+     "label": "Say nothing, and ask him to play it again",
+     "result": "He plays it again. And a third time. The duck comes back.",
+     "effects": [
+      {
+       "type": "planStatus",
+       "character": "theo",
+       "id": "theo-song",
+       "plan": "Hear Theo play the finished song at the canal tomorrow afternoon",
+       "status": "kept"
+      },
+      {
+       "type": "chemistry",
+       "character": "theo",
+       "delta": 4
+      },
+      {
+       "type": "satisfaction",
+       "character": "theo",
+       "delta": 3
+      },
+      {
+       "type": "flag",
+       "id": "theo-song-heard",
+       "value": true
+      }
+     ]
+    }
+   ],
+   "cg": "assets/generated/cg/theo-song_v01.png"
+  },
+  {
+   "id": "juno-flea-ask",
+   "title": "Tomorrow, nine",
+   "storylet": true,
+   "opening": "Juno slides a coaster over with a time on it.",
+   "trigger": {
+    "event": "core.inspected",
+    "match": {
+     "location": "bar"
+    }
+   },
+   "when": {
+    "location": "bar",
+    "dayparts": [
+     "Evening"
+    ],
+    "flags": {
+     "juno-kissed": true,
+     "last-call": false
+    },
+    "plans": {
+     "juno-flea": "none"
+    }
+   },
+   "pages": [
+    {
+     "speaker": "juno",
+     "text": "Flea market tomorrow. Nine. You carry, I haggle. Don't be late; I won't wait."
+    }
+   ],
+   "choices": [
+    {
+     "id": "yes",
+     "label": "Tell her you'll be there",
+     "result": "\"Nine,\" she says again, and goes back to work like nothing happened.",
+     "effects": [
+      {
+       "type": "plan",
+       "character": "juno",
+       "id": "juno-flea",
+       "plan": "Meet Juno at the flea market tomorrow morning",
+       "deadlineTicks": 7
+      }
+     ]
+    },
+    {
+     "id": "no",
+     "label": "Say you can't tomorrow",
+     "result": "\"Your loss.\" She means it lightly. Mostly.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": -1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "juno-no-show",
+   "title": "Your phone buzzes",
+   "opening": "",
+   "trigger": {
+    "event": "story.planBroken",
+    "match": {
+     "id": "juno-flea"
+    }
+   },
+   "when": {
+    "flags": {
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "",
+     "text": "Juno, 10:14: \"Bought a lamp. Carried it myself.\" Nothing after that."
+    }
+   ],
+   "choices": [
+    {
+     "id": "joke",
+     "label": "Send a joke about the lamp",
+     "result": "\"It's a very good lamp,\" she sends back, eventually. You are forgiven, on probation.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": -1
+      },
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": -2
+      }
+     ],
+     "check": {
+      "stat": "wit",
+      "target": 8,
+      "fail": {
+       "result": "The joke lands like a dropped tray. She leaves you on read, and at work she is exactly as friendly with you as with the dishwasher.",
+       "effects": [
+        {
+         "type": "chemistry",
+         "character": "juno",
+         "delta": -6
+        },
+        {
+         "type": "trust",
+         "character": "juno",
+         "delta": -4
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "sorry",
+     "label": "Apologise",
+     "result": "\"Noted.\" She doesn't do second chances out loud. She does them quietly, eventually.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": -4
+      },
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": -4
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "theo-song-ask",
+   "title": "Tomorrow afternoon",
+   "storylet": true,
+   "opening": "Theo stops you on the way out, hands in his pockets.",
+   "trigger": {
+    "event": "core.inspected",
+    "match": {
+     "location": "bar"
+    }
+   },
+   "when": {
+    "location": "bar",
+    "dayparts": [
+     "Evening"
+    ],
+    "flags": {
+     "theo-kissed": true,
+     "last-call": false
+    },
+    "plans": {
+     "theo-song": "none"
+    }
+   },
+   "pages": [
+    {
+     "speaker": "theo",
+     "text": "The song. It's finished, I think. Tomorrow afternoon, the canal, the middle bridge? I'd rather play it there than here."
+    }
+   ],
+   "choices": [
+    {
+     "id": "yes",
+     "label": "Promise you'll be there",
+     "result": "He nods three times, which you are learning means very happy.",
+     "effects": [
+      {
+       "type": "plan",
+       "character": "theo",
+       "id": "theo-song",
+       "plan": "Hear Theo play the finished song at the canal tomorrow afternoon",
+       "deadlineTicks": 11
+      }
+     ]
+    },
+    {
+     "id": "no",
+     "label": "Ask him to play it here instead",
+     "result": "\"Maybe.\" He doesn't. Not that night.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "theo",
+       "delta": -2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "theo-no-show",
+   "title": "Your phone buzzes",
+   "opening": "",
+   "trigger": {
+    "event": "story.planBroken",
+    "match": {
+     "id": "theo-song"
+    }
+   },
+   "when": {
+    "flags": {
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "",
+     "text": "A voice note from Theo, four seconds long: the last chord of a song, then the canal, then nothing."
+    }
+   ],
+   "choices": [
+    {
+     "id": "call",
+     "label": "Call him and explain properly",
+     "result": "He picks up on the fifth ring. You tell him the truth. There is a long pause. \"Okay. It'll keep.\" It will, just about.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "theo",
+       "delta": -2
+      },
+      {
+       "type": "trust",
+       "character": "theo",
+       "delta": -2
+      }
+     ],
+     "check": {
+      "stat": "empathy",
+      "target": 8,
+      "modifiers": [
+       {
+        "when": {
+         "flags": {
+          "theo-cowrote": true
+         }
+        },
+        "value": 2,
+        "label": "Your line is in it"
+       }
+      ],
+      "fail": {
+       "result": "You explain too much and apologise too little. \"It's fine,\" he says, in the voice that means it isn't. He stops playing the song at the bar.",
+       "effects": [
+        {
+         "type": "flag",
+         "id": "theo-hurt",
+         "value": true
+        },
+        {
+         "type": "chemistry",
+         "character": "theo",
+         "delta": -8
+        },
+        {
+         "type": "trust",
+         "character": "theo",
+         "delta": -6
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "text",
+     "label": "Text \"sorry, something came up\"",
+     "result": "Two blue ticks. No reply. He is polite at work, which is worse.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "theo",
+       "delta": -6
+      },
+      {
+       "type": "trust",
+       "character": "theo",
+       "delta": -6
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "priya-books",
+   "title": "The books",
+   "storylet": true,
+   "opening": "Priya has the ledger open on a keg, and the look of someone who has added the same column six times.",
+   "trigger": {
+    "event": "world.activityCompleted",
+    "match": {
+     "activity": "stock-room"
+    }
+   },
+   "when": {
+    "minTick": 24,
+    "flags": {
+     "helped-priya": true,
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "priya",
+     "text": "Forty quid out and I can't find where. If you're about to say 'have you tried adding it up', don't."
+    }
+   ],
+   "choices": [
+    {
+     "id": "find-it",
+     "label": "Find the mistake",
+     "result": "Juno rang a refund twice on Tuesday. Priya stares at the line, then at you. \"Right. You can count. Good.\" From Priya, that is a hug.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "priya",
+       "delta": 6
+      },
+      {
+       "type": "flag",
+       "id": "priya-trusts",
+       "value": true
+      }
+     ],
+     "check": {
+      "stat": "wit",
+      "target": 8,
+      "fail": {
+       "result": "You find a mistake that turns out not to be one, and make it worse. Priya fixes both and makes you a coffee anyway.",
+       "effects": [
+        {
+         "type": "trust",
+         "character": "priya",
+         "delta": 2
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "leave",
+     "label": "Leave her to it",
+     "result": "She finds it at two in the morning. \"Juno,\" she says to the ledger, darkly.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "priya",
+       "delta": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "priya-tips",
+   "title": "Priya, off the record",
+   "storylet": true,
+   "opening": "Quiet afternoon. Priya is polishing glasses that are already clean, which means she wants to talk.",
+   "trigger": {
+    "event": "core.inspected",
+    "match": {
+     "location": "bar"
+    }
+   },
+   "when": {
+    "location": "bar",
+    "minTick": 36,
+    "maxTick": 107,
+    "trust": {
+     "priya": 30
+    },
+    "flags": {
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "priya",
+     "text": "You've got a week and a bit left. One question. Make it a good one."
+    }
+   ],
+   "choices": [
+    {
+     "id": "about-juno",
+     "label": "Ask about Juno",
+     "result": "\"Juno doesn't date staff. She'll make an exception for someone who doesn't blink. Nerve, not flowers.\"",
+     "effects": [
+      {
+       "type": "memory",
+       "character": "priya",
+       "text": "Told the player Juno wants nerve, not flowers."
+      }
+     ]
+    },
+    {
+     "id": "about-theo",
+     "label": "Ask about Theo",
+     "result": "\"Theo hasn't finished a song in two years. If you want him, listen first. And don't ever stand him up.\"",
+     "effects": [
+      {
+       "type": "memory",
+       "character": "priya",
+       "text": "Told the player to listen to Theo, and never to stand him up."
+      }
+     ]
+    },
+    {
+     "id": "about-job",
+     "label": "Ask about the job",
+     "result": "\"Show up. That's ninety percent. The other ten is not sleeping with the staff, and I've given up on that one.\"",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "priya",
+       "delta": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rowdy-regular",
+   "title": "Last warning",
+   "storylet": true,
+   "opening": "A regular has had four too many and is leaning over the bar to tell Juno what she should smile about.",
+   "trigger": {
+    "event": "core.inspected",
+    "match": {
+     "location": "bar"
+    }
+   },
+   "when": {
+    "location": "bar",
+    "dayparts": [
+     "Evening"
+    ],
+    "minTick": 48,
+    "maxTick": 131,
+    "flags": {
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "juno",
+     "text": "Mate. Last warning."
+    },
+    {
+     "speaker": "priya",
+     "text": "Somebody get him out before she does."
+    }
+   ],
+   "choices": [
+    {
+     "id": "step-in",
+     "label": "Step between him and Juno",
+     "result": "You take his arm, walk him to the door and hold it. He goes. Juno says \"I had it,\" then pours you a drink she doesn't ring up.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": 4
+      },
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": 3
+      },
+      {
+       "type": "trust",
+       "character": "priya",
+       "delta": 3
+      },
+      {
+       "type": "flag",
+       "id": "stepped-in",
+       "value": true
+      }
+     ],
+     "check": {
+      "stat": "nerve",
+      "target": 8,
+      "fail": {
+       "result": "He shoves you into the ice well. Juno removes him in four words, then checks you are all right, which she will later deny.",
+       "effects": [
+        {
+         "type": "chemistry",
+         "character": "juno",
+         "delta": 2,
+         "reason": "someone had her back"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "talk-down",
+     "label": "Talk him down",
+     "result": "You ask about his day until he forgets he was angry, then put him in a taxi. Priya nods at you once. That nod is worth a lot.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "priya",
+       "delta": 4
+      },
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": 2
+      }
+     ],
+     "check": {
+      "stat": "charm",
+      "target": 8,
+      "fail": {
+       "result": "He decides you are his best friend and will not leave without you. Priya handles it. \"Nice try.\"",
+       "effects": [
+        {
+         "type": "trust",
+         "character": "priya",
+         "delta": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "fetch-priya",
+     "label": "Fetch Priya",
+     "result": "Priya handles it in thirty seconds. Juno watches you the whole time and says nothing.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "priya",
+       "delta": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "open-mic-heckler",
+   "title": "Heckler",
+   "storylet": true,
+   "opening": "Your five minutes on the little stage. Halfway through, a man at the back starts talking over you.",
+   "trigger": {
+    "event": "world.activityCompleted",
+    "match": {
+     "activity": "open-mic"
+    }
+   },
+   "when": {
+    "minTick": 24,
+    "maxTick": 143,
+    "flags": {
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "",
+     "text": "\"Get off!\" The room goes quiet, waiting to see what you do."
+    }
+   ],
+   "choices": [
+    {
+     "id": "heckle-back",
+     "label": "Heckle him back",
+     "result": "One line. The room explodes. Juno bangs the bar with her palm. Even Priya laughs.",
+     "effects": [
+      {
+       "type": "flag",
+       "id": "room-laughed",
+       "value": true
+      },
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": 2
+      },
+      {
+       "type": "chemistry",
+       "character": "theo",
+       "delta": 1
+      }
+     ],
+     "check": {
+      "stat": "wit",
+      "target": 8,
+      "fail": {
+       "result": "Your comeback comes out as \"no\". It gets a laugh, just not the one you wanted. You finish anyway.",
+       "effects": [
+        {
+         "type": "stat",
+         "character": "player",
+         "stat": "nerve",
+         "delta": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "finish",
+     "label": "Ignore him and finish your bit",
+     "result": "You finish. It is not great. You finished.",
+     "effects": [
+      {
+       "type": "stat",
+       "character": "player",
+       "stat": "nerve",
+       "delta": 1
+      }
+     ]
+    }
+   ],
+   "cg": "assets/generated/cg/open-mic-heckler_v01.png"
+  },
+  {
+   "id": "theo-request",
+   "title": "Fourth request",
+   "storylet": true,
+   "opening": "A man at table six requests the same song for the fourth time. Theo's smile has gone very fixed.",
+   "trigger": {
+    "event": "core.inspected",
+    "match": {
+     "location": "bar"
+    }
+   },
+   "when": {
+    "location": "bar",
+    "dayparts": [
+     "Evening"
+    ],
+    "minTick": 36,
+    "maxTick": 131,
+    "completedScenes": [
+     "theo-piano"
+    ],
+    "flags": {
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "theo",
+     "text": "(under his breath) If I play it again I will walk into the canal."
+    }
+   ],
+   "choices": [
+    {
+     "id": "redirect",
+     "label": "Buy the man a drink and a different song",
+     "result": "Five minutes of charm and a free pint later, table six wants something Theo actually likes. Theo plays it looking at you.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "theo",
+       "delta": 4
+      },
+      {
+       "type": "chemistry",
+       "character": "theo",
+       "delta": 2
+      }
+     ],
+     "check": {
+      "stat": "charm",
+      "target": 4,
+      "fail": {
+       "result": "The man wants two drinks and the same song. Theo plays it as a funeral march. The room loves it.",
+       "effects": [
+        {
+         "type": "trust",
+         "character": "theo",
+         "delta": 2
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "leave",
+     "label": "Leave it; it is his job",
+     "result": "Theo plays it a fifth time. Then a sixth.",
+     "effects": []
+    }
+   ]
+  },
+  {
+   "id": "friday-rush",
+   "title": "Friday rush",
+   "storylet": true,
+   "opening": "Three deep at the bar, the card machine is down, and Juno is moving so fast she is a blur.",
+   "trigger": {
+    "event": "world.activityCompleted",
+    "match": {
+     "activity": "bar-shift"
+    }
+   },
+   "when": {
+    "minTick": 48,
+    "weekdays": [
+     "Friday",
+     "Saturday"
+    ],
+    "flags": {
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "juno",
+     "text": "You take the left. Smile. Sell them the expensive gin."
+    }
+   ],
+   "choices": [
+    {
+     "id": "work-crowd",
+     "label": "Work the crowd",
+     "result": "You sell forty expensive gins and remember everyone's name. Priya counts the till twice.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "priya",
+       "delta": 3
+      },
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": 2
+      },
+      {
+       "type": "flag",
+       "id": "big-night",
+       "value": true
+      }
+     ],
+     "check": {
+      "stat": "charm",
+      "target": 8,
+      "fail": {
+       "result": "You drop a tray of negronis. The crowd cheers. Priya does not.",
+       "effects": [
+        {
+         "type": "chemistry",
+         "character": "juno",
+         "delta": 1,
+         "reason": "the effort showed"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "head-down",
+     "label": "Keep your head down and pour",
+     "result": "Nobody notices you, which on a Friday is a compliment.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "staff-drinks",
+   "title": "Staff drinks",
+   "storylet": true,
+   "opening": "Sunday, after close. Chairs on tables, one bottle open, the four of you around the piano.",
+   "trigger": {
+    "event": "core.inspected",
+    "match": {
+     "location": "bar"
+    }
+   },
+   "when": {
+    "location": "bar",
+    "weekdays": [
+     "Sunday"
+    ],
+    "dayparts": [
+     "Evening"
+    ],
+    "minTick": 72,
+    "flags": {
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "priya",
+     "text": "Staff drinks. One bottle. Nobody talks about work."
+    },
+    {
+     "speaker": "juno",
+     "text": "So we talk about Theo."
+    },
+    {
+     "speaker": "theo",
+     "text": "Please don't."
+    }
+   ],
+   "choices": [
+    {
+     "id": "sit-juno",
+     "label": "Sit on the bar next to Juno",
+     "result": "Juno moves her leg so it is against yours and leaves it there.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": 3
+      }
+     ]
+    },
+    {
+     "id": "sit-theo",
+     "label": "Sit on the piano bench with Theo",
+     "result": "Theo plays requests. Every one of them is for you.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "theo",
+       "delta": 3
+      }
+     ]
+    },
+    {
+     "id": "hold-table",
+     "label": "Hold the whole table",
+     "result": "You tell the story about the lime man and the lamp and the heckler, and even Priya cries laughing.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": 2
+      },
+      {
+       "type": "chemistry",
+       "character": "theo",
+       "delta": 2
+      },
+      {
+       "type": "trust",
+       "character": "priya",
+       "delta": 3
+      }
+     ],
+     "check": {
+      "stat": "charm",
+      "target": 8,
+      "fail": {
+       "result": "You tell the long story. Only Priya laughs, and she is laughing at you.",
+       "effects": [
+        {
+         "type": "trust",
+         "character": "priya",
+         "delta": 1
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "juno-needles",
+   "title": "The piano man",
+   "storylet": true,
+   "opening": "Juno is cutting limes with more force than limes need.",
+   "trigger": {
+    "event": "core.inspected",
+    "match": {
+     "location": "bar"
+    }
+   },
+   "when": {
+    "location": "bar",
+    "dayparts": [
+     "Afternoon",
+     "Evening"
+    ],
+    "flags": {
+     "juno-flirt": true,
+     "theo-kissed": true,
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "juno",
+     "text": "So. The piano man. Cute. Very quiet. I'm sure that's restful."
+    }
+   ],
+   "choices": [
+    {
+     "id": "dare-back",
+     "label": "Answer with a dare of your own",
+     "result": "\"Jealous looks good on you.\" She points the knife at you and does not deny it.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": 3
+      }
+     ],
+     "check": {
+      "stat": "wit",
+      "target": 8,
+      "fail": {
+       "result": "You try to be clever and it comes out defensive. \"Relax,\" Juno says. \"I don't do jealous.\" She does, a bit.",
+       "effects": [
+        {
+         "type": "chemistry",
+         "character": "juno",
+         "delta": -2
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "straight",
+     "label": "Tell her straight",
+     "result": "Juno nods. \"Good. I hate guessing.\" Something cools, and something settles.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": 4
+      },
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": -2
+      },
+      {
+       "type": "flag",
+       "id": "honest-with-juno",
+       "value": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "priya-candid",
+   "title": "Why she asks",
+   "storylet": true,
+   "opening": "Priya is doing the rota for next month. Your name is already on it, in pencil.",
+   "trigger": {
+    "event": "core.inspected",
+    "match": {
+     "location": "bar"
+    }
+   },
+   "when": {
+    "location": "bar",
+    "minTick": 120,
+    "trust": {
+     "priya": 35
+    },
+    "completedScenes": [
+     "priya-books"
+    ],
+    "flags": {
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "priya",
+     "text": "Don't read into it. Pencil rubs out."
+    }
+   ],
+   "choices": [
+    {
+     "id": "ask-why",
+     "label": "Ask why she really wants you to stay",
+     "result": "\"Because I have run this place alone for six years and you are the first person who noticed.\" She rubs out nothing.",
+     "effects": [
+      {
+       "type": "flag",
+       "id": "priya-candid",
+       "value": true
+      },
+      {
+       "type": "trust",
+       "character": "priya",
+       "delta": 5
+      },
+      {
+       "type": "memory",
+       "character": "priya",
+       "text": "Admitted to the player she has run the bar alone for six years."
+      }
+     ],
+     "check": {
+      "stat": "empathy",
+      "target": 8,
+      "fail": {
+       "result": "\"Because you're cheap,\" she says. You don't push, and you don't find out.",
+       "effects": [
+        {
+         "type": "trust",
+         "character": "priya",
+         "delta": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "ask-pay",
+     "label": "Ask about pay",
+     "result": "\"Pay is a strong word,\" says Priya.",
+     "effects": []
+    }
+   ]
+  },
+  {
+   "id": "juno-text",
+   "title": "Apron",
+   "storylet": true,
+   "opening": "You get in, kick off your shoes, and your phone lights up.",
+   "trigger": {
+    "event": "core.moved",
+    "match": {
+     "to": "flat"
+    }
+   },
+   "when": {
+    "minTick": 24,
+    "flags": {
+     "juno-kissed": true,
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "",
+     "text": "Juno: \"You left your apron. Come and get it. Or don't, I'll wear it.\""
+    }
+   ],
+   "choices": [
+    {
+     "id": "reply-well",
+     "label": "Send something better back",
+     "result": "You get a reply in under a minute, which for Juno is a love letter.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": 4
+      }
+     ],
+     "check": {
+      "stat": "wit",
+      "target": 8,
+      "fail": {
+       "result": "She sends back a single full stop. You look at it for twenty minutes.",
+       "effects": [
+        {
+         "type": "chemistry",
+         "character": "juno",
+         "delta": 1,
+         "reason": "the wit still counted"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "heart",
+     "label": "Send a heart",
+     "result": "\"Soft,\" she replies. It is not a complaint.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "theo-voicenote",
+   "title": "Voice note",
+   "storylet": true,
+   "opening": "Your flat, late. The phone buzzes with a voice note.",
+   "trigger": {
+    "event": "core.moved",
+    "match": {
+     "to": "flat"
+    }
+   },
+   "when": {
+    "minTick": 24,
+    "flags": {
+     "theo-kissed": true,
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "",
+     "text": "Theo, thirty seconds: the unfinished song, with a new bar at the end. Then: \"That one's yours. Goodnight.\""
+    }
+   ],
+   "choices": [
+    {
+     "id": "record-back",
+     "label": "Record one back",
+     "result": "You hum the harmony into your phone and send it before you can stop yourself. He replies with a photo of his face in his hands, smiling.",
+     "effects": [
+      {
+       "type": "chemistry",
+       "character": "theo",
+       "delta": 4
+      }
+     ],
+     "check": {
+      "stat": "nerve",
+      "target": 8,
+      "fail": {
+       "result": "You record it four times, delete it four times, and send a thumbs up.",
+       "effects": [
+        {
+         "type": "chemistry",
+         "character": "theo",
+         "delta": 1,
+         "reason": "being heard mattered"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "write-back",
+     "label": "Write back what it made you feel",
+     "result": "It takes you an hour. He reads it and doesn't reply until the morning, and then only with \"thank you\" and a lot of full stops.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "theo",
+       "delta": 3
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "last-call",
+   "title": "Last call",
+   "priority": 20,
+   "opening": "The last night of your two-week trial. Priya rings the bell for last orders and looks straight at you.",
+   "trigger": {
+    "event": "core.inspected",
+    "match": {
+     "location": "bar"
+    }
+   },
+   "when": {
+    "location": "bar",
+    "minTick": 164
+   },
+   "pages": [
+    {
+     "speaker": "priya",
+     "text": "Trial's over tonight. I'm offering you the job. Take it or don't; I'll know which by closing."
+    },
+    {
+     "speaker": "",
+     "text": "Juno is wiping down the bar. Theo is playing something slow. Whatever you started here, tonight is where it lands."
+    }
+   ],
+   "choices": [
+    {
+     "id": "stay-on",
+     "label": "Take the job",
+     "result": "Priya nods like she knew. \"Monday. Don't be late.\"",
+     "effects": [
+      {
+       "type": "flag",
+       "id": "last-call",
+       "value": true
+      },
+      {
+       "type": "flag",
+       "id": "stayed-on",
+       "value": true
+      }
+     ]
+    },
+    {
+     "id": "move-on",
+     "label": "Hand back the apron",
+     "result": "Priya takes it and, for once, has nothing dry to say. \"Come in as a customer, then.\"",
+     "effects": [
+      {
+       "type": "flag",
+       "id": "last-call",
+       "value": true
+      },
+      {
+       "type": "flag",
+       "id": "moved-on",
+       "value": true
+      }
+     ]
+    }
+   ],
+   "cg": "assets/generated/cg/last-call_v01.png"
+  },
+  {
+   "id": "jukebox-lives",
+   "title": "The Wurlitzer wakes",
+   "storylet": true,
+   "cg": "assets/generated/cg/jukebox-lives_v01.png",
+   "opening": "The record is an old torch song, piano-led, slightly warped. Juno freezes with a glass in her hand. At the piano, Theo stops playing and just listens.",
+   "trigger": {
+    "event": "world.objectUsed",
+    "match": {
+     "object": "jukebox"
+    }
+   },
+   "pages": [
+    {
+     "speaker": "juno",
+     "text": "\"That was my mum's song. She used to close up to it.\" She sets the glass down very carefully."
+    },
+    {
+     "speaker": "theo",
+     "text": "\"My granddad played on that record,\" Theo says, half to himself. \"He's on the photo wall. I never told anyone.\""
+    }
+   ],
+   "choices": [
+    {
+     "id": "ask-juno",
+     "label": "Ask Juno about her mum",
+     "result": "She talks for twenty minutes, mid-shift, while Priya covers the taps without being asked. When she is done she squeezes your wrist once.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": 4
+      }
+     ]
+    },
+    {
+     "id": "ask-theo",
+     "label": "Ask Theo to play along",
+     "result": "He finds the key by the second verse. For three minutes the dead man and the living one play together, and nobody in the bar orders anything.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "theo",
+       "delta": 4
+      }
+     ]
+    },
+    {
+     "id": "dance",
+     "label": "Pull them both onto the floor",
+     "result": "It is ridiculous and brief and the regulars cheer. Juno steps on your foot; Theo laughs harder than you have ever heard him laugh.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": 2
+      },
+      {
+       "type": "trust",
+       "character": "theo",
+       "delta": 2
+      }
+     ],
+     "check": {
+      "stat": "nerve",
+      "target": 6,
+      "fail": {
+       "result": "You get as far as holding out a hand before losing your nerve and turning it into a stretch. Juno notices, and is kind about it.",
+       "effects": [
+        {
+         "type": "trust",
+         "character": "juno",
+         "delta": 1
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "fortune-told",
+   "title": "Two roads",
+   "storylet": true,
+   "opening": "Madame Oyelaran lets go of your hand and taps the table twice, which apparently costs extra.",
+   "trigger": {
+    "event": "world.objectUsed",
+    "match": {
+     "object": "fortune-booth"
+    }
+   },
+   "pages": [
+    {
+     "speaker": "",
+     "text": "\"The one who pours is afraid of staying. The one who sings is afraid of being heard. Be braver than both of them.\""
+    }
+   ],
+   "choices": [
+    {
+     "id": "tip",
+     "label": "Tip her a fiver",
+     "result": "She pockets it without looking. \"Thursday,\" she adds. \"Something happens on a Thursday.\"",
+     "effects": [
+      {
+       "type": "money",
+       "delta": -5
+      },
+      {
+       "type": "stat",
+       "stat": "empathy",
+       "delta": 1
+      }
+     ]
+    },
+    {
+     "id": "scoff",
+     "label": "Laugh it off",
+     "result": "\"Everybody laughs,\" she says, already reaching for the next palm. You think about it all afternoon anyway.",
+     "effects": [
+      {
+       "type": "stat",
+       "stat": "wit",
+       "delta": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "till-short",
+   "title": "Forty short",
+   "opening": "Close is done and the till is forty short. Priya counts the drawer a third time, slowly, so everyone knows the maths is not the problem.",
+   "tension": 10,
+   "trigger": {
+    "event": "story.incident",
+    "match": {
+     "incident": "till-short"
+    }
+   },
+   "when": {
+    "location": "bar",
+    "flags": {
+     "last-call": false
+    }
+   },
+   "repeatable": true,
+   "choices": [
+    {
+     "id": "cover-it",
+     "label": "Top up the drawer from your tips",
+     "result": "You slide twenty across without a word. Priya sees. She never mentions it, and she never forgets it either.",
+     "effects": [
+      {
+       "type": "money",
+       "delta": -20
+      },
+      {
+       "type": "trust",
+       "character": "priya",
+       "delta": 2
+      }
+     ]
+    },
+    {
+     "id": "recount",
+     "label": "Ask to count it with her",
+     "result": "There — a round double-entered at nine. The till was never short; the night was just badly kept. Priya almost smiles.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "priya",
+       "delta": 3
+      }
+     ],
+     "check": {
+      "stat": "wit",
+      "target": 9,
+      "fail": {
+       "result": "You count it twice and the gap stays a gap. Priya writes it down under a heading that has your shift on it.",
+       "effects": [
+        {
+         "type": "trust",
+         "character": "priya",
+         "delta": -2
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "shrug",
+     "label": "Say machines make mistakes",
+     "result": "Priya agrees, in the way people agree when they have already decided something about you.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "priya",
+       "delta": -1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ex-at-the-bar",
+   "title": "A coat you don't recognise",
+   "opening": "The door swings and a man in a good coat takes the end stool like he used to own it. Juno's pour doesn't stutter, which is how you know it cost her.",
+   "tension": 15,
+   "trigger": {
+    "event": "story.incident",
+    "match": {
+     "incident": "ex-at-the-bar"
+    }
+   },
+   "when": {
+    "location": "bar",
+    "charactersAt": {
+     "juno": "bar"
+    },
+    "flags": {
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "juno",
+     "text": "Ignore him. He goes when the football's on."
+    }
+   ],
+   "choices": [
+    {
+     "id": "run-interference",
+     "label": "Get between him and her stool",
+     "result": "You lose sight of him somewhere between the glassbacks and the door, and the coat doesn't come back. Juno refills your water without being asked. That's a thank-you, in her currency.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": 4
+      },
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": 2
+      }
+     ],
+     "check": {
+      "stat": "nerve",
+      "target": 9,
+      "fail": {
+       "result": "You get there late. Juno has already handled it, and being handled is its own conversation. Still — you were walking towards her when it mattered.",
+       "effects": [
+        {
+         "type": "trust",
+         "character": "juno",
+         "delta": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "stay-out",
+     "label": "Keep the drinks coming, opinions to yourself",
+     "result": "When the coat finally leaves, Juno exhales like a held note ending. She doesn't thank you. She notices, which is better.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": 1
+      }
+     ]
+    },
+    {
+     "id": "ask-later",
+     "label": "File it away for closing time",
+     "result": "Some stories are told at closing time, not during. You keep serving and keep the question warm."
+    }
+   ]
+  },
+  {
+   "id": "market-shakedown",
+   "title": "A cleaning fee",
+   "opening": "Two men in matching jackets are explaining a 'cleaning fee' to the fruit stall, in the tone of people who have done this before and been paid.",
+   "tension": 15,
+   "trigger": {
+    "event": "story.incident",
+    "match": {
+     "incident": "market-shakedown"
+    }
+   },
+   "when": {
+    "location": "market",
+    "flags": {
+     "last-call": false
+    }
+   },
+   "choices": [
+    {
+     "id": "film-them",
+     "label": "Raise your phone like you're already filming",
+     "result": "The jackets discover urgent business elsewhere. The stallholder presses change into your hand for purchases you never made.",
+     "effects": [
+      {
+       "type": "money",
+       "delta": 10
+      },
+      {
+       "type": "stat",
+       "stat": "wit",
+       "delta": 1
+      }
+     ],
+     "check": {
+      "stat": "nerve",
+      "target": 8,
+      "fail": {
+       "result": "Your hand shakes on the raise, and they take the fee and a little extra for the entertainment. Standing too close to a shakedown, it turns out, is a taxable position.",
+       "effects": [
+        {
+         "type": "money",
+         "delta": -10
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "fetch-priya",
+     "label": "Make one call to the Velvet Room",
+     "result": "Priya listens, says 'which jackets,' and hangs up. The jackets don't come back this week.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "priya",
+       "delta": 1
+      }
+     ]
+    },
+    {
+     "id": "walk-away",
+     "label": "Study the fishmonger's ice instead",
+     "result": "You become very interested in ice. The market keeps its arrangements, and you keep your teeth."
+    }
+   ]
+  },
+  {
+   "id": "landlord-inspection",
+   "title": "The clipboard",
+   "opening": "A knock with authority behind it. The landlord has a clipboard, a list, and the particular smile of a man who has already found something.",
+   "tension": 20,
+   "trigger": {
+    "event": "story.incident",
+    "match": {
+     "incident": "landlord-inspection"
+    }
+   },
+   "when": {
+    "location": "flat",
+    "flags": {
+     "last-call": false
+    }
+   },
+   "choices": [
+    {
+     "id": "clean-sprint",
+     "label": "Get in front of him, room by room",
+     "result": "You walk him through a version of the flat that has never existed, narrating like a museum docent. He finds one lamp missing a bulb and calls it character. You learn the flat's hiding places by heart.",
+     "effects": [
+      {
+       "type": "stat",
+       "stat": "wit",
+       "delta": 1
+      }
+     ],
+     "check": {
+      "stat": "wit",
+      "target": 10,
+      "fail": {
+       "result": "He finds the thing before you find the story for it. The pen makes a small, expensive sound.",
+       "effects": [
+        {
+         "type": "money",
+         "delta": -20
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "charm-him",
+     "label": "Ask about his grandchildren until he softens",
+     "result": "Nine minutes later he's showing you photos of a pond he built and the inspection has become a visit. He waives the question about the damp entirely.",
+     "check": {
+      "stat": "charm",
+      "target": 11,
+      "fail": {
+       "result": "He looks at the photos he offered like you stole them. The pen makes its small, expensive sound.",
+       "effects": [
+        {
+         "type": "money",
+         "delta": -20
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "pay-the-fine",
+     "label": "Sign it and get back to your evening",
+     "result": "Twenty quid for the privilege of being home. You pay it the way you pay rent: quickly, and without looking.",
+     "effects": [
+      {
+       "type": "money",
+       "delta": -20
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "crate-digging",
+   "title": "Three quid a disc",
+   "offer": "director",
+   "offerHint": "A stall at the market is selling crates of old records for pocket change. The afternoon goes on whichever crate you open.",
+   "opening": "A folding table of milk crates, three quid a disc, no sleeves, no returns. The stallholder watches you with the patience of a man who has sold everything at least twice.",
+   "timeCost": 4,
+   "trigger": {
+    "event": "story.opportunity"
+   },
+   "when": {
+    "location": "market",
+    "flags": {
+     "last-call": false
+    }
+   },
+   "choices": [
+    {
+     "id": "dig-patiently",
+     "label": "Go through every crate, properly",
+     "result": "Under a well-loved compilation: a first pressing in a rice-paper sleeve. You pay for it like it's nothing, which is the whole art.",
+     "effects": [
+      {
+       "type": "item",
+       "id": "rare-vinyl",
+       "to": "player"
+      }
+     ],
+     "check": {
+      "stat": "wit",
+      "target": 8,
+      "fail": {
+       "result": "Three crates, two hours, nothing but compilations and one sleeve that once held biscuits. The stallholder wishes you luck like a condolence."
+      }
+     }
+    },
+    {
+     "id": "pocket-the-coin",
+     "label": "Pocket the token by the till",
+     "result": "There's a slot-machine token by the lock of the till, heads worn smooth. You pocket it. Finders, keepers — the whole doctrine.",
+     "effects": [
+      {
+       "type": "item",
+       "id": "lucky-coin",
+       "to": "player"
+      }
+     ]
+    },
+    {
+     "id": "chat-stallholder",
+     "label": "Ask where the good boxes go when they die",
+     "result": "He tells you about a lock-up across the canal that empties on Sundays. Charm, you find, is mostly being the last person still listening.",
+     "effects": [
+      {
+       "type": "stat",
+       "stat": "charm",
+       "delta": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pub-quiz",
+   "title": "One brain short",
+   "offer": "director",
+   "offerHint": "The bar quiz is one brain short of a legal team. Winners drink on the house; losers drink anyway.",
+   "opening": "Quiz night. The scoreboard chalk squeaks, phones are banned on pain of scorn, and the trailing team is one warm body short of legal.",
+   "timeCost": 4,
+   "trigger": {
+    "event": "story.opportunity"
+   },
+   "when": {
+    "location": "bar",
+    "dayparts": [
+     "Evening"
+    ],
+    "flags": {
+     "last-call": false
+    }
+   },
+   "choices": [
+    {
+     "id": "play-the-brain",
+     "label": "Take the music round and the anagrams",
+     "result": "You take the music round on a technicality and the anagram round because it fell to you. The pot splits four ways, and the fourth way is yours.",
+     "effects": [
+      {
+       "type": "money",
+       "delta": 25
+      }
+     ],
+     "check": {
+      "stat": "wit",
+      "target": 9,
+      "fail": {
+       "result": "Second place. Second place is a voucher. The voucher is for a place that closed.",
+       "effects": [
+        {
+         "type": "money",
+         "delta": 5
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "charm-the-room",
+     "label": "Charm the quizmaster instead of knowing things",
+     "result": "You can't name the year, but you deliver it beautifully. The quizmaster, a romantic, rounds your score up out of pure sympathy.",
+     "effects": [
+      {
+       "type": "money",
+       "delta": 15
+      }
+     ],
+     "check": {
+      "stat": "charm",
+      "target": 8,
+      "fail": {
+       "result": "The quizmaster has heard every angle there is. You still get a round of applause for trying, which spends like applause."
+      }
+     }
+    },
+    {
+     "id": "keep-score",
+     "label": "Volunteer to run the scoreboard",
+     "result": "It's harder than it looks and nobody thanks you, which is how you know it mattered.",
+     "effects": [
+      {
+       "type": "stat",
+       "stat": "wit",
+       "delta": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "market-hustle",
+   "title": "Down two helpers",
+   "offer": "director",
+   "offerHint": "The fruit stall is drowning in a delivery. Hard work, quick money, or a lesson in spotting the ripe from the rot.",
+   "opening": "The fruit stall is buried in a delivery and the owner is down two helpers and all of her patience.",
+   "timeCost": 4,
+   "trigger": {
+    "event": "story.opportunity"
+   },
+   "when": {
+    "location": "market",
+    "dayparts": [
+     "Morning",
+     "Afternoon"
+    ],
+    "flags": {
+     "last-call": false
+    }
+   },
+   "choices": [
+    {
+     "id": "haul-crates",
+     "label": "Take the crates and don't complain",
+     "result": "Four hours of crates in the sort of sun the market saves for its worst deliveries. Your shoulders file a complaint; your pocket disagrees.",
+     "effects": [
+      {
+       "type": "money",
+       "delta": 18
+      }
+     ]
+    },
+    {
+     "id": "charm-the-queue",
+     "label": "Turn the queue into a bit",
+     "result": "The queue enjoys itself; the queue buys more. The owner pays you like the comedy was load-bearing.",
+     "effects": [
+      {
+       "type": "money",
+       "delta": 30
+      }
+     ],
+     "check": {
+      "stat": "charm",
+      "target": 8,
+      "fail": {
+       "result": "The queue enjoys itself and buys nothing. She pays you for the crates anyway.",
+       "effects": [
+        {
+         "type": "money",
+         "delta": 12
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "learn-the-trade",
+     "label": "Watch how she spots the ripe from the rot",
+     "result": "Ten feet, one glance, no mistakes. That eye is worth more than the wages, and she lets you borrow it for the last hour.",
+     "effects": [
+      {
+       "type": "stat",
+       "stat": "wit",
+       "delta": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "study-slate",
+   "title": "The quiet hour",
+   "offer": "director",
+   "offerHint": "A free evening and a second-hand book of self-improvement. The flat is quiet; the question is what to do with the quiet.",
+   "opening": "A free evening and a paperback of second-hand self-improvement with someone else's notes in the margins. The flat is quiet. The choice is what to do with the quiet.",
+   "timeCost": 4,
+   "trigger": {
+    "event": "story.opportunity"
+   },
+   "when": {
+    "location": "flat",
+    "flags": {
+     "last-call": false
+    }
+   },
+   "choices": [
+    {
+     "id": "drill-flashcards",
+     "label": "Work through the memory chapters",
+     "result": "An hour of memory tricks, most of which are just paying attention with extra steps. Tomorrow you will remember what any of it was for.",
+     "effects": [
+      {
+       "type": "stat",
+       "stat": "wit",
+       "delta": 1
+      }
+     ]
+    },
+    {
+     "id": "rehearse-out-loud",
+     "label": "Rehearse being charming at the mirror",
+     "result": "You rehearse a version of yourself that says the right thing at the right time. The mirror is unmoved. The mirror is also wrong.",
+     "effects": [
+      {
+       "type": "stat",
+       "stat": "charm",
+       "delta": 1
+      }
+     ]
+    },
+    {
+     "id": "sit-with-it",
+     "label": "Do nothing, properly",
+     "result": "You do nothing, for once, all the way through. Somewhere in the nothing you find a thought you'd been chasing all week.",
+     "effects": [
+      {
+       "type": "stat",
+       "stat": "empathy",
+       "delta": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "after-work-drinks",
+   "title": "One each",
+   "offer": "director",
+   "offerHint": "Juno's heading to the canal with one bottle and two glasses, and one of them could be yours.",
+   "opening": "Last glass polished, lights half down. Juno hooks a bottle by the neck and nods at the canal door.",
+   "timeCost": 4,
+   "trigger": {
+    "event": "story.opportunity"
+   },
+   "when": {
+    "location": "bar",
+    "charactersAt": {
+     "juno": "bar"
+    },
+    "flags": {
+     "last-call": false
+    }
+   },
+   "pages": [
+    {
+     "speaker": "juno",
+     "text": "One each. Then I stop being interesting."
+    }
+   ],
+   "choices": [
+    {
+     "id": "go-with",
+     "label": "Take the second glass",
+     "result": "The canal does its lantern trick and the bottle does its work. She talks about nothing for an hour — and then, briefly, about something.",
+     "effects": [
+      {
+       "type": "money",
+       "delta": -10
+      },
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": 3
+      },
+      {
+       "type": "chemistry",
+       "character": "juno",
+       "delta": 2
+      }
+     ]
+    },
+    {
+     "id": "stay-sober",
+     "label": "Take the water, keep the watch",
+     "result": "You take the water and she takes the whole bottle's worth of talking. Turns out somebody listening was the point.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": 2
+      },
+      {
+       "type": "stat",
+       "stat": "empathy",
+       "delta": 1
+      }
+     ]
+    },
+    {
+     "id": "beg-off",
+     "label": "Plead an early start",
+     "result": "You plead an early start. She says sure, easy, no story — and means the opposite of all three.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "juno",
+       "delta": -1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "stock-windfall",
+   "title": "No invoice",
+   "offer": "director",
+   "offerHint": "There's an unopened crate of festival stock behind the spare kegs. No invoice. No witness.",
+   "opening": "Behind the spare kegs: an unopened crate of festival stock from a summer nobody at the Velvet Room talks about. There's no invoice and no witness.",
+   "timeCost": 4,
+   "trigger": {
+    "event": "story.opportunity"
+   },
+   "when": {
+    "flags": {
+     "last-call": false
+    }
+   },
+   "choices": [
+    {
+     "id": "log-it",
+     "label": "Put it on the books",
+     "result": "You put it on the books and carry it up yourself. Priya's finder's fee is ten quid and a nod that lasts a full second.",
+     "effects": [
+      {
+       "type": "trust",
+       "character": "priya",
+       "delta": 3
+      },
+      {
+       "type": "money",
+       "delta": 10
+      }
+     ]
+    },
+    {
+     "id": "sell-it-quietly",
+     "label": "Move it quietly down the canal",
+     "result": "It's gone by Friday, in ones and twos, for cash. You tell yourself it was abandoned, which is a word that works at night.",
+     "effects": [
+      {
+       "type": "money",
+       "delta": 25
+      }
+     ]
+    },
+    {
+     "id": "keep-one-bottle",
+     "label": "Log the crate, keep one out",
+     "result": "You keep one bottle for a night that hasn't happened yet. Everyone does. That's why there's no invoice."
+    }
+   ]
+  }
+ ],
+ "intimacySettings": {
+  "difficulty": "normal",
+  "contentLevel": "explicit",
+  "privateLocations": [
+   "flat"
+  ],
+  "aftercareWindow": 2,
+  "aftercareOptions": [
+   {
+    "id": "stay",
+    "name": "Ask to stay the night"
+   },
+   {
+    "id": "talk",
+    "name": "Lie there and talk"
+   },
+   {
+    "id": "space",
+    "name": "Give some space"
+   }
+  ]
+ },
+ "intimacyCategories": [
+  {
+   "id": "first-night",
+   "name": "Take it to bed",
+   "privacy": "private",
+   "casual": false,
+   "resolution": "scene",
+   "style": "first-night",
+   "discretion": "discreet"
+  }
+ ],
+ "intimacyProfiles": [
+  {
+   "character": "juno",
+   "openness": 70,
+   "casual": true,
+   "consentPolicy": "threshold",
+   "consentDuration": 2,
+   "allowedCategories": [
+    "first-night"
+   ],
+   "cooldown": 12,
+   "missedAftercareDelta": -2,
+   "requirements": {
+    "attraction": 25,
+    "phases": [
+     "dating",
+     "exclusive"
+    ]
+   },
+   "interests": [
+    {
+     "id": "juno-lead",
+     "category": "first-night",
+     "label": "Likes being out-played; wants someone who takes the lead and means it",
+     "visibility": "discoverable"
+    }
+   ],
+   "aftercarePreferences": [
+    {
+     "id": "juno-space",
+     "option": "space",
+     "reaction": "liked",
+     "satisfactionDelta": 8,
+     "visibility": "discoverable"
+    },
+    {
+     "id": "juno-stay",
+     "option": "stay",
+     "reaction": "disliked",
+     "satisfactionDelta": -3,
+     "visibility": "discoverable"
+    }
+   ]
+  },
+  {
+   "character": "theo",
+   "openness": 45,
+   "casual": false,
+   "consentPolicy": "threshold",
+   "consentDuration": 2,
+   "allowedCategories": [
+    "first-night"
+   ],
+   "cooldown": 12,
+   "missedAftercareDelta": -8,
+   "requirements": {
+    "attraction": 30,
+    "phases": [
+     "dating",
+     "exclusive"
+    ]
+   },
+   "interests": [
+    {
+     "id": "theo-slow",
+     "category": "first-night",
+     "label": "Needs it slow, and needs to be asked when he goes quiet",
+     "visibility": "discoverable"
+    }
+   ],
+   "aftercarePreferences": [
+    {
+     "id": "theo-stay",
+     "option": "stay",
+     "reaction": "liked",
+     "satisfactionDelta": 12,
+     "visibility": "discoverable"
+    },
+    {
+     "id": "theo-space",
+     "option": "space",
+     "reaction": "disliked",
+     "satisfactionDelta": -6,
+     "visibility": "discoverable"
+    }
+   ]
+  }
+ ],
+ "endings": [
+  {
+   "id": "juno-last-one-out",
+   "name": "Last one out",
+   "character": "juno",
+   "requires": {
+    "flags": {
+     "juno-kissed": true,
+     "last-call": true
+    }
+   },
+   "text": "Chairs up, till counted, lights off. Juno holds the door and doesn't lock it until you are through it. \"Same time tomorrow,\" she says. It isn't a question anymore."
+  },
+  {
+   "id": "theo-the-ending",
+   "name": "The ending",
+   "character": "theo",
+   "requires": {
+    "flags": {
+     "theo-kissed": true,
+     "last-call": true,
+     "theo-hurt": false
+    }
+   },
+   "text": "Theo plays the song after midnight, finished. He doesn't say who it's about. He looks at you the whole time he doesn't say it."
+  },
+  {
+   "id": "closing-time",
+   "name": "Closing time",
+   "character": "theo",
+   "requires": {
+    "flags": {
+     "theo-hurt": true,
+     "last-call": true
+    }
+   },
+   "text": "Theo plays other people's songs all night and leaves by the back door. Some things a fortnight can't fix. Priya pours you one on the house and says nothing, which is the kindest thing she has done."
+  },
+  {
+   "id": "regular",
+   "name": "A regular",
+   "requires": {
+    "flags": {
+     "last-call": true
+    }
+   },
+   "text": "Two weeks, a few scars, a stool at the end of the bar with your name on it. Nobody fell for you this time. The Velvet Room did."
+  }
+ ],
+ "schedules": [
+  {
+   "actor": "juno",
+   "period": 12,
+   "stops": [
+    {
+     "at": 0,
+     "location": "market"
+    },
+    {
+     "at": 6,
+     "location": "bar"
+    }
+   ]
+  },
+  {
+   "actor": "theo",
+   "period": 12,
+   "stops": [
+    {
+     "at": 0,
+     "location": "canal"
+    },
+    {
+     "at": 8,
+     "location": "bar"
+    }
+   ]
+  }
+ ],
+ "scheduleExceptions": [
+  {
+   "id": "trial-day-juno",
+   "actor": "juno",
+   "location": "bar",
+   "startTick": 0,
+   "endTick": 11
+  },
+  {
+   "id": "trial-day-theo",
+   "actor": "theo",
+   "location": "bar",
+   "startTick": 0,
+   "endTick": 11
+  }
+ ],
+ "initialMoney": 60,
+ "directorProfile": {
+  "preset": "cassandra",
+  "opportunityChancePercent": 45,
+  "interruptionChancePercent": 40,
+  "opportunitiesPerDay": 3,
+  "complications": [
+   {
+    "id": "till-short",
+    "scene": "till-short",
+    "kind": "work-crisis",
+    "intensity": 1,
+    "weight": 12,
+    "maxUses": 2,
+    "cooldownTicks": 24,
+    "text": "The till is short and Priya is counting.",
+    "tease": "Close is never just close."
+   },
+   {
+    "id": "ex-at-the-bar",
+    "scene": "ex-at-the-bar",
+    "kind": "ex",
+    "intensity": 2,
+    "weight": 10,
+    "minTick": 24,
+    "text": "Someone from Juno's past just walked in.",
+    "tease": "A coat you don't recognise takes the end stool."
+   },
+   {
+    "id": "market-shakedown",
+    "scene": "market-shakedown",
+    "kind": "extortion",
+    "intensity": 2,
+    "weight": 9,
+    "minTick": 24,
+    "text": "Men in matching jackets are collecting a 'cleaning fee'.",
+    "tease": "The market has attracted an audience."
+   },
+   {
+    "id": "landlord-inspection",
+    "scene": "landlord-inspection",
+    "kind": "inspection",
+    "intensity": 3,
+    "weight": 8,
+    "minTick": 48,
+    "text": "The landlord is at the door with a clipboard.",
+    "tease": "Someone is testing the hallway light. It's not for the good of the light."
+   }
+  ],
+  "opportunities": [
+   {
+    "id": "crate-digging",
+    "scene": "crate-digging",
+    "weight": 12
+   },
+   {
+    "id": "pub-quiz",
+    "scene": "pub-quiz",
+    "weight": 10
+   },
+   {
+    "id": "market-hustle",
+    "scene": "market-hustle",
+    "weight": 10
+   },
+   {
+    "id": "study-slate",
+    "scene": "study-slate",
+    "weight": 8
+   },
+   {
+    "id": "after-work-drinks",
+    "scene": "after-work-drinks",
+    "weight": 12,
+    "match": {
+     "activity": "bar-shift"
+    }
+   },
+   {
+    "id": "stock-windfall",
+    "scene": "stock-windfall",
+    "weight": 10,
+    "match": {
+     "activity": "stock-room"
+    }
+   }
+  ]
+ },
+ "objects": [
+  {
+   "id": "floorboard",
+   "name": "the creaking floorboard",
+   "location": "flat",
+   "description": "It lifts with a butter knife. Under it: dust, a bus ticket from 1994, and room for whatever somebody meant to come back for."
+  },
+  {
+   "id": "launderette-board",
+   "name": "the launderette noticeboard",
+   "location": "flat",
+   "description": "Lost cat, guitar lessons, and a faded flyer: \"The Velvet Room, open mic every Thursday since 1987.\""
+  },
+  {
+   "id": "mirror",
+   "name": "the wardrobe mirror",
+   "location": "flat",
+   "description": "You practise a smile. It is getting better.",
+   "effectFlag": "mirror-pep",
+   "useText": "You give yourself the pep talk out loud. The neighbour bangs on the wall, which counts as applause."
+  },
+  {
+   "id": "photo-wall",
+   "name": "the photo wall",
+   "location": "bar",
+   "description": "Forty years of staff nights. In one, a young woman with Juno's jaw pours a drink for a pianist with Theo's hands. Neither of them has mentioned this."
+  },
+  {
+   "id": "ice-machine",
+   "name": "the ice machine",
+   "location": "bar",
+   "description": "It rattles like a bag of teeth. Things fall behind it and stay there."
+  },
+  {
+   "id": "jukebox",
+   "name": "the dead jukebox",
+   "location": "bar",
+   "description": "A Wurlitzer, unplugged since before Juno. The service panel has a tiny brass lock marked JB.",
+   "requiresItem": "brass-key",
+   "effectFlag": "jukebox-on",
+   "useText": "The key turns. The Wurlitzer shudders, glows amber, and drops a record nobody has heard in this room for twenty years. The whole bar goes quiet."
+  },
+  {
+   "id": "record-crate",
+   "name": "the record crate",
+   "location": "market",
+   "description": "Fifty pence a record, no refunds. Near the bottom, in a paper sleeve, a single with green ink on the label.",
+   "reveals": [
+    "rare-vinyl"
+   ]
+  },
+  {
+   "id": "fortune-booth",
+   "name": "the fortune-teller's booth",
+   "location": "market",
+   "description": "Madame Oyelaran reads palms for a pound. The sign says CASH ONLY, NO REFUNDS ON DESTINY.",
+   "effectFlag": "fortune-read",
+   "useText": "She holds your hand a long time. \"Two roads, both after midnight. One sings, one pours. Pick before the fortnight ends, or the city picks for you.\""
+  },
+  {
+   "id": "lock-hut",
+   "name": "the lock-keeper's hut",
+   "location": "canal",
+   "description": "Boarded up, but the window box still has a row of rusted key hooks and a loose brick underneath."
+  },
+  {
+   "id": "bridge-graffiti",
+   "name": "the graffiti under the bridge",
+   "location": "canal",
+   "description": "Decades of initials. Low down, nearly scrubbed out: \"M + A, VR, 1987\". Someone has recently drawn a small piano beside it."
+  }
+ ],
+ "dialogueReactions": [
+  {
+   "id": "juno-family",
+   "character": "juno",
+   "phrases": [
+    "your mum",
+    "your mother",
+    "your family",
+    "how long have you run",
+    "history of the bar",
+    "this place mean"
+   ],
+   "trustDelta": 2,
+   "cooldownTicks": 12
+  },
+  {
+   "id": "juno-praise",
+   "character": "juno",
+   "phrases": [
+    "great drink",
+    "good drink",
+    "nice bar",
+    "love this bar",
+    "you run this place well",
+    "best bar"
+   ],
+   "trustDelta": 1,
+   "cooldownTicks": 12
+  },
+  {
+   "id": "theo-music",
+   "character": "theo",
+   "phrases": [
+    "your song",
+    "your music",
+    "you play",
+    "that song",
+    "the piano",
+    "your voice"
+   ],
+   "trustDelta": 2,
+   "cooldownTicks": 12
+  },
+  {
+   "id": "theo-writing",
+   "character": "theo",
+   "phrases": [
+    "what are you writing",
+    "your lyrics",
+    "your notebook",
+    "your granddad"
+   ],
+   "trustDelta": 1,
+   "cooldownTicks": 12
+  },
+  {
+   "id": "priya-studies",
+   "character": "priya",
+   "phrases": [
+    "what are you reading",
+    "your book",
+    "your studies",
+    "your exam",
+    "your course"
+   ],
+   "trustDelta": 2,
+   "cooldownTicks": 12
+  },
+  {
+   "id": "offer-help",
+   "phrases": [
+    "can i help",
+    "let me help",
+    "i can cover",
+    "i'll cover",
+    "need a hand"
+   ],
+   "trustDelta": 1,
+   "cooldownTicks": 12
+  },
+  {
+   "id": "rude",
+   "phrases": [
+    "shut up",
+    "piss off",
+    "you're boring",
+    "you are boring",
+    "you're annoying",
+    "nobody cares"
+   ],
+   "trustDelta": -3,
+   "cooldownTicks": 0
+  }
+ ]
+}

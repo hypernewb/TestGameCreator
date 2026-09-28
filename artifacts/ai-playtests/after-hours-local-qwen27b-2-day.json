@@ -1,0 +1,558 @@
+{
+  "generatedAt": "2026-09-28T10:49:06.622Z",
+  "pack": {
+    "id": "showcase.after-hours",
+    "title": "After Hours"
+  },
+  "model": "qwen/qwen3.8-27b",
+  "contextWindow": 8192,
+  "requestedDays": 2,
+  "tickTargetReached": true,
+  "qualityGates": {
+    "pass": false,
+    "failures": [
+      "deadTurns 3 exceeds 10% of 18 turns"
+    ]
+  },
+  "reachedTarget": false,
+  "incompleteReason": "",
+  "metrics": {
+    "turns": 18,
+    "startTick": 0,
+    "endTick": 24,
+    "ticksPlayed": 24,
+    "typed": 8,
+    "authoredChoices": 3,
+    "fallbacks": 0,
+    "clarifications": 0,
+    "deadTurns": 3,
+    "maxConsecutiveSameDecision": 1,
+    "commandCounts": {
+      "core.move": 1,
+      "story.respond": 1,
+      "story.choose": 3,
+      "core.scene": 10,
+      "social.speak": 3
+    },
+    "nearDuplicates": [],
+    "calendarConflicts": 1,
+    "averageSeconds": 7.54
+  },
+  "modelUsage": {
+    "requests": {
+      "tester": 18,
+      "game": 20,
+      "critique": 1,
+      "total": 39
+    },
+    "responses": 39,
+    "tokens": 93707
+  },
+  "ending": null,
+  "fun": {
+    "turns": 18,
+    "timing": "measured",
+    "minutes": 2.3,
+    "choices": 3,
+    "typed": 8,
+    "deadTurns": 9,
+    "longestDeadStreak": 4,
+    "freshTurns": 4,
+    "firstChoice": {
+      "turn": 3,
+      "minutes": 0.5,
+      "via": "story.choose"
+    },
+    "firstSpark": {
+      "turn": 3,
+      "minutes": 0.5,
+      "via": "social.attractionChanged"
+    },
+    "firstPayoff": {
+      "turn": 5,
+      "minutes": 0.5,
+      "via": "social.crushStarted"
+    },
+    "firstDrama": {
+      "turn": 5,
+      "minutes": 0.5,
+      "via": "story.incident"
+    },
+    "firstCg": null,
+    "deadByCommand": {
+      "story.respond": 1,
+      "core.scene": 6,
+      "social.speak": 2
+    },
+    "choicesPer10": 13,
+    "deadRatio": 0.5,
+    "freshRatio": 0.22,
+    "storylets": {
+      "seen": 3,
+      "total": 47
+    },
+    "storyletIds": [
+      "first-night",
+      "juno-shift",
+      "till-short"
+    ],
+    "repeatedProse": 0,
+    "nearDuplicates": [],
+    "ending": null
+  },
+  "funGates": [
+    {
+      "id": "first-choice",
+      "value": 0.5,
+      "need": "≤ 2 min",
+      "pass": true
+    },
+    {
+      "id": "first-payoff",
+      "value": 0.5,
+      "need": "≤ 15 min",
+      "pass": true
+    },
+    {
+      "id": "dead-turns",
+      "value": 0.5,
+      "need": "≤ 10%",
+      "pass": false
+    },
+    {
+      "id": "run-length",
+      "value": null,
+      "need": "30–45 min to an ending",
+      "pass": null
+    },
+    {
+      "id": "drama",
+      "value": 1,
+      "need": "a complication or witness fires",
+      "pass": true
+    },
+    {
+      "id": "repeated-prose",
+      "value": 0,
+      "need": "≤ 10% of narrated turns",
+      "pass": true
+    }
+  ],
+  "unmetIntents": [],
+  "transcript": [
+    {
+      "turn": 1,
+      "clock": "Day 1 Monday Morning",
+      "decision": "Go to The Velvet Room",
+      "kind": "action",
+      "command": "core.move",
+      "narrative": "Travelled to The Velvet Room.\nYour first night at the Velvet Room.\nA low-lit cocktail bar with a battered upright piano and a staff room with a window nobody remembers is there.\nJuno and Theo and Priya are here.\nYour first night at the Velvet Room.\nPriya: You're the new barback. Juno trains you, Theo plays, I sign the cheques. Nobody dates anybody. That's a joke. Mostly.\nJuno: Can you carry a crate and keep your mouth shut? Because the last one could do neither.",
+      "results": [
+        "Travelled to The Velvet Room.",
+        "Your first night at the Velvet Room."
+      ],
+      "from": 0,
+      "to": 1,
+      "seconds": 0.03,
+      "requestId": "395e506a-994a-4505-871e-f5f9c877c91c",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 2,
+      "clock": "Day 1 Monday Morning",
+      "decision": "I can carry a crate and keep my mouth shut. Probably. What's the first thing I need to do?",
+      "kind": "input",
+      "command": "story.respond",
+      "narrative": "The upright piano sits against the far wall, its lid propped open by a folded napkin. A crate of empty bottles rests on the floor near the service door, its cardboard flaps torn and sticky with dried syrup.\nJuno wipes down the bar top with a rag, her movements sharp and rhythmic. Priya stands by the staff-room door, holding a clipboard against her chest, her eyes fixed on the crate rather than the player.\nPriya: Probably. That word is going to cost us a bottle of gin by Friday.\nJuno: You said probably. I need yes. Or I need you to go home.\nJuno drops the rag on the bar top with a wet slap. She points a single finger at the crate of bottles, then at the service door, then back at the crate. Her jaw is set, waiting for a commitment, not a question.\nPriya: Juno, let them breathe. They just walked in.\nJuno: They just walked in and already lied. Probably is a lie with extra steps.\nThe air in the room feels tighter, the low hum of the refrigerator the only sound besides the clink of ice in a glass Juno hasn’t yet poured.\nPriya shifts her weight, her gaze flicking between the player and Juno, calculating the cost of patience versus the cost of a new hire quitting in the first hour.\nPriya: First thing you need to do is pick up that crate. Second thing is to stop making me work for the truth.",
+      "results": [
+        "I can carry a crate and keep my mouth shut. Probably. What's the first thing I need to do?",
+        "I can carry a crate and keep my mouth shut. Probably. What's the first thing I need to do?"
+      ],
+      "from": 1,
+      "to": 2,
+      "seconds": 30.3,
+      "requestId": "eb715777-1583-4093-afbc-801ca31256a6",
+      "fallback": false,
+      "failureReason": "",
+      "flags": [
+        "mentions Friday but it is Monday"
+      ]
+    },
+    {
+      "turn": 3,
+      "clock": "Day 1 Monday Morning",
+      "decision": "[Wit · Sharp ✗] Give Juno a line back",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "Your comeback arrives about three seconds late. Juno pats your shoulder. \"We'll work on it.\"\nWit check failed.\nAttraction with Juno changed.\nJuno: Chemistry 5 → 7\nYour Wit rose to Sharp.",
+      "results": [
+        "Wit check failed.",
+        "Attraction with Juno changed.",
+        "Juno: Chemistry 5 → 7",
+        "Your Wit rose to Sharp.",
+        "Your comeback arrives about three seconds late. Juno pats your shoulder. \"We'll work on it.\""
+      ],
+      "from": 2,
+      "to": 3,
+      "seconds": 0.01,
+      "requestId": "18bfe503-f18c-4f85-86dd-a72128a57059",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 4,
+      "clock": "Day 1 Monday Morning",
+      "decision": "Work a shift with Juno",
+      "kind": "action",
+      "command": "core.scene",
+      "narrative": "Four hours of orders, spills and Juno correcting your pour. Forty in tips and wages.\nYour Charm rose to Likable.\nJuno: Trust 20 → 22\nBalance: $100.\nThree deep at the bar, and Juno is enjoying watching you drown.\nJuno: Two negronis, an old fashioned, and stop looking at me like I'm the emergency exit.",
+      "results": [
+        "Work a shift with Juno",
+        "Your Charm rose to Likable.",
+        "Juno: Trust 20 → 22",
+        "Balance: $100.",
+        "Four hours of orders, spills and Juno correcting your pour. Forty in tips and wages.",
+        "Three deep at the bar, and Juno is enjoying watching you drown."
+      ],
+      "from": 3,
+      "to": 7,
+      "seconds": 0.05,
+      "requestId": "64a9eefa-0c81-4689-aad5-61b4deb3917d",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 5,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "[Charm · Likable ✓] Flirt back without missing an order",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "\"You'd make a lovely emergency exit.\" You slide the negronis out on time. Juno's grin lasts the rest of the shift.\nCharm check passed.\nAttraction with Juno changed.\nJuno: Chemistry 7 → 15\nClose is done and the till is forty short. Priya counts the drawer a third time, slowly, so everyone knows the maths is not the problem.",
+      "results": [
+        "Charm check passed.",
+        "Attraction with Juno changed.",
+        "A romantic possibility has opened with Juno.",
+        "Juno: Chemistry 7 → 15",
+        "\"You'd make a lovely emergency exit.\" You slide the negronis out on time. Juno's grin lasts the rest of the shift.",
+        "The till is short and Priya is counting.",
+        "Close is done and the till is forty short. Priya counts the drawer a third time, slowly, so everyone knows the maths is not the problem."
+      ],
+      "from": 7,
+      "to": 8,
+      "seconds": 0.02,
+      "requestId": "1620637f-762f-43aa-8bf9-f1d7cca9b064",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 6,
+      "clock": "Day 1 Monday Evening",
+      "decision": "[Wit · 9 ✗] Ask to count it with her",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "You count it twice and the gap stays a gap. Priya writes it down under a heading that has your shift on it.\nWit check failed.\nPriya: Trust 25 → 23\nWit +1 · Sharp",
+      "results": [
+        "Wit check failed.",
+        "Priya: Trust 25 → 23",
+        "Wit +1 · Sharp",
+        "You count it twice and the gap stays a gap. Priya writes it down under a heading that has your shift on it."
+      ],
+      "from": 8,
+      "to": 9,
+      "seconds": 0.02,
+      "requestId": "366dae26-aa48-4aa9-b932-546ae229da62",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 7,
+      "clock": "Day 1 Monday Evening",
+      "decision": "I'm sorry I messed up the count earlier. I really want to get this right for you and the team. Can we go over the drawer together one more time? I'll be careful this time.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Juno stops wiping the glass, sets it down on the bar top with a soft click, and leans her forearms on the wood.\nShe looks at you for a beat, then reaches under the counter and pulls out the register drawer, sliding it across the surface until it stops in front of you.\nJuno: Careful. That's the word that makes me want to throw the drawer at your head.\nJuno: Fine. Sit. I'll count the twenties first, you count the fives. Don't touch the ones until I say so.\nJuno: And if you fumble a bill, I'm charging you for the time. It's house policy. I made it up three seconds ago.",
+      "results": [
+        "I'm sorry I messed up the count earlier. I really want to get this right for you and the team. Can we go over the drawer together one more time? I'll be careful this time."
+      ],
+      "from": 9,
+      "to": 10,
+      "seconds": 10.8,
+      "requestId": "f3d0f742-5b2a-4f89-ab0b-971ddc9a7712",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 8,
+      "clock": "Day 1 Monday Evening",
+      "decision": "I'll take the fives. I'll count them out loud so you can hear if I'm skipping any, and I'll double-check the total against the register slip before I close the drawer.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Juno wipes the bar top with a rag, her movements sharp and rhythmic, eyes fixed on the register drawer.\nJuno: Good. I need this right. Every cent counts for what I'm building.\nJuno: So, you promised me you'd take the fives.\nJuno: Don't make me repeat it. Start counting.",
+      "results": [
+        "I'll take the fives. I'll count them out loud so you can hear if I'm skipping any, and I'll double-check the total against the register slip before I close the drawer.",
+        "You talk to Juno: I'll take the fives. I'll count them out loud so you can hear if I'm skipping any, and I'll double-check the total against the register slip before I close the drawer.",
+        "Juno: Trust 22 → 23"
+      ],
+      "from": 10,
+      "to": 11,
+      "seconds": 5.79,
+      "requestId": "e18cb5bf-ca62-4c12-8862-c9c954693230",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 9,
+      "clock": "Day 1 Monday Evening",
+      "decision": "One, two, three... five, ten, fifteen, twenty. Okay, fives are done. Let me check the register slip real quick to make sure the total matches before I close this up.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Juno watches the bills slide across the worn wood, her eyes tracking each one with sharp focus. She leans back against the bar counter, arms crossed, waiting for the next move.\nJuno: Twenty. You didn't skip. Good.\nJuno: You're actually being careful. Suspicious.\nJuno: Now that you're done with the fives, check the slip. Tell me if it matches. Don't just guess.\nThe register slip lies flat on the counter, the numbers printed in neat, small font. The bar is quiet except for the low hum of the refrigerator and the distant sound of rain against the window.",
+      "results": [
+        "One, two, three... five, ten, fifteen, twenty. Okay, fives are done. Let me check the register slip real quick to make sure the total matches before I close this up."
+      ],
+      "from": 11,
+      "to": 11,
+      "seconds": 8.71,
+      "requestId": "d017e517-5fef-4ddf-8d60-4cf679c0b3fa",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 10,
+      "clock": "Day 1 Monday Evening",
+      "decision": "The slip shows $420. The drawer has $420. It matches perfectly. I'm ready to close it up whenever you are.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Juno uncrosses her arms and steps closer to the register drawer, her shadow falling across the counter. She picks up the rag she had been using, folds it neatly, and sets it aside with a precise, deliberate motion.\nJuno: Forty-two. Zero. It matches.\nJuno: You actually did it right. I’m not used to that. It’s annoying.\nJuno: Close it. And don’t look at me like I’m going to take it back.",
+      "results": [
+        "The slip shows $420. The drawer has $420. It matches perfectly. I'm ready to close it up whenever you are."
+      ],
+      "from": 11,
+      "to": 11,
+      "seconds": 8.5,
+      "requestId": "1ac34798-41f6-4cb3-98dc-e96a80fa9bad",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 11,
+      "clock": "Day 1 Monday Evening",
+      "decision": "The drawer is closed and locked. I lean back against the bar, looking at you. You were right to be suspicious, but I think I proved I can be trusted with the details. Now that the night is settled, I'd love to hear more about what you're building. What's the dream behind the Velvet Room?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Juno turns away from the counter, her back to the locked drawer. She reaches up to a high shelf behind the bar, pulling down a dusty bottle of rye whiskey and two glasses.\nThe glass clinks softly against the wood as she sets them down, then pours a generous measure into each, the amber liquid catching the low light.\nJuno: It’s not a dream. It’s a ledger. I’m building a place where I don’t have to answer to anyone. Where the music is what I want, and the doors lock when I say so.\nShe slides one glass across the bar top until it stops against the player's hand. Her eyes stay on the other glass in her own grip, not meeting the player's gaze.\nJuno: You’re asking a lot of questions for someone who just proved they can count fives. Most people just want the drink and the silence.\nJuno takes a sip, her expression unreadable, though her fingers tighten slightly around the stem of her glass.\nJuno: So. You’re not just here for the shift. What’s your angle?",
+      "results": [
+        "The drawer is closed and locked. I lean back against the bar, looking at you. You were right to be suspicious, but I think I proved I can be trusted with the details. Now that the night is settled, I'd love to hear more about what you're building. What's the dream behind the Velvet Room?"
+      ],
+      "from": 11,
+      "to": 11,
+      "seconds": 23.03,
+      "requestId": "ec767dd2-14e0-4877-a629-53ad83919527",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 12,
+      "clock": "Day 1 Monday Evening",
+      "decision": "I take the glass, but I don't drink yet. I lean in, matching your intensity. 'A ledger. I like that. It means it's not just a bar to you. It's a statement. Tell me about the first entry. What was the one thing you refused to let slide when you started this?','reason",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "The glass sits untouched in your hand, the condensation cooling your fingers. You lean forward, closing the distance between the bar top and your shoulder, your posture mirroring the intensity of the moment.\nThe low hum of the refrigerator in the back is the only sound breaking the silence as you wait for a response that never comes.\nThe room remains still. The dust motes drifting in the sliver of morning light cutting through the blinds do not pause. The leather of the chair creaks slightly as the weight of the empty space where a conversation should be settles in.\nYou hold the pose, the question hanging in the air like smoke from a extinguished cigarette. The glass remains full, the ice clinking softly against the rim as the silence stretches, unbroken and absolute.",
+      "results": [
+        "I take the glass, but I don't drink yet. I lean in, matching your intensity. 'A ledger. I like that. It means it's not just a bar to you. It's a statement. Tell me about the first entry. What was the one thing you refused to let slide when you started this?','reason",
+        "The activity comes to a close."
+      ],
+      "from": 11,
+      "to": 12,
+      "seconds": 7.81,
+      "requestId": "124dcf2b-4dd5-44c3-b08f-6da55791ae83",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 13,
+      "clock": "Day 2 Tuesday Morning",
+      "decision": "Talk to Priya",
+      "kind": "action",
+      "command": "social.speak",
+      "narrative": "Priya stands behind the bar, her arms crossed over her chest. She does not look at the glass in your hand, but at the condensation dripping down its side. Her eyes track the single drop as it falls onto the wooden surface, leaving a small, dark ring.\nPriya: The first entry was a refund.\nPriya: A regular wanted his drink back because it was too strong. I didn't. I told him that's what he paid for. He left. He hasn't come back. Good riddance.\nPriya uncrosses her arms and picks up a rag from the counter. She begins wiping a spot on the wood that is already clean, moving in slow, deliberate circles.\nPriya: You're holding that glass like it owes you money. Drink it or put it down. I don't care which, but don't let it sit there sweating on my counter.\nPriya: And since you're asking how things are going: The coffee machine is jammed. Again. And the ice delivery is late. So, it's a Tuesday.",
+      "results": [
+        "You tell Priya: “How are things going?”",
+        "Priya: Trust 23 → 24"
+      ],
+      "from": 12,
+      "to": 13,
+      "seconds": 9.44,
+      "requestId": "92b4f6a1-614d-4e2b-b85d-77d8f5bd6b5f",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 14,
+      "clock": "Day 2 Tuesday Morning",
+      "decision": "Ask Priya about what favours returned means to them",
+      "kind": "action",
+      "command": "social.speak",
+      "narrative": "Priya: Because it means the debt is settled. No loose ends. No one coming back to say I owe them something.\nPriya sets the rag down on the counter and leans back against the shelf of empty bottles, crossing one ankle over the other.\nPriya: What I can't stand is drama I didn't start. Like when a customer spills a drink and then blames the floor.\nPriya: So. You're still holding that glass. Is it a decision or a habit?",
+      "results": [
+        "You tell Priya: “What is it you love about favours returned?”"
+      ],
+      "from": 13,
+      "to": 14,
+      "seconds": 11.07,
+      "requestId": "34d24629-67e8-416b-9238-0b53cd8782c5",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 15,
+      "clock": "Day 2 Tuesday Morning",
+      "decision": "Help Priya with the stock count",
+      "kind": "action",
+      "command": "core.scene",
+      "narrative": "Priya caps the pen and taps the clipboard against her thigh, eyes flicking toward the empty stools before settling back on the inventory list.\nPriya: Count the gin. No, the other gin. The one that smells like regret.\nPriya: I don't care if you like the bartender. I care if he starts talking to the regulars.\nPriya: Sign here. And here. Don't smudge it, I just refilled the ink.",
+      "results": [
+        "Help Priya with the stock count",
+        "Your Empathy rose to Attentive.",
+        "Priya: Trust 24 → 27",
+        "Crates, clipboards and Priya's running commentary on everyone who works here."
+      ],
+      "from": 14,
+      "to": 18,
+      "seconds": 3.83,
+      "requestId": "2d3360a7-d2ce-4ee4-b6d6-b98fb74e6272",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 16,
+      "clock": "Day 2 Tuesday Afternoon",
+      "decision": "Ask Priya about what a quiet Tuesday means to them",
+      "kind": "action",
+      "command": "social.speak",
+      "narrative": "Priya sets the clipboard on the bar top and pulls a rag from her apron, wiping a ring of condensation off the wood.\nPriya: Nobody's yelling. That's the whole list.\nPriya: You asked that like I'm a poet. I'm a manager with a spreadsheet.\nPriya: You've been staring at that gin bottle for two minutes. Either count it or go sit down.",
+      "results": [
+        "You tell Priya: “What is it you love about a quiet Tuesday?”"
+      ],
+      "from": 18,
+      "to": 19,
+      "seconds": 9.04,
+      "requestId": "ed1cd537-f7c9-4132-b080-e03e4c432e80",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 17,
+      "clock": "Day 2 Tuesday Afternoon",
+      "decision": "It's a decision. I'm deciding whether to drink it or hand it to you, because you seem to have the right answer to everything right now. So, since I've signed your clipboard and counted the regret-gin, can I ask one more thing? What's the one thing you'd change about this place if you could?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "The glass sits on the scarred wood of the bar top, the ice shifting with a dull clink as the room settles into silence.\nThe question hangs in the air, unspoken, waiting for a response that never comes.\nThe low hum of the refrigerator in the back is the only sound, a steady, mechanical breath in the dim light.\nThe velvet curtains framing the window remain still, heavy and dark against the glass.\nThe upright piano in the corner waits, its keys covered in a thin layer of dust, silent and untouched.\nThe clipboard lies flat on the bar, the signature ink still wet, the regret-gin bottle standing uncorked beside it.\nThe moment stretches, suspended in the quiet of the empty room.\nThe scene ends with the question left unanswered.",
+      "results": [
+        "It's a decision. I'm deciding whether to drink it or hand it to you, because you seem to have the right answer to everything right now. So, since I've signed your clipboard and counted the regret-gin, can I ask one more thing? What's the one thing you'd change about this place if you could?",
+        "The activity comes to a close."
+      ],
+      "from": 19,
+      "to": 20,
+      "seconds": 7.09,
+      "requestId": "d952a651-0734-4da6-a510-c2084b4835b0",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 18,
+      "clock": "Day 2 Tuesday Evening",
+      "decision": "Stay after closing",
+      "kind": "action",
+      "command": "core.scene",
+      "narrative": "Chairs up, lights down, Juno counting the till.\nThe bar is dark except for the till light. Juno counts, slowly.\nJuno: You stayed. Nobody stays. So say whatever it is you've been not saying all week.",
+      "results": [
+        "Stay after closing",
+        "Chairs up, lights down, Juno counting the till.",
+        "The bar is dark except for the till light. Juno counts, slowly."
+      ],
+      "from": 20,
+      "to": 24,
+      "seconds": 0.16,
+      "requestId": "7610f530-99f6-4b47-b758-71fe8443c9c5",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    }
+  ],
+  "review": {
+    "strengths": [
+      "Distinct character voices: Juno's sharp, ledger-focused pragmatism and Priya's dry, managerial wit are clearly differentiated in dialogue (Turns 1, 3, 13, 14).",
+      "Effective use of environmental details: The 'battered upright piano' and 'battered upright piano' (Turn 1) and 'condensation' (Turn 13) ground the scene, though some descriptions are repetitive.",
+      "Clear relationship feedback: Chemistry and Trust stats update explicitly after interactions, providing tangible progression (Turns 3, 5, 8, 15)."
+    ],
+    "issues": [
+      {
+        "severity": "critical",
+        "layer": "model-prompt",
+        "evidence": "Turns 12 and 17 end with 'The activity comes to a close' after the player asks a direct question. The game fails to generate a response from the NPC, instead describing the silence and ending the scene. This is a 'manual finish' failure where the engine/model did not resolve the interaction.",
+        "cause": "The model-prompt likely lacks a constraint to always answer direct questions or the 'activity close' trigger fires prematurely before the NPC response is generated.",
+        "concreteFix": "Add a system instruction: 'Never end a turn on a player question without an NPC response. If the scene is ending, the NPC must provide a final line or action before the 'activity close' marker.' Also, ensure the 'activity close' logic waits for a valid NPC response token."
+      },
+      {
+        "severity": "high",
+        "layer": "content",
+        "evidence": "Turn 12: 'The dust motes drifting in the sliver of morning light cutting through the blinds...' occurs during 'Day 1 Monday Evening'. Turn 17: 'The velvet curtains framing the window remain still...' occurs during 'Day 2 Tuesday Afternoon'. The lighting descriptions contradict the stated time of day (evening/afternoon vs morning light).",
+        "cause": "Content generation uses generic atmospheric descriptors that do not align with the current in-game clock/time-of-day variable.",
+        "concreteFix": "Inject the current time-of-day into the prompt context and add a negative constraint: 'Do not describe lighting that contradicts the current time of day (e.g., no morning light in the evening).'"
+      },
+      {
+        "severity": "high",
+        "layer": "engine",
+        "evidence": "Turn 11 shows 'TIME 11->11' and Turn 10 shows 'TIME 11->11'. The clock did not advance for two consecutive turns of active dialogue and scene progression. This breaks the pacing and continuity of the 2-day run.",
+        "cause": "The time-advancement logic is tied to specific command types (like core.scene) but failed to increment on these specific core.scene calls, or there is a bug in the tick counter.",
+        "concreteFix": "Audit the time-advancement function in the engine. Ensure every 'core.scene' or 'story.respond' command increments the tick counter by at least 1, unless explicitly flagged as a 'real-time' conversation which should still advance by a minimum delta."
+      },
+      {
+        "severity": "medium",
+        "layer": "model-prompt",
+        "evidence": "Turn 12: 'You lean forward, closing the distance between the bar top and your shoulder, your posture mirroring the intensity of the moment.' Turn 17: 'The glass sits on the scarred wood... The question hangs in the air...' The game narrates the player's physical actions and internal state ('mirroring intensity') which violates the agency rule against narrating player feelings/reactions.",
+        "cause": "The model is generating 'second-person' narrative descriptions of the player's body language and emotional state, which is a known failure class for dating sims.",
+        "concreteFix": "Add a strict constraint to the system prompt: 'Do not describe the player's physical actions, posture, or internal feelings. Only describe the NPC's actions, dialogue, and the environment. Let the player's input define their actions.'"
+      },
+      {
+        "severity": "medium",
+        "layer": "content",
+        "evidence": "Turn 13: Priya says 'The first entry was a refund.' This is a direct answer to the question asked in Turn 12 ('What was the one thing you refused to let slide...'). However, in Turn 12, the game ended the activity *before* answering. In Turn 13, the player asks 'Talk to Priya' and Priya answers the *previous* question. This creates a disjointed flow where the answer to Turn 12's question appears in Turn 13, but the context is broken by the 'activity close' in Turn 12.",
+        "cause": "The state machine does not preserve 'pending questions' across scene boundaries. The 'activity close' in Turn 12 likely reset the conversation context, but Priya's response in Turn 13 is still tied to the previous prompt, creating a continuity error.",
+        "concreteFix": "Implement a 'pending_question' state variable. If a player question is asked and the scene ends without an answer, the next interaction should either prompt the player to re-ask or have the NPC acknowledge the interruption before answering."
+      },
+      {
+        "severity": "low",
+        "layer": "ui",
+        "evidence": "Turn 3: 'Wit check failed. Attraction with Juno changed. Juno: Chemistry 5 → 7'. The feedback is contradictory. A failed check usually implies a negative or neutral outcome, but chemistry increased. While this can be a 'fail-forward' mechanic, the UI/feedback does not explain *why* the failure led to an increase, making it confusing.",
+        "cause": "The UI does not distinguish between 'mechanical failure' and 'narrative consequence'. The player expects a penalty for a failed check, but receives a reward.",
+        "concreteFix": "Add a tooltip or explicit narrative line explaining the 'fail-forward' logic (e.g., 'Juno respects your honesty despite the late timing') to clarify why the stat increased despite the check failure."
+      }
+    ],
+    "prioritizedFixes": [
+      "Fix the 'manual finish' bug where scenes end on player questions without NPC responses (Turns 12, 17).",
+      "Resolve the time-advancement bug where ticks do not increment during consecutive dialogue turns (Turns 10-11).",
+      "Enforce the agency rule by removing all narrative descriptions of player posture, feelings, or physical actions from the model output.",
+      "Align atmospheric descriptions (lighting, time-of-day) with the in-game clock to prevent continuity errors (e.g., morning light in the evening).",
+      "Improve the clarity of 'fail-forward' mechanics by providing explicit narrative justification for stat increases after a failed check."
+    ]
+  }
+}

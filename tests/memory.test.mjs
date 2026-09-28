@@ -7,8 +7,8 @@ import {Store} from '../packages/persistence/store.mjs';
 import {GameService,sceneFallback} from '../packages/ai/service.mjs';
 import {normalizeSceneLines} from '../packages/ai/providers.mjs';
 import {messageTokens} from '../packages/ai/budget.mjs';
-import {budgetSceneContext} from '../packages/ai/context-budget.mjs';
-import {classifyUtterance,memoryText,mentionsPlayer,stripPlaceholders,disclosedName,playerStatements} from '../packages/ai/memory.mjs';
+import {budgetSceneContext,closedScenes} from '../packages/ai/context-budget.mjs';
+import {classifyUtterance,memoryText,mentionsPlayer,stripPlaceholders,disclosedName,playerStatements,slotOf} from '../packages/ai/memory.mjs';
 import {scenePromptMessages,absentView} from '../vendor/venus/scenePrompt.mjs';
 const pack=()=>JSON.parse(readFileSync(new URL('../packs/neutral.json',import.meta.url)));
 const said=(input,names=['Ada'])=>{const c=classifyUtterance(input,names);return {kind:c.kind,text:memoryText(c.kind,c.said,'Ada')};};
@@ -106,4 +106,29 @@ test('the minimal preset keeps only the newest turns word for word, even when mo
  const context={stagedCast:['ada'],sceneHistory:history,memories:[],playerAction:'Go on'};
  const {context:out}=budgetSceneContext(context,p,{turns:{}},'now',{window:32768,reply:500,verbatim:6,render:c=>scenePromptMessages(c,p)});
  assert.deepEqual(out.sceneHistory.map(h=>Boolean(h.compact)),[...Array(6).fill(true),...Array(6).fill(false)]);
+});
+
+test('a corrected disclosure replaces the clause it corrects and keeps the rest',()=>{
+ assert.equal(slotOf('my favourite colour is teal'),'favorite color');
+ assert.equal(slotOf('Call me Jo'),'name');
+ assert.equal(slotOf("I'm 24"),'age');
+ assert.equal(slotOf('my name is not important'),'');
+ assert.equal(slotOf('I love the harbor'),'');
+ const p=pack(),mem=(source,tick,text)=>({source,tick,text,knownBy:['player','ada']});
+ const state={turns:{},modules:{'social.conversation':{memories:[mem('a',1,'Tell Ada my name is Mara, my favorite color is teal, and I grew up by the harbor'),mem('b',2,'Tell Ada I live in Lisbon'),mem('c',3,'Tell Ada actually, my favorite color is red'),mem('d',4,'Tell Ada I live in Porto now')]}}};
+ p.actors.find(a=>a.id===p.playerId).name='You';
+ assert.deepEqual(playerStatements(state,p,'ada').map(m=>m.text),['the player told Ada: the player’s name is Mara, the player grew up by the harbor','Mara told Ada actually, Mara’s favorite color is red','Mara told Ada: Mara lives in Porto now']);
+});
+
+test('a closed scene carries the question the player left unanswered',()=>{
+ const turn=(id,over={})=>({id,sceneId:'s1',status:'complete',command:{type:'core.scene',args:{}},events:[{type:'core.sceneContinued',payload:{characters:['ada']},tick:5}],...over});
+ const hanging=closedScenes({turns:{
+  ask:turn('ask',{input:'So where were you during the count?'}),
+  reply:turn('reply',{sceneLines:[{speaker:'ada',text:'Straight answer: where were you during the count?'}],sceneEnded:true,sceneSummary:'Ada saw you out before answering.'})}},['ada'],pack())[0];
+ assert.deepEqual(hanging.unansweredQuestion,{by:'Ada',text:'Straight answer: where were you during the count?'});
+ const answered=closedScenes({turns:{
+  ask:turn('ask',{input:'So where were you during the count?'}),
+  reply:turn('reply',{sceneLines:[{speaker:'ada',text:'Straight answer: where were you during the count?'}]}),
+  drop:turn('drop',{input:'Never mind.',sceneLines:[{speaker:'ada',text:'Suit yourself. See you tomorrow.'}],sceneEnded:true,sceneSummary:'The question was dropped.'})}},['ada'],pack())[0];
+ assert.equal(answered.unansweredQuestion,undefined);
 });

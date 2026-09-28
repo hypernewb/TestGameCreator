@@ -121,3 +121,61 @@ npm warn Unknown env config "http-proxy". This will stop working in the next maj
 ℹ skipped 0
 ℹ todo 0
 ℹ duration_ms 1314.530441
+
+
+==== F12 fun metrics: after-hours persona bots (2026-09-28) ====
+command: npm run fun -- --pack packs/after-hours.json --turns 250 --seeds 11,42,97
+(bots take no narration, so timing is the reading-speed estimate [8s + words/4] and repeated prose is always 0%; real play will be slower)
+
+showcase.after-hours romancer seed 11
+  fun[estimated]: 121 turns 24.8m | 1st choice 0.8m/t4 | 1st spark 0.8m/t4 | 1st payoff 18.3m/t90 | 1st CG 0.5m/t3 | drama 1.7m/t9 | choices/10m 6 | dead 44 (36%, streak 5) | fresh 22% | storylets 13/47 | repeat prose 0% | ending regular
+  gate: first-choice ok · first-payoff NO · dead-turns NO · run-length NO · drama ok · repeated-prose ok
+showcase.after-hours romancer seed 42
+  fun[estimated]: 250 turns 50.5m | 1st choice 0.4m/t2 | 1st spark 5m/t26 | 1st payoff 14.8m/t73 | 1st CG 0.2m/t1 | drama 5.5m/t28 | choices/10m 5.5 | dead 107 (43%, streak 7) | fresh 14% | storylets 21/47 | repeat prose 0%
+  gate: first-choice ok · first-payoff ok · dead-turns NO · run-length ? · drama ok · repeated-prose ok
+showcase.after-hours romancer seed 97
+  fun[estimated]: 250 turns 49.7m | 1st choice 0.6m/t3 | 1st spark 0.6m/t3 | 1st payoff 4.2m/t22 | 1st CG 0.3m/t2 | drama 1.8m/t9 | choices/10m 4.6 | dead 106 (42%, streak 7) | fresh 12% | storylets 18/47 | repeat prose 0%
+  gate: first-choice ok · first-payoff ok · dead-turns NO · run-length ? · drama ok · repeated-prose ok
+showcase.after-hours explorer seed 11
+  fun[estimated]: 250 turns 52.6m | 1st choice 0.8m/t4 | 1st spark 0.8m/t4 | 1st payoff 17.5m/t83 | 1st CG 0.6m/t3 | drama 8.5m/t41 | choices/10m 4.4 | dead 140 (56%, streak 10) | fresh 12% | storylets 18/47 | repeat prose 0%
+  gate: first-choice ok · first-payoff NO · dead-turns NO · run-length ? · drama ok · repeated-prose ok
+showcase.after-hours explorer seed 42
+  fun[estimated]: 250 turns 52.5m | 1st choice 0.4m/t2 | 1st spark 18.9m/t90 | 1st payoff 18.9m/t90 | 1st CG 0.2m/t1 | drama 9.7m/t47 | choices/10m 5.1 | dead 131 (52%, streak 8) | fresh 14% | storylets 22/47 | repeat prose 0%
+  gate: first-choice ok · first-payoff NO · dead-turns NO · run-length ? · drama ok · repeated-prose ok
+showcase.after-hours explorer seed 97
+  fun[estimated]: 247 turns 51.9m | 1st choice 0.9m/t5 | 1st spark 0.9m/t5 | 1st payoff 10.6m/t51 | 1st CG 0.7m/t4 | drama 1.6m/t8 | choices/10m 5 | dead 126 (51%, streak 8) | fresh 14% | storylets 21/47 | repeat prose 0% | ending regular
+  gate: first-choice ok · first-payoff ok · dead-turns NO · run-length NO · drama ok · repeated-prose ok
+showcase.after-hours achiever seed 11
+  fun[estimated]: 121 turns 25.9m | 1st choice 0.9m/t4 | 1st spark 0.9m/t4 | 1st payoff 3.8m/t17 | 1st CG 0.6m/t3 | drama 1.4m/t6 | choices/10m 8.9 | dead 24 (20%, streak 3) | fresh 25% | storylets 18/47 | repeat prose 0% | ending regular
+  gate: first-choice ok · first-payoff ok · dead-turns NO · run-length NO · drama ok · repeated-prose ok
+showcase.after-hours achiever seed 42
+  fun[estimated]: 250 turns 52m | 1st choice 0.4m/t2 | 1st spark 1.1m/t5 | 1st payoff 8m/t38 | 1st CG 0.2m/t1 | drama 1.1m/t5 | choices/10m 4.6 | dead 83 (33%, streak 6) | fresh 13% | storylets 19/47 | repeat prose 0%
+  gate: first-choice ok · first-payoff ok · dead-turns NO · run-length ? · drama ok · repeated-prose ok
+showcase.after-hours achiever seed 97
+  fun[estimated]: 250 turns 52.2m | 1st choice 2.2m/t10 | 1st spark 4.4m/t20 | 1st payoff 6.3m/t29 | 1st CG 2.4m/t11 | drama 1.9m/t9 | choices/10m 4.8 | dead 76 (30%, streak 4) | fresh 14% | storylets 20/47 | repeat prose 0%
+  gate: first-choice NO · first-payoff ok · dead-turns NO · run-length ? · drama ok · repeated-prose ok
+
+fun summary: 9 runs | endings 1 distinct (3 runs ended) | drama fired 9/9 | dead-turn gate 0/9 | storylets seen (union) 26
+
+Reading:
+- first choice <= 2 min: 8/9 (achiever seed 97 took 2.2m). 1st CG 0.2-2.4m. Drama (secret/witness) fired in 9/9.
+- first payoff <= 15 min: 6/9. Achievers get it in 4-8m; romancer 11 (18.3m) and explorers 11/42 (17.5m, 18.9m) miss it. The romance route needs an earlier hook for players who wander.
+- Dead turns are 20-56% (the gate is <=10%) and fail in 9/9 runs. The biggest miss. Driven by re-examining with world.explore, social.speak that changes no state, core.move and core.waitUntil.
+- Endings: only "regular" is reached (3 runs, ~25m / 121 turns); the rest hit the 250-turn cap. The gate needs >= 2 reachable endings in a 30-45 min run.
+- Storylets: 13-22 of 47 per run, 26 of 47 across all runs.
+Fix first: (1) make a repeat explore/speak do something (diminishing returns + a nudge toward an open thread); (2) give non-regular endings reachable triggers inside 45 min; (3) an earlier romance hook for explorers; (4) run the human checklist (docs/HUMAN-PLAYTEST.md) for real timing and the replay questions.
+
+==== F12 follow-up: "Look around" cue + plan-keeping bots (2026-09-28) ====
+Change: Look around shows "(something is going on here)" when an inspect-triggered scene is ready at this spot
+(10 after-hours bar scenes incl. last-call and the kiss follow-ups were hidden behind an unmarked Look around).
+Bots now press a cued Look around and keep dates they said yes to.
+Command: node scripts/fun-report.mjs --pack <after-hours copy> --turns 200 --seeds 11,42 (copy strips 5 failed-check
+chemistry effects that a new validator rule rejected at run time; the pack author has since caught up).
+Before -> after (same seeds 11,42):
+- runs ended: 0 non-regular endings, many unfinished -> 6/6 ended at 24-29 min, 2 distinct (regular x5, theo-the-ending x1)
+- dead turns: 20-56% -> 13-27% (gate <=10% still 0/6)
+- first payoff: explorers 17.5-18.9 min -> 10.9-14.7; romancer 11 18.3 -> 14.8; romancer 42 16.5 (gate miss)
+- storylets union 26 -> 30/47
+Remaining dead turns by command: social.speak 5-16 per run (the "Keep talking"/"Go on." button, dialogue session),
+core.move 3-12 (walking with nothing new on arrival). Juno endings still unreached in bots; run-length gate now fails
+because the trial ends at ~25 min, under the 45-min target.

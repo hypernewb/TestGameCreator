@@ -10,4 +10,14 @@ The project is building an adult eroge/dating sim, not merely a generic narrativ
 - Preserve agency. Every participant is explicitly adult; consent is specific, current, and withdrawable. Easy difficulty and promiscuous characterization reduce courtship requirements but never remove consent or hard boundaries.
 - Treat reader convenience as part of consent UX. Auto-forward and skip-read stop at choices and intimacy boundaries; the searchable backlog makes prior wording easy to review; reduced motion, scalable text and high contrast remain available during explicit scenes.
 
+- Make the encounter itself playable. The player makes decisions during an intimate scene (pace, who leads, which interest to explore), and choices matched against the character's preferences change how it goes. Unstructured model prose is not gameplay.
+- Build a ladder, not a gate. Each route has several smaller payoffs (flirt, charged moment, kiss, interrupted scene, first time, new dynamics), and the first tease lands within about 15 minutes of play. Repeat encounters escalate; ranks unlock something usable.
+- Give every romanceable character a sexual personality: specific interests, a boundary that matters to the story, a dynamic, and their own voice in intimate scenes. Numbers such as openness are not a personality.
+- Show progress, hide arithmetic. Players see hearts, ranks and in-character hints about what comes next, never threshold numbers.
+- Consent check-ins happen in character. They should read as part of the intimacy, while the engine's consent gate stays authoritative and withdrawal stays available at every beat.
+- Use the drama. Secrets, witnesses, disclosure and multiple partners are the main source of tension in the genre; the showcase pack must exercise them.
+- Provide genre staples: a scene/CG gallery, CGs for key scenes, expressions per character, and skip that stops at unseen text.
+
+These principles drive milestones F1 and F5–F10 in [NEXT-MILESTONES.md](NEXT-MILESTONES.md); the reasoning and references are in [FUN-PASS.md](FUN-PASS.md).
+
 The three cross-setting templates intentionally include adult modules in different settings. Their content is small; their job is to prove that erotic mechanics are modular rather than campus-specific.

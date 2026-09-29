@@ -1,6 +1,7 @@
 import {assert,safeKey} from '../core/engine.mjs';
 import {calendarFor} from '../../public/calendar.mjs';
 import {conditionReasons,validateConditions} from './conditions.mjs';
+import {addPoints} from './romance-tempo.mjs';
 
 // F8 drama director, in the spirit of the Left 4 Dead AI Director and RimWorld storytellers: the engine, not
 // the model, decides when drama lands. Tension rises with eventful play and decays with the clock; a streak of
@@ -23,36 +24,57 @@ export const settingsOf=profile=>({...BASE,opportunityChancePercent:0,interrupti
 export const TENSION_DEFAULTS={'story.choiceResolved':8,'core.sceneStarted':4,'world.hangoutStarted':6,'social.relationshipChanged':5,'social.romancePointsChanged':5,'social.jealousyTriggered':15,'social.neglectDetonated':12,'social.consentDeclined':10,'story.planBroken':10,'social.rumorCreated':5,'social.rumorBelieved':6,'story.sceneEvicted':4,'social.giftLimitReached':4,'social.neglectDefused':-8};
 const clampTension=v=>Math.max(0,Math.min(100,v));
 const profileOf=p=>p.directorProfile||null;
+export const TONE_LEVELS={grounded:1,soap:2,melodrama:3};
+const ceilingOf=settings=>settings.toneCeiling?TONE_LEVELS[settings.toneCeiling]:3;
+export const focusOf=current=>{const sorted=Object.entries(current.attention||{}).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));return sorted[0]?.[1]>=3&&sorted[0][1]>=(sorted[1]?.[1]||0)*2?sorted[0][0]:null;};
+export const adaptationOf=(current,quiet,settings)=>current.setbacks>=2?'recovery':focusOf(current)&&quiet>=1?'focus':quiet>=settings.quietDayparts?'quiet':'none';
+const scoreBonus=(c,current,mode,delivery)=>!c.template?0:(mode==='recovery'?(delivery==='offer'?30:-10):0)+(mode==='focus'?(c.focus===focusOf(current)&&['obstacle','temptation'].includes(c.kind)?30:c.focus&&c.focus!==focusOf(current)?-20:0):0);
 // Wildermyth-style escalation: heavier drama unlocks as campaign days pass (day 1 → tier 1, then +1 per escalationDays).
 const tierOf=(settings,cal)=>1+Math.min(2,Math.floor((cal.day-1)/settings.escalationDays));
 // Weighted draw with a no-immediate-repeat penalty; jitter consumes the campaign RNG once per candidate, so seeded runs replay exactly.
-const bestOf=(pool,tx,settings,deck)=>{let best=null;for(const {c} of pool){const score=(c.weight??10)+settings.jitter*tx.random()-(deck.recent.includes(c.id)?8:0);if(!best||score>best.score)best={c,score};}return best?best.c:null;};
+const bestOf=(pool,tx,settings,deck,current=null,mode='none',delivery='incident')=>{let best=null;for(const {c,delivery:kind} of pool){const score=(c.weight??10)+settings.jitter*tx.random()-(deck.recent.includes(c.id)?8:c.template&&deck.recent.some(r=>r.startsWith(`${c.template}.`))?6:0)+(current?scoreBonus(c,current,mode,kind||delivery):0);if(!best||score>best.score)best={c,score,delivery:kind||delivery};}return best?{...best.c,_delivery:best.delivery}:null;};
 // Deck bookkeeping is per role: complications count in uses/lastUse/recent, dealt events in the o- prefixed trio.
 const deckOf=(current,prefix)=>prefix?{uses:current[prefix+'Uses']||{},lastUse:current[prefix+'LastUse']||{},recent:current[prefix+'Recent']||[]}:{uses:current.uses||{},lastUse:current.lastUse||{},recent:current.recent||[]};
-const budgetLeft=(current,settings,cal)=>(cal.day===current.oLastDay?current.oToday||0:0)<settings.opportunitiesPerDay;
-function eligible(tx,entries,settings,cal,tier,deck){
+const budgetLeft=(current,settings,cal,tick=Infinity)=>tick>=(current.offerBlockedUntilTick||0)&&(cal.day===current.oLastDay?current.oToday||0:0)<settings.opportunitiesPerDay;
+function missedGoal(tx,current,profile,event){
+ const entry=[...(profile.complications||[]),...(profile.opportunities||[])].find(c=>c.goal?.planId===event.payload?.id);
+ if(!entry)return current;
+ const {character,missed}=entry.goal,name=tx.state.actors[character]?.name||character;
+ if(missed.kind==='relationship'){
+  const edge=`${character}--${tx.pack.playerId}`,relationships=tx.state.modules['social.relationships'];
+  if(relationships){const old=relationships.edges[edge]||0,value=Math.max(0,old-missed.cost);tx.set(['modules','social.relationships','edges',edge],value);tx.emit('social.relationshipChanged',{actor:character,toward:tx.pack.playerId,old,value,delta:value-old,reaction:'director:missed-goal',text:`${name}: Trust ${old} → ${value}`},[tx.pack.playerId,character]);}
+  else if(tx.state.modules['social.romance-tempo']?.characters?.[character])addPoints(tx,character,-missed.cost,'director:missed-goal');
+ }else current={...current,offerBlockedUntilTick:Math.max(current.offerBlockedUntilTick||0,tx.state.tick+missed.cost)};
+ tx.emit('story.goalMissed',{template:entry.template||null,entry:entry.id,planId:entry.goal.planId,character,consequence:missed.kind,cost:missed.cost,text:missed.kind==='relationship'?`Missing the deadline strains things with ${name}.`:`Missing the deadline closes off new opportunities for ${missed.cost} ticks.`},[tx.pack.playerId,character]);
+ return current;
+}
+function eligible(tx,entries,settings,cal,tier,deck,recycle=false){
  const st=tx.state.modules['story.scenes'];
  return entries.map((c,i)=>({c,i})).filter(({c})=>{
   const scene=tx.pack.scriptedScenes.find(x=>x.id===c.scene),last=deck.lastUse[c.id];
-  return scene&&(deck.uses[c.id]||0)<(c.maxUses??1)&&!(c.minTick&&tx.state.tick<c.minTick)
-   &&(last==null||tx.state.tick-last>=(c.cooldownTicks??0))&&(c.intensity??1)<=tier
+  return scene&&(recycle?scene.repeatable:(deck.uses[c.id]||0)<(c.maxUses??1))&&!(c.minTick&&tx.state.tick<c.minTick)
+   &&(last==null||tx.state.tick-last>=(c.cooldownTicks??0))&&(c.intensity??1)<=tier&&(c.tone??1)<=ceilingOf(settings)
    &&!conditionReasons(c.when,tx.state,tx.pack).length&&!conditionReasons(scene.when,tx.state,tx.pack,scene.pages).length
    &&(scene.repeatable||!st.completed.includes(scene.id))&&!(st.queue||[]).some(x=>x.scene===scene.id);
  });
 }
 // Deal one authored event action into state.offers: it shows up as a choosable action (startOfferedScene) whose
 // timeCost is the scene's — a whole daypart by design. Offers expire at dawn; taking one counts its uses.
-const deal=(tx,current,settings,cal,entries,deck,extra)=>{
- const pool=eligible(tx,entries,settings,cal,tierOf(settings,cal),deck).filter(({c})=>extra(c)&&!(current.offers||[]).some(o=>o.id===c.id));
- const pick=bestOf(pool,tx,settings,deck);if(!pick)return false;
- tx.set(path,{...current,offers:[...(current.offers||[]),{id:pick.id,scene:pick.scene}],offersDay:cal.day,oLastDay:cal.day,oToday:(cal.day===current.oLastDay?current.oToday||0:0)+1});
+const deal=(tx,current,settings,cal,entries,deck,extra,selected=null,mode='quiet')=>{
+ const pool=(selected?[{c:selected}]:eligible(tx,entries,settings,cal,tierOf(settings,cal),deck)).filter(({c})=>extra(c)&&!(current.offers||[]).some(o=>o.id===c.id));
+ const pick=selected?pool.find(x=>x.c.id===selected.id)?.c:bestOf(pool,tx,settings,deck);if(!pick)return false;
+ tx.set(path,{...current,offers:[...(current.offers||[]),{id:pick.id,scene:pick.scene,...(pick.template?{template:pick.template,roles:pick.roles,kind:pick.kind,tone:pick.tone}: {})}],offersDay:cal.day,oLastDay:cal.day,oToday:(cal.day===current.oLastDay?current.oToday||0:0)+1,...(settings.adaptive?{quiet:0,armed:null,lastTick:tx.state.tick,lastKind:pick.kind,setbacks:Math.max(0,current.setbacks-(mode==='recovery'?2:0))}:{})});
+ if(settings.adaptive)tx.emit('story.directorDealt',{entry:pick.id,scene:pick.scene,kind:pick.kind||'event',template:pick.template||null,roles:pick.roles||{},tone:pick.tone??1,mode,recycled:Boolean(pick._recycled),text:pick.text||'A new opportunity appears.'},[tx.pack.playerId]);
  return true;
 };
+function adaptivePool(tx,profile,settings,cal,current,recycle=false){const incidentsLeft=cal.day!==current.lastDay||(current.firedToday||0)<settings.maxPerDay,complications=incidentsLeft?eligible(tx,profile.complications||[],settings,cal,tierOf(settings,cal),deckOf(current,''),recycle).filter(({c})=>c.template).map(x=>({...x,delivery:'incident'})):[];const offers=budgetLeft(current,settings,cal,tx.state.tick)?eligible(tx,profile.opportunities||[],settings,cal,tierOf(settings,cal),deckOf(current,'o'),recycle).filter(({c})=>c.template&&!c.match?.activity&&!(current.offers||[]).some(o=>o.id===c.id)).map(x=>({...x,delivery:'offer'})):[];return [...complications,...offers];}
+function adaptivePick(tx,pool,current,settings,mode){if(current.armed){const hit=pool.find(x=>x.c.id===current.armed.id&&x.delivery===(current.armed.delivery||'incident'));if(hit)return {...hit.c,_delivery:hit.delivery};}return bestOf(pool,tx,settings,{recent:[...current.recent,...(current.oRecent||[])]},current,mode);}
+function adaptiveBeat(tx,profile,current,settings,cal,tension,quiet,rollover,early){const mode=adaptationOf(current,quiet,settings)==='none'?(early?'whim':'quiet'):adaptationOf(current,quiet,settings),pool=adaptivePool(tx,profile,settings,cal,current),recycled=!pool.length,options=recycled?adaptivePool(tx,profile,settings,cal,current,true):pool,pick=adaptivePick(tx,options,current,settings,mode);if(!pick){if(quiet===settings.quietDayparts)tx.emit('story.starved',{quiet,text:'Every director template is spent or gated.'},[]);return false;}if(recycled)pick._recycled=true;if(pick._delivery==='offer')return deal(tx,{...current,...rollover,tension,quiet,armed:null},settings,cal,profile.opportunities||[],deckOf(current,'o'),c=>!c.match?.activity,pick,mode);const deck=deckOf(current,'');tx.emit('story.incident',{incident:pick.id,scene:pick.scene,kind:pick.kind||'complication',intensity:pick.intensity??1,mode,recycled,armed:Boolean(current.armed?.id===pick.id),tension,quiet,template:pick.template||null,roles:pick.roles||{},tone:pick.tone??1,text:pick.text||'Something is about to happen.'},[tx.pack.playerId]);tx.set(path,{...current,...rollover,tension,quiet:0,armed:null,uses:{...deck.uses,[pick.id]:(deck.uses[pick.id]||0)+1},lastUse:{...deck.lastUse,[pick.id]:tx.state.tick},recent:[...deck.recent,pick.id].slice(-5),fired:current.fired+1,lastDay:cal.day,firedToday:cal.day===current.lastDay?current.firedToday+1:1,lastTick:tx.state.tick,lastKind:pick.kind||'complication'});return true;}
 // What the rest of the game may know about the drama schedule: derived only from committed state, costs nothing.
 export function directorContext(s,p){
  const profile=profileOf(p),st=s.modules['story.director'];if(!profile||!st)return null;
  const settings=settingsOf(profile),cal=calendarFor(s.tick,p);
- return {tension:st.tension,quiet:st.quiet,needed:settings.quietDayparts,tier:tierOf(settings,cal),...(st.armed?{armed:st.armed.id}:{}),...(st.lastTick!=null&&s.tick-st.lastTick<=(p.daypart?.interval||4)?{freshKind:st.lastKind}:{})};
+ return {tension:st.tension,quiet:st.quiet,needed:settings.quietDayparts,tier:tierOf(settings,cal),...(settings.adaptive?{adaptation:adaptationOf(st,st.quiet,settings),focus:focusOf(st),textMode:settings.textMode||'authored'}:{}),...(st.armed?{armed:st.armed.id}:{}),...(st.lastTick!=null&&s.tick-st.lastTick<=(p.daypart?.interval||4)?{freshKind:st.lastKind}:{})};
 }
 // One line of dramatic pressure for beats.mjs: charged days lean into subtext, a teased beat leans toward giving,
 // and a fresh incident colors the aftermath. Empty string most turns, so the prompt only pays when it matters.
@@ -65,7 +87,8 @@ export function briefOf(d){
 }
 function react(tx,event){
  const profile=profileOf(tx.pack);if(!profile||event.type==='core.patch')return;
- const current=tx.state.modules['story.director'],settings=settingsOf(profile);
+ let current=tx.state.modules['story.director'];const settings=settingsOf(profile);
+ if(event.type==='story.planBroken')current=missedGoal(tx,current,profile,event);
  // Taking a dealt event marks it accepted and counts the play: uses, cooldowns and the no-immediate-repeat penalty.
  if(event.type==='story.sceneSelected'){
   const hit=(current.offers||[]).find(o=>o.scene===event.payload.scene&&!o.accepted);
@@ -75,31 +98,37 @@ function react(tx,event){
  // Work interrupts: finishing an authored activity can deal one event tied to it (match.activity) while the day has budget.
  if(event.type==='world.activityCompleted'){
   const st=tx.state.modules['story.scenes'],cal=calendarFor(tx.state.tick,tx.pack);
-  if(st&&!st.pending&&tx.state.tick>=settings.firstTick&&settings.interruptionChancePercent>0&&budgetLeft(current,settings,cal)&&tx.random()*100<settings.interruptionChancePercent)
-   deal(tx,current,settings,cal,profile.opportunities||[],deckOf(current,'o'),c=>c.match?.activity===event.payload.activity);
+  if(st&&!st.pending&&tx.state.tick>=settings.firstTick&&settings.interruptionChancePercent>0&&budgetLeft(current,settings,cal,tx.state.tick)&&tx.random()*100<settings.interruptionChancePercent)
+   deal(tx,current,settings,cal,profile.opportunities||[],deckOf(current,'o'),c=>c.match?.activity===event.payload.activity&&(!settings.adaptive||c.template));
   return;
  }
  // Authored scenes can weight their own beats: scene.tension replaces the flat default when that scene resolves.
  const sceneTension=(tx.pack.scriptedScenes||[]).find(x=>x.id===event.payload?.scene)?.tension;
  const bump=(event.type==='story.choiceResolved'?(sceneTension??TENSION_DEFAULTS[event.type]??0):(TENSION_DEFAULTS[event.type]??0))+(profile.tensionEvents||[]).filter(x=>x.event===event.type&&Object.entries(x.match||{}).every(([k,v])=>event.payload[k]===v)).reduce((n,x)=>n+x.weight,0);
- if(event.type!=='core.timeAdvanced'){if(bump)tx.set(path,{...current,tension:clampTension(current.tension+bump)});return;}
+ if(event.type!=='core.timeAdvanced'){
+  let setbacks=current.setbacks||0,attention=current.attention||{},attentionChanged=false;
+  if(settings.adaptive){if(event.type==='social.romancePointsChanged')setbacks=Math.max(0,Math.min(10,setbacks+(event.payload.delta<0?1:-1)));if(['story.planBroken','social.planMissed','social.intimacyDeferred'].includes(event.type))setbacks=Math.min(10,setbacks+1);const character=event.type==='social.actPriced'?event.payload.character:event.type==='social.spoke'?event.payload.target:event.type==='core.sceneStarted'&&event.payload.characters?.length===1?event.payload.characters[0]:null;if(character&&tx.state.actors[character]&&character!==tx.pack.playerId){attention={...attention,[character]:Math.min(10,(attention[character]||0)+1)};attentionChanged=true;}}
+  if(bump||setbacks!==(current.setbacks||0)||attentionChanged)tx.set(path,{...current,tension:clampTension(current.tension+bump),setbacks,attention});return;
+ }
  // The clock settles the daypart: tension decays over the elapsed ticks, then each crossed boundary counts as
  // quiet when what is left of tension sits below the threshold. Waiting IS quiet, so long rests invite drama.
  const {from,to}=event.payload,interval=tx.pack.daypart?.interval||4,cal=calendarFor(to,tx.pack);
  const tension=clampTension(current.tension-settings.decayPerTick*(to-from)),crossed=Math.floor(to/interval)-Math.floor(from/interval);
+ if(settings.adaptive&&crossed>0)current={...current,attention:Object.fromEntries(Object.entries(current.attention||{}).map(([id,n])=>[id,Math.max(0,n-crossed)]).filter(([,n])=>n>0)),setbacks:Math.max(0,(current.setbacks||0)-(cal.day>calendarFor(from,tx.pack).day?1:0))};
  let quiet=current.quiet;
  // Dealt event actions are today's: they expire at dawn, and a new day draws from a fresh budget.
  const rollover=crossed>0&&cal.day!==current.offersDay?{offers:[],offersDay:cal.day}:{};
  if(crossed>0){
   quiet=tension<settings.activeThreshold?current.quiet+crossed:0;
   const st=tx.state.modules['story.scenes'],dayOk=cal.day!==current.lastDay||current.firedToday<settings.maxPerDay;
-  const ready=st&&!st.pending&&tx.state.tick>=settings.firstTick&&dayOk&&!(tx.state.run&&tx.state.tick>=tx.state.run.endTick);
+  const ready=st&&!st.pending&&tx.state.tick>=settings.firstTick&&(settings.adaptive||dayOk)&&!(tx.state.run&&tx.state.tick>=tx.state.run.endTick);
   // An eventful daypart also forgets the tease: the pressure released elsewhere, the armed beat returns to the deck.
   const armed=tension<settings.activeThreshold?current.armed:null;
   // Randy's whim: even an eventful daypart can turn on a low roll, the way a storyteller interrupts a good streak.
   const early=ready&&settings.earlyChancePercent>0&&tx.random()*100<settings.earlyChancePercent;
   const cdeck=deckOf(current,''),odeck=deckOf(current,'o');
-  if(ready&&(quiet>=settings.quietDayparts||early)){
+  if(settings.adaptive&&ready){const mode=adaptationOf(current,quiet,settings),due=quiet>=settings.quietDayparts||mode==='recovery'||mode==='focus'||early;if(due){if(adaptiveBeat(tx,profile,current,settings,cal,tension,quiet,rollover,early))return;}else if(quiet===settings.quietDayparts-1&&settings.quietDayparts>=2&&crossed===1&&!armed){const pool=adaptivePool(tx,profile,settings,cal,current),pick=adaptivePick(tx,pool,current,settings,'quiet');if(pick){tx.emit('story.teaser',{incident:pick.id,kind:pick.kind||'event',template:pick.template||null,delivery:pick._delivery,text:pick.tease||'Something is about to happen.',quiet},[tx.pack.playerId]);tx.set(path,{...current,...rollover,tension,quiet,armed:{id:pick.id,delivery:pick._delivery}});return;}}}
+  if(!settings.adaptive&&ready&&(quiet>=settings.quietDayparts||early)){
    const pool=eligible(tx,profile.complications||[],settings,cal,tierOf(settings,cal),cdeck);
    const pick=armed?pool.find(x=>x.c.id===armed.id)?.c??bestOf(pool,tx,settings,cdeck):bestOf(pool,tx,settings,cdeck);
    if(pick){
@@ -109,7 +138,7 @@ function react(tx,event){
    }
    // The deck is empty or fully gated: say so once per streak so playtests can measure dry spells (F12).
    if(quiet===settings.quietDayparts)tx.emit('story.starved',{quiet,text:'Every complication is spent or gated; the drama director has nothing to draw.'},[]);
-  }else if(ready&&quiet===settings.quietDayparts-1&&settings.quietDayparts>=2&&crossed===1&&!armed){
+  }else if(!settings.adaptive&&ready&&quiet===settings.quietDayparts-1&&settings.quietDayparts>=2&&crossed===1&&!armed){
    // Pre-commit the draw one daypart early and tell the player: the teased beat is the beat that fires, so the
    // warning is honest and the genre's "teased next event" staple comes for free.
    const pick=bestOf(eligible(tx,profile.complications||[],settings,cal,tierOf(settings,cal),cdeck),tx,settings,cdeck);
@@ -117,7 +146,7 @@ function react(tx,event){
   }
   // The mirror: a dull daypart (tension under the threshold, drama not due) may deal one authored event action —
   // stats, money, loot or affection the player chooses to chase instead of whatever they were doing.
-  if(ready&&quiet>0&&tension<settings.activeThreshold&&settings.opportunityChancePercent>0&&budgetLeft(current,settings,cal)&&tx.random()*100<settings.opportunityChancePercent){
+  if(!settings.adaptive&&ready&&quiet>0&&tension<settings.activeThreshold&&settings.opportunityChancePercent>0&&budgetLeft(current,settings,cal,tx.state.tick)&&tx.random()*100<settings.opportunityChancePercent){
    if(deal(tx,{...current,tension,quiet,armed,...rollover},settings,cal,profile.opportunities||[],odeck,c=>!c.match?.activity))return;
   }
  }
@@ -135,6 +164,9 @@ export const director={id:'story.director',version:'0.1.0',coreApi:'0.1.0',requi
   const profile=p.directorProfile;if(profile===undefined)return;
   assert(profile&&typeof profile==='object'&&!Array.isArray(profile),'directorProfile: expected an object');
   assert(profile.preset===undefined||Object.hasOwn(PRESETS,profile.preset),'directorProfile.preset: expected cassandra, randy or phoebe');
+  assert(profile.adaptive===undefined||typeof profile.adaptive==='boolean','directorProfile.adaptive: expected boolean');
+  assert(profile.toneCeiling===undefined||profile.toneCeiling===''||Object.hasOwn(TONE_LEVELS,profile.toneCeiling),'directorProfile.toneCeiling: expected no ceiling, grounded, soap or melodrama');
+  assert(profile.textMode===undefined||['authored','draft'].includes(profile.textMode),'directorProfile.textMode: expected authored or draft');
   const settings=settingsOf(profile);
   for(const [k,lo,hi] of [['quietDayparts',1,20],['earlyChancePercent',0,100],['jitter',0,50],['escalationDays',1,100],['decayPerTick',0,20],['activeThreshold',0,100],['maxPerDay',1,5],['firstTick',0,100000],['opportunityChancePercent',0,100],['interruptionChancePercent',0,100],['opportunitiesPerDay',1,10]])assert(Number.isInteger(settings[k])&&settings[k]>=lo&&settings[k]<=hi,`directorProfile.${k}: expected an integer from ${lo} to ${hi}`);
   assert(Array.isArray(profile.tensionEvents||[])&&(profile.tensionEvents||[]).length<=20,'directorProfile.tensionEvents: expected up to 20 entries');
@@ -144,7 +176,7 @@ export const director={id:'story.director',version:'0.1.0',coreApi:'0.1.0',requi
    assert(Number.isInteger(t.weight)&&t.weight!==0&&Math.abs(t.weight)<=50,'directorProfile.tensionEvents.weight: expected a nonzero integer from -50 to 50');
   }
   const ids=new Set(),activities=new Set((p.activities||[]).map(a=>a.id));
-  assert(Array.isArray(profile.complications||[])&&(profile.complications||[]).length<=30,'directorProfile.complications: expected up to 30');
+  assert(Array.isArray(profile.complications||[])&&(profile.complications||[]).length<=(profile.adaptive?200:30),`directorProfile.complications: expected up to ${profile.adaptive?200:30}`);
   for(const c of profile.complications||[]){
    assert(safeKey(c.id)&&!ids.has(c.id),`director complication ${c.id}: invalid or duplicate ID`);ids.add(c.id);
    const scene=(p.scriptedScenes||[]).find(x=>x.id===c.scene);
@@ -153,6 +185,9 @@ export const director={id:'story.director',version:'0.1.0',coreApi:'0.1.0',requi
    assert(scene.offer!=='hand'&&!scene.storylet&&scene.offer!=='director',`director complication ${c.id}: complication scenes are director-fired, not offered`);
    if((c.maxUses??1)>1)assert(scene.repeatable,`director complication ${c.id}: the scene must be repeatable for more than one use`);
    assert(c.kind===undefined||typeof c.kind==='string'&&c.kind.trim()&&c.kind.length<=40,`director complication ${c.id}.kind: up to 40 characters`);
+   assert(c.tone===undefined||Number.isInteger(c.tone)&&c.tone>=1&&c.tone<=3,`director complication ${c.id}.tone: expected 1–3`);
+   assert(c.template===undefined||safeKey(c.template),`director complication ${c.id}.template: invalid`);
+   assert(c.focus===undefined||p.actors.some(x=>x.id===c.focus&&x.id!==p.playerId),`director complication ${c.id}.focus: unknown character`);
    assert(Number.isInteger(c.intensity??1)&&(c.intensity??1)>=1&&(c.intensity??1)<=3,`director complication ${c.id}.intensity: expected 1–3`);
    assert(Number.isInteger(c.weight??10)&&(c.weight??10)>=0&&(c.weight??10)<=100,`director complication ${c.id}.weight: expected 0–100`);
    for(const [k,lo,hi] of [['minTick',0,100000],['cooldownTicks',0,100000],['maxUses',1,10]])assert(c[k]===undefined||Number.isInteger(c[k])&&c[k]>=lo&&c[k]<=hi,`director complication ${c.id}.${k}: expected an integer from ${lo} to ${hi}`);
@@ -160,7 +195,7 @@ export const director={id:'story.director',version:'0.1.0',coreApi:'0.1.0',requi
    assert(c.text===undefined||typeof c.text==='string'&&c.text.length<=200,`director complication ${c.id}.text: up to 200 characters`);
    assert(c.tease===undefined||typeof c.tease==='string'&&c.tease.trim()&&c.tease.length<=200,`director complication ${c.id}.tease: up to 200 characters`);
   }
-  assert(Array.isArray(profile.opportunities||[])&&(profile.opportunities||[]).length<=30,'directorProfile.opportunities: expected up to 30');
+  assert(Array.isArray(profile.opportunities||[])&&(profile.opportunities||[]).length<=(profile.adaptive?200:30),`directorProfile.opportunities: expected up to ${profile.adaptive?200:30}`);
   for(const c of profile.opportunities||[]){
    assert(safeKey(c.id)&&!ids.has(c.id),`director opportunity ${c.id}: invalid or duplicate ID`);ids.add(c.id);
    const scene=(p.scriptedScenes||[]).find(x=>x.id===c.scene);
@@ -169,6 +204,9 @@ export const director={id:'story.director',version:'0.1.0',coreApi:'0.1.0',requi
    assert(scene.trigger?.event!=='story.incident',`director opportunity ${c.id}: its scene must not trigger on story.incident`);
    if((c.maxUses??1)>1)assert(scene.repeatable,`director opportunity ${c.id}: the scene must be repeatable for more than one use`);
    assert(c.kind===undefined||typeof c.kind==='string'&&c.kind.trim()&&c.kind.length<=40,`director opportunity ${c.id}.kind: up to 40 characters`);
+   assert(c.tone===undefined||Number.isInteger(c.tone)&&c.tone>=1&&c.tone<=3,`director opportunity ${c.id}.tone: expected 1–3`);
+   assert(c.template===undefined||safeKey(c.template),`director opportunity ${c.id}.template: invalid`);
+   assert(c.focus===undefined||p.actors.some(x=>x.id===c.focus&&x.id!==p.playerId),`director opportunity ${c.id}.focus: unknown character`);
    assert(Number.isInteger(c.weight??10)&&(c.weight??10)>=0&&(c.weight??10)<=100,`director opportunity ${c.id}.weight: expected 0–100`);
    for(const [k,lo,hi] of [['minTick',0,100000],['cooldownTicks',0,100000],['maxUses',1,10]])assert(c[k]===undefined||Number.isInteger(c[k])&&c[k]>=lo&&c[k]<=hi,`director opportunity ${c.id}.${k}: expected an integer from ${lo} to ${hi}`);
    if(c.when)validateConditions(c.when,p,`director opportunity ${c.id}.when`);
@@ -176,7 +214,7 @@ export const director={id:'story.director',version:'0.1.0',coreApi:'0.1.0',requi
    assert(c.text===undefined||typeof c.text==='string'&&c.text.length<=200,`director opportunity ${c.id}.text: up to 200 characters`);
   }
  },
- init:()=>({tension:0,quiet:0,uses:{},lastUse:{},recent:[],fired:0,lastDay:null,firedToday:0,armed:null,lastTick:null,lastKind:null,offers:[],offersDay:null,oToday:0,oLastDay:null,oUses:{},oLastUse:{},oRecent:[]}),
+ init:()=>({tension:0,quiet:0,uses:{},lastUse:{},recent:[],fired:0,lastDay:null,firedToday:0,armed:null,lastTick:null,lastKind:null,offers:[],offersDay:null,oToday:0,oLastDay:null,oUses:{},oLastUse:{},oRecent:[],setbacks:0,attention:{}}),
  react,
  panel(s,p){const profile=profileOf(p),st=s.modules['story.director'];if(!profile)return {title:'Drama director',lines:['No director profile; the module idles.']};
   const settings=settingsOf(profile),cal=calendarFor(s.tick,p),tier=tierOf(settings,cal);

@@ -40,7 +40,7 @@ function processNeglect(tx,event,profile){
 }
 export const jealousyOf=profile=>profile.jealousy?{preset:'secure',events:['social.romanticInteraction','social.intimacyExposed'],...JEALOUSY_PRESETS[profile.jealousy.preset||'secure'],...profile.jealousy}:null;
 
-function addPoints(tx,character,amount,reason){
+export function addPoints(tx,character,amount,reason){
  const profile=profileOf(tx.pack,character),runtime=runtimeOf(tx.state,character);if(!profile||!amount)return 0;
  const ceiling=currentRank(profile,runtime).ceiling,from=runtime.points,to=Math.max(0,Math.min(ceiling,from+amount)),delta=to-from;
  if(delta){tx.set([...path,character,'points'],to);tx.emit('social.romancePointsChanged',{character,from,to,delta,reason,text:`Your bond with ${tx.state.actors[character].name} ${delta>0?'deepened':'weakened'}.`},[tx.pack.playerId,character]);}

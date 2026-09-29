@@ -25,7 +25,8 @@ export function reviewProposal(pack,proposal,{play=true,turns=120}={}){
   const hit=live.find(e=>e.id&&err.includes(e.id)&&moves(e))||live.find(moves);if(!hit){general.push(err);break;}hit.errors.push(err);skip.add(key(hit));err=check(pack,skipping(proposal,skip));}
  let merged=null,warnings=[];try{merged=withProposal(pack,skipping(proposal,skip));const before=new Set(playability(pack));warnings=playability(merged).filter(w=>!before.has(w));}catch(e){general.push(e.message);}
  const ids=new Set(entries.map(e=>e.id).filter(Boolean));
- for(const w of warnings){const own=/^(?:scene|event) ([^ :.]+)/.exec(w)?.[1],at=entries.filter(e=>own&&ids.has(own)?e.id===own:e.id&&new RegExp(`\\b${e.id.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`).test(w));for(const e of at)e.warnings.push(w);}
+ // Notes from normalizing (a dropped effect, a moved scene) name their scene the same way.
+ for(const w of [...warnings,...(proposal.warnings||[])]){const own=/^(?:scene|event) ([^ :.]+)/.exec(w)?.[1],at=entries.filter(e=>own&&ids.has(own)?e.id===own:e.id&&new RegExp(`\\b${e.id.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`).test(w));for(const e of at)e.warnings.push(w);}
  const playtest=play&&merged&&!general.length?playtestProposal(pack,skipping(proposal,skip),{turns}):null,playedIds=new Set(playtest?.playedIds||[]);
  const route=proposal.route?.route?.map(x=>({character:x,name:merged?.actors.find(a=>a.id===x)?.name||x,ending:proposal.route.endings?.[x]?.ending?.name||'',close:proposal.route.endings?.[x]?.close?.name||'',
   cells:RUNGS.map(rung=>{const e=entries.find(e=>e.kind==='scenes'&&e.id===`${x}-${rung}`);return e?{rung,index:e.index,id:e.id,label:e.label,status:e.status,errors:e.errors.length,warnings:e.warnings.length,played:playedIds.has(e.id)}:{rung};})}))||[];

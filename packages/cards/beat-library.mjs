@@ -1,0 +1,48 @@
+// M2 beat library: genre-neutral templates for one love interest's route. Code owns ids, gates, triggers and numbers; a world spec
+// (drafted by a model, reviewed in Studio) fills only names, reasons and prose. Four temperaments x three paces cover campus's cast.
+export const slug=x=>String(x).toLowerCase().trim().replace(/\s+/g,'-').replace(/[^a-z0-9@:_-]/g,'').slice(0,40);
+export const idOf=x=>String(x).normalize('NFKD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40);
+
+// Arc: `second` is her other trait; gates are [stage 2, stage 3] as {trust, second}. Drift/acts rows: [act, target, trait|points, delta|extra].
+// Targets: '{topic}' her loved subject, '{looks}' the compliment that misses, '{quirk}' the one that lands, '{invite}', '{gift}', '{buy}'.
+export const TEMPERAMENTS={
+ torn:{about:'Pulled between a life someone planned for her and her own; needs room to decide.',second:'resolve',initial:{trust:25,second:20},gates:[{trust:40,second:45},{trust:60,second:75}],chemistry:10,wantsHerCall:15,
+  drift:[['listen','{topic}','second',12],['listen',null,'trust',4],['invite',null,'second',5],['tease',null,'trust',3],['pushy',null,'trust',-8],['pushy','{topic}','second',-6],['compliment','{looks}','second',-3]],
+  acts:[['listen','listen','*',8,{memory:true}],['topic','listen','{topic}',10,{memory:true}],['sore','pushy','{topic}',-12],['tease','tease','*',6],['invite','invite','{invite}',10],['looks','compliment','{looks}',-3],['pushy','pushy','*',-10],['touch','touch','*',-4,{when:{private:false}}]]},
+ guarded:{about:'Keeps people at arm\'s length until they prove they take her seriously.',second:'ease',initial:{trust:10,second:10},gates:[{trust:35,second:30},{trust:65,second:55}],chemistry:3,
+  drift:[['compliment','{topic}','trust',6],['listen',null,'trust',4],['tease',null,'second',5],['invite',null,'second',4],['boast',null,'trust',-5],['pushy',null,'trust',-8]],
+  acts:[['topic','compliment','{topic}',8],['looks','compliment','{looks}',-2],['sore','boast','*',-6],['listen','listen','*',5],['tease','tease','*',4,{when:{private:true}}],['tease-public','tease','*',-5,{when:{private:false}}],['pushy','pushy','*',-8],['invite','invite','{invite}',3]]},
+ prickly:{about:'Sharp-tongued and fast; banter is affection, sincerity about her passion is the way in.',second:'softness',initial:{trust:15,second:10},gates:[{trust:35,second:30},{trust:60,second:60}],chemistry:8,
+  drift:[['tease',null,'trust',4],['compliment','{topic}','second',8],['listen',null,'second',6],['insult','{topic}','trust',-10],['pushy',null,'trust',-8],['insult',null,'trust',3],['listen',null,'trust',2]],
+  acts:[['tease','tease','*',7],['topic','compliment','{topic}',9,{memory:true}],['listen','listen','*',6,{memory:true}],['pushy','pushy','*',-8],['banter','insult','*',2,{when:{private:true}}],['sore','insult','{topic}',-10],['invite','invite','{invite}',7],['looks','compliment','{looks}',-4]]},
+ practical:{about:'Busy, direct and project-minded; show up for the thing she cares about and she lights up.',second:'playfulness',initial:{trust:15,second:10},gates:[{trust:35,second:30},{trust:60,second:55}],chemistry:6,
+  drift:[['listen','{topic}','trust',8],['listen',null,'trust',3],['invite',null,'second',6],['tease',null,'second',4],['compliment','{quirk}','second',4],['boast',null,'trust',-5],['pushy',null,'trust',-7]],
+  acts:[['topic','listen','{topic}',9,{memory:true}],['listen','listen','*',4],['invite','invite','{invite}',8],['quirk','compliment','{quirk}',8],['sore','boast','*',-5],['tease','tease','*',3],['pushy','pushy','*',-7]]},
+};
+// Every temperament also prices her gifts and the round she likes; harping on a dislike is a small exact minus (Risky, owner call 2026-09-29).
+export const SHARED_ACTS=[['gift','gift','{gift}',8],['buy','buy','{buy}',3],['bad-gift','gift','{badGift}',-3]];
+
+// Pace = how intimacy opens up. Slow waits for exclusive; casual also allows a fling.
+export const PACES={
+ slow:{openness:45,casual:false,attraction:40,phases:['exclusive'],categories:['first-night']},
+ steady:{openness:55,casual:false,attraction:40,phases:['dating','exclusive'],categories:['first-night']},
+ easy:{openness:60,casual:false,attraction:35,phases:['dating','exclusive'],categories:['first-night']},
+ casual:{openness:75,casual:true,attraction:30,phases:['dating','exclusive'],categories:['first-night','fling']},
+};
+export const RANK_POINTS=[[0,30],[20,55],[45,80],[70,100]],THRESHOLDS={crush:15,date:35,exclusive:65},WANT_WEIGHTS=[10,8,6];
+export const INTIMACY_CATEGORIES=[{id:'first-night',name:'Take it to bed',privacy:'private',casual:false,resolution:'scene',style:'first-night',discretion:'discreet'},{id:'fling',name:'Fling',privacy:'private',casual:true,resolution:'scene',style:'fling',discretion:'discreet'}];
+
+// Firsts: the engine's own milestones fire them. A choice picks a tone; the tone owns the numbers.
+export const RUNGS={
+ talk:{event:'social.romanceRankChanged',match:c=>({character:c,to:null}),flag:'talked'},
+ date:{event:'social.dateAccepted',match:c=>({character:c}),flag:'dated'},
+ kiss:{event:'social.datingPhaseChanged',match:c=>({character:c,to:'exclusive'}),flag:'kissed'},
+ night:{event:'social.intimacyStarted',match:c=>({character:c,category:'first-night'}),flag:'first-night'},
+};
+export const TONES={best:[3,3],good:[3,2],fond:[3,0],careful:[2,2],light:[2,1],spark:[2,0],flat:[1,0],miss:[-1,0]};
+// Night: lead/rush -> check-in (honest/yes) -> peak (close/more), with a stop on every beat that withdraws consent and costs nothing.
+export const NIGHT={lead:[4],rush:[-2],honest:[3,2],yes:[1],close:[4],more:[3]},STOP_LABEL='Say you want to stop here',STOP_TRUST=3;
+export const ENDING_PRIORITY={route:20,together:10,fallback:-10};
+// Model-facing guidance is part of the engine contract, not world prose: every world starts from these and may override per key.
+export const AI_GUIDANCE={intent:'Interpret the player\'s words as one grounded action or spoken response without inventing results.',scene:'Continue the conversation naturally. Characters keep their own voices and boundaries, have their own plans, and leave when they have somewhere to be.',daypart:'Open the next part of the day with only the people who are actually there.'};
+export const DEFAULT_CHOICE_TONES=['best','light','miss']; // a rung with no authored choices: one that lands, one that half-lands, one that misses

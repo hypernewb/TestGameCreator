@@ -120,7 +120,7 @@ test('chatty pronouns keep their first standard set, a missing one is left out a
  const s=normalizeCandidate({characters:[],scenes:[scene('a'),scene('b'),scene('c')]},p,{sceneCount:3}).scenes;
  assert.deepEqual(s.map(x=>x.trigger),[{event:'core.moved',match:{to:'hub'}},{event:'story.handOffered',match:{}},{event:'story.handOffered',match:{}}]);
  assert.deepEqual(s.map(x=>[x.offer,x.when]),[[undefined,undefined],['hand',{location:'hub'}],['hand',{location:'hub'}]]);
- assert.equal(normalizeCandidate({characters:[],scenes:[scene('d')]},{...p,scriptedScenes:[s[0]]},{sceneCount:1}).scenes[0].offer,'hand','a place with an intro already gets hand cards');assert.deepEqual(playability({...p,scriptedScenes:s}),[]);validatePack({...p,scriptedScenes:s},registry);
+ assert.equal(normalizeCandidate({characters:[],scenes:[scene('d')]},{...p,scriptedScenes:[s[0]]},{sceneCount:1}).scenes[0].offer,'hand','a place with an intro already gets hand cards');assert.deepEqual(playability({...p,scriptedScenes:s}).filter(w=>!/no choice has an effect/.test(w)),[]);validatePack({...p,scriptedScenes:s},registry);
 });
 
 test('a scene moves to where its unscheduled speakers stay, speakers who never meet fail it, and later scenes at a place are hand cards that play there',()=>{
@@ -131,7 +131,7 @@ test('a scene moves to where its unscheduled speakers stay, speakers who never m
  const c=normalizeCandidate(raw,p,counts);assert.deepEqual(c.scenes.map(x=>x.id),['a','b','d','e']);assert.match(c.dropped.join(),/scenes c: .*never meet/);
  assert.deepEqual(c.scenes.map(x=>x.trigger.match.to??x.trigger.match.location??x.when.location),['kitchen-bar','main-party-room','kitchen-bar','kitchen-bar']);
  assert.deepEqual(c.scenes.map(x=>x.offer),[undefined,undefined,'hand','hand']);
- const q=applyProposal(p,{...createProposal(p,c),scenes:c.scenes.map(value=>({status:'approved',value}))});assert.deepEqual(playability(q),[]);
+ const q=applyProposal(p,{...createProposal(p,c),scenes:c.scenes.map(value=>({status:'approved',value}))});assert.deepEqual(playability(q).filter(w=>!/no choice has an effect/.test(w)),[]);
  const at=(s,where)=>{const w=structuredClone(s);w.actors[q.playerId].location=where;return w;};
  let s=createWorld(q,registry,'hand');assert.ok(!actions(s,q,registry).some(a=>['d','e'].includes(a.args?.scene)),'not offered away from the kitchen bar');
  s=at(s,'kitchen-bar');assert.deepEqual(actions(s,q,registry).filter(a=>a.type==='story.startOfferedScene').map(a=>a.args.scene),['d','e'],'offered at the kitchen bar');

@@ -1,0 +1,79 @@
+{
+  "sheet": "art/cg/campus.json",
+  "cg": "jana-night",
+  "scene": "jana-night",
+  "seed": 41004,
+  "request": {
+    "input": "nsfw, explicit, 1girl, 1boy, hetero, pov, bedroom at night, string fairy lights, warm glow, on bed, sex, intimate, romantic, visual novel, painterly anime illustration, clean linework, soft autumn daylight, terracotta walnut and cream palette, detailed, cinematic composition",
+    "model": "nai-diffusion-4-5-full",
+    "action": "generate",
+    "parameters": {
+      "params_version": 3,
+      "width": 1344,
+      "height": 768,
+      "scale": 5,
+      "sampler": "k_euler_ancestral",
+      "steps": 28,
+      "n_samples": 1,
+      "ucPreset": 0,
+      "qualityToggle": true,
+      "dynamic_thresholding": false,
+      "cfg_rescale": 0,
+      "noise_schedule": "karras",
+      "legacy": false,
+      "legacy_v3_extend": false,
+      "legacy_uc": false,
+      "use_coords": false,
+      "prefer_brownian": true,
+      "deliberate_euler_ancestral_bug": false,
+      "seed": 41004,
+      "negative_prompt": "pixel art, sprite, dithering, text, logo, watermark, signature, speech bubble, username, lowres, blurry, jpeg artifacts, bad anatomy, bad hands, extra fingers, missing fingers, extra limbs, multiple views, chibi, 3d, photorealistic, neon, sci-fi, child, loli, shota, underage",
+      "characterPrompts": [
+        {
+          "prompt": "girl, adult woman, 20 years old, university student, tall athletic build, long blonde hair, sandy blonde hair, freckles, mature female, nude, completely nude, freckled shoulders, girl on top, guiding viewer's hand, looking at viewer, blush, soft smile, parted lips",
+          "uc": "",
+          "center": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "enabled": true
+        }
+      ],
+      "v4_prompt": {
+        "caption": {
+          "base_caption": "nsfw, explicit, 1girl, 1boy, hetero, pov, bedroom at night, string fairy lights, warm glow, on bed, sex, intimate, romantic, visual novel, painterly anime illustration, clean linework, soft autumn daylight, terracotta walnut and cream palette, detailed, cinematic composition",
+          "char_captions": [
+            {
+              "char_caption": "girl, adult woman, 20 years old, university student, tall athletic build, long blonde hair, sandy blonde hair, freckles, mature female, nude, completely nude, freckled shoulders, girl on top, guiding viewer's hand, looking at viewer, blush, soft smile, parted lips",
+              "centers": [
+                {
+                  "x": 0.5,
+                  "y": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        "use_coords": false,
+        "use_order": true
+      },
+      "v4_negative_prompt": {
+        "caption": {
+          "base_caption": "pixel art, sprite, dithering, text, logo, watermark, signature, speech bubble, username, lowres, blurry, jpeg artifacts, bad anatomy, bad hands, extra fingers, missing fingers, extra limbs, multiple views, chibi, 3d, photorealistic, neon, sci-fi, child, loli, shota, underage",
+          "char_captions": [
+            {
+              "char_caption": "",
+              "centers": [
+                {
+                  "x": 0.5,
+                  "y": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        "legacy_uc": false
+      }
+    }
+  }
+}

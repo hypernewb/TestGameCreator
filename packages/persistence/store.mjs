@@ -34,7 +34,8 @@ export function validateImport(data,p,registry){
   assert(s&&s.schemaVersion===1,'Unsupported world schema');assert(s.packId===p.id&&s.packVersion===p.version&&s.packDigest===mechanicsDigest(p),'Save requires its exact pack version');
   assert(JSON.stringify(s.moduleVersions)===JSON.stringify(p.modules),'Save module set differs');
   // Re-simulate accepted commands and compare mechanical state, never trusting arbitrary imported patches.
-  let rebuilt=createWorld(p,registry,s.campaignId,s.initialSeed??42,s.startId);
+  assert(['framework','venus'].includes(s.sceneWriter??'framework'),'Unknown scene writer');
+  let rebuilt=createWorld(p,registry,s.campaignId,s.initialSeed??42,s.startId,{sceneWriter:s.sceneWriter??'framework'});
   assert(s.turns&&Object.keys(s.turns).length<=10000,'Invalid/oversized turn history');
   for(const t of Object.values(s.turns)) {assert(t.id===t.command?.id,'Invalid turn record');const r=execute(rebuilt,t.command,p,registry);assert(JSON.stringify(r.turn.events)===JSON.stringify(t.events),'Event history is inconsistent');assert(['pending','complete'].includes(t.status),'Invalid narrative status');assert(t.narrative===null||typeof t.narrative==='string'&&t.narrative.length<=20000,'Invalid narrative');if(t.command.type==='world.nextDaypart'&&t.status==='complete'){assert(t.artifact,'Missing daypart artifact');validateDaypart(t.artifact,daypartContext(r.state,p,r.turn));}if(t.input!==undefined)assert(typeof t.input==='string'&&t.input.length<=2000,'Invalid player input');if(t.sceneLines!==undefined)assert(Array.isArray(t.sceneLines)&&t.sceneLines.length<=80&&t.sceneLines.every(line=>typeof line.speaker==='string'&&typeof line.text==='string'&&line.text.length<=1000),'Invalid visual novel lines');if(t.promptVersion==='scene_structured_v1'){
     const cast=scenePlanForTurn(r.state,p,r.turn).cast;

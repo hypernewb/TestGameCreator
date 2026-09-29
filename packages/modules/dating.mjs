@@ -27,7 +27,7 @@ export function datingEvaluation(state,pack,character){
  for(const flag of eligibility.requiredFlags||[])if(!state.flags[flag])reasons.push(`required flag ${flag} is absent`);
  for(const flag of eligibility.forbiddenFlags||[])if(state.flags[flag])reasons.push(`dealbreaker flag ${flag} is active`);
  const relationshipState=state.modules['social.progression']?.states[character];if((eligibility.blockedStates||[]).includes(relationshipState))reasons.push(`relationship state ${relationshipState} blocks romance`);
- const exclusive=Object.entries(state.modules['social.dating'].characters).find(([id,x])=>id!==character&&x.phase==='exclusive'&&x.agreement==='monogamous');if(exclusive&&!profile.allowWhileExclusive)reasons.push(`a monogamous agreement with ${exclusive[0]} blocks another relationship`);
+ const exclusive=Object.entries(state.modules['social.dating'].characters).find(([id,x])=>id!==character&&x.phase==='exclusive'&&x.agreement==='monogamous');if(exclusive&&!profile.allowWhileExclusive&&!state.modules['social.secrecy'])reasons.push(`a monogamous agreement with ${exclusive[0]} blocks another relationship`);
  if(runtime.cooldownUntil>state.tick)reasons.push(`cooldown until tick ${runtime.cooldownUntil}`);
  const trace=(profile.preferences||[]).map(rule=>contribution(rule,state,pack,character));
  return {eligible:reasons.length===0,reasons,score:clamp(runtime.chemistry+trace.reduce((n,x)=>n+x.points,0)),chemistry:runtime.chemistry,trace};
@@ -35,7 +35,8 @@ export function datingEvaluation(state,pack,character){
 
 function writeEvaluation(tx,character,previousScore,allowCrush=true){
  const result=datingEvaluation(tx.state,tx.pack,character),runtime=runtimeOf(tx.state,character),profile=profileOf(tx.pack,character);
- tx.set([...modulePath,'characters',character,'score'],result.score);tx.set([...modulePath,'characters',character,'eligible'],result.eligible);tx.set([...modulePath,'characters',character,'reasons'],result.reasons);tx.set([...modulePath,'characters',character,'trace'],result.trace);
+ // Only changed fields are patched: re-scoring every profile on every event otherwise floods the turn's event budget.
+ for(const key of ['score','eligible','reasons','trace'])if(JSON.stringify(runtime[key])!==JSON.stringify(result[key]))tx.set([...modulePath,'characters',character,key],result[key]);
  if(previousScore!==result.score)tx.emit('social.attractionChanged',{character,from:previousScore,to:result.score,eligible:result.eligible,text:`Attraction with ${tx.state.actors[character].name} changed.`},[tx.pack.playerId,character]);
  if(allowCrush&&result.eligible&&result.score>=profile.thresholds.crush&&runtime.phase==='available'){tx.set([...modulePath,'characters',character,'phase'],'crush');tx.emit('social.crushStarted',{character,score:result.score,text:`A romantic possibility has opened with ${tx.state.actors[character].name}.`},[tx.pack.playerId,character]);}
  return result;

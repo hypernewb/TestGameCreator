@@ -1,5 +1,7 @@
 # Fun pass — critique and borrowed designs
 
+> **Superseded 2026-09-29** by [GAME-DESIGN.md](GAME-DESIGN.md) and the Game tier in [NEXT-MILESTONES.md](NEXT-MILESTONES.md). Kept for history and for its list of borrowed designs.
+
 Rationale for the Fun tier (F1–F12) in [NEXT-MILESTONES.md](NEXT-MILESTONES.md). The engine is correct, replayable and well tested; the problem is that there is no game on top of it yet. This file records what is wrong from a player's point of view and which existing games each fix borrows from. We borrow designs and patterns, not source code.
 
 ## What is wrong

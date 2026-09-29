@@ -1,0 +1,79 @@
+{
+  "sheet": "art/cg/campus.json",
+  "cg": "jana-talk",
+  "scene": "jana-talk",
+  "seed": 41001,
+  "request": {
+    "input": "1girl, solo, pov, indoors, cozy apartment living room at night, warm floor lamp, fairy lights, mismatched mugs on coffee table, visual novel, painterly anime illustration, clean linework, soft autumn daylight, terracotta walnut and cream palette, detailed, cinematic composition",
+    "model": "nai-diffusion-4-5-full",
+    "action": "generate",
+    "parameters": {
+      "params_version": 3,
+      "width": 1344,
+      "height": 768,
+      "scale": 5,
+      "sampler": "k_euler_ancestral",
+      "steps": 28,
+      "n_samples": 1,
+      "ucPreset": 0,
+      "qualityToggle": true,
+      "dynamic_thresholding": false,
+      "cfg_rescale": 0,
+      "noise_schedule": "karras",
+      "legacy": false,
+      "legacy_v3_extend": false,
+      "legacy_uc": false,
+      "use_coords": false,
+      "prefer_brownian": true,
+      "deliberate_euler_ancestral_bug": false,
+      "seed": 41001,
+      "negative_prompt": "pixel art, sprite, dithering, text, logo, watermark, signature, speech bubble, username, lowres, blurry, jpeg artifacts, bad anatomy, bad hands, extra fingers, missing fingers, extra limbs, multiple views, chibi, 3d, photorealistic, neon, sci-fi, child, loli, shota, underage, nsfw, nude, underwear",
+      "characterPrompts": [
+        {
+          "prompt": "girl, adult woman, 20 years old, university student, tall athletic build, long blonde hair, sandy blonde hair, freckles, blue-gray eyes, oversized cream knit sweater, sleeves pulled over hands, sitting on a worn sofa, knees drawn up, serious soft expression, looking at viewer",
+          "uc": "",
+          "center": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "enabled": true
+        }
+      ],
+      "v4_prompt": {
+        "caption": {
+          "base_caption": "1girl, solo, pov, indoors, cozy apartment living room at night, warm floor lamp, fairy lights, mismatched mugs on coffee table, visual novel, painterly anime illustration, clean linework, soft autumn daylight, terracotta walnut and cream palette, detailed, cinematic composition",
+          "char_captions": [
+            {
+              "char_caption": "girl, adult woman, 20 years old, university student, tall athletic build, long blonde hair, sandy blonde hair, freckles, blue-gray eyes, oversized cream knit sweater, sleeves pulled over hands, sitting on a worn sofa, knees drawn up, serious soft expression, looking at viewer",
+              "centers": [
+                {
+                  "x": 0.5,
+                  "y": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        "use_coords": false,
+        "use_order": true
+      },
+      "v4_negative_prompt": {
+        "caption": {
+          "base_caption": "pixel art, sprite, dithering, text, logo, watermark, signature, speech bubble, username, lowres, blurry, jpeg artifacts, bad anatomy, bad hands, extra fingers, missing fingers, extra limbs, multiple views, chibi, 3d, photorealistic, neon, sci-fi, child, loli, shota, underage, nsfw, nude, underwear",
+          "char_captions": [
+            {
+              "char_caption": "",
+              "centers": [
+                {
+                  "x": 0.5,
+                  "y": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        "legacy_uc": false
+      }
+    }
+  }
+}

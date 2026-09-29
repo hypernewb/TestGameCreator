@@ -63,7 +63,7 @@ try{
   }
   if(candidate.skipped?.length)console.error(`Skipped copies of existing content: ${candidate.skipped.join(', ')}`);
   // Playability problems the new content introduces (existing ones are the pack's own business; see the check command).
-  const before=new Set(playability(pack));candidate.warnings=playability(staged).filter(x=>!before.has(x));if(candidate.warnings.length)console.error(`Playability warnings (listed under "warnings" in the proposal):\n- ${candidate.warnings.join('\n- ')}`);
+  const before=new Set(playability(pack));candidate.warnings=[...(candidate.warnings||[]),...playability(staged).filter(x=>!before.has(x))];if(candidate.warnings.length)console.error(`Warnings (listed under "warnings" in the proposal):\n- ${candidate.warnings.join('\n- ')}`);
   if(candidate.dropped?.length)console.error(`Dropped entries that failed validation (listed under "dropped" in the proposal):\n- ${candidate.dropped.join('\n- ')}`);
   const out=resolve(required('out'));writeFileSync(out,JSON.stringify(createProposal(pack,candidate,{brief,counts,model}),null,2)+'\n',{flag:'wx'});console.log(`Wrote ${KINDS.filter(k=>candidate[k].length).map(k=>`${candidate[k].length} ${k}`).join(', ')} to ${out}`);console.log('Review each entry, change selected statuses to "approved", then run the apply command.');
  }else if(command==='route'){
@@ -101,8 +101,8 @@ try{
   // A saved reply (<out>.failed.txt) through today's normalizer, no model call; counts default to what the reply holds.
   const pack=readJson(required('pack')),raw=readFileSync(resolve(required('reply')),'utf8'),o=JSON.parse(raw.slice(raw.indexOf('{'),raw.lastIndexOf('}')+1)),n=(k,a)=>integer(k,Array.isArray(o[a])?o[a].length:0);
   const counts={locationCount:n('locations','locations'),characterCount:n('characters','characters'),sceneCount:n('scenes','scenes'),objectCount:n('objects','objects'),itemCount:n('items','items'),activityCount:n('activities','activities'),eventCount:n('events','events'),templateCount:n('templates','templates')},candidate=normalizeCandidate(raw,pack,counts);
-  const before=new Set(playability(pack));candidate.warnings=playability(mergeApproved(pack,Object.fromEntries(KINDS.map(k=>[k,candidate[k].map(value=>({status:'approved',value}))])))).filter(x=>!before.has(x));
-  console.log(`Kept ${KINDS.filter(k=>candidate[k].length).map(k=>`${candidate[k].length} ${k}`).join(', ')||'nothing'}`);for(const [k,label] of [['skipped','Skipped copies'],['dropped','Dropped'],['warnings','Playability warnings']])if(candidate[k].length)console.log(`${label}:\n- ${candidate[k].join('\n- ')}`);
+  const before=new Set(playability(pack));candidate.warnings=[...(candidate.warnings||[]),...playability(mergeApproved(pack,Object.fromEntries(KINDS.map(k=>[k,candidate[k].map(value=>({status:'approved',value}))])))).filter(x=>!before.has(x))];
+  console.log(`Kept ${KINDS.filter(k=>candidate[k].length).map(k=>`${candidate[k].length} ${k}`).join(', ')||'nothing'}`);for(const [k,label] of [['skipped','Skipped copies'],['dropped','Dropped'],['warnings','Warnings']])if(candidate[k].length)console.log(`${label}:\n- ${candidate[k].join('\n- ')}`);
   const file=arg('out');if(file){const out=resolve(file);writeFileSync(out,JSON.stringify(createProposal(pack,candidate,{brief:`replayed from ${required('reply')}`,counts,model:'replay'}),null,2)+'\n',{flag:'wx'});console.log(`Wrote ${out}`);}
  }else if(command==='apply'){
   const pack=readJson(required('pack')),proposal=readJson(required('proposal')),next=applyProposal(pack,proposal),out=resolve(required('out'));writeFileSync(out,JSON.stringify(next,null,2)+'\n',{flag:'wx'});const approved=list=>(list||[]).filter(x=>x.status==='approved').length;console.log(`Wrote validated pack to ${out} (${KINDS.filter(k=>proposal[k]?.length).map(k=>`${approved(proposal[k])} ${k}`).join(', ')} applied).`);

@@ -1,20 +1,26 @@
 // Showcase-styled play screen on the same /api as the classic UI (index.html). Presentation only: no game rules here.
 import {sceneLines} from '/vendor/venus/sceneText.mjs';
 import {calendarFor} from './calendar.mjs';
+import {openGallery,readKey} from './gallery.mjs';
+import {featuredFirst,isCampus,dayCard,newDay,hub,goals,activityCommand,promptFill,speakCommand,actionHint,endCard,journal,phone,poseFor,PHONE_ACTIONS} from './campus.mjs';
 const $=s=>document.querySelector(s),el=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const fontStacks={source:"'VN Source Sans 3','Segoe UI',sans-serif",noto:"'VN Noto Sans','Arial',sans-serif",open:"'VN Open Sans','Tahoma',sans-serif",lato:"'VN Lato','Trebuchet MS',sans-serif",custom:"'Player Uploaded Font','Segoe UI',sans-serif"};
 const GROUPS=[['Look around',t=>t.startsWith('world.')],['Clothes and belongings',t=>t.startsWith('items.')]];
-let current=null,busy=false,lines=[],cursor=0,key='',auto=null,retryId=null;
+let current=null,busy=false,lines=[],cursor=0,key='',auto=null,retryId=null,seen={campaign:'',tick:undefined,end:''},cards=[],hubTab='places';
 
 async function api(path,body){const r=await fetch(path,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{});const data=await r.json();if(!r.ok)throw Error(data.error||'Request failed');return data;}
 function showLoading(title='Writing the next moment…',detail='The story is responding to your action.'){const st=$('#scene-status');st.hidden=false;st.classList.remove('error');$('#state-title').textContent=title;$('#state-detail').textContent=detail;st.querySelector('button').hidden=true;}
 function showError(title,detail,canRetry=false){const st=$('#scene-status');st.hidden=false;st.classList.add('error');$('#state-title').textContent=title;$('#state-detail').textContent=detail;st.querySelector('button').hidden=!canRetry;}
 function clearState(){$('#scene-status').hidden=true;$('#scene-status').classList.remove('error');}
-const setPlaying=on=>{$('#title-screen').hidden=on;for(const s of ['.scene-header','.scene-nav','.dialogue','#prompt-composer'])$(s).hidden=!on;if(!on)$('#choices').hidden=true;};
+const setPlaying=on=>{$('#title-screen').hidden=on;for(const s of ['.scene-header','.scene-nav','.dialogue','#prompt-composer'])$(s).hidden=!on;if(!on){$('#choices').hidden=true;$('#hub').hidden=true;}};
+
+// Read lines are shared with the classic UI's gallery, so skip-to-unseen agrees across both screens.
+const READ='story-vn-read-pages',readSet=()=>{try{return new Set(JSON.parse(localStorage.getItem(READ))||[]);}catch{return new Set();}};
+function showGallery(){openGallery(current,{read:readSet,markRead:l=>{try{const r=readSet();r.add(readKey(current.pack.id,l));localStorage.setItem(READ,JSON.stringify([...r].slice(-4000)));}catch{}}});}
 
 async function title(){stopAuto();current=null;setPlaying(false);$('#sprites').replaceChildren();const data=await api('/api/bootstrap');$('#title-provider').textContent=data.ai?.mode==='local'?`Local AI · ${data.ai.model}`:data.provider||'';
  let n=0;const row=(label,hint,onclick)=>{const b=el('button');b.type='button';b.append(el('b',String(++n).padStart(2,'0')));const span=el('span',label);if(hint)span.append(el('small',hint));b.append(span,el('i','›'));b.onclick=onclick;return b;};
- $('#title-packs').replaceChildren(...data.packs.flatMap(p=>(p.starts?.length?p.starts:[{id:'',title:'Begin'}]).map(start=>row(`${p.title}${start.id?` · ${start.title}`:''}`,start.description||p.subtitle,()=>api('/api/new',{packId:p.id,...(start.id?{startId:start.id}:{})}).then(render).catch(e=>showError('Could not start',e.message))))));
+ $('#title-packs').replaceChildren(...featuredFirst(data.packs).flatMap(p=>(p.starts?.length?p.starts:[{id:'',title:'Begin'}]).map(start=>row(`${p.title}${start.id?` · ${start.title}`:''}`,start.description||p.subtitle,()=>api('/api/new',{packId:p.id,sceneWriter:$('#title-writer').value,...(start.id?{startId:start.id}:{})}).then(render).catch(e=>showError('Could not start',e.message))))));
  n=0;$('#title-campaigns').replaceChildren(...(data.campaigns.length?data.campaigns.slice(0,8).map(c=>row(`Campaign ${c.id.slice(0,8)}`,`${c.revision} turns`,()=>api('/api/load',{id:c.id}).then(render).catch(e=>showError('Could not load',e.message)))):[el('p','No campaigns yet.','muted')]));}
 
 // Same page source as the classic VN: generated reply > scripted beat > turn pages > narrative, plus visible results (stat checks, rank-ups, endings).
@@ -25,8 +31,8 @@ function linesFor(data){const {state:s,pack:p}=data,turn=Object.values(s.turns).
 function render(data){current=data;const {state:s,pack:p}=data;localStorage.setItem('story-last',s.campaignId);setPlaying(true);
  const loc=p.locations.find(l=>l.id===s.actors[p.playerId].location),clock=calendarFor(s.tick,p),turn=Object.values(s.turns).at(-1),scene=p.scriptedScenes?.find(x=>x.id===s.modules['story.scenes']?.pending),beat=scene?.beats?.find(b=>b.id===s.modules['story.scenes']?.pendingBeat)||scene;
  $('#place-index').textContent=String(p.locations.indexOf(loc)+1).padStart(2,'0');$('#pack-title').textContent=p.title.toUpperCase();$('#place').textContent=loc.name;$('#weekday').textContent=String(clock.weekday).slice(0,3).toUpperCase();$('#day').textContent=`Day ${clock.day}`;$('#daypart').textContent=String(clock.daypart).toUpperCase();$('#menu-where').textContent=`${loc.name} · ${clock.weekday} ${clock.daypart}`;
- const nextKey=`${s.campaignId}:${turn?.id||'start'}:${scene?.id||''}:${s.modules['story.scenes']?.pendingBeat||''}`;if(nextKey!==key){key=nextKey;lines=linesFor(data);cursor=0;$('#choices').hidden=true;$('.dialogue').hidden=false;}
- const blocked=beat?.allowInput===false||Boolean(data.diagnostics?.ended);$('#player-prompt').disabled=blocked||busy;$('#player-prompt').placeholder=blocked?'Choose one of the options':'What do you say or do?';
+ const nextKey=`${s.campaignId}:${turn?.id||'start'}:${scene?.id||''}:${s.modules['story.scenes']?.pendingBeat||''}`;if(nextKey!==key){key=nextKey;lines=linesFor(data);cursor=0;$('#choices').hidden=true;$('#hub').hidden=true;$('.dialogue').hidden=false;queueCards(data);}
+ const here=s.actors[p.playerId].location,present=id=>s.actors[id]?.location===here,voiced=beat&&![...(beat.pages||[]).map(x=>x.speaker),...Object.keys(beat.when?.charactersAt||{})].some(id=>id&&present(id)),blocked=beat?.allowInput===false||voiced||Boolean(data.diagnostics?.ended);$('#player-prompt').disabled=blocked||busy;$('#player-prompt').placeholder=blocked?'Choose one of the options':'What do you say or do?';
  retryId=turn?.fallback?turn.id:null;if(busy)return;if(retryId)showError('The writing was interrupted',`Your action was saved. ${turn.failureReason||''}`.trim(),true);else if(data.clarification)showError('Could you say that differently?',data.clarification);else clearState();
  renderChoices();showLine();}
 
@@ -34,18 +40,46 @@ function showLine(){if(!current)return;const {state:s,pack:p}=current,line=lines
  $('#speaker').textContent=actor?.id===p.playerId?'You':actor?.name||'Narration';$('#speaker-kind').textContent=line.kind||(actor?actor.id===p.playerId?'YOU':'SPEAKING':'SCENE');$('#line').textContent=line.text;
  const cg=seen.find(l=>l.cg)?.cg||scene?.cg,bg=seen.find(l=>l.background)?.background||scene?.background||loc.background,img=$('#background'),want=cg||bg||'assets/showcase/bedroom.png';img.onerror=()=>{img.onerror=null;img.src=cg?'assets/cg-placeholder.svg':'assets/showcase/bedroom.png';};if(img.getAttribute('src')!==want)img.src=want;img.alt=cg?'Scene illustration':loc.name;
  const present=cg?[]:Object.keys(s.actors).filter(id=>id!==p.playerId&&s.actors[id].location===loc.id).map(id=>p.actors.find(a=>a.id===id)).filter(a=>a?.portrait).slice(0,3);
- $('#sprites').replaceChildren(...present.map((a,i)=>{const f=el('figure',undefined,`character character--slot${present.length===1?'':i+1} ${present.length===1?'character--right':''}`);f.dataset.character=a.id;f.dataset.speaking=String(a.id===line.speaker);const im=el('img');im.src=a.portrait;im.alt=a.name;f.append(im);return f;}));
+ $('#sprites').replaceChildren(...present.map((a,i)=>{const f=el('figure',undefined,`character character--slot${present.length===1?'':i+1} ${present.length===1?'character--right':''}`);f.dataset.character=a.id;f.dataset.speaking=String(a.id===line.speaker);const im=el('img');im.src=isCampus(p)?poseFor(s,p,a.id)||a.portrait:a.portrait;im.onerror=()=>{im.onerror=null;if(im.getAttribute('src')!==a.portrait)im.src=a.portrait;};im.alt=a.name;f.append(im);return f;}));
  $('.continue').firstChild.textContent=cursor<lines.length-1?'NEXT ':'CHOOSE ';$('.dialogue').animate([{opacity:.55,transform:'translateY(5px)'},{opacity:1,transform:'none'}],{duration:180,easing:'ease-out'});}
 
 function renderChoices(){const acts=current.actions||[],main=acts.filter(a=>!GROUPS.some(([,f])=>f(a.type))),box=$('#choices');
- const button=a=>{const b=el('button',a.storylet?.title||a.label);b.type='button';b.disabled=!a.enabled||busy;b.title=a.reason||'';if(a.storylet?.hint||(!a.enabled&&a.reason))b.append(el('small',a.storylet?.hint||a.reason.replace(/^Error:\s*/,'')));b.append(el('span','›'));b.onclick=()=>act({command:{type:a.type,args:a.args}});return b;};
+ const button=a=>{const b=el('button',a.storylet?.title||a.label);b.type='button';b.disabled=!a.enabled||busy;b.title=a.reason||'';const hint=actionHint(current.pack,a);if(hint||(!a.enabled&&a.reason))b.append(el('small',hint||a.reason.replace(/^Error:\s*/,'')));b.append(el('span','›'));b.onclick=()=>{const text=promptFill(current.state,a);if(!text)return act({command:speakCommand(current.state,current.pack,a)});const box=$('#player-prompt');box.value=text;box.focus();box.setSelectionRange(text.length,text.length);};return b;};
  box.replaceChildren(el('p',current.diagnostics?.ended?'The story has ended.':'What will you do?'),...main.map(button));for(const [label,f] of GROUPS){const list=acts.filter(a=>f(a.type));if(!list.length)continue;const more=el('details');more.append(el('summary',`${label} (${list.length})`),...list.map(button));box.append(more);}
- const back=el('button','Back to the scene','choices__back');back.type='button';back.onclick=()=>{box.hidden=true;$('.dialogue').hidden=false;};box.append(back);}
+ const back=el('button',useHub()?'Back to the map':'Back to the scene','choices__back');back.type='button';back.onclick=()=>{box.hidden=true;if(useHub())renderHub();else $('.dialogue').hidden=false;};box.append(back);}
 
-function next(){if(cursor<lines.length-1){cursor++;showLine();return;}stopAuto();$('.dialogue').hidden=true;$('#choices').hidden=false;}
+function next(){if(cursor<lines.length-1){cursor++;showLine();return;}stopAuto();$('.dialogue').hidden=true;if(useHub())return renderHub();$('#choices').hidden=false;}
+const useHub=()=>isCampus(current?.pack)&&!current.state.scene&&!current.diagnostics?.ended;
+
+// Campus layer: end card, then the day card, once per turn / per day. Views come from campus.mjs; the engine still decides.
+function queueCards(data){const {state:s,pack:p}=data;if(!isCampus(p))return;const fresh=seen.campaign!==s.campaignId;if(fresh)seen={campaign:s.campaignId,tick:undefined,end:''};
+ const turn=Object.values(s.turns).at(-1),card=!fresh&&endCard(s,p);if(card&&turn&&seen.end!==turn.id&&(card.rows.length||card.characters.length)){seen.end=turn.id;cards.push(()=>showEndCard(card));}
+ if(seen.tick===undefined||newDay(s,p,seen.tick))cards.push(()=>showDayCard(dayCard(s,p)));seen.tick=s.tick;if(!document.querySelector('dialog[open]'))nextCard();}
+function nextCard(){const show=cards.shift();if(show)show();}
+function showDayCard(d){$('#day-card-date').textContent=`${d.weekday}, ${d.date}`;$('#day-card-left').textContent=d.daysLeft?`${d.daysLeft} day${d.daysLeft===1?'':'s'} left in term`:'Last day of term';
+ const row=(label,text)=>{if(!text)return null;const a=el('article');a.append(el('strong',label),el('p',text));return a;};
+ $('#day-card-entries').replaceChildren(...[row('Weather',d.weather&&[d.weather.name,d.weather.text].filter(Boolean).join(' · ')),row('Today',d.holiday&&[d.holiday.name,d.holiday.text].filter(Boolean).join(' · ')),row('Yesterday',d.yesterday?.replace(/^Yesterday, /,'')),row('Rumor',d.rumor)].filter(Boolean));$('#day-card').showModal();}
+function showEndCard(c){$('#end-card-text').textContent=c.text||(c.characters.length?`Time with ${c.characters.join(' and ')}.`:'');
+ $('#end-card-entries').replaceChildren(...(c.rows.length?c.rows.map(r=>{const a=el('article',undefined,`heart-row heart-row--${r.mark}`),h=el('span',r.mark==='up'?'♥+':r.mark==='down'?'♥−':'♥',`heart heart--${r.mark}`);h.setAttribute('aria-label',r.mark==='up'?'Closer':r.mark==='down'?'Cooler':'No change');a.append(h,el('p',r.text));return a;}):[el('p','Nothing stood out this time.','muted')]));$('#end-card').showModal();}
+for(const id of ['day-card','end-card'])$('#'+id).addEventListener('close',()=>setTimeout(nextCard,120));
+
+// Hub: places (what you can do and who is around), phone, and everything else the engine offers. Free text stays open below.
+function renderHub(){const {state:s,pack:p}=current,box=$('#hub'),go=command=>act({command});box.hidden=false;
+ const threads=phone(s,p),unread=threads.reduce((n,t)=>n+t.unread,0),tab=(id,label)=>{const b=el('button',label,'hub__tab');b.type='button';b.setAttribute('aria-pressed',String(hubTab===id));b.onclick=()=>{hubTab=id;renderHub();};return b;};
+ const tabs=el('nav',undefined,'hub__tabs');tabs.append(tab('places','Places'),tab('phone',unread?`Phone · ${unread}`:'Phone'),tab('more','Other'));
+ let body;if(hubTab==='phone'){const acts=(current.actions||[]).filter(a=>PHONE_ACTIONS.includes(a.type)&&a.enabled!==false),owner=x=>x.args.character||threads.find(t=>t.messages.some(m=>m.id===x.args.message))?.character;body=el('div',undefined,'hub__phone');
+  body.append(...(threads.length?threads.map(t=>{const a=el('article');a.append(el('strong',t.unread?`${t.name} · ${t.unread} new`:t.name));for(const m of t.messages.slice(0,4)){a.append(el('p',m.text));if(m.reply)a.append(el('p',`You: ${m.reply}`,'hub__mine'));if(m.offer)a.append(el('small',`Invite to ${m.offer.place} · ${m.offer.status}`));}
+   for(const x of acts.filter(x=>owner(x)===t.character)){const b=el('button',x.label.replace(/^Text [^:]+: /,'Reply: '));b.type='button';b.disabled=busy;b.onclick=()=>go({type:x.type,args:x.args});a.append(b);}return a;}):[el('p','No messages yet.','muted')]));}
+ else if(hubTab==='more'){body=el('div');const b=el('button','Show every option');b.type='button';b.onclick=()=>{box.hidden=true;renderChoices();$('#choices').hidden=false;};body.append(b);}
+ else{body=el('div',undefined,'hub__places');body.append(...hub(s,p).sort((a,b)=>b.here-a.here).map(l=>{const card=el('article',undefined,`hub__place${l.here?' hub__place--here':''}${l.closed?' hub__place--closed':''}`);card.append(el('strong',l.here?`${l.name} · you are here`:l.name));if(l.closed)card.append(el('small',l.closed));
+   if(l.people.length){const who=el('div',undefined,'hub__people');who.append(...l.people.map(x=>{const b=el('button',x.name,`hub__person${x.interest?' hub__person--interest':''}`);b.type='button';b.disabled=busy||Boolean(l.closed);b.title=`Talk to ${x.name}`;b.onclick=()=>go({type:'core.scene',args:{text:`Talk to ${x.name}`,location:l.id,characters:[x.id],activity:'talk'}});return b;}));card.append(who);}
+   for(const a of l.activities){const b=el('button',a.name,'hub__activity');b.type='button';b.disabled=busy||!a.available;b.title=a.description;if(a.yields)b.append(el('span',a.yields,'hub__yields'));b.append(el('small',a.available?a.description:a.why));b.onclick=()=>go(activityCommand(p,a.id));card.append(b);}return card;}));}
+ const aims=el('ul',undefined,'hub__goals');aims.append(...goals(s,p).map(g=>el('li',g.text)));box.replaceChildren(el('p',`${calendarFor(s.tick,p).daypart} · where to?`),aims,tabs,body);}
+function showJournal(){const {state:s,pack:p}=current,list=(title,xs)=>el('p',`${title}: ${xs.length?xs.map(x=>x.reason).join('; '):'not yet known'}`);
+ $('#journal-entries').replaceChildren(...journal(s,p).map(j=>{const a=el('article');a.append(el('strong',j.stage?`${j.name} · ${j.stage}`:j.name),list('Likes when',j.likes),list('Dislikes when',j.dislikes));return a;}));$('#game-menu').close();$('#journal').showModal();}
 function stopAuto(){clearInterval(auto);auto=null;$('[data-action=auto]')?.classList.remove('active');}
 
-async function act(request){if(busy||!current)return;busy=true;stopAuto();$('#choices').hidden=true;$('.dialogue').hidden=false;if(request.input){lines=[{speaker:current.pack.playerId,kind:'YOUR ACTION',text:request.input}];cursor=0;showLine();}showLoading();$('#player-prompt').disabled=true;
+async function act(request){if(busy||!current)return;busy=true;stopAuto();$('#choices').hidden=true;$('#hub').hidden=true;$('.dialogue').hidden=false;if(request.input){lines=[{speaker:current.pack.playerId,kind:'YOUR ACTION',text:request.input}];cursor=0;showLine();}showLoading();$('#player-prompt').disabled=true;
  const campaignId=current.state.campaignId;let polling=true;const poll=(async()=>{while(polling){await new Promise(r=>setTimeout(r,250));if(!polling)break;try{const {preview}=await api('/api/preview?id='+encodeURIComponent(campaignId)),n=preview?.lines?.length;if(n)$('#state-detail').textContent=`${n} page${n===1?'':'s'} ready…`;}catch{}}})();
  try{const data=await api('/api/action',{campaignId,id:crypto.randomUUID(),expectedRevision:current.state.revision,...request});polling=false;await poll;busy=false;if(!data.clarification)$('#player-prompt').value='';render(data);}
  catch(e){polling=false;await poll;busy=false;render(current);showError('That action did not go through',e.message);}}
@@ -62,8 +96,8 @@ $('#font-choice').onchange=e=>{if(e.target.value!=='custom'||!$('#font-choice [v
 $('#font-file').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>2_500_000)throw Error('Choose a font smaller than 2.5 MB.');const url=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsDataURL(file);});await loadCustomFont(url,file.name,true);}catch(err){$('#font-status').textContent=`Could not load that font: ${err.message}`;}};
 
 document.addEventListener('click',e=>{const a=e.target.closest('[data-action]')?.dataset.action;if(!a)return;
- if(a==='continue')next();if(a==='menu')$('#game-menu').showModal();if(a==='history')history();if(a==='status')status();if(a==='save')save();if(a==='load')load().catch(err=>showError('Could not list saves',err.message));if(a==='retry')retry();
- if(a==='preferences'){$('#game-menu').close();$('#preferences').showModal();}if(a==='classic')location.href='/';if(a==='title'){$('#game-menu').close();title().catch(err=>showError('Could not reach the server',err.message));}
+ if(a==='continue')next();if(a==='menu')$('#game-menu').showModal();if(a==='history')history();if(a==='status')status();if(a==='journal')showJournal();if(a==='save')save();if(a==='load')load().catch(err=>showError('Could not list saves',err.message));if(a==='retry')retry();
+ if(a==='preferences'){$('#game-menu').close();$('#preferences').showModal();}if(a==='classic')location.href='/';if(a==='gallery'&&current){$('#game-menu').close();showGallery();}if(a==='title'){$('#game-menu').close();title().catch(err=>showError('Could not reach the server',err.message));}
  if(a==='auto'){if(auto)return stopAuto();e.target.closest('button').classList.add('active');auto=setInterval(()=>{if(!document.querySelector('dialog[open]')&&!busy)cursor<lines.length-1?next():stopAuto();},3000);}});
 $('.dialogue').addEventListener('click',e=>{if(!e.target.closest('button'))next();});
 $('#prompt-composer').onsubmit=e=>{e.preventDefault();const text=$('#player-prompt').value.trim();if(text)act({input:text});};

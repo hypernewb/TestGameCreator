@@ -15,9 +15,10 @@ function assertKnowledgeLeaks(value,context){
  }
 }
 function assertContentLevel(value,context,pack){
- const level=pack.intimacySettings?.contentLevel;
- if(level!=='fade'&&level!=='suggestive')return;
- if(value.lines.some(line=>EXPLICIT.test(line.text)))throw Error(`Content level is "${level}": remove explicit sexual detail`);
+ // An explicit pack is still capped at suggestive until state holds a consented, active encounter (service sets intimacyGate).
+ const gated=context.intimacyGate&&!context.intimacyGate.open,level=pack.intimacySettings?.contentLevel;
+ if(!gated&&level!=='fade'&&level!=='suggestive')return;
+ if(value.lines.some(line=>EXPLICIT.test(line.text)))throw Error(gated?'No consented intimate encounter in state: remove explicit sexual detail and have the character decline':`Content level is "${level}": remove explicit sexual detail`);
 }
 // Small local models sometimes decorate an otherwise grounded scene with the wrong time of day.
 // Limit this to concrete environmental phrases so a character may still discuss plans for tonight.
@@ -36,6 +37,13 @@ function assertDaypart(value,context){
 const PLAYER_INTERIOR=/\b(?:you (?:feel|realize|sense|think|wonder|hope|fear|want|need|remember|decide|resolve|brace yourself|steel yourself|can'?t quite place|find yourself)|your (?:heart|pulse) (?:pounds?|races?|quickens?)|(?:drawing|pulling|dragging|pulls?|draws?|drags?|lifts?) your (?:gaze|eyes|attention)|your (?:gaze|eyes) (?:being )?(?:drawn|pulled|dragged|drift(?:s|ing)?|travel(?:s|ling)?)|(?:anticipation|dread|excitement|nervous(?:ness| energy)?|relief|desire|longing) (?:courses?|washes?|floods?|surges?) (?:through|over) you|leaves? you feeling|(?:makes?|sends?) your (?:skin|spine|neck|ears|pulse) (?:prickl\w+|crawls?|tingl\w+|burn|ache)|your (?:skin|spine) (?:prickl\w+|crawls?|tingl\w+)|your (?:posture|stance|body language|breathing|breath) (?:\w+ ){0,2}(?:mirror\w*|match\w*|echo\w*|catch\w*|hitch\w*|quicken\w*|settle\w*|soften\w*|tense\w*|relax\w*|still\w*|deepen\w*|ease\w*|straighten\w*))\b/iu;
 function assertPlayerInterior(value){
  for(const line of value.lines)if(!line.speaker&&PLAYER_INTERIOR.test(line.text))throw Error('Do not invent the player’s feelings, thoughts, motives, memories, decisions, gaze, posture, or bodily reactions; describe only observable action and surroundings');
+}
+// Narration is second person. Once a named player turns up in memories, small models drift to "Cael vows to protect her",
+// which authors the player from outside and dodges the "you" checks above. Characters may still say the name. Soft: one repair.
+function assertPlayerPerson(value,context,pack){
+ const name=pack.actors?.find(a=>a.id===pack.playerId)?.name;if(!name||/^you$/i.test(name))return;
+ const re=new RegExp(`(?<![\\p{L}\\p{N}])${name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}(?![\\p{L}\\p{N}])`,'iu');
+ if(value.lines.some(l=>!l.speaker&&re.test(l.text)))throw Object.assign(Error(`Narration calls the player "you", never "${name}" or he/she: rewrite those lines in second person. Characters may still say "${name}" in dialogue`),{soft:true});
 }
 // Role-play fine-tunes open a scene with paragraphs of narration and never let the character talk. Soft: one repair is
 // asked for, and a second silent answer is still shown rather than failing the turn.
@@ -107,7 +115,7 @@ function assertPlayerTransactions(value,context){
   throw Object.assign(Error(`Do not narrate "you ${m[1]} ..." during a typed activity: purchases, sales, trades and item transfers are committed by the engine, not by prose. Describe the scene or have a character speak instead`),{soft:true});
  }
 }
-const CHECKS=[['attendance',assertSceneBoundaries],['knowledge',assertKnowledgeLeaks],['content',assertContentLevel],['time',assertDaypart],['calendar',assertWeekday],['player-agency',assertPlayerInterior],['player-transactions',assertPlayerTransactions],['touch-stage',assertStageTouch],['speech',assertCastSpeaks],['repeat',assertFresh],['paraphrase',assertFreshNarration],['beats',assertFreshBeats]];
+const CHECKS=[['attendance',assertSceneBoundaries],['knowledge',assertKnowledgeLeaks],['content',assertContentLevel],['time',assertDaypart],['calendar',assertWeekday],['player-agency',assertPlayerInterior],['player-person',assertPlayerPerson],['player-transactions',assertPlayerTransactions],['touch-stage',assertStageTouch],['speech',assertCastSpeaks],['repeat',assertFresh],['paraphrase',assertFreshNarration],['beats',assertFreshBeats]];
 export function lintScene(value,context,pack){
  for(const [check,run] of CHECKS){
   try{run(value,context,pack);}

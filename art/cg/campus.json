@@ -1,0 +1,644 @@
+{
+  "pack": "campus.ashford",
+  "size": [
+    1344,
+    768
+  ],
+  "steps": 28,
+  "scale": 5,
+  "style": "visual novel, painterly anime illustration, clean linework, soft autumn daylight, terracotta walnut and cream palette, detailed, cinematic composition",
+  "negative": "pixel art, sprite, dithering, text, logo, watermark, signature, speech bubble, username, lowres, blurry, jpeg artifacts, bad anatomy, bad hands, extra fingers, missing fingers, extra limbs, multiple views, chibi, 3d, photorealistic, neon, sci-fi, child, loli, shota, underage",
+  "characters": {
+    "jana": "girl, adult woman, 20 years old, university student, tall athletic build, long blonde hair, sandy blonde hair, freckles, blue-gray eyes, fitted cream knit sweater, denim shorts",
+    "monique": "girl, adult woman, 22 years old, university student, dark skin, black woman, vivid green eyes, long black hair in a tight french braid, fitted blouse, tailored trousers, small gold earrings",
+    "nova": "girl, adult woman, 22 years old, university student, long blonde hair with red and black streaks, bright blue eyes, punk fashion, red plaid skirt, black band t-shirt, choker, chains, platform boots",
+    "abigail": "girl, adult woman, 22 years old, university student, tanned skin, freckles, round glasses, short brown pixie cut, athletic build, loose tank top, athletic shorts, sneakers",
+    "kaylee": "girl, adult woman, 20 years old, university student, dirty blonde hair with platinum highlights, freckles, big bright smile, pastel hoodie, athletic leggings",
+    "jana-talk": "girl, adult woman, 20 years old, university student, tall athletic build, long blonde hair, sandy blonde hair, freckles, blue-gray eyes, oversized cream knit sweater, sleeves pulled over hands",
+    "jana-date": "girl, adult woman, 20 years old, university student, tall athletic build, long blonde hair, sandy blonde hair, freckles, blue-gray eyes, yellow raincoat over striped sweater, jeans",
+    "jana-kiss": "girl, adult woman, 20 years old, university student, tall athletic build, long blonde hair, sandy blonde hair, freckles, blue-gray eyes, cream knit sweater, denim shorts",
+    "jana-night": "girl, adult woman, 20 years old, university student, tall athletic build, long blonde hair, sandy blonde hair, freckles, mature female, nude, completely nude, freckled shoulders",
+    "monique-talk": "girl, adult woman, 22 years old, university student, dark skin, black woman, vivid green eyes, long black hair in a tight french braid, small gold earrings, fitted white blouse, tailored trousers",
+    "monique-date": "girl, adult woman, 22 years old, university student, dark skin, black woman, vivid green eyes, long black hair in a tight french braid, small gold earrings, elegant dark green dress, gold earrings",
+    "monique-kiss": "girl, adult woman, 22 years old, university student, dark skin, black woman, vivid green eyes, long black hair in a tight french braid, small gold earrings, camel wool coat over blouse",
+    "monique-night": "girl, adult woman, 22 years old, university student, dark skin, black woman, vivid green eyes, long loose black hair, braid undone, small gold earrings, mature female, nude, completely nude",
+    "nova-talk": "girl, adult woman, 22 years old, university student, long blonde hair with red and black streaks, bright blue eyes, black band t-shirt, red plaid skirt, choker, chains",
+    "nova-date": "girl, adult woman, 22 years old, university student, long blonde hair with red and black streaks, bright blue eyes, black leather jacket, band t-shirt, choker",
+    "nova-kiss": "girl, adult woman, 22 years old, university student, long blonde hair with red and black streaks, bright blue eyes, oversized black hoodie, plaid skirt, platform boots",
+    "nova-night": "girl, adult woman, 22 years old, university student, long blonde hair with red and black streaks, bright blue eyes, mature female, nude, completely nude, socks",
+    "abigail-talk": "girl, adult woman, 22 years old, university student, tanned skin, freckles, round glasses, short brown pixie cut, athletic build, loose tank top, athletic shorts, chalk on hands and forearms",
+    "abigail-date": "girl, adult woman, 22 years old, university student, tanned skin, freckles, round glasses, short brown pixie cut, athletic build, windbreaker jacket, hiking shorts, small backpack, round glasses",
+    "abigail-kiss": "girl, adult woman, 22 years old, university student, tanned skin, freckles, round glasses, short brown pixie cut, athletic build, green flannel shirt over tank top, round glasses",
+    "abigail-night": "girl, adult woman, 22 years old, university student, tanned skin, freckles, round glasses, short brown pixie cut, athletic build, mature female, nude, completely nude"
+  },
+  "cgs": [
+    {
+      "id": "apartment",
+      "seed": 21001,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "no humans, scenery, indoors, cozy small off-campus apartment living room, worn sofa with throw blanket, coffee table, bookshelf, mismatched mugs, surfboard wax on windowsill, kitchenette in background, table covered in notes and books, warm floor lamp, autumn afternoon",
+      "cast": [],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "langley",
+      "seed": 21002,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "no humans, scenery, old university dining hall and student union, long wooden tables, noticeboards covered in flyers, tall windows, brick walls",
+      "cast": [],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "hewett",
+      "seed": 21003,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "no humans, scenery, university gym exterior with climbing wall visible through glass, playing fields sloping down to the sea, beach volleyball court, autumn",
+      "cast": [],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "prescott",
+      "seed": 21004,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "no humans, scenery, modern glass university library, tall bookshelves, study tables, reading lamps, view of campus trees",
+      "cast": [],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "campbells",
+      "seed": 21005,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "no humans, scenery, cozy coffee shop interior, mismatched armchairs, chalkboard menu, espresso machine, pastries in display case, rain on window",
+      "cast": [],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "murphys",
+      "seed": 21006,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "no humans, scenery, irish pub interior, dark wood bar, sticky tables, small karaoke stage, string lights, evening",
+      "cast": [],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "jana-neutral",
+      "seed": 31001,
+      "size": [
+        832,
+        1216
+      ],
+      "prompt": "1girl, solo, standing, cowboy shot, facing viewer, looking at viewer, simple background, white background",
+      "cast": [
+        {
+          "id": "jana",
+          "action": "calm neutral expression, relaxed"
+        }
+      ],
+      "negative": "nsfw, nude, underwear, orange hair, red hair, brown hair, ginger hair"
+    },
+    {
+      "id": "jana-smile",
+      "seed": 31001,
+      "size": [
+        832,
+        1216
+      ],
+      "prompt": "1girl, solo, standing, cowboy shot, facing viewer, looking at viewer, simple background, white background",
+      "cast": [
+        {
+          "id": "jana",
+          "action": "warm smile, happy"
+        }
+      ],
+      "negative": "nsfw, nude, underwear, orange hair, red hair, brown hair, ginger hair"
+    },
+    {
+      "id": "jana-concerned",
+      "seed": 31001,
+      "size": [
+        832,
+        1216
+      ],
+      "prompt": "1girl, solo, standing, cowboy shot, facing viewer, looking at viewer, simple background, white background",
+      "cast": [
+        {
+          "id": "jana",
+          "action": "concerned expression, worried eyebrows"
+        }
+      ],
+      "negative": "nsfw, nude, underwear, orange hair, red hair, brown hair, ginger hair"
+    },
+    {
+      "id": "jana-frustrated",
+      "seed": 31001,
+      "size": [
+        832,
+        1216
+      ],
+      "prompt": "1girl, solo, standing, cowboy shot, facing viewer, looking at viewer, simple background, white background",
+      "cast": [
+        {
+          "id": "jana",
+          "action": "frustrated expression, pout, crossed arms"
+        }
+      ],
+      "negative": "nsfw, nude, underwear, orange hair, red hair, brown hair, ginger hair"
+    },
+    {
+      "id": "monique-neutral",
+      "seed": 31002,
+      "size": [
+        832,
+        1216
+      ],
+      "prompt": "1girl, solo, standing, cowboy shot, facing viewer, looking at viewer, simple background, white background",
+      "cast": [
+        {
+          "id": "monique",
+          "action": "calm neutral expression, relaxed"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "monique-smile",
+      "seed": 31002,
+      "size": [
+        832,
+        1216
+      ],
+      "prompt": "1girl, solo, standing, cowboy shot, facing viewer, looking at viewer, simple background, white background",
+      "cast": [
+        {
+          "id": "monique",
+          "action": "warm smile, happy"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "monique-concerned",
+      "seed": 31002,
+      "size": [
+        832,
+        1216
+      ],
+      "prompt": "1girl, solo, standing, cowboy shot, facing viewer, looking at viewer, simple background, white background",
+      "cast": [
+        {
+          "id": "monique",
+          "action": "concerned expression, worried eyebrows"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "monique-frustrated",
+      "seed": 31002,
+      "size": [
+        832,
+        1216
+      ],
+      "prompt": "1girl, solo, standing, cowboy shot, facing viewer, looking at viewer, simple background, white background",
+      "cast": [
+        {
+          "id": "monique",
+          "action": "frustrated expression, pout, crossed arms"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "nova-neutral",
+      "seed": 31003,
+      "size": [
+        832,
+        1216
+      ],
+      "prompt": "1girl, solo, standing, cowboy shot, facing viewer, looking at viewer, simple background, white background",
+      "cast": [
+        {
+          "id": "nova",
+          "action": "calm neutral expression, relaxed"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "nova-smile",
+      "seed": 31003,
+      "size": [
+        832,
+        1216
+      ],
+      "prompt": "1girl, solo, standing, cowboy shot, facing viewer, looking at viewer, simple background, white background",
+      "cast": [
+        {
+          "id": "nova",
+          "action": "warm smile, happy"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "nova-concerned",
+      "seed": 31003,
+      "size": [
+        832,
+        1216
+      ],
+      "prompt": "1girl, solo, standing, cowboy shot, facing viewer, looking at viewer, simple background, white background",
+      "cast": [
+        {
+          "id": "nova",
+          "action": "concerned expression, worried eyebrows"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "nova-frustrated",
+      "seed": 31003,
+      "size": [
+        832,
+        1216
+      ],
+      "prompt": "1girl, solo, standing, cowboy shot, facing viewer, looking at viewer, simple background, white background",
+      "cast": [
+        {
+          "id": "nova",
+          "action": "frustrated expression, pout, crossed arms"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "abigail-neutral",
+      "seed": 31004,
+      "size": [
+        832,
+        1216
+      ],
+      "prompt": "1girl, solo, standing, cowboy shot, facing viewer, looking at viewer, simple background, white background",
+      "cast": [
+        {
+          "id": "abigail",
+          "action": "calm neutral expression, relaxed"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "abigail-smile",
+      "seed": 31004,
+      "size": [
+        832,
+        1216
+      ],
+      "prompt": "1girl, solo, standing, cowboy shot, facing viewer, looking at viewer, simple background, white background",
+      "cast": [
+        {
+          "id": "abigail",
+          "action": "warm smile, happy"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "abigail-concerned",
+      "seed": 31004,
+      "size": [
+        832,
+        1216
+      ],
+      "prompt": "1girl, solo, standing, cowboy shot, facing viewer, looking at viewer, simple background, white background",
+      "cast": [
+        {
+          "id": "abigail",
+          "action": "concerned expression, worried eyebrows"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "abigail-frustrated",
+      "seed": 31004,
+      "size": [
+        832,
+        1216
+      ],
+      "prompt": "1girl, solo, standing, cowboy shot, facing viewer, looking at viewer, simple background, white background",
+      "cast": [
+        {
+          "id": "abigail",
+          "action": "frustrated expression, pout, crossed arms"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "kaylee-neutral",
+      "seed": 36001,
+      "size": [
+        832,
+        1216
+      ],
+      "prompt": "1girl, solo, standing, cowboy shot, facing viewer, looking at viewer, simple background, white background",
+      "cast": [
+        {
+          "id": "kaylee",
+          "action": "cheerful smile, waving"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "jana-talk",
+      "scene": "jana-talk",
+      "seed": 41001,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "1girl, solo, pov, indoors, cozy apartment living room at night, warm floor lamp, fairy lights, mismatched mugs on coffee table",
+      "cast": [
+        {
+          "id": "jana-talk",
+          "action": "sitting on a worn sofa, knees drawn up, serious soft expression, looking at viewer"
+        }
+      ],
+      "negative": "nsfw, nude, underwear, orange hair, red hair, brown hair, ginger hair"
+    },
+    {
+      "id": "jana-date",
+      "scene": "jana-date",
+      "seed": 41002,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "1girl, solo, pov, harbour sea wall, grey north sea, gulls, overcast autumn sky, wind",
+      "cast": [
+        {
+          "id": "jana-date",
+          "action": "holding a paper bag of cinnamon rolls, hair blowing loose in the wind, bright laugh, looking at viewer"
+        }
+      ],
+      "negative": "nsfw, nude, underwear, orange hair, red hair, brown hair, ginger hair"
+    },
+    {
+      "id": "jana-kiss",
+      "scene": "jana-kiss",
+      "seed": 41003,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "1girl, solo, pov, apartment kitchen at dusk, warm light, mismatched mugs, intimate close-up",
+      "cast": [
+        {
+          "id": "jana-kiss",
+          "action": "standing close, faint blush, determined gentle smile, looking up at viewer, face close"
+        }
+      ],
+      "negative": "nsfw, nude, underwear, orange hair, red hair, brown hair, ginger hair"
+    },
+    {
+      "id": "jana-night",
+      "scene": "jana-night",
+      "seed": 41004,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "nsfw, explicit, 1girl, 1boy, hetero, pov, bedroom at night, string fairy lights, warm glow, on bed, sex, intimate, romantic",
+      "cast": [
+        {
+          "id": "jana-night",
+          "action": "girl on top, guiding viewer's hand, looking at viewer, blush, soft smile, parted lips"
+        }
+      ],
+      "negative": "orange hair, red hair, brown hair, ginger hair"
+    },
+    {
+      "id": "monique-talk",
+      "scene": "monique-talk",
+      "seed": 41005,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "1girl, solo, empty university seminar room at evening, long table, laptop glow, papers in neat stacks",
+      "cast": [
+        {
+          "id": "monique-talk",
+          "action": "sitting at a seminar table with a laptop, not looking up, tired small smile"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "monique-date",
+      "scene": "monique-date",
+      "seed": 41006,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "1girl, solo, pov, small candlelit restaurant, window with harbour lights at night, wine glasses",
+      "cast": [
+        {
+          "id": "monique-date",
+          "action": "sitting at a restaurant table by the window, a closed paperback beside her plate, amused smile, looking at viewer"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "monique-kiss",
+      "scene": "monique-kiss",
+      "seed": 41007,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "1girl, solo, pov, quiet street at night, single streetlight pool of light, autumn leaves on pavement",
+      "cast": [
+        {
+          "id": "monique-kiss",
+          "action": "standing under a streetlight, composed expression, slight blush, looking at viewer"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "monique-night",
+      "scene": "monique-night",
+      "seed": 41008,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "nsfw, explicit, 1girl, 1boy, hetero, pov, bedroom at night, desk lamp, hairpins on desk, on bed, sex, intimate",
+      "cast": [
+        {
+          "id": "monique-night",
+          "action": "girl on top, straddling, hands on viewer's chest, confident smile, half-closed eyes, looking at viewer"
+        }
+      ]
+    },
+    {
+      "id": "nova-talk",
+      "scene": "nova-talk",
+      "seed": 41009,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "1girl, solo, dim dorm room, film posters on the wall, stacked vinyl records, string lights, night",
+      "cast": [
+        {
+          "id": "nova-talk",
+          "action": "sitting on a floor cushion, mid-sentence, sudden vulnerable expression, hugging her knees"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "nova-date",
+      "scene": "nova-date",
+      "seed": 41010,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "1girl, solo, pov, old movie theatre at midnight, dark auditorium, projector beam, red velvet seats",
+      "cast": [
+        {
+          "id": "nova-date",
+          "action": "in a cinema seat, pulling a snack from her jacket, mischievous grin, screen light on her face, looking at viewer"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "nova-kiss",
+      "scene": "nova-kiss",
+      "seed": 41011,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "1girl, solo, pov, outside the old cinema at night, glowing marquee, wet pavement reflections",
+      "cast": [
+        {
+          "id": "nova-kiss",
+          "action": "arms crossed, flustered pout, heavy blush, glancing at viewer"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "nova-night",
+      "scene": "nova-night",
+      "seed": 41012,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "nsfw, explicit, 1girl, 1boy, hetero, pov, messy bedroom at night, boots on floor, band posters, on bed, sex, playful",
+      "cast": [
+        {
+          "id": "nova-night",
+          "action": "lying on back, laughing, hair spread on pillow, blush, reaching for viewer"
+        }
+      ]
+    },
+    {
+      "id": "abigail-talk",
+      "scene": "abigail-talk",
+      "seed": 41013,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "1girl, solo, indoor climbing gym in the evening, bouldering wall with colourful holds, empty, crash mats",
+      "cast": [
+        {
+          "id": "abigail-talk",
+          "action": "sitting on gym crash mats, chalky hands in lap, thoughtful worried expression, looking at viewer"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "abigail-date",
+      "scene": "abigail-date",
+      "seed": 41014,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "1girl, solo, pov, sea cave entrance at low tide, rock pools, golden morning light, wet sand",
+      "cast": [
+        {
+          "id": "abigail-date",
+          "action": "holding a thermos and a folded tide timetable, excited smile, looking at viewer"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "abigail-kiss",
+      "scene": "abigail-kiss",
+      "seed": 41015,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "1girl, solo, pov, campus path at dusk, autumn trees, warm lamp posts",
+      "cast": [
+        {
+          "id": "abigail-kiss",
+          "action": "pushing her glasses up, nervous hopeful smile, blush, holding a folded paper list, looking at viewer"
+        }
+      ],
+      "negative": "nsfw, nude, underwear"
+    },
+    {
+      "id": "abigail-night",
+      "scene": "abigail-night",
+      "seed": 41016,
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "nsfw, explicit, 1girl, 1boy, hetero, pov, bedroom at night, bedside lamp, on bed, sex, intimate",
+      "cast": [
+        {
+          "id": "abigail-night",
+          "action": "sitting in viewer's lap, straddling, arms around viewer's neck, glasses askew, blush, looking at viewer"
+        }
+      ],
+      "negative": "orange hair, red hair, ginger hair, long hair, pale skin"
+    }
+  ]
+}

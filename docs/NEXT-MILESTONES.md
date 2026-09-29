@@ -2,7 +2,7 @@
 
 This roadmap is ordered by player risk and dependency, not by novelty. AI narration remains descriptive: only validated commands and authored effects may change world state.
 
-**Current priority: the Fun tier (F1–F12) comes before all remaining P1–P4 work.** Correctness and recovery are in good shape, but there is no game yet: across all packs there are about 13 scripted scenes and 28 choices, and no pack has a goal, a deadline, or a played intimate scene. The rationale and the games each milestone borrows from are in [FUN-PASS.md](FUN-PASS.md).
+**Current priority (2026-09-29): the [Game tier](#game-tier--the-venus-style-loop-do-first) (M0 → M2 → M3 → M5; the creator moved ahead of Director v2 on 2026-09-29) comes before all remaining P1–P4 work.** The design is in [GAME-DESIGN.md](GAME-DESIGN.md). It replaces the Fun tier (F1–F12). The Fun tier built a hand-authored storylet game, and a human playtest of it felt far worse than Venus University. The engine and modules are kept and re-aimed at a Venus-style loop, where typed text changes state and authored scenes are used where authoring pays off.
 
 **Module freeze lifted (2026-09-28).** New modules and module versions are allowed again. A new module should make a measurable [fun gate](#fun-gate) number better (dead turns, run length, payoff timing) on at least one showcase pack.
 
@@ -20,24 +20,61 @@ Reliability update: save-envelope migration v1→v2, automatic bounded recovery 
 
 Honest assessment (September 2026): the engine-to-content ratio is badly inverted (about 590 KB of code, 215 KB of docs, largest pack 19 KB). Free text has no mechanical weight, relationship feedback is a raw number diff (`Trust 52 → 55`), the main screen shows developer tools (context report, memory manager, backups, journal), and intimate scenes are gate → unstructured model prose → outcome, with no player decisions during the scene. Dating, rivals, gossip, secret encounters, disclosure and jealousy are implemented, but no shipped pack exercises them together.
 
-## Fun tier — make it a game (do first)
+Update (2026-09-29): F1–F12 fixed the buttons-and-numbers half of that list, but the owner's human playtest of `after-hours` still felt far worse than Venus. The problems were:
+- typing didn't work;
+- replies were one sentence long;
+- the speaker jumped between characters;
+- there was no liked/disliked feedback;
+- buying a drink changed nothing.
 
-Each milestone reuses existing modules where possible. "Steals from" names the design reference; the design is borrowed, not the code. Details are in [FUN-PASS.md](FUN-PASS.md).
+The content model had drifted into hand-authored storylets. Evidence and scene rules are in [research/venus-university/](research/venus-university/).
 
-| Milestone | What to change | Steals from | Done when |
+## Game tier — the Venus-style loop (do first)
+
+Design: [GAME-DESIGN.md](GAME-DESIGN.md). Order: **M0 → M2 → M3 → M5** (owner call 2026-09-29: the creator is the product, so it comes right after M0; the director is built for what the creator produces). The later items at the end wait until M5 lands.
+
+| Milestone | What to build | Reuses | Done when |
 |---|---|---|---|
-| F1. Vertical slice pack — **content complete; human fun gate pending** | One pack, meant to be the showcase: two romanceable characters plus one witness/gossip, a two-week run with a hard end date, ~25 storylets, a 4–5 rung intimacy ladder per love interest, one secret-and-witness drama thread, at least 3 endings, ~6 CGs and 3 expressions per love interest. Each Fun milestone lands against this pack. Workshops and templates stay as fixtures, not showcases. | Monster Prom, Being a DIK, Eternum | Passes the [fun gate](#fun-gate). Status (`after-hours`, 2026-09-28): 18-day run (endTick 216; lengthened from 14 so scripted runs land in the 30–45 min band), 77 scenes, Juno and Theo endings both reachable (`tests/after-hours.test.mjs` plays Juno to `juno-last-one-out` and the run auto-ends by the deadline). Last call is speakerless so it fires wherever the player is. `npm run fun` (6 scripted personas): all runs end on the date, 4 distinct endings, drama fires 6/6, run length 30.6–34.8 min (6/6 in band), dead turns 1–9% (6/6 ≤10%), first payoff 1.3–9 min (6/6 ≤15). Every route warms toward a first crush through ordinary attention: each love interest starts at chemistry 7 and gains a one-time bump from a first gift, a first learned like, a first wait together and their own activities (`warm-*` signals). Character-bound activities are only offered while that character is present. Still needed: the three-human fun gate on the local model. |
-| F2. Storylet hand — **shipped** | Scripted scenes support `offer: "hand"` cards with title, cast, location and time cost. Eligible cards start only when selected; locked cards may show an authored `offerHint`. Automatic triggers and the older one-per-period `storylet` pacing flag remain compatible. | Fallen London / quality-based narrative, Reigns | The validated hand, selection command, replay path, locked hints, player UI and creator fields are shipped. `after-hours` has 26 hand cards; a test checks 2–4 enabled offers in every daypart of days 1–15 on five routes (fresh, Juno, Theo, each kissed). |
-| F3. Run calendar with a hard end — **shipped** | Optional pack `run` block sets length in days and a fallback ending. The same tick clock drives cards, plans and events; time clamps at the deadline, lets an active scene land, then deterministically selects the highest-priority eligible ending or the fallback. Both player clocks show days left. | Persona, Monster Prom | A run always ends on its date with a deterministic ending; the UI always shows remaining time. `after-hours` uses `run: {days: 16, defaultEnding: "regular"}`; a non-continuous scene still open at the deadline closes itself ("Time is up. X says goodbye."), and the director fires no incidents after it, so the ending always selects. |
-| F4. Stat checks with visible requirements — **shipped** | No dice. A scene choice can carry a `check` (stat + target, optional situational modifiers, and a required `fail` branch). The player sees the requirement before choosing (`[Nerve · Bold ✗]`); the result is base stat + equipped gear `statBonus` + modifiers whose `when` holds. Failure runs its own authored result, effects and next beat, and `learnFromFailure` grants a little of the stat, so failing is progress. Stats have named `ranks` and are trained by activities that spend dayparts, so the tension is time allocation (F3), not luck. Checks never grant or bypass consent and never block declining. Mapping typed free text onto the current check choices is deferred until the slice is fun with buttons. See [STATS-AND-CHECKS.md](STATS-AND-CHECKS.md). | Persona social stats and gated options, Monster Prom stat-gated choices, Disco Elysium fail-forward | Every day in the F1 pack offers at least one check the player can see coming and plan for; a failed check always moves the story; replay gives identical results. Done in `after-hours`: 56 scenes carry checks, including 13 of the 26 hand cards across all three dayparts. A failed check that pays chemistry must carry a `reason`, and validation enforces this. |
-| F5. Intimacy encounter beats — **shipped in `after-hours`** | Replace the black-box intimate scene with an authored beat skeleton per category (opening → escalation → check-in → peak → aftermath). Each beat offers 2–3 player choices (pace, lead or follow, which interest to explore) scored against `stylePreferences` and `interests`; mismatches lower satisfaction and can end the scene early. `beats.mjs` gives the model one concrete instruction per beat. The check-in is an in-character beat backed by the engine's consent gate, so declining or withdrawing is always available and always honored. Fade and suggestive levels reuse the same beats. | Koikatsu / Honey Select (player-led pacing), Trials in Tainted Space (encounter menus), HuniePop (earned payoff), Baldur's Gate 3 (in-character check-ins) | Two encounters with the same character play differently depending on choices; preferences can be learned through play; the consent gate is unchanged and covered by tests at every beat. Done: Juno (take-lead → check-in → peak) and Theo (read-him → ask → slow) are multi-beat. The choices score against style and interests, and `knownInterests` is learned through play. A go-slow mismatch ends early with an awkward outcome. Tests check that every opening and beat has a stop choice (consent withdrawn, no check, no next), that stopping at the check-in completes nothing, and that repeat encounters stack the liked-style bonus. |
-| F6. Visible progress and teased next scene — **shipped** | Character cards show hearts, authored romance-rank names, and the next rank scene or nearest trust-gated storylet without exposing its numeric threshold. Characters without an authored route show a general relationship direction. Raw trust, chemistry, satisfaction, and trace values remain in Developer view. A Leads panel ("what could I pursue now") lists currently offered storylets and, per character, the concrete hook: here/away, pending invitations, unread messages, live events. | Stardew Valley, Persona | A player can always say what they're working toward with each character, and no player-facing text shows threshold numbers. |
-| F7. Escalation ladder and rank perks — **shipped in `after-hours`** | Authored rungs per route (flirt → charged moment → kiss → interrupted scene → first time → new dynamics). `romance-tempo` ranks and `styleExperience` unlock things: intimacy categories, actions, locations, or a character sharing a fantasy. Repeat encounters escalate instead of resetting. | Persona confidants, Being a DIK, Summertime Saga | Every rung is its own authored payoff; a rank-up always grants something the player can use. Done: each route runs flirt → charged moment → kiss → night → repeat. Every perk card has a stats gate and an `offerHint`, is shown disabled until earned, and grants a usable thing (for example the wit-4 quiz perk gives the player the quiz pen). |
-| F8. Drama director — **engine shipped (`story.director`); showcase content shipped in `after-hours`** | A deterministic tension score derived from committed events (authored per-scene weights override the defaults), decaying with the clock. Quiet dayparts draw one authored complication scene through the existing queue as `story.incident`. RimWorld-style storyteller presets (cassandra/randy/phoebe), Wildermyth-style intensity tiers, deck-style cooldowns/uses, honest pre-committed teasers (`story.teaser`) one daypart ahead, `story.starved` telemetry when the deck runs dry, and a one-line narrator brief fed to `beats.mjs` so improvised scenes feel directed too. The reward mirror: `offer: "director"` scenes are dealt as choosable event actions on quiet dayparts (`opportunityChancePercent`) or right after an authored activity (`interruptionChancePercent` + `match.activity`), each costing a full daypart and paying stats, money, loot or affection through authored effects. `after-hours` ships four complications across tiers/locations and six reward events. | Left 4 Dead AI Director, RimWorld storytellers, Façade drama manager | Seeded runs never go more than N dayparts without a complication; every complication and event action is an authored scene with provenance. Done: the `after-hours` director profile ships both decks; playtest telemetry (F12) still needs to measure them in real runs. |
-| F9. Feedback juice and player-only chrome — **shipped** | Hearts and next-event teasers appear in the character view; short reactions replace numeric relationship changes in feedback and backlog. Context reports, memory manager, backups, exports, action journal, creator panels, Studio link, and compact harness are hidden until the player enables Developer view from the game menu. | Persona rank-up screen | A new player's first screen shows only story controls; every relationship change is shown as a reaction, not a number diff. |
-| F10. Scene gallery and skip-to-unseen — **shipped** | Gallery of completed scenes and CGs per route, replayable from committed history without changing state. Skip stops at the first unseen line, including inside repeat intimate encounters. (Moved here from milestone 26.) Shipped: `public/gallery.mjs` (Game menu → Gallery). Scenes group by the character they are most about, unplayed ones show as locked tiles, and replay rebuilds the pages, the choice taken and a failed check's text from `story.scenes` history without building a command. Read state is keyed by pack + speaker + text (as in Ren'Py), so replays, new runs and repeat encounters skip read lines. Tests: `tests/gallery.test.mjs`. | Ren'Py galleries, genre standard | Any completed scene can be replayed from the gallery; replay never commits events. |
-| F11. Role-slot storylet templates — **shipped** | Storylets with role slots ("the jealous one", "the confidant", "the rival") that are filled from the current cast when offered. `scripts/ai-bulk-author.mjs` drafts them offline; an author reviews them before they're baked into a pack. | Wildermyth | One template produces correct scenes for at least two different cast pairings in the F1 pack. Done: authoring-time expander `packages/cards/role-slots.mjs` (no runtime module) turns a template with `roles`, `@role` ids and `{role}` / `{role.they|them|their}` text into one ordinary scripted scene per pairing, gated by its own `when` and a shared `<id>.done` flag so it plays once. `packs/templates/after-hours.json` ("seen-together") yields 4 pairings; `tests/role-slots.test.mjs` covers them in play. `node scripts/bake-templates.mjs <pack> <templates> [--write]` previews/bakes. Baked into `after-hours.json` (4 seen-together scenes; re-baking replaces them). Not yet: bulk-author drafting of templates, verb agreement for they/them. |
-| F12. Fun metrics in playtest — **metrics shipped** | Extend `npm run playtest` and the Studio evaluation with fun proxies: minutes to first choice, minutes to first romantic payoff, choices per 10 minutes, dead turns (no state change), distinct storylets seen, repeated-prose ratio. Add a human playtest checklist. | Shipped 2026-09-28 (metrics side): `packages/testing/fun-metrics.mjs` + persona bots (`persona-playtest.mjs`); fun/gate lines in `npm run playtest`, `playtest:ai` and `npm run fun` (bots, or `--campaign latest` for a human run); checklist in `docs/HUMAN-PLAYTEST.md`; after-hours numbers in `docs/TEST-RESULTS.txt`. Studio evaluation not wired yet. | The summary line reports these metrics, and the F1 pack's numbers are recorded in `docs/TEST-RESULTS.txt`. |
+| **M0. Scene feel + first playable (campus)** | Steps below, in order. The old M1 (first playable) is merged in. | See each step | The owner plays 30 minutes on the local model and would rather keep going than switch to Venus. The proxies in the [fun gate](#fun-gate) pass. |
+| M0.1 Scene feel | **Fix typing:** the input box always accepts text; no action is discarded, including the one that hits the budget. **Free-typing scene contract:** one focus NPC, an echo line, 1–3 sentence beats, 3–5 input budget, a closing reply that answers the last input, the narrator in the scene's voice, the model completing the player's action. | `service.mjs` scene path, `beats.mjs`, `scene-boundaries.mjs`, `narration-lint.mjs`, `vendor/venus/` | A 5-scene typed run on the 9b model breaks none of the contract rules; tests cover budget close and no dropped input. |
+| M0.2 Free text becomes state | **Tagger → engine pricing:** the model tags acts (flirt, gift, touch, insult, buy, invite…) and size; the engine prices money, affection and calendar invites against hidden likes, prices and caps. Tags ride in the existing structured reply; add a separate end-of-scene pass only if the 9b model tags badly. **End card:** liked/disliked reasons and the heart change. **NPC memories** from the model. Tags are committed events, so replay never calls the model. | `romance-tempo` (banks, caps, tastes, repeat decay), `economy`, `phone` / `timed-events` (invites), `memory.mjs` | "Buy her a drink" bills money and moves affection; "hang out Sunday" lands on the calendar and missing it costs; sweet talk can't exceed the caps; replay is identical. |
+| M0.3 Model check (postponed, owner call 2026-09-29) | The owner plays for an hour on a cloud model with the same world, to separate what the 9b model costs from what our systems cost. | — | The findings are recorded, and any 9b-only failures get a prompt or budget fix or become a documented limit. |
+| M0.4 Campus world | Built as structured data (the wizard comes in M2): 3–4 romanceable characters plus one warm friend, 5–6 places, basic activities, a fixed calendar and endings. Each love interest gets a likes and limits table, a trait track and a ladder of firsts. | `packs/*.json`, `calendar`, `endings`, `stats` | `npm run validate` passes and a bot run reaches an ending. The campus world replaces `after-hours` as the showcase. |
+| M0.5 Deduction and change arc | **Hidden likes and limits**, surfaced only through reasons and a **discoveries journal** (read-only, never raw NPC memory). **Hidden traits plus named stages:** stages change voice, outfits, what she'll say yes to, and unlocked scenes. | `dating` preferences, `intimacy` `knownInterests`, `progression` relationship states, `stats` (hidden) | A player can name 2+ likes per love interest after an hour of play, and a stage change is visible in her voice and options. |
+| M0.6 Erotic payoff | **Ladder of firsts:** the first time is authored, with choices that read her cues; repeats are free-typed; each first unlocks a gallery entry. **Mood and moment:** privacy, mood and sobriety state. **Intimacy hard rule:** state wins; the engine blocks before the model writes; "drunk and willing" becomes an "ask me when I'm sober" hook; a pushy advance becomes a remembered rejection. | F5 beats, F7 ladder, F10 gallery, `intimacy.mjs` gates; sobriety state is new | Tests show no path into intimate prose without consent in state, including typed attempts while drunk or at too early a stage. The first romantic payoff lands within 15 minutes. |
+| M0.7 Hub | Map plus phone: places show this slot's activities with stat and gold ranges and who might be there; the phone carries texts, invites and rumors; a morning day card. Activities give midpoint results (minigames come in M5). | `daypart`, `calendar`, `phone`, core schedules, F9 player chrome | Every slot offers 3+ things to do plus free text, and the player can always say what they're working toward. Owner call 2026-09-29: the hub states it automatically from engine state, as each love interest's next first plus what gates it, in words, never numbers ("Nova: next is a date. She needs to be more into you."). Talking to someone outside a scene opens a short focused talk scene, so everything said there is priced. Activity yields (owner call 2026-09-29): money exact, your stats as arrows, her trust as a heart (`+$30 · Charm ↑`, `Jana ♥ · Charm ↑`). The goal line lists all four love interests from day one; dislike questions are "Risky": free once, a small minus (−3, decaying) when you keep bringing it up. |
+| **M3. Director v2** (acceptance met 2026-09-30, see [M3-DIRECTOR-PLAN.md](M3-DIRECTOR-PLAN.md)) | Generates four kinds from a template library made when the world is created: events and invites, obstacles and rivals, goals with deadlines, temptations. Fully adaptive (nothing happening → drama; losing → an opportunity; one-character focus → a rival or a temptation) under a creator-set tone ceiling. The storyteller presets become internal defaults. | `story.director` (F8), `role-slots.mjs` (F11), `timed-events`, `phone`, `romance-network` | Seeded campus runs never go more than N slots without a director beat. Every beat is a template instance with provenance. A test shows play style changing what the director deals. |
+| **M2. Creator wizard** | Input: a one-line premise or ST card(s) first, then a guided form to fill gaps and edit → cast (with act profiles: likes, dislikes, limits) → places and activities → arcs and the firsts ladder from beat templates → director event seeds (M3 consumes them later). The AI drafts each step and the creator approves it before the next. Owner call 2026-09-29: a cloud model drafts, the local model plays. | [GENERATOR-PLAN.md](GENERATOR-PLAN.md) steps 1–6, `card-world`, `character-card`, `route-skeleton`, `intimacy-skeleton`, `bulk-authoring`, `proposal-review` | First proof: rebuild campus from a one-line premise and compare it to the hand-built `packs/campus.json` (same shape, validates, the ladder reaches every rung, fun-gate proxies within range of the original). Then a second world from one of the owner's ST cards. |
+| **M5. Activity depth** | A clue or timing minigame for every activity, skippable at the midpoint result. Push your luck: bigger gains with a mishap chance, and mishaps feed the director. Activity encounter procs, with witnesses for touch at work, gym or study. Social-link ranks unlock activities. | F4 checks, `moments`, `gossip`, `npc-social`, `romance-tempo` ranks | Every campus activity has a minigame. A mishap reliably produces a director beat. Getting handsy in front of a coworker has a consequence. |
+
+### Later (after M5)
+- **M4. Secrecy and agreements.**
+  - Suspicion, evidence and witnesses lead to caught outcomes: a free-typing confrontation (her evidence vs your claims), a breakup or bad ending, negotiating an opening, and ripple drama.
+  - Agreements move monogamous → open → poly and secret → public, negotiated in play.
+  - NPC-to-NPC relationships and the player's reputation arc.
+  - Reuses `gossip`, `dating` agreements, `romance-network` and `npc-social`.
+- **Roguelike cards:** deal 3 plus a basics row, built on the F2 hand; deckbuilding after that.
+- **Runtime AI director events** as a supplement to the template library.
+- **Run-shape presets:** roguelite (isekai) and forever sandbox.
+- **after-hours regeneration check (optional):** regenerate an after-hours-like premise through the wizard, to see whether the premise or the old systems were the problem.
+
+### What happens to the Fun tier (F1–F12)
+Superseded 2026-09-29. The original table is in [COMPLETED-MILESTONES.md](COMPLETED-MILESTONES.md#fun-tier-superseded-2026-09-29) and the old rationale in [FUN-PASS.md](FUN-PASS.md), both kept for history.
+
+| Milestone | Verdict |
+|---|---|
+| F1 after-hours pack | **Retire.** It stays as a test fixture until the campus world replaces it in tests, then gets deleted in a reviewed change. |
+| F2 storylet hand | **Demote** to the later roguelike card layer; it is no longer the core loop. |
+| F3 run calendar | **Keep.** It is the default run shape. |
+| F4 stat checks | **Keep** for authored choices. Its "map typed text onto checks" deferral is superseded by the M0.2 tagger. |
+| F5 intimacy beats | **Keep** as the authored first time (M0.6). |
+| F6 visible progress | **Keep.** Hearts stay visible (owner's call, 2026-09-29: avoids reading as a Venus copy). The end card animates the heart change. Likes and limits stay hidden. |
+| F7 escalation ladder | **Keep** as the ladder of firsts. |
+| F8 drama director | **Keep** as the timing core of director v2 (M3). |
+| F9 player-only chrome | **Keep.** |
+| F10 gallery | **Keep.** It is the collection half of the erotic payoff. |
+| F11 role-slot templates | **Keep** as the base for director and first-time templates. |
+| F12 fun metrics | **Keep.** Add the typed-turns-that-changed-state metric. |
 
 ## P0 — Critical correctness and recovery
 
@@ -45,7 +82,7 @@ All P0 milestones are shipped — see [COMPLETED-MILESTONES.md](COMPLETED-MILEST
 
 ## P1 — Required for a dependable creator
 
-Deprioritized behind the Fun tier, except where a Fun milestone needs it (for example, Studio forms for storylet `offer`, run calendars, and encounter beats). Milestones 6 and 7 are shipped — see [COMPLETED-MILESTONES.md](COMPLETED-MILESTONES.md#p1--required-for-a-dependable-creator).
+Deprioritized behind the Game tier, except where a Game milestone needs it (for example, the M2 creator wizard reuses Studio forms and validation). Milestones 6 and 7 are shipped — see [COMPLETED-MILESTONES.md](COMPLETED-MILESTONES.md#p1--required-for-a-dependable-creator).
 
 | Milestone | What to change | Done when |
 |---|---|---|
@@ -90,7 +127,7 @@ Milestone 23 (VN playback polish) is shipped — see [COMPLETED-MILESTONES.md](C
 
 ## P4 — Optional expansion modules
 
-Build these only after the Fun tier passes its gate and the creator and recovery path are dependable. Each should be opt-in, data-driven, replay-safe, and removable without changing the core loop.
+Build these only after M0 passes the fun gate and the creator and recovery path are dependable. Each should be opt-in, data-driven, replay-safe, and removable without changing the core loop.
 
 | Milestone | Possible modules |
 |---|---|
@@ -99,7 +136,7 @@ Build these only after the Fun tier passes its gate and the creator and recovery
 | 29. Sharing and ecosystem | Pack export with dependency manifests, reusable module presets, compatibility checks, safe asset bundling, content-rating metadata, and optional community distribution. |
 | 30. Advanced model adapters | Provider-specific adapters, context-window negotiation, model capability detection, editable retry/reword flows, and separate queues for narration and media jobs. |
 | 31. Pre-generated dialogue graphs and offline replay | Let one model request author a bounded multi-step dialogue graph (for example three player choices, then two follow-up choices) whose branches can apply different deterministic memories/effects even when prose rejoins. Record approved player-choice/response pairs by context signature so later playthroughs can replay a known branch without a model call. | Replaying a recorded branch in offline mode produces the approved pages and the same committed effects; cache misses remain explicit and can fall back to a configured model. |
-| 32. Card-style presentation (parked) | Not a card battler: a Reigns-style choice-card skin for decisions and/or a Fallen London-style "hand" view for offered storylets (the existing `offer: "hand"` flow). Presentation layer only, no card-combat mechanics; revisit only after the fun gate passes. |
+| 32. Card-style presentation | Moved to the Game tier's "Later" list as roguelike activity cards (deal 3 plus a basics row, deckbuilding after that). |
 
 ## Recommended attraction model
 
@@ -122,7 +159,7 @@ Stats must remain pack-defined. A Bar game might use confidence, humor, style, e
 | Phone and feed | **Keep; P2** | It creates meaningful asynchronous play and replaces the limited invitation stand-in. Phone should land before feed; feed can be a thin event view initially. |
 | Romance and adult scenes | **Keep; promote to high-priority P2** | This is a primary product goal. Keep `social.dating` and `social.intimacy` optional and layered over generic stats, bonds, plans, privacy, witnesses, and consent. This preserves modularity while supporting deep romance and explicit adult packs. |
 | Economy v0.2 | **Keep, narrowed to P2** | Multi-shop stock, gifts, wages, and bounded debt are reusable. Business ownership is a separate management-game feature and should wait for a game that needs it. |
-| Education | **Do not build yet; retain as P4** | It proves modularity for Campus, but Bar and Fantasy Town gain nothing from GPA/exams. The Campus template can initially use generic schedules and activities. |
+| Education | **Do not build yet; retain as P4** | It proves modularity for Campus, but Bar and Fantasy Town gain nothing from GPA/exams. The M0 campus world uses generic schedules and activities (Venus-style classes: attend → +1 stat, plus a chance to meet someone). |
 | NPC overlays and gossip | **Keep; P2 before romance** | Witness and rumor provenance are prerequisites for fair jealousy or social consequences. Replace arbitrary caps with authored budgets rather than simulating everyone. |
 | Automated test-play | **Keep; promote to P1** | New modules multiply unreachable content and clarification loops. This is leverage for every later feature. |
 | Mechanics/content digest split | **Keep; promote to P1** | Creators must be able to fix prose and art without destroying campaigns. This belongs with migration safety, not content polish. |
@@ -131,8 +168,8 @@ Stats must remain pack-defined. A Bar game might use confidence, humor, style, e
 | Streaming parser integration | **Keep; P0** | High player impact for local models, but previews must remain non-authoritative until final sanitation. |
 | Checkpoints and rewind | **Keep; P1** | Valuable recovery feature once atomic preview/final boundaries and migrations are defined. |
 | ComfyUI, audio, animation | **Defer; P3 and last** | Large surface area and little mechanical value. Manual assets, accessibility, saves, and creator diagnostics matter first. Exception: the F1 pack's CGs and expressions are content, not pipeline work, and are in scope now. |
-| Intimate scenes as unstructured prose | **Replace; F5** | The genre's main payoff currently has no player decisions. Authored beats with choices keep the model to voicing one instruction at a time, which is also what a 9B model needs. |
-| Fun tier before creator completeness | **Adopt** | A dependable creator for a game nobody enjoys is not worth finishing first. Studio work continues only where a Fun milestone needs it. |
+| Intimate scenes as unstructured prose | **Replace; F5, then M0.6** | The first time is authored with beats (F5). Repeats are free-typed for replayability, under the intimacy hard rule in [GAME-DESIGN.md](GAME-DESIGN.md#what-the-model-writes): state wins, and the engine blocks before the model writes. |
+| Game tier before creator completeness | **Adopt** | A dependable creator for a game nobody enjoys is not worth finishing first. Studio work continues only where a Game milestone needs it. |
 
 Items not carried forward as new milestones: competing-trigger priority, a bounded pending queue, plan deadlines, kept/broken plan events, and a scene escape hatch. They are already implemented; the remaining work is authoring UX, stable IDs/visibility, diagnostics, and long-campaign evaluation.
 
@@ -144,29 +181,29 @@ Items not carried forward as new milestones: competing-trigger priority, a bound
 4. Implement `social.dating`, then the separately switchable `social.intimacy` layer, with creator controls and non-explicit fallbacks from the start.
 5. Add phone first, then the minimal feed, then economy depth; validate romance-aware flows in Campus, Bar, and Fantasy Town templates.
 6. Run a 50-turn campaign evaluation before starting education, ComfyUI, or authored media pipelines. Studio now exposes this evaluation directly.
-7. Ship the Fun tier as a playable vertical slice release (F1–F12) before resuming P1 creator completeness.
+7. Ship the Game tier: M0 (campus first playable), M2 (rebuild campus from a premise, then a second world from an ST card), M3, then M5. Resume P1 creator completeness after that. The Fun tier (F1–F12) shipped the engine pieces this relies on.
 
-## Immediate implementation order (updated September 2026)
+## Immediate implementation order (updated 2026-09-29)
 
-1. F2 (storylet hand) and F3 (run calendar): together they give the game a structure and a goal.
-2. F5 (intimacy encounter beats), prototyped on `template-bar.json`, then moved into the F1 pack.
-3. F1 content, written alongside F2–F5: characters, ladders, storylets, the secret-and-witness thread, endings.
-4. F4 (stat checks in pack content), F7 (ladder and perks), F8 (drama director).
-5. F10 (gallery), F11 (role-slot templates), F12 (fun metrics), then the fun gate.
-6. After the fun gate: resume P1 (scene-plan authoring, creator completeness, diagnostics, desktop release).
-7. Treat the remaining P4 modules as product choices, not framework completeness requirements.
+1. M0.1 scene feel, starting with the text-box bug. Then M0.2 (free text becomes state).
+2. M0.3 model check (the owner, one hour on a cloud model), so later prompt work targets the right bottleneck. Postponed by the owner on 2026-09-29.
+3. M0.4 campus world as structured data, then M0.5 (deduction and change arc), M0.6 (erotic payoff) and M0.7 (hub).
+4. The fun gate on the campus world. Only then M2 (creator), M3 and M5.
+5. `after-hours` stays as a test fixture during M0. Tests move to the campus world, and the pack is then deleted in a reviewed change.
+6. P1–P4 only where a Game milestone needs them.
 
 ## Fun gate
 
-The F1 pack passes when, with the `minimal` preset on the local model and at least three first-time human players:
+M0 passes when the owner plays the campus world for 30 minutes with the `minimal` preset on the local model and would rather keep going than switch to Venus. From M2 on, the same gate applies to the second world. The proxies below must also hold, measured by `npm run playtest` / `npm run fun` or recorded by hand:
 
-- The first meaningful choice comes within 2 minutes and the first romantic payoff (a tease rung) within 15 minutes.
-- A full run reaches an ending in 30–45 minutes, and different choices reach at least 2 different endings.
+- Typing always works. No player input is discarded, including the input that hits the scene budget.
+- Every free-typing scene closes within its 3–5 input budget, with a reply to the last input.
+- At least half of typed turns change state: money, affection, a memory, a calendar event or a discovery. This is the new F12 metric.
 - No more than 1 in 10 turns is a dead turn (no state change and no new information).
-- Each love interest's intimate encounter plays differently depending on player choices, and players can name at least one preference they discovered through play.
-- The secret-and-witness thread fires in at least half of runs.
-- Players can say what they were working toward with each character without seeing a number.
-- At least 2 of 3 players say they would start a second run.
+- The first liked/disliked reason comes within 5 minutes, and the first romantic payoff (a rung on the ladder of firsts) within 15 minutes.
+- After an hour, the player can name at least 2 likes or limits per love interest, and say what they're working toward with each one without seeing a number.
+- No path leads into intimate prose without consent in state. This is covered by tests, including typed attempts.
+- A full run reaches an ending, and different play reaches at least 2 different endings.
 
 ## Campaign evaluation gate
 

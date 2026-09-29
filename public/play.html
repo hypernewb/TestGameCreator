@@ -36,6 +36,8 @@
 
     <section class="choices" id="choices" hidden aria-label="Choices"></section>
 
+    <section class="choices hub" id="hub" hidden aria-label="Where to"></section>
+
     <form class="prompt-composer" id="prompt-composer" hidden>
       <label for="player-prompt">Your action</label>
       <input id="player-prompt" maxlength="500" autocomplete="off" placeholder="What do you say or do?">
@@ -50,6 +52,10 @@
 
     <section class="title-screen" id="title-screen">
       <div class="menu-heading"><small>STORY FRAMEWORK</small><h1>New game</h1><span id="title-provider"></span></div>
+      <label class="writer-choice" for="title-writer">Scene writing
+        <select id="title-writer"><option value="framework">Framework</option><option value="venus">Venus-inspired</option></select>
+        <small>Chosen when you start a game; saved with that game.</small>
+      </label>
       <div class="menu-list" id="title-packs"></div>
       <div class="menu-heading"><small>SAVED CAMPAIGNS</small></div>
       <div class="menu-list" id="title-campaigns"></div>
@@ -62,11 +68,13 @@
         <div class="menu-list">
           <button value="resume"><b>01</b><span>Return to story<small>Continue from the current scene</small></span><i>›</i></button>
           <button type="button" data-action="status"><b>02</b><span>Status<small>Stats, money, bonds and nearby things</small></span><i>›</i></button>
-          <button type="button" data-action="save"><b>03</b><span>Save game<small>Record a checkpoint</small></span><i>›</i></button>
-          <button type="button" data-action="load"><b>04</b><span>Load game<small>Return to an earlier checkpoint</small></span><i>›</i></button>
-          <button type="button" data-action="preferences"><b>05</b><span>Preferences<small>Font and reading</small></span><i>›</i></button>
-          <button type="button" data-action="classic"><b>06</b><span>Classic UI<small>AI settings, developer tools, full log</small></span><i>›</i></button>
-          <button type="button" data-action="title"><b>07</b><span>Title screen<small>Leave the current session</small></span><i>›</i></button>
+          <button type="button" data-action="journal"><b>03</b><span>Journal<small>What you have learned about people</small></span><i>›</i></button>
+          <button type="button" data-action="save"><b>04</b><span>Save game<small>Record a checkpoint</small></span><i>›</i></button>
+          <button type="button" data-action="load"><b>05</b><span>Load game<small>Return to an earlier checkpoint</small></span><i>›</i></button>
+          <button type="button" data-action="preferences"><b>06</b><span>Preferences<small>Font and reading</small></span><i>›</i></button>
+          <button type="button" data-action="gallery"><b>07</b><span>Gallery<small>Replay the firsts you have unlocked</small></span><i>›</i></button>
+          <button type="button" data-action="classic"><b>08</b><span>Classic UI<small>AI settings, developer tools, full log</small></span><i>›</i></button>
+          <button type="button" data-action="title"><b>09</b><span>Title screen<small>Leave the current session</small></span><i>›</i></button>
         </div>
         <button class="menu-close" value="resume">ESC &nbsp; Close</button>
       </form>
@@ -90,6 +98,36 @@
       <form method="dialog">
         <header><div><small>CHECKPOINTS</small><h2>Load game</h2></div><button value="close">Close ×</button></header>
         <div id="save-entries"></div>
+      </form>
+    </dialog>
+
+    <dialog id="day-card" class="history-panel campus-card">
+      <form method="dialog">
+        <header><div><small id="day-card-left">NEW DAY</small><h2 id="day-card-date">Morning</h2></div></header>
+        <div id="day-card-entries"></div>
+        <button class="campus-card__go" value="close">Start the day ›</button>
+      </form>
+    </dialog>
+
+    <dialog id="end-card" class="history-panel campus-card">
+      <form method="dialog">
+        <header><div><small>SCENE OVER</small><h2 id="end-card-text">Later</h2></div></header>
+        <div id="end-card-entries"></div>
+        <button class="campus-card__go" value="close">Continue ›</button>
+      </form>
+    </dialog>
+
+    <dialog id="gallery-dialog" class="history-panel gallery-panel">
+      <form method="dialog">
+        <header><div><small>SCENES YOU HAVE PLAYED</small><h2>Gallery</h2></div><button value="close">Close ×</button></header>
+      </form>
+      <div id="gallery-body"></div>
+    </dialog>
+
+    <dialog id="journal" class="history-panel">
+      <form method="dialog">
+        <header><div><small>WHAT YOU KNOW</small><h2>Journal</h2></div><button value="close">Close ×</button></header>
+        <div id="journal-entries"></div>
       </form>
     </dialog>
 

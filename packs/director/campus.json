@@ -1,0 +1,219 @@
+{
+ "tone": "soap",
+ "beats": {
+  "invite": {
+   "title": "Come Find Me Today",
+   "opening": "Your phone buzzes with {lead}'s name, and what she sends is less an invitation than a decision she has already made — she is doing something today, and she wants you in the room for it. You find her where she said she would be, and the second she spots you her whole face changes, like the day just decided to go well.",
+   "choices": [
+    {
+     "label": "I show up early and stay till the end.",
+     "result": "{lead} notices you were the first one there and the last one to leave, and she keeps inventing reasons to stand close to you. It lands: she tells you, near the end, that she is glad it was you."
+    },
+    {
+     "label": "I ask what this really means to her.",
+     "result": "{lead} blinks, then actually answers — the real version, not the easy one. It lands: she talks longer than she meant to and never once checks the time."
+    }
+   ],
+   "phone": "{lead}: I'm doing a thing today and I want you there for it — no pressure, but I'll be looking for you."
+  },
+  "hand": {
+   "title": "Two Hands, One Problem",
+   "opening": "{lead} messages you mid-spiral about something small that has swollen into something enormous — a shelf that will not sit level, a form that will not submit, a thing that needs two hands and one more person. By the time you arrive she is already apologizing for asking and already halfway to solving it badly.",
+   "choices": [
+    {
+     "label": "I take the hard half without being asked.",
+     "result": "{lead} goes quiet for a second, then hands it over like it costs her something — and it does. It lands: she stops apologizing and starts working beside you, shoulder to shoulder, done in half the time."
+    },
+    {
+     "label": "I tell her to do it her own way.",
+     "result": "{lead} solves it her way, and it works well enough. She thanks you, smiles, and the moment passes without either of you reaching for more."
+    }
+   ],
+   "phone": "{lead}: Okay, this is stupid, but I'm stuck and you're the only person I could think to ask. Help?"
+  },
+  "crowd": {
+   "title": "Two Of Us, One You",
+   "opening": "The room is loud and warm and both of them find you within ten minutes — {lead} at your left with a drink and something she has been saving all night to tell you, {rival} at your right, not bothering to hide that she is waiting. Neither of them is going to move first, which means you have to.",
+   "choices": [
+    {
+     "label": "I stay with {lead} the whole night.",
+     "result": "{lead} lights up and claims the entire evening, one story at a time, until the party thins out around the two of you. {rival} watches from across the room for a while, then leaves without saying goodbye to anyone."
+    },
+    {
+     "label": "I keep one hand for each of them.",
+     "result": "You split yourself down the middle and somehow nobody loses — {lead} gets your attention, {rival} gets your attention, and both of them are still standing when the music dies. It lands for both: neither of them feels dropped."
+    },
+    {
+     "label": "I go to {rival} and let {lead} wait.",
+     "result": "{rival} takes your arm like she has won something. {lead} gets one look at your back, finds someone else to talk to, and when you finally turn around she is already gone."
+    }
+   ],
+   "phone": "{lead}: I'm at this thing and it's fine, but you should be here. Come rescue me — I'll be the one watching the door."
+  },
+  "bad-day": {
+   "title": "A Short Fuse",
+   "opening": "{lead} has had a day that keeps getting worse, one small thing stacking on the last, and it shows in the set of the jaw before a word is spoken. You say something ordinary, and {lead} snaps at you — hard, sharp, out of all proportion to what you said. It isn't about you, and some part of {lead} knows it even while saying it.",
+   "choices": [
+    {
+     "label": "I don't take it personally. I wait.",
+     "result": "You stay steady, say you're around when {lead} wants to talk, and go. Ten minutes later your phone buzzes with an apology that actually means it, and {lead} finds you that evening with the whole day spilled out."
+    },
+    {
+     "label": "I try to smooth it over now.",
+     "result": "{lead} accepts the peace offering flatly, the way you take a receipt, and the rest of the conversation stays polite and thin. The day stays heavy and nothing really shifts."
+    },
+    {
+     "label": "I snap right back at {lead}.",
+     "result": "It escalates, both of you saying things you'll have to carry. {lead} goes quiet in the way that means a door just shut, and it takes days of careful work to pry it open again."
+    }
+   ]
+  },
+  "saw-you": {
+   "title": "Cool in the Hallway",
+   "opening": "{rival} saw you with {lead} — close, easy, laughing at something no one else would get. When you find {rival} later, every answer is one word too short and the smile is perfectly level. {rival} isn't going to ask. {rival} is waiting to see whether you'll say it first.",
+   "choices": [
+    {
+     "label": "I tell the truth before being asked.",
+     "result": "You say it plainly — what it was, what it wasn't — with no spin and no apology for having a life. {rival} studies you for one long second, then nods. That was all {rival} wanted."
+    },
+    {
+     "label": "I mention it plainly and keep walking.",
+     "result": "{rival} lets you explain without pushing back, and by the end of the block the coolness has thinned into something close to normal. Nothing is fixed, but nothing is broken either."
+    },
+    {
+     "label": "I joke it off and change the subject.",
+     "result": "{rival} laughs right on cue, then finds somewhere else to be. The distance settles in like weather — unremarkable, and everywhere."
+    }
+   ]
+  },
+  "rumor": {
+   "title": "The Rumor Mill",
+   "opening": "By now the story has been through three group chats and come out the far side wrong — you and {lead}, in a version you wouldn't recognize. {rival} catches you alone, no lead-in, no cushion, and asks flatly whether it's true. Then {rival} watches your face while you answer.",
+   "choices": [
+    {
+     "label": "I answer straight and don't flinch.",
+     "result": "You give it to {rival} whole, uncut, and let it stand. {rival} takes the answer as given — and respects that you didn't dress it up more than the answer itself."
+    },
+    {
+     "label": "I deny it flat. All of it.",
+     "result": "It works on {rival}, who relaxes and lets the whole thing drop. Across campus, {lead} hears exactly how you said it, and goes very, very quiet."
+    },
+    {
+     "label": "I say it's nobody's business but ours.",
+     "result": "{rival} takes the deflection with a shrug and lets it go. {lead} hears the same non-answer and lets it go too. Nothing moves, in either direction."
+    }
+   ]
+  },
+  "showdown": {
+   "title": "The Room Goes Quiet",
+   "opening": "It starts as nothing — a joke with an edge, a name said one time too many — and by the time you look up, {lead} and {rival} are squared off across the same table while half the room pretends not to watch. The argument isn't really the argument. The point is you, sitting between them. And now both of them turn and look at you to settle it.",
+   "choices": [
+    {
+     "label": "I stand with {lead}, no hedging.",
+     "result": "{lead} exhales and the fight goes out of the room in one breath. {rival} takes it exactly as it looks, gathers a jacket and the last of their dignity, and leaves without a word to you."
+    },
+    {
+     "label": "I side with {rival}. I say so.",
+     "result": "{rival} nods once, satisfied, and the tension breaks their way. {lead} doesn't argue — just looks at you a beat longer than the rest of the room does, then stops looking."
+    },
+    {
+     "label": "I won't pick. I tell them why.",
+     "result": "You say you won't rank people for an audience, and you mean it. Neither of them gets what they came for, but both of them stay — and the table stays yours."
+    }
+   ]
+  },
+  "promise": {
+   "title": "Find Me Tomorrow",
+   "opening": "{lead} catches you between things — hallway, doorway, the ten seconds before class — and doesn't waste them. She asks you to come find her before this time tomorrow, somewhere that isn't here, and she says it like it's already decided. What isn't decided is whether you're the kind of person who shows up.",
+   "choices": [
+    {
+     "label": "I'll be there. Tell me where.",
+     "result": "She gives you a place and a time and doesn't soften it with a joke. When she walks off she's walking a little taller, and you can tell she's already counting on you."
+    },
+    {
+     "label": "Probably. I've got a lot going on.",
+     "result": "She nods like she expected that answer, and something behind her eyes closes politely. The rest of the day she's friendly, normal, and slightly further away."
+    }
+   ],
+   "phone": "Before this time tomorrow — come find me. I'm not asking twice.",
+   "kept": {
+    "title": "You Came",
+    "opening": "You show up where she said, at the hour she said, and she's already there — which means she was early, which means she was waiting on purpose. She doesn't say she's glad. She just makes room beside her.",
+    "choices": [
+     {
+      "label": "I said I'd come. So I came.",
+      "result": "She looks at you for one long second and lets the corner of her mouth go. Whatever she was holding up alone, she puts some of it down with you."
+     }
+    ]
+   }
+  },
+  "big-night": {
+   "title": "The Thing That Matters",
+   "opening": "{lead} tells you about it flatly, like facts, like she's already preparing to hear that no one can make it. In the next two days she has the thing that matters most this term — the one with her name on it — and she asks if you'll be there. She asks like she'd survive either answer.",
+   "choices": [
+    {
+     "label": "I'll be there. Front row, whatever it is.",
+     "result": "She blinks, and then she's talking faster than before, explaining what she wants you to notice when it happens — the sign that someone is really going to be watching. She remembers that you said yes."
+    },
+    {
+     "label": "I'll try. No promises, though.",
+     "result": "She nods and changes the subject to something easy, and the easy subject lasts exactly as long as you're standing there. She doesn't bring it up again."
+    }
+   ],
+   "phone": "Two days out. It's the big one. I want you in the room — say you'll come.",
+   "kept": {
+    "title": "Room Full of People",
+    "opening": "You're there when it happens, in the chair she'd have picked for you if she'd let herself hope that far. She spots you before it starts, and the whole rest of it she keeps glancing back to make sure you're still watching.",
+    "choices": [
+     {
+      "label": "I watched every second of it.",
+      "result": "Afterward she finds you first, still running on it, and tells you which part she was thinking about when she looked at you. She doesn't let go of your sleeve for the rest of the walk."
+     }
+    ]
+   }
+  },
+  "spark": {
+   "title": "Someone Else Notices",
+   "opening": "You have spent every evening this week with {lead}, and the whole hall has noticed. {rival} finds you by the library steps, stands a half-step too close, and touches your sleeve while she talks. She is not being subtle about it.",
+   "choices": [
+    {
+     "label": "Flirt back and see where it goes.",
+     "result": "It lands. {rival} laughs low, holds your eyes a beat too long, and suddenly the two of you have plans neither of you has named yet."
+    },
+    {
+     "label": "Smile, then change the subject.",
+     "result": "It changes little. {rival} takes the deflection gracefully and lets the subject go, but her hand stays on your sleeve a moment longer than it needs to."
+    }
+   ]
+  },
+  "late-text": {
+   "title": "Two A.M., One Message",
+   "opening": "Your phone lights the ceiling at 1:52 a.m. Everyone else in the room is asleep and breathing slow. The message is from {rival}, and it is not about homework.",
+   "choices": [
+    {
+     "label": "Tell her I'm awake and thinking too.",
+     "result": "It lands. The reply comes back in seconds, warmer than it should be at this hour, and the two of you type until your phone is hot and the window has gone gray."
+    },
+    {
+     "label": "Ask her to call me.",
+     "result": "It lands. She calls, voice low and close to the microphone, and neither of you hangs up for a very long time."
+    }
+   ],
+   "phone": "You awake? I keep thinking about tonight and I don't want to stop."
+  },
+  "close-call": {
+   "title": "Half A Step Away",
+   "opening": "{rival} walks you back across the quad, talking fast and grinning, and stops under the lamp where the path splits. {lead} is somewhere behind you, not far, close enough to be heard if she called your name. {rival} leans in, close enough that you feel her breath, and waits.",
+   "choices": [
+    {
+     "label": "Close the gap and kiss her.",
+     "result": "It lands. Her mouth is warm and sure, and for a few seconds the quad, the lamp, and everything behind you goes quiet."
+    },
+    {
+     "label": "Step back, warm but clear.",
+     "result": "She catches the step back and takes it well — a grin, a shrug, no sting in it at all. She bumps your shoulder and lets you go, and nothing between you has been spent."
+    }
+   ]
+  }
+ }
+}

@@ -18,6 +18,6 @@ The project is building an adult eroge/dating sim, not merely a generic narrativ
 - Use the drama. Secrets, witnesses, disclosure and multiple partners are the main source of tension in the genre; the showcase pack must exercise them.
 - Provide genre staples: a scene/CG gallery, CGs for key scenes, expressions per character, and skip that stops at unseen text.
 
-These principles drive milestones F1 and F5–F10 in [NEXT-MILESTONES.md](NEXT-MILESTONES.md); the reasoning and references are in [FUN-PASS.md](FUN-PASS.md).
+These principles drove milestones F5–F10 and now drive M0.5–M0.6 in [NEXT-MILESTONES.md](NEXT-MILESTONES.md). The erotic loop and the intimacy hard rule (state wins over prose) are in [GAME-DESIGN.md](GAME-DESIGN.md).
 
 The three cross-setting templates intentionally include adult modules in different settings. Their content is small; their job is to prove that erotic mechanics are modular rather than campus-specific.

@@ -25,6 +25,14 @@
         "C:\\Users\\ckx19\\AppData\\Local\\Temp\\claude\\C--Users-ckx19-story-framework\\ca11aa10-7ba3-4375-9296-0bada72b5851\\scratchpad/iso-f10.mjs"
       ],
       "port": 3019
+    },
+    {
+      "name": "iso-c",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "C:\\Users\\ckx19\\AppData\\Local\\Temp\\claude\\C--Users-ckx19-story-framework\\0dabe507-b6c9-44e3-b272-6f6282f5806f\\scratchpad\\iso-c.mjs"
+      ],
+      "port": 3021
     }
   ]
 }

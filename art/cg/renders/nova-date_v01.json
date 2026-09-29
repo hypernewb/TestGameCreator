@@ -1,0 +1,79 @@
+{
+  "sheet": "art/cg/campus.json",
+  "cg": "nova-date",
+  "scene": "nova-date",
+  "seed": 41010,
+  "request": {
+    "input": "1girl, solo, pov, old movie theatre at midnight, dark auditorium, projector beam, red velvet seats, visual novel, painterly anime illustration, clean linework, soft autumn daylight, terracotta walnut and cream palette, detailed, cinematic composition",
+    "model": "nai-diffusion-4-5-full",
+    "action": "generate",
+    "parameters": {
+      "params_version": 3,
+      "width": 1344,
+      "height": 768,
+      "scale": 5,
+      "sampler": "k_euler_ancestral",
+      "steps": 28,
+      "n_samples": 1,
+      "ucPreset": 0,
+      "qualityToggle": true,
+      "dynamic_thresholding": false,
+      "cfg_rescale": 0,
+      "noise_schedule": "karras",
+      "legacy": false,
+      "legacy_v3_extend": false,
+      "legacy_uc": false,
+      "use_coords": false,
+      "prefer_brownian": true,
+      "deliberate_euler_ancestral_bug": false,
+      "seed": 41010,
+      "negative_prompt": "text, logo, watermark, signature, speech bubble, username, lowres, blurry, jpeg artifacts, bad anatomy, bad hands, extra fingers, missing fingers, extra limbs, multiple views, chibi, 3d, photorealistic, neon, sci-fi, nsfw, child, loli, shota, underage",
+      "characterPrompts": [
+        {
+          "prompt": "girl, adult woman, 22 years old, university student, long blonde hair with red and black streaks, bright blue eyes, black leather jacket, band t-shirt, choker, in a cinema seat, pulling a snack from her jacket, mischievous grin, screen light on her face, looking at viewer",
+          "uc": "",
+          "center": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "enabled": true
+        }
+      ],
+      "v4_prompt": {
+        "caption": {
+          "base_caption": "1girl, solo, pov, old movie theatre at midnight, dark auditorium, projector beam, red velvet seats, visual novel, painterly anime illustration, clean linework, soft autumn daylight, terracotta walnut and cream palette, detailed, cinematic composition",
+          "char_captions": [
+            {
+              "char_caption": "girl, adult woman, 22 years old, university student, long blonde hair with red and black streaks, bright blue eyes, black leather jacket, band t-shirt, choker, in a cinema seat, pulling a snack from her jacket, mischievous grin, screen light on her face, looking at viewer",
+              "centers": [
+                {
+                  "x": 0.5,
+                  "y": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        "use_coords": false,
+        "use_order": true
+      },
+      "v4_negative_prompt": {
+        "caption": {
+          "base_caption": "text, logo, watermark, signature, speech bubble, username, lowres, blurry, jpeg artifacts, bad anatomy, bad hands, extra fingers, missing fingers, extra limbs, multiple views, chibi, 3d, photorealistic, neon, sci-fi, nsfw, child, loli, shota, underage",
+          "char_captions": [
+            {
+              "char_caption": "",
+              "centers": [
+                {
+                  "x": 0.5,
+                  "y": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        "legacy_uc": false
+      }
+    }
+  }
+}

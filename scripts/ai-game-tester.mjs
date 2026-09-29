@@ -9,11 +9,13 @@ import {join,resolve} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {actions,createWorld} from '../packages/core/engine.mjs';
 import {calendarFor} from '../public/calendar.mjs';
+import {promptFill,speakCommand} from '../public/campus.mjs';
 import {registry} from '../packages/modules/index.mjs';
 import {Store} from '../packages/persistence/store.mjs';
 import {CompatibleProvider} from '../packages/ai/providers.mjs';
 import {GameService} from '../packages/ai/service.mjs';
 import {funMetrics,funGate,funLine,gateLine} from '../packages/testing/fun-metrics.mjs';
+import {readPack} from '../packages/cards/director-library.mjs';
 
 const arg=(name,fallback)=>{const at=process.argv.indexOf(`--${name}`);return at<0?fallback:process.argv[at+1];};
 const cleanJson=text=>JSON.parse(String(text).replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim());
@@ -81,7 +83,8 @@ ${transcript}`;
 async function main(){
  const packId=arg('pack','showcase.after-hours'),days=Math.max(1,Math.min(30,Number(arg('days','4'))||4)),context=Math.max(2048,Number(arg('context',process.env.STORY_CONTEXT_WINDOW||'8192'))||8192),endpoint=arg('endpoint',process.env.STORY_ENDPOINT),model=arg('model',process.env.STORY_MODEL),key=process.env.STORY_API_KEY||'';
  if(!endpoint||!model)throw Error('Set STORY_ENDPOINT and STORY_MODEL. Set STORY_API_KEY when the endpoint requires it.');
- const packs=readdirSync(resolve('packs')).filter(file=>file.endsWith('.json')).map(file=>JSON.parse(readFileSync(resolve('packs',file),'utf8'))),pack=packs.find(value=>value.id===packId);if(!pack)throw Error(`Unknown pack ${packId}`);
+ // --pack also takes a JSON file (a pack, or a creator/draft-world output with {pack}), so a created world plays without landing in packs/.
+ const file=/\.json$/i.test(packId)&&JSON.parse(readFileSync(resolve(packId),'utf8')),packs=file?[file.pack||file]:readdirSync(resolve('packs')).filter(file=>file.endsWith('.json')).map(file=>readPack(resolve('packs',file))),pack=file?packs[0]:packs.find(value=>value.id===packId);if(!pack)throw Error(`Unknown pack ${packId}`);
  const provider=new CompatibleProvider({endpoint,model,key,timeout:120000,maxRequests:500,maxTokens:1800,contextWindow:context}),dir=mkdtempSync(join(tmpdir(),'story-ai-tester-')),store=new Store(join(dir,'campaign.sqlite')),campaignId=`ai-test-${randomUUID()}`,start=createWorld(pack,registry,campaignId),service=new GameService(store,{[pack.id]:pack},registry,provider);store.insert(start);
  const interval=pack.daypart?.interval||4,targetTick=start.tick+days*interval*3,history=[],modelRequests={tester:0,game:0,critique:0},unmetIntents=[];let state=start,clarification='',typedScene='',guard=0,gameErrors=0;
  try{
@@ -90,7 +93,7 @@ async function main(){
    const beforeTester=provider.requests;let decision=await choose(provider,view,typedInScene);modelRequests.tester+=provider.requests-beforeTester;if(decision.testerError){history.push({clock:`Day ${view.clock.day} ${view.clock.weekday} ${view.clock.daypart}`,decision:'Tester stopped',kind:'tester',command:'TESTER_ERROR',narrative:decision.testerError,results:[],from:state.tick,to:state.tick,seconds:0,fallback:true,failureReason:decision.testerError,testerError:true});break;}
    if(Number.isInteger(decision.actionIndex)&&decision.actionIndex>=0&&!offered[decision.actionIndex]?.enabled)decision={...fallbackDecision(offered),testerWarning:decision.testerWarning||`Tester chose disabled action index ${decision.actionIndex}`,unmetIntent:decision.unmetIntent||''};
    if(decision.testerWarning||decision.unmetIntent)unmetIntents.push({turn:history.length+1,intent:String(decision.unmetIntent||decision.input||decision.reason||'').slice(0,200),reason:decision.reason||'',warning:decision.testerWarning||''});
-   const before=state.tick,t0=Date.now(),request={id:randomUUID(),expectedRevision:state.revision};if(Number.isInteger(decision.actionIndex)&&decision.actionIndex>=0){const selected=offered[decision.actionIndex];request.command={type:selected.type,args:selected.args};}else{request.input=decision.input;if(sceneKey)typedScene=sceneKey;}
+   const before=state.tick,t0=Date.now(),request={id:randomUUID(),expectedRevision:state.revision};if(Number.isInteger(decision.actionIndex)&&decision.actionIndex>=0){const selected=offered[decision.actionIndex],typed=promptFill(state,selected);if(typed){request.input=typed;if(sceneKey)typedScene=sceneKey;}else request.command=speakCommand(state,pack,selected);}else{request.input=decision.input;if(sceneKey)typedScene=sceneKey;}
    const beforeGame=provider.requests;let result;try{result=await service.act(campaignId,request);}catch(error){modelRequests.game+=provider.requests-beforeGame;history.push({turn:history.length+1,clock:`${view.clock.weekday} ${view.clock.daypart}`,decision:decision.input||offered[decision.actionIndex]?.label||'unknown',kind:request.input?'input':'action',command:'ERROR',narrative:error.message,results:[],from:before,to:state.tick,seconds:(Date.now()-t0)/1000,fallback:true,failureReason:error.message});console.log(`${String(history.length).padStart(2)} refused: ${clip(error.message,60)}`);if(++gameErrors>=3)break;continue;}modelRequests.game+=provider.requests-beforeGame;gameErrors=0;
    clarification=result.clarification||'';state=result.state;if(clarification)continue;const turn=Object.values(state.turns).at(-1),row={turn:history.length+1,clock:`Day ${view.clock.day} ${view.clock.weekday} ${view.clock.daypart}`,decision:request.input||offered[decision.actionIndex]?.label||decision.reason,kind:request.input?'input':'action',command:turn.command.type,narrative:turn.narrative||'',results:publicEvents(turn,pack.playerId),from:before,to:state.tick,seconds:Number(((Date.now()-t0)/1000).toFixed(2)),requestId:request.id,fallback:Boolean(turn.fallback),failureReason:turn.failureReason||'',flags:calendarFlags(turn.narrative||'',view.clock.weekday),...(decision.testerWarning?{testerWarning:decision.testerWarning}:{})};history.push(row);console.log(`${String(history.length).padStart(2)} ${row.clock.padEnd(24)} ${String(row.from+'→'+row.to).padEnd(8)} ${row.command.padEnd(26)} ${clip(row.decision,60)}`);
    const nextKey=`${state.modules['story.scenes']?.pending||''}:${state.scene?.id||''}`;if(nextKey!==sceneKey)typedScene='';

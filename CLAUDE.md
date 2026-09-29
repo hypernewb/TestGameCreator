@@ -13,7 +13,7 @@ Local-first interactive fiction engine: deterministic world state + modules, wit
 - Dense one-liner style: short names, chained expressions, few comments. Match surrounding code; don't reformat files.
 - Pure functions over state; modules never mutate state outside `execute`.
 - New behaviour needs a test in `tests/`. Keep prompts small: every token added to context must justify itself on the `minimal` preset.
-- Modules are unfrozen (2026-09-28): new modules are allowed, but each must earn its keep on the fun gate (`docs/NEXT-MILESTONES.md`). Fun-tier work (F1–F12) still comes before P1–P4.
+- Modules are unfrozen (2026-09-28): new modules are allowed, but each must earn its keep on the fun gate (`docs/NEXT-MILESTONES.md`). Game-tier work (M0 → M3 → M2 → M5, design in `docs/GAME-DESIGN.md`) comes before P1–P4. The `after-hours` pack is retired: keep it only as a test fixture and don't extend it.
 
 ## Safety rules
 - Creating/writing campaigns in the real `data/campaigns.sqlite` is allowed (the user has authorized this). Bulk-destructive ops on it (deleting/wiping campaigns, dropping tables) still need to go through a reviewable script and a heads-up in chat, not an ad hoc inline command.

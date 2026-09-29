@@ -17,3 +17,12 @@ test('what the player actually typed is allowed, and dialogue and normal scenes 
  assert.doesNotThrow(()=>lintScene(scene([{speaker:'',text:'You pocket the till tips.'}]),{playerAction:''},pack()),'non-typed scenes are unchecked');
  assert.doesNotThrow(()=>lintScene(scene([{speaker:'',text:'The floor is sticky near the taps.'}]),{typedActivity:true,playerAction:'start the shift'},pack()));
 });
+
+test('narration never names the player in third person; characters may say the name',()=>{
+ const named={playerId:'player',actors:[{id:'player',name:'Cael'},{id:'yvette',name:'Yvette'}]};
+ let err;try{lintScene(scene([{speaker:'',text:'Cael vows to protect Yvette from the dark.'}]),{},named);}catch(e){err=e;}
+ assert.equal(err?.lintCheck,'player-person');assert.equal(err.soft,true);assert.match(err.message,/"you", never "Cael"/);
+ assert.doesNotThrow(()=>lintScene(scene([{speaker:'yvette',text:'Cael. You again.'}]),{},named),'dialogue may use the name');
+ assert.doesNotThrow(()=>lintScene(scene([{speaker:'',text:'Caelum lamps gutter along the alley.'}]),{},named),'only the whole name');
+ assert.doesNotThrow(()=>lintScene(scene([{speaker:'',text:'You step in.'}]),{},{playerId:'player',actors:[{id:'player',name:'You'}]}),'an unnamed player is unchecked');
+});

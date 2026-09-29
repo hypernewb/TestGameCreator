@@ -14,7 +14,7 @@ test('review blames errors and warnings on the entry that causes them; rejected 
  const p=workshop(),ghost={...scene,id:'ghost-talk',title:'Ghost',pages:[{speaker:'ghost',text:'Boo'}]},far={...scene,id:'mira-away',title:'Away',trigger:{event:'core.inspected',match:{location:'workshop'}},when:{location:'workshop'}};
  const proposal=createProposal(p,{characters:[character],scenes:[scene,ghost,far]}),r=reviewProposal(p,proposal,{turns:30}),by=id=>r.entries.find(e=>e.id===id);
  assert.equal(r.stale,'');assert.deepEqual(r.errors,[]);assert.deepEqual(by('mira').errors,[]);assert.deepEqual(by('mira-arrives').errors,[]);
- assert.match(by('ghost-talk').errors[0],/speaker/);assert.match(by('mira-away').warnings[0],/^scene mira-away: mira speaks/);assert.deepEqual(by('mira-arrives').warnings,[]);
+ assert.match(by('ghost-talk').errors[0],/speaker/);assert.ok(by('mira-away').warnings.some(w=>/^scene mira-away: mira speaks/.test(w)));assert.deepEqual(by('mira-arrives').warnings.filter(w=>!/no choice has an effect/.test(w)),[]);
  assert.ok(r.play&&r.calendar.length&&r.calendar.every(c=>c.day>=1&&c.daypart&&c.hand>=0),'playtest and calendar');
  const rejected={...proposal,scenes:proposal.scenes.map(e=>e.value.id==='ghost-talk'?{...e,status:'rejected'}:e)};assert.deepEqual(reviewProposal(p,rejected,{play:false}).entries.find(e=>e.id==='ghost-talk').errors,[]);
  const approved={...rejected,characters:rejected.characters.map(e=>({...e,status:'approved'})),scenes:rejected.scenes.map(e=>e.value.id==='mira-arrives'?{...e,status:'approved'}:e)},changed={...p,subtitle:'edited'};

@@ -16,6 +16,8 @@ import {endingsContext} from '../modules/endings.mjs';
 import {feedContext} from '../modules/feed.mjs';
 import {directorContext} from '../modules/director.mjs';
 import {heldBy} from '../modules/inventory.mjs';
+// Authored act memories (social.acts entry.memory) ride on the recorded social.actPriced event, so they read like scene ledger rows.
+const actMemories=t=>(t.events||[]).filter(e=>e.type==='social.actPriced'&&typeof e.payload.memory==='string'&&e.payload.memory).map(e=>({charKey:e.payload.character,type:['liked','disliked'].includes(e.payload.verdict)?e.payload.verdict:'neutral',desc:e.payload.memory}));
 function visibleTo(v,actor){return v==='public'||Array.isArray(v)&&v.includes(actor);}
 // Tick of each timed entry's latest fresh keyed activation, read from committed turn traces newest-first and only as far
 // back as the longest sticky+cooldown window, so timers are a pure function of saved state and replay identically.
@@ -51,7 +53,7 @@ export function contextFor(s,p,actorId=p.playerId,turn=null,query='',opts={}){
  // the character itself; they cost tokens and teach the next reply nothing about the relationship.
  const playerName=p.actors.find(a=>a.id===p.playerId)?.name,aboutPlayer=d=>mentionsPlayer(d,playerName);
  // Walk newest-first and stop early: this runs every turn and must not scan the whole campaign.
- const ledger=[],turnList=Object.values(s.turns);for(let i=turnList.length-1;i>=0&&ledger.length<8;i--){const t=turnList[i];if(t.status!=='complete')continue;const own=(t.ledger||[]).filter(m=>(m.charKey===actorId||actorId===p.playerId)&&aboutPlayer(m.desc)).map(m=>{const name=p.actors.find(a=>a.id===m.charKey)?.name||m.charKey;return {source:`ledger:${t.id}`,text:`${name} ${m.type}: ${stripPlaceholders(m.desc,'the player',name)}`,knownBy:[p.playerId,m.charKey],tick:t.events[0]?.tick||0};});ledger.unshift(...own);}ledger.splice(0,Math.max(0,ledger.length-8));
+ const ledger=[],turnList=Object.values(s.turns);for(let i=turnList.length-1;i>=0&&ledger.length<8;i--){const t=turnList[i];if(t.status!=='complete')continue;const own=[...(t.ledger||[]).filter(m=>aboutPlayer(m.desc)),...actMemories(t)].filter(m=>m.charKey===actorId||actorId===p.playerId).map(m=>{const name=p.actors.find(a=>a.id===m.charKey)?.name||m.charKey;return {source:`ledger:${t.id}`,text:`${name} ${m.type}: ${stripPlaceholders(m.desc,'the player',name)}`,knownBy:[p.playerId,m.charKey],tick:t.events[0]?.tick||0};});ledger.unshift(...own);}ledger.splice(0,Math.max(0,ledger.length-8));
  const lore=selectLore(s,p,actorId,query,opts.wide?Infinity:1200);
  const generatedFactTrace=selectGeneratedFacts(s,p,actorId,query,opts.wide?Infinity:650);
  const items=(p.items||[]).filter(i=>heldBy(s,i.id,location)>0&&(!i.hidden||s.modules['world.objects']?.discovered.includes(i.id))).map(i=>({id:i.id,name:i.name}));

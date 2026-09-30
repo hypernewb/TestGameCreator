@@ -71,7 +71,10 @@ export function contextFor(s,p,actorId=p.playerId,turn=null,query='',opts={}){
  const unlockedEndings=s.modules['story.endings']?endingsContext(s,p):[];
  const socialFeed=s.modules['social.feed']?feedContext(s,p,actorId):[];
  const objects=(p.objects||[]).filter(o=>o.location===location).map(({id,name,description,tags})=>({id,name,description,tags}));
- const recentActions=s.events.filter(e=>e.type!=='core.patch'&&canSee(e.visibility)&&e.payload.text).slice(-10).map(e=>({source:e.id,tick:e.tick,type:e.type,text:e.payload.text}));
+ // Score events are UI feedback ("Ada: Trust 45 → 50", "Balance: $30."), not conversation: the model reads trust
+ // and money from their context panels, so the raw score lines never reach it as recent actions.
+ const scoreEvent=new Set(['social.relationshipChanged','social.bondChanged','social.chemistryChanged','social.satisfactionChanged','world.moneyChanged','character.statChanged']);
+ const recentActions=s.events.filter(e=>e.type!=='core.patch'&&!scoreEvent.has(e.type)&&canSee(e.visibility)&&e.payload.text).slice(-10).map(e=>({source:e.id,tick:e.tick,type:e.type,text:e.payload.text}));
  const clock=calendarFor(s.tick,p),{day,weekday,week}=clock,part=clock.daypart;
  const activeEvents=p.modules['world.events']?(p.worldEvents||[]).filter(e=>day>=e.startDay&&day<=e.endDay).map(({id,name,description,location:where})=>({id,name,description,location:where||null})):[];
  const sceneId=s.modules['story.scenes']?.pending,scriptedScene=(p.scriptedScenes||[]).find(x=>x.id===sceneId),sceneBeat=scriptedScene?.beats?.find(b=>b.id===s.modules['story.scenes']?.pendingBeat)||scriptedScene;

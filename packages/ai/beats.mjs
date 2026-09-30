@@ -48,7 +48,10 @@ export function beatDirection(context,pack,seed=''){
  const toYou=t=>{const who=/^(.+?) (?:told|promised) /u.exec(t)?.[1];if(!who)return t;const w=who.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
   return t.replace(new RegExp(`^${w} told [^:]+:\\s*`,'u'),'').replace(new RegExp(`^${w} told .+? about\\b`,'u'),'you told me about').replace(new RegExp(`\\b${w}[’']s\\b`,'gu'),'your').replace(new RegExp(`\\b${w} (is|was|has)\\b`,'gu'),(_,v)=>({is:'you are',was:'you were',has:'you have'})[v]).replace(new RegExp(`\\b${w}\\b`,'gu'),'you');};
  const recalled=aboutPlayer?toYou(focus((context.memories||[]).reduce((best,m)=>{const r=relevance(m.text,input,names);return r&&r+(m.kind?1:0)>=best[0]?[r+(m.kind?1:0),m.text]:best;},[0,''])[1])):'';
- const pool=[...movesOf(actor),...(seeds.length?['topic']:[])];
+ // Mid-scene the player owns the subject: a sheet topic only comes up when they gave nothing to follow ("Go on.", "Nice.").
+ const drift=phase!=='opening'&&!question&&input.trim().split(/\s+/).length<=3;
+ // An opening is one thread. Until they know the player well it is a greeting and a reaction to the moment, not their life goal plus a topic from their sheet.
+ const opening=phase==='opening',first=opening&&['stranger','familiar'].includes(stageOf(actor)),pool=[...movesOf(actor).filter(m=>!first||['notice','ask'].includes(m)),...(seeds.length&&drift?['topic']:[])];
  // Persona and Venus University characters remember: opening a later scene, every other time they follow up on something the
  // player told or promised them before ("so, how did the gallery opening go?"), which a 9B model given the memory list never does.
  const callbacks=phase==='opening'?(context.memories||[]).filter(m=>(m.kind==='disclosure'||m.promise)&&!/\bname(?:’s| is)\b/u.test(m.text)).slice(-3):[],
@@ -58,7 +61,7 @@ export function beatDirection(context,pack,seed=''){
  // A question the player walked away from outranks the routine beat: the character noticed the non-answer (Façade's beat of re-raising a dropped thread).
  const hang=context.hangingAsk&&context.hangingAsk.by===actor.name?`call back their own unanswered question ("${context.hangingAsk.text}") — the player left the last scene without answering it`:'';
  const beat=hang?hang:callback?(callback.promise?`ask whether the player kept their word ("${cb}")`:`follow up on something the player told them last time ("${cb}")`):move==='topic'?`bring up ${seeds[turn%seeds.length].replace(/[.!?]$/,'')}`:MOVES[move];
- const lead=phase==='opening'?(actor.goal?`start on what they want (${actor.goal.replace(/\.$/,'')})`:'greet the player their own way'):aboutPlayer?(recalled?`remind the player of what they told them: "${recalled.length>160?`${recalled.slice(0,160)}…`:recalled}"`:"answer from what the player has told them (if the player never said, admit not knowing)"):question?(ground?`answer the question directly from what is true (${ground.replace(/\.$/,'')})`:'answer the question directly and specifically'):/\b(?:sorry|apologi[sz]e)\b/i.test(input)?`accept or needle the player's apology their own way (the player is the one who is sorry, not ${actor.name.split(' ')[0]})`:FEELING.test(input)?'respond to how the player feels, their own way':'react to what the player just said';
+ const lead=opening?(first?'greet the player their own way and react to what they said':actor.goal?`start on what they want (${actor.goal.replace(/\.$/,'')})`:'greet the player their own way'):aboutPlayer?(recalled?`remind the player of what they told them: "${recalled.length>160?`${recalled.slice(0,160)}…`:recalled}"`:"answer from what the player has told them (if the player never said, admit not knowing)"):question?(ground?`answer the question directly from what is true (${ground.replace(/\.$/,'')})`:'answer the question directly and specifically'):/\b(?:sorry|apologi[sz]e)\b/i.test(input)?`accept or needle the player's apology their own way (the player is the one who is sorry, not ${actor.name.split(' ')[0]})`:FEELING.test(input)?'respond to how the player feels, their own way':'react to what the player just said';
  const size=context.sceneWriter==='venus'?'five or six visual-novel entries total, with brief narration and substantial character replies':'one brief narration entry, then four or five entries mostly in the character’s own spoken voice';
  // One authored line, rotating per turn, placed where the model reads last: small models copy a voice, not adjectives.
  // Left out of memory checks, where the model copies the sample's opener instead of recalling.
@@ -72,7 +75,7 @@ export function beatDirection(context,pack,seed=''){
  const under=briefOf(context.director);
  // The engine flags a re-asked question; the character voices the reaction (Venus: prompt the live moment, don't mute it).
  const repeat=context.repeatAsk?` The player just repeated something ${context.repeatAsk} already answered: react to the repetition itself — call it out, tease, or deflect. Do not answer it again.`:'';
- // Reciprocity is what makes chat feel like two people rather than an interview (Venus's "answer, react and move the moment on").
- const carry=phase==='continuation'&&!aboutPlayer?` After answering, move the moment on their own way: ask the player something back, tease, disagree, or pull something happening in the room into it.`:'';
- return `${actor.name}${tone?` (${tone})`:''}: ${lead}, then ${beat}.${chime} Keep it to ${size}. Plain talk, no speeches; don't echo the player.${carry} Find fresh physical business every turn; never reuse a gesture or mannerism from earlier in this scene.${boundary?` ${boundary}`:''}${voice}${repeat}${under?` ${under}`:''}`;
+ // Reciprocity without an interview: stay on what the player raised; a forced closing question every turn reads as a quiz (chat audit 2026-10).
+ const carry=phase==='continuation'&&!aboutPlayer?` Stay on what the player brought up and change the subject only through a clear link to it. A short reply is fine, and it need not end on a question.`:'';
+ return `${actor.name}${tone?` (${tone})`:''}: ${lead}, then ${beat}.${opening?' Keep to that one thread.':''}${chime} Keep it to ${size}. Plain talk, no speeches; don't echo the player.${carry} Gestures only when they add something; never reuse a gesture or mannerism from earlier in this scene.${boundary?` ${boundary}`:''}${voice}${repeat}${under?` ${under}`:''}`;
 }

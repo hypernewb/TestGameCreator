@@ -248,8 +248,9 @@ const placed=(tick,flags={})=>{const s=createWorld(pack,registry,'hand');Object.
 const handsAt=s=>[...new Set(pack.locations.flatMap(l=>{const t=structuredClone(s);t.actors.player.location=l.id;return actions(t,pack,registry).filter(a=>a.type==='story.startOfferedScene'&&a.enabled!==false&&a.args.scene.startsWith('hand-')).map(a=>a.args.scene);}))];
 
 test('F2: every daypart of the run holds 2-4 hand offers, whichever route you are on',()=>{
+ // Hand windows only change at ticks 24/36/48/60/211 (days 2-5 and 17); days 7-16 repeat day 6, so sample the boundaries.
  const routes={fresh:{},juno:{'juno-flirt':true,'juno-banter':true},theo:{'theo-opened':true,'theo-close':true},'juno kissed':{'juno-kissed':true,'juno-flirt':true,'juno-charged':true},'theo kissed':{'theo-kissed':true,'theo-opened':true,'theo-close':true,'theo-charged':true}};
- for(const [route,flags] of Object.entries(routes))for(let day=1;day<18;day++)for(const h of [1,6,9]){if(day===17&&h===9)continue;const n=handsAt(placed(day*12+h,flags)).length;assert.ok(n>=2&&n<=4,`${route} day ${day} tick ${h}: ${n} hand offers`);}
+ for(const [route,flags] of Object.entries(routes))for(const day of [1,2,3,4,5,6,17])for(const h of [1,6,9]){if(day===17&&h===9)continue;const n=handsAt(placed(day*12+h,flags)).length;assert.ok(n>=2&&n<=4,`${route} day ${day} tick ${h}: ${n} hand offers`);}
 });
 
 const nights=pack.scriptedScenes.filter(s=>s.trigger.event==='social.intimacyStarted');

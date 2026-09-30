@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createWorld,execute,replay} from '../packages/core/engine.mjs';
 import {registry} from '../packages/modules/index.mjs';
-import {Store} from '../packages/persistence/store.mjs';
+import {Store,exportCampaign,validateImport} from '../packages/persistence/store.mjs';
 import {GameService} from '../packages/ai/service.mjs';
 
 const pack=(extra={})=>{const p=JSON.parse(readFileSync(new URL('../packs/neutral.json',import.meta.url)));p.gameProject={...JSON.parse(readFileSync(new URL('../packs/crossed-plans.json',import.meta.url))).gameProject,...extra};delete p.schedules;return p;};
@@ -62,6 +62,40 @@ test('a scene that runs past its exchange cap closes itself and the clock moves 
  assert.equal(c.state.scene,null);assert.equal(c.state.tick,4);assert.equal(r.turn.events.find(e=>e.type==='core.sceneEnded').payload.reason,'schedule');
 });
 
+test('waits and rules-only commands mid-scene do not spend the exchange cap',()=>{
+ const c=run(pack(),'no-count');
+ c.act('core.scene',talk('Hi Ada.'));assert.equal(c.state.scene.exchanges,undefined);
+ c.act('core.inspect');assert.equal(c.state.scene.exchanges,undefined);
+ c.act('core.scene',talk('How was your day?','continue'));assert.equal(c.state.scene.exchanges,1);
+});
+
+test('a failed generation gives its exchange back to the scene',async()=>{
+ const p=pack();let fail=true;
+ const provider={name:'probe',async generateScene(){if(fail)throw new Error('model down');return {lines:[{speaker:'ada',text:'Still here.'}]};}};
+ const store=new Store();store.insert(createWorld(p,registry,'refund'));const service=new GameService(store,{[p.id]:p},registry,provider);
+ try{
+  await service.act('refund',{id:'open',expectedRevision:0,command:{type:'core.scene',args:talk('Hi Ada.')}});
+  const bad=await service.act('refund',{id:'cont',expectedRevision:1,command:{type:'core.scene',args:talk('How was your day?','continue')}});
+  assert.equal(bad.turn.fallback,true);assert.ok(bad.state.scene,'the scene stays open behind a failed turn');assert.equal(bad.state.scene.exchanges,0);assert.equal(replay(createWorld(p,registry,'refund'),bad.state.events).scene.exchanges,0);assert.equal(validateImport(exportCampaign(bad.state),p,registry).scene.exchanges,0);
+  fail=false;
+  const fixed=await service.retry('refund','cont');
+  assert.equal(fixed.turn.fallback,false);assert.match(fixed.turn.narrative,/Still here/);assert.ok(fixed.state.scene);assert.equal(fixed.state.scene.exchanges,0);assert.equal(validateImport(exportCampaign(fixed.state),p,registry).scene.exchanges,0);assert.equal(fixed.turn.events.filter(e=>e.id==='cont.refund').length,1);
+ }finally{store.close();}
+});
+
+test('a director-style offer whose preconditions broke cannot start',()=>{
+ const p=pack();p.modules['story.scenes']='0.1.0';
+ p.scriptedScenes=[{id:'visit',title:'She visits',opening:'A knock at the door.',offer:'hand',repeatable:true,timeCost:1,trigger:{event:'core.inspected',match:{}},pages:[{speaker:'ada',text:'Hi, got a minute?'}],choices:[{id:'ok',label:'Of course.',result:'You talk it through.',effects:[]}],when:{trust:{ada:30}}}];
+ p.initialRelationships=[{character:'ada',trust:30}];
+ p.dialogueReactions=[{id:'insult-ada',character:'ada',phrases:['you idiot'],trustDelta:-6}];
+ const c=run(p,'gate');
+ c.act('story.startOfferedScene',{scene:'visit'});assert.equal(c.state.modules['story.scenes'].pending,'visit');
+ c.act('story.choose',{scene:'visit',choice:'ok'});assert.equal(c.state.modules['story.scenes'].pending,null);
+ c.act('core.scene',talk('Hi Ada.'));c.act('core.scene',talk('You idiot.','continue'));
+ assert.equal(c.state.modules['social.relationships'].edges[`ada--${p.playerId}`],24,'trust dropped below the gate');
+ assert.throws(()=>c.act('story.startOfferedScene',{scene:'visit'}),/conditions are not met/);
+});
+
 test('a sharp trust drop makes the NPC leave the scene',()=>{
  const p=pack();p.dialogueReactions=[{id:'insult-ada',character:'ada',phrases:['you idiot'],trustDelta:-6}];p.initialRelationships=[{character:'ada',trust:30}];const c=run(p,'hurt');
  c.act('core.scene',talk('Hi Ada.'));const r=c.act('core.scene',talk('You idiot.','continue'));
@@ -79,5 +113,21 @@ test('a model-proposed ending in a continuous pack runs core.endScene and advanc
   const r=await service.act('natural',{id:'bye',expectedRevision:1,command:{type:'core.scene',args:talk('Nice talking.','continue')}});
   assert.equal(r.state.scene,null);assert.equal(r.state.tick,4);assert.equal(r.turn.id,'bye');assert.match(r.turn.narrative,/I should get going/);assert.equal(calls,2);
   const end=r.state.turns['bye-end'];assert.equal(end.status,'complete');assert.equal(end.events.find(e=>e.type==='core.sceneEnded').payload.reason,'natural');
+ }finally{store.close();}
+});
+
+
+test('failure at the safety limit leaves the scene open and refunds an event-replayable slot',async()=>{
+ const p=pack({sceneTurns:1});let fail=false;
+ const provider={name:'limit',async generateScene(){if(fail)throw Error('model down');return {lines:[{speaker:'ada',text:'I am listening.'}]};}};
+ const store=new Store();store.insert(createWorld(p,registry,'limit'));const service=new GameService(store,{[p.id]:p},registry,provider);
+ try{
+  await service.act('limit',{id:'open',expectedRevision:0,command:{type:'core.scene',args:talk('Hi Ada.')}});
+  fail=true;const bad=await service.act('limit',{id:'failed',expectedRevision:1,command:{type:'core.scene',args:talk('One.','continue')}});
+  assert.ok(bad.state.scene);assert.equal(bad.state.tick,0);assert.equal(bad.state.scene.exchanges,0);
+  assert.equal(validateImport(exportCampaign(bad.state),p,registry).scene.exchanges,0);
+  fail=false;const good=await service.act('limit',{id:'success',expectedRevision:bad.state.revision,command:{type:'core.scene',args:talk('Try again.','continue')}});
+  assert.equal(good.state.scene,null);assert.equal(good.state.tick,4);assert.equal(good.state.turns['success-end'].events.find(e=>e.type==='core.sceneEnded').payload.reason,'safety');
+  assert.equal(validateImport(exportCampaign(good.state),p,registry).scene,null);
  }finally{store.close();}
 });

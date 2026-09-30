@@ -15,10 +15,10 @@ const probe=async(state,p,id)=>{const seen=[];const provider={name:'probe',async
  const store=new Store();store.insert(state);const service=new GameService(store,{[p.id]:p},registry,provider);
  try{await service.act(id,{id:'t',expectedRevision:state.revision,command:{type:'core.scene',args:{text:'I kiss Ada and pull her closer.',location:'hub',characters:['ada'],activity:'talk'}}});}finally{store.close();}return seen[0];};
 
-test('an explicit pack without an active encounter gets the boundary line and a hard lint',async()=>{
+test('an explicit pack without an active encounter gets the boundary line and no word filter',async()=>{
  const p=pack(),ctx=await probe(createWorld(p,registry,'gate'),p,'gate');
  assert.deepEqual(ctx.intimacyGate,{open:false});assert.match(scenePromptMessages(ctx,p)[1].content,/BOUNDARY: Nothing sexual happens/);assert.doesNotMatch(ctx.intimacyRule,/sober/);
- assert.throws(()=>lintScene(hot,ctx,p),e=>e.lintCheck==='content'&&!e.soft&&/No consented intimate encounter/.test(e.message));
+ assert.doesNotThrow(()=>lintScene(hot,ctx,p),'the boundary is a prompt line, not a word filter');
 });
 
 test('an active consented encounter opens the gate; a drunk partner gets the sober line',async()=>{
@@ -28,7 +28,7 @@ test('an active consented encounter opens the gate; a drunk partner gets the sob
  assert.match((await probe(drunk,p,'open')).intimacyRule,/Ada has been drinking.*ask me again when I'm sober/);
 });
 
-test('packs without the intimacy module keep the old content check',()=>{
+test('packs without the intimacy module have no explicit-word filter either',()=>{
  const p=pack();delete p.modules['social.intimacy'];assert.doesNotThrow(()=>lintScene(hot,{},p));
- p.intimacySettings.contentLevel='suggestive';assert.throws(()=>lintScene(hot,{},p),/Content level is "suggestive"/);
+ p.intimacySettings.contentLevel='suggestive';assert.doesNotThrow(()=>lintScene(hot,{},p));
 });

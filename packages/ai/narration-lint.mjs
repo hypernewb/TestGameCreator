@@ -2,7 +2,6 @@
 // before it's shown: attendance, knowledge leaks, and content-level overflow.
 import {assertSceneBoundaries} from './scene-boundaries.mjs';
 import {onlyRepeats} from './untrusted-output.mjs';
-const EXPLICIT=/\b(cock|dick|pussy|penis|vagina|cum(?:ming|s|shot)?|orgasms?|climax(?:es|ed|ing)?|thrust(?:ing|s|ed)?|erections?|clit(?:oris)?|moans? in pleasure)\b/iu;
 // A fact's quote is how facts.mjs proves a fact happened in narration; the same quote in a line spoken by
 // someone outside that fact's knownBy means the model let a character speak knowledge it was never given.
 function assertKnowledgeLeaks(value,context){
@@ -13,12 +12,6 @@ function assertKnowledgeLeaks(value,context){
    if(line.text.includes(fact.quote))throw Error(`${line.speaker} should not know: ${fact.text}`);
   }
  }
-}
-function assertContentLevel(value,context,pack){
- // An explicit pack is still capped at suggestive until state holds a consented, active encounter (service sets intimacyGate).
- const gated=context.intimacyGate&&!context.intimacyGate.open,level=pack.intimacySettings?.contentLevel;
- if(!gated&&level!=='fade'&&level!=='suggestive')return;
- if(value.lines.some(line=>EXPLICIT.test(line.text)))throw Error(gated?'No consented intimate encounter in state: remove explicit sexual detail and have the character decline':`Content level is "${level}": remove explicit sexual detail`);
 }
 // Small local models sometimes decorate an otherwise grounded scene with the wrong time of day.
 // Limit this to concrete environmental phrases so a character may still discuss plans for tonight.
@@ -61,9 +54,13 @@ function assertFresh(value,context,pack){
 // Local models contradict the calendar the context supplies ("a quiet Tuesday" on a Wednesday). Only narration
 // is checked: a character may still make plans for another day.
 const WEEKDAY_WORDS=/(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/i;
+// Only a claim about today counts ("it is Sunday", "Sunday morning"); a plan ("the beach on Sunday", "next Friday") is fine.
+const NOT_TODAY=/\b(?:on|next|last|until|till|by|before|after|since|from|every|coming|for|this|that)\s+$/i,TODAY=/\b(?:it'?s|it is|it was|today is|another|a)\s+$/i;
+export const todayClaims=text=>[...text.matchAll(new RegExp(`\\b${WEEKDAY_WORDS.source}\\b`,'gi'))].filter(m=>{const before=text.slice(Math.max(0,m.index-16),m.index),after=text.slice(m.index+m[0].length);return !NOT_TODAY.test(before)&&(TODAY.test(before)||/^(?:'s)?\s+(?:morning|afternoon|evening|night)\b/i.test(after)||!text.slice(0,m.index).trim());}).map(m=>m[1].toLowerCase());
 function assertWeekday(value,context){
- if(!context.weekday)return;
- for(const line of value.lines)if(!line.speaker){const said=line.text.match(WEEKDAY_WORDS);if(said&&said[1].toLowerCase()!==String(context.weekday).toLowerCase())throw Error(`It is ${context.weekday}: do not describe today as ${said[1].toLowerCase()}`);}
+ // A day the player named ("the beach on Sunday") is their plan, not a claim about today. Soft: a second miss keeps the reply.
+ if(!context.weekday)return;const named=new Set((String(context.playerAction||'').match(new RegExp(WEEKDAY_WORDS.source,'gi'))||[]).map(d=>d.toLowerCase()));
+ for(const line of value.lines)if(!line.speaker)for(const day of todayClaims(line.text))if(day!==String(context.weekday).toLowerCase()&&!named.has(day))throw Object.assign(Error(`It is ${context.weekday}: do not describe today as ${day}`),{soft:true});
 }
 // Exact-match dedup misses a lightly paraphrased rerun of the same beats ("arches an eyebrow… crosses her arms…"
 // again). Word-trigram overlap against this scene's earlier narration catches the near-copy; soft, like speech.
@@ -94,10 +91,13 @@ function assertStageTouch(value,context,pack){
 // and reads as stock animation. Any 5-word run of text already used in this scene asks for fresh business. Soft.
 function assertFreshBeats(value,context){
  const seen=new Set();const shingles=text=>{const words=String(text||'').toLowerCase().replace(/[^a-z\s]/g,' ').split(/\s+/).filter(Boolean);const out=[];for(let i=0;i+5<=words.length;i++)out.push(words.slice(i,i+5).join(' '));return out;};
- for(const old of (context.sceneHistory||[]).map(entry=>entry.text).filter(Boolean).slice(-6))for(const gram of shingles(old))seen.add(gram);
+ // Narration only (a spoken line keeps just its present-tense stage business, "She watches…"): characters may repeat themselves, and the player's own phrasing ("the beach on Sunday") is fair to echo back.
+ const own=new Set([context.playerAction,...(context.sceneHistory||[]).map(entry=>entry.input)].filter(Boolean).flatMap(shingles));
+ for(const old of (context.sceneHistory||[]).map(entry=>entry.text).filter(Boolean).slice(-6))for(const gram of shingles(old))if(!own.has(gram))seen.add(gram);
  for(const line of value.lines){
-  for(const gram of shingles(line.text))if(seen.has(gram))throw Object.assign(Error(`"${gram}" was already used in this scene: find fresh, specific physical business instead of reusing the same mannerism`),{soft:true});
-  for(const gram of shingles(line.text))seen.add(gram);
+  const text=line.speaker?(String(line.text).match(/[^.!?]+[.!?]*/g)||[]).filter(x=>/^\s*(?:she|he)\s+[a-z]+s\b/i.test(x)).join(' '):line.text;
+  for(const gram of shingles(text))if(seen.has(gram)&&!own.has(gram))throw Object.assign(Error(`"${gram}" was already used in this scene: find fresh, specific physical business instead of reusing the same mannerism`),{soft:true});
+  for(const gram of shingles(text))seen.add(gram);
  }
 }
 // Last open agency frontier from the small-model runs: during a typed activity the narrator scripts the player
@@ -115,10 +115,28 @@ function assertPlayerTransactions(value,context){
   throw Object.assign(Error(`Do not narrate "you ${m[1]} ..." during a typed activity: purchases, sales, trades and item transfers are committed by the engine, not by prose. Describe the scene or have a character speak instead`),{soft:true});
  }
 }
-const CHECKS=[['attendance',assertSceneBoundaries],['knowledge',assertKnowledgeLeaks],['content',assertContentLevel],['time',assertDaypart],['calendar',assertWeekday],['player-agency',assertPlayerInterior],['player-person',assertPlayerPerson],['player-transactions',assertPlayerTransactions],['touch-stage',assertStageTouch],['speech',assertCastSpeaks],['repeat',assertFresh],['paraphrase',assertFreshNarration],['beats',assertFreshBeats]];
-export function lintScene(value,context,pack){
+const CHECKS=[['attendance',assertSceneBoundaries],['knowledge',assertKnowledgeLeaks],['time',assertDaypart],['calendar',assertWeekday],['player-agency',assertPlayerInterior],['player-person',assertPlayerPerson],['player-transactions',assertPlayerTransactions],['touch-stage',assertStageTouch],['speech',assertCastSpeaks],['repeat',assertFresh],['paraphrase',assertFreshNarration],['beats',assertFreshBeats]];
+// Style checks a strong model may break without a repair call; attendance, knowledge, content, player-person,
+// touch-stage and speech stay hard for every model.
+export const STYLE_CHECKS=new Set(['time','calendar','player-agency','player-transactions','repeat','paraphrase','beats']);
+// A character asking the same question twice in one scene reads as not listening. Warn only: rewording is the model's job.
+const QSTOP=new Set('the and you your are was were did does what how who why where when that this for with have has about just really so do is it to of a an in on me my i'.split(' '));
+const qWords=q=>new Set(q.toLowerCase().replace(/[^a-z\s]/g,' ').split(/\s+/).filter(w=>w.length>1&&!QSTOP.has(w)));
+const questionsOf=text=>String(text||'').match(/[^.!?]*\?/g)?.map(s=>s.trim()).filter(Boolean)||[];
+export function repeatedQuestions(lines,before=[]){
+ const same=(a,b)=>{if(!a.size||!b.size)return false;let n=0;for(const w of a)if(b.has(w))n++;return n/(a.size+b.size-n)>=0.6;};
+ return (lines||[]).filter(l=>l.speaker).flatMap(l=>{const old=(before||[]).filter(b=>b.speaker===l.speaker).flatMap(b=>questionsOf(b.text)).map(qWords);return questionsOf(l.text).filter(q=>{const w=qWords(q);return old.some(o=>same(w,o));});});
+}
+export function lintScene(value,context,pack,{lenient=false}={}){
+ const warnings=[];
  for(const [check,run] of CHECKS){
   try{run(value,context,pack);}
-  catch(error){throw Object.assign(Error(error.message),{lintCheck:check,soft:!!error.soft});}
+  catch(error){if(lenient&&STYLE_CHECKS.has(check)){warnings.push({check,message:String(error.message).slice(0,200)});continue;}throw Object.assign(Error(error.message),{lintCheck:check,soft:!!error.soft});}
  }
+ // Warn only, never repair: in a group scene someone who gets no line or beat reads as a prop.
+ const cast=context.stagedCast||[],silent=cast.length>1?cast.filter(id=>{const name=pack.actors.find(x=>x.id===id)?.name;return !value.lines.some(l=>l.speaker===id||(name&&!l.speaker&&l.text.includes(name)));}):[];
+ if(silent.length)warnings.push({check:'ensemble',message:'No line or beat for '+silent.map(id=>pack.actors.find(x=>x.id===id)?.name||id).join(', ')});
+ const again=repeatedQuestions(value.lines,context.spokenBefore);
+ if(again.length)warnings.push({check:'repeat-question',message:'Asked again: '+again.join(' | ').slice(0,200)});
+ return warnings;
 }

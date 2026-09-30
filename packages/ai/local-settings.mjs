@@ -53,5 +53,11 @@ export const CONTEXT_SIZES={
 // Used when the server does not report its window: small enough that no common local model silently truncates.
 export const FALLBACK_WINDOW=8192;
 export function validateContextSize(size){assert(Object.hasOwn(CONTEXT_SIZES,size),'Choose a minimal, default, or max context size');return size;}
-export function effectiveWindow(detected,size='default'){return Math.min(detected>0?detected:FALLBACK_WINDOW,(CONTEXT_SIZES[size]||CONTEXT_SIZES.default).cap);}
+// A cloud model (any non-loopback endpoint) is strong and has a large window, so an undetected one is budgeted at
+// CLOUD_WINDOW and its 'default' size means the full window with no digesting: the whole scene stays word for word.
+// 'minimal' stays an explicit opt-in cap. STORY_CONTEXT_WINDOW still overrides the detected size.
+export const CLOUD_WINDOW=65536;
+export const isLoopback=endpoint=>{try{return ['localhost','127.0.0.1','[::1]'].includes(new URL(endpoint).hostname);}catch{return false;}};
+export const contextPreset=(size,remote=false)=>remote&&size==='default'?CONTEXT_SIZES.max:CONTEXT_SIZES[size]||CONTEXT_SIZES.default;
+export function effectiveWindow(detected,size='default',remote=false){return Math.min(detected>0?detected:remote?CLOUD_WINDOW:FALLBACK_WINDOW,contextPreset(size,remote).cap);}
 export function validateLocalModel(model){assert(typeof model==='string'&&model.trim()&&model.length<=200&&!/[\r\n]/.test(model),'Select a local model');return model.trim();}

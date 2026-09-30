@@ -3,7 +3,7 @@
 Local-first interactive fiction engine: deterministic world state + modules, with an LLM only interpreting input and narrating. Play targets a cloud model (e.g. Gemini free tier); tests run on a local model. Node 24 ESM, `node:sqlite`, Electron desktop shell, no build step, almost no dependencies.
 
 ## Commands
-- `npm test` — `node --test tests/*.test.mjs` (~156 tests, must stay green)
+- `npm test` — `node --test tests/*.test.mjs` (~700 tests, ~7s, must stay green)
 - `npm run validate` — pack/schema validation
 - `npm run playtest -- --size minimal --filler 12` — live run against LM Studio; prints one line per turn (context used/budget, cuts, over-budget, recall ok/NO, echo) plus a summary. Add `--verbose` for reply text. Uses a throwaway temp DB.
 - `npm start` (server.mjs on localhost), `npm run desktop` (Electron), `npm run build:st` (SillyTavern bundle)
@@ -23,6 +23,7 @@ Local-first interactive fiction engine: deterministic world state + modules, wit
 
 ## Session habits (token hygiene)
 - Use one session per task. After a task lands, start fresh instead of carrying a long transcript.
+- While iterating, run only the test files you touched (`node --test tests/x.test.mjs`); run the full `npm test` once before reporting a task done or committing.
 - Prefer summary outputs: `npm test 2>&1 | tail -15`, `npm run playtest` (not raw logs), `git diff --stat` before a full diff.
 - Run a live playtest only when prompt/context/memory code changed. Otherwise the mock-provider tests are enough.
 - Run the playtest in the background and read its summary line first.

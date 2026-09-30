@@ -95,3 +95,13 @@ test('a group scene never shows or stores an off-slate voice or model state synt
   assert.equal(result.state.money,store.load('gs').money);
  }finally{store.close();}
 });
+
+test('a player-named day, the player’s own words and a character repeating herself are not style failures',()=>{
+ const p=pack(),base={daypart:'Afternoon',scenePhase:'continuation',stagedCast:['ada'],knownFacts:[],spokenBefore:[],weekday:'Monday'};
+ const beach={...base,playerAction:'Want to go to the beach on Sunday?',sceneHistory:[]};
+ assert.doesNotThrow(()=>lintScene({lines:[{speaker:'',text:'Sunday afternoon at the beach sounds like a plan to her.'}]},beach,p));
+ assert.throws(()=>lintScene({lines:[{speaker:'',text:'It is Sunday and the room is quiet.'}]},{...base,playerAction:'Look around.',sceneHistory:[]},p),e=>e.soft&&/It is Monday/.test(e.message),'a wrong today is soft, so a second miss keeps the reply');
+ const hist={...base,playerAction:'Tell me about the old lighthouse keeper again.',sceneHistory:[{input:'Tell me about the old lighthouse keeper.',text:'Ada: He kept the light for forty years, you know.'}]};
+ assert.doesNotThrow(()=>lintScene({lines:[{speaker:'',text:'She thinks about the old lighthouse keeper again for a moment.'}]},hist,p),'echoing the player’s phrase is not a stale mannerism');
+ assert.doesNotThrow(()=>lintScene({lines:[{speaker:'ada',text:'He kept the light for forty years, you know.'}]},hist,p),'a character may repeat herself in dialogue');
+});

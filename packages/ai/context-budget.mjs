@@ -23,12 +23,18 @@ export function turnDigest(turn){
 export function sceneDigest(turns){return [...new Set(turns.flatMap(eventChanges))].join('; ');}
 const sceneDigestOf=scenes=>[...new Set(scenes.flatMap(x=>(x.digest||'').split('; ')).filter(Boolean))].join('; ');
 
+// Sub-turns the service appends to one player action: they carry score and close state, never scene prose, so
+// neither the model's scene history nor the showcase dialogue may show them as conversation.
+import {SUB_TURNS} from '../../public/turn-presentation.mjs';
+export {SUB_TURNS};
+
 /** Every narrated turn of the current scene, oldest first; the allocator decides how much stays verbatim. */
 export function sceneTranscript(world,turn,cast,limit=120){
  if(turn.events.some(e=>['core.sceneStarted','core.moved','world.daypartStarted','world.hangoutStarted'].includes(e.type)))return [];
  const history=[];
  for(const prior of Object.values(world.turns).filter(t=>t.id!==turn.id&&t.status==='complete').reverse()){
   if(prior.command.type==='world.nextDaypart'||prior.command.type==='core.endScene'||prior.sceneEnded||(prior.sceneId&&world.scene&&prior.sceneId!==world.scene.id))break;
+  if(SUB_TURNS.has(prior.command.type))continue;
   const people=[...(prior.command.type==='social.speak'?[prior.command.args.target]:prior.events.find(e=>e.type==='core.sceneStarted'||e.type==='core.sceneContinued')?.payload.characters||[]),...(prior.sceneLines||[]).map(line=>line.speaker).filter(Boolean)];
   if(people.some(id=>!cast.includes(id)))break;
   if(prior.narrative&&!prior.fallback)history.unshift({source:prior.id,input:prior.input||prior.command.args.text||'',text:prior.narrative,digest:turnDigest(prior)});

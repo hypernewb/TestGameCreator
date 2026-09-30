@@ -21,6 +21,11 @@ test('CG requests refuse to spend Anlas or draw unknown characters unless told t
  const two=buildRequest(sheet,{id:'two',prompt:'x',cast:[{id:'juno',at:[0.25,0.5]},{id:'theo',at:[0.75,0.5]}]}).parameters;assert.equal(two.use_coords,true);assert.deepEqual(two.v4_prompt.caption.char_captions.map(c=>c.centers[0].x),[0.3,0.7]);
 });
 
+test('sheets can pick the model, cfg rescale and UC preset (V5 sprite sheet)',()=>{
+ const p=buildRequest({...sheet,model:'nai-diffusion-5-full',scale:9,cfgRescale:0.7,ucPreset:2,steps:18},{id:'s',prompt:'x',cast:[]});assert.equal(p.model,'nai-diffusion-5-full');assert.equal(p.parameters.cfg_rescale,0.7);assert.equal(p.parameters.ucPreset,2);assert.equal(p.parameters.scale,9);
+ assert.equal(buildRequest(sheet,sheet.cgs[0]).parameters.cfg_rescale,0);
+});
+
 test('the zipped image comes back out whether stored or deflated, and API errors surface',async()=>{
  const png=Buffer.from('\x89PNG fake image bytes');for(const m of [0,8])assert.deepEqual(unzipFirst(zip('image_0.png',png,m)),{name:'image_0.png',data:png});
  assert.throws(()=>unzipFirst(Buffer.from('nope, not a zip at all')),/Not a zip/);

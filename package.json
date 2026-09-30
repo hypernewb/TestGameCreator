@@ -16,6 +16,7 @@
     "author:characters": "node scripts/character-author.mjs",
     "build:st": "node scripts/build-st.mjs",
     "playtest": "node scripts/playtest.mjs",
+    "prompt-ab": "node scripts/prompt-ab.mjs",
     "playtest:ai": "node scripts/ai-game-tester.mjs",
     "fun": "node scripts/fun-report.mjs",
     "audit:playtest": "node scripts/audit-playtest.mjs",

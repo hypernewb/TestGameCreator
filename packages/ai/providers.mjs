@@ -1,5 +1,6 @@
 import {createRequestQueue} from '../../vendor/venus/requestQueue.mjs';
 import {lintScene} from './narration-lint.mjs';
+import {isLoopback} from './local-settings.mjs';
 import {assert} from '../core/engine.mjs';
 import {daypartMessages,validateDaypart,fallbackDaypart} from './daypart.mjs';
 import {parseModelObject} from './json.mjs';
@@ -53,7 +54,7 @@ export class MockProvider {
     const low=input.toLowerCase(),mentioned=pack.actors.filter(a=>a.id!==pack.playerId&&[a.id.replaceAll('_',' '),a.name.toLowerCase(),a.name.split(' ')[0].toLowerCase()].some(n=>new RegExp(`\\b${n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`,'i').test(low))).map(a=>a.id);
     const location=pack.locations.find(l=>low.includes(l.name.toLowerCase())||low.includes(l.id.replaceAll('_',' ')))?.id||null;
     const activity=/\b(sleep|rest|nap|bed)\b/.test(low)?'rest':/\b(meet|visit|find|see)\b/.test(low)&&mentioned.length?'meet':/\b(explore|look|wander)\b/.test(low)?'explore':/\b(work|shift)\b/.test(low)?'work':mentioned.length?'talk':'other';
-    const rule=(pack.activities||[]).find(a=>low.includes(a.name.toLowerCase())||a.phrases?.some(phrase=>phrase&&low.includes(phrase.toLowerCase())));
+    const word=p=>new RegExp('(?<![\\p{L}])'+p.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?![\\p{L}])','u').test(low),rule=(pack.activities||[]).find(a=>[a.name,...a.phrases||[]].some(p=>p&&word(p)));
     return {characters:rule?.character?[...new Set([...mentioned,rule.character])]:mentioned,mentionedOnly:[],location:rule?.location||location||(activity==='rest'?pack.daypart?.introLocation||pack.startOptions?.[0]?.playerLocation||null:activity==='meet'?world.actors[mentioned[0]]?.location||null:null),activity,activityId:rule?.id||'',itemAction:'',itemId:'',itemTarget:''};
   }
   async interpret(input,context,available){const text=input.trim().toLowerCase();const usable=available.filter(a=>a.enabled);const exact=usable.find(a=>a.label.toLowerCase()===text);if(exact)return {type:exact.type,args:exact.args};
@@ -96,14 +97,14 @@ export class CompatibleProvider {
   name='Configured model';
   bundlesSceneMetadata=true;
   enqueue=createRequestQueue();
-  constructor({endpoint,model,key='',timeout=30000,maxRequests=10000,maxTokens=1800,contextWindow=null,fetchImpl=fetch}){const url=new URL(endpoint);assert(url.protocol==='https:'||url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname),'Endpoint must be HTTPS or local HTTP');assert(model,'Model ID is required');Object.assign(this,{endpoint,model,key,timeout,maxRequests,maxTokens,contextWindow,fetchImpl});this.requests=0;this.usage=[];this.calibration={ratio:1,samples:0};this.reasoningParam=true;}
+  constructor({endpoint,model,key='',timeout=30000,maxRequests=10000,maxTokens=1800,contextWindow=null,fetchImpl=fetch}){const url=new URL(endpoint);assert(url.protocol==='https:'||url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname),'Endpoint must be HTTPS or local HTTP');assert(model,'Model ID is required');Object.assign(this,{endpoint,model,key,timeout,maxRequests,maxTokens,contextWindow,fetchImpl});this.remote=!isLoopback(endpoint);this.requests=0;this.usage=[];this.calibration={ratio:1,samples:0};this.reasoningParam=true;}
   // Local servers (Ollama num_ctx, LM Studio) drop the start of a prompt when prompt+max_tokens overflows the window; ask only for what is left.
   outputCap(messages){return this.contextWindow?Math.min(this.maxTokens,Math.max(256,this.contextWindow-Math.ceil(messageTokens(messages,this.calibration?.ratio||1)*1.03)-16)):this.maxTokens;}
   complete(messages,signal,responseFormat,onDelta){return this.enqueue(()=>this.performComplete(messages,signal,responseFormat,0,onDelta),signal);}
   async performComplete(messages,signal,responseFormat,retry=0,onDelta){
     const formats=responseFormat?.type==='json_schema'?[responseFormat,{type:'json_object'},null]:responseFormat?.type==='json_object'?[responseFormat,null]:[responseFormat||null];
     for(const format of formats){
-      assert(this.requests<this.maxRequests,'Session request limit reached');this.requests++;
+      assert(this.requests<this.maxRequests,`Session request limit reached (${this.maxRequests} model calls). Restart the server or raise STORY_MAX_REQUESTS`);this.requests++;
       const began=Date.now(),controller=new AbortController(),abort=()=>controller.abort();
       signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)controller.abort();const timer=setTimeout(abort,this.timeout);
       try{
@@ -138,7 +139,7 @@ Player ID: ${pack.playerId}`},{role:'user',content:JSON.stringify({action:turn.i
   }
   async narrate(context,signal){return this.complete(narrativeMessages(context),signal);}
   async generateScene(context,pack,signal,onPreview){
-    const messages=scenePromptMessages(context,pack),lintTrace=[];
+    const messages=(this.scenePrompt||scenePromptMessages)(context,pack),lintTrace=[];
     for(let attempt=0;attempt<2;attempt++){
       // Keep transport streaming for responsive cancellation, but publish pages only after the entire answer passes
       // truth and agency lint. Otherwise a rejected first draft can flash on screen while its repair is generated.
@@ -148,8 +149,12 @@ Player ID: ${pack.playerId}`},{role:'user',content:JSON.stringify({action:turn.i
         messages[1]={...messages[1],content:shorter};raw=await this.complete(messages,signal,sceneResponseFormat(context,pack));
       }
       try{
-        const value=normalizeSceneLines(parseModelObject(raw),context,pack);assert(value.lines.length>0,'Expected 1–12 scene lines');lintScene(value,context,pack);
-        if(lintTrace.length){lintTrace[lintTrace.length-1].resolved=true;value.lintTrace=lintTrace;}
+        const value=normalizeSceneLines(parseModelObject(raw),context,pack);assert(value.lines.length>0,'Expected 1–12 scene lines');
+        // A cloud model gets style checks as warnings: a repair call to fix a weekday word or a repeated phrase costs a
+        // turn's latency and flattens the prose. Truth, content and cast checks still force a repair.
+        const warnings=lintScene(value,context,pack,{lenient:this.remote});
+        if(lintTrace.length)lintTrace[lintTrace.length-1].resolved=true;
+        lintTrace.push(...warnings.map(w=>({attempt,...w,warned:true})));if(lintTrace.length)value.lintTrace=lintTrace;
         onPreview?.(value.lines);
         return value;
       }

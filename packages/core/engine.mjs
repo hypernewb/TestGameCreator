@@ -46,20 +46,23 @@ export function releaseScene(tx){
  }
  tx.set(['scene'],null);
 }
-// A continuous scene also ends from the NPC's side: they run out of time after the pack's exchange budget, or leave when a
-// boundary is crossed (a declined advance, a sharp loss of trust), or the run reaches its last tick. Scripted scenes and free firsts hold the scene open until they resolve.
-export function sceneLifecycle(tx,world,emitted,exchange,continuous=true){
+// A continuous scene ends only from a real ending: the model writes a farewell, the player walks away, an NPC leaves
+// when a boundary is crossed (a declined advance, a sharp loss of trust), or the run reaches its last tick. The
+// sceneTurns cap (default 12) is a safety net, not a schedule: only typed conversation turns count toward it.
+export function sceneLifecycle(tx,world,emitted,exchange,continuous=true,deferCap=false){
  const s=tx.state,pack=tx.pack,scene=s.scene;if(!scene||scene.id!==world.scene.id||s.modules['story.scenes']?.pending||s.modules['social.firsts']?.active||!scene.characters.length)return;
  const closing=s.run&&s.tick>=s.run.endTick;if(!continuous&&!closing)return;
  const cast=scene.characters,hurt=continuous&&emitted.find(e=>cast.includes(e.payload?.actor??e.payload?.character)&&(e.type==='social.consentDeclined'||e.type==='social.relationshipChanged'&&e.payload.toward===pack.playerId&&Number.isInteger(e.payload.old)&&e.payload.value-e.payload.old<=-5));
  const count=(scene.exchanges||0)+(exchange?1:0),cap=pack.gameProject?.sceneTurns??12;
- if(!hurt&&!closing&&count<cap){if(exchange)tx.set(['scene','exchanges'],count);return;}
+ if(!hurt&&!closing&&(deferCap||count<cap)){if(exchange)tx.set(['scene','exchanges'],count);return;}
  const who=hurt?(hurt.payload.actor??hurt.payload.character):cast[0],name=s.actors[who].name,reason=hurt?'boundary':'schedule';
  releaseScene(tx);tx.emit('core.sceneEnded',{reason,character:who,characters:cast,text:hurt?`${name} has had enough for now and leaves.`:closing?`Time is up. ${name} says goodbye.`:`${name} has somewhere to be and says goodbye.`},[pack.playerId,...cast]);
 }
 export function travel(tx,pack,from,to,player){const route=routeBetween(pack,from,to,tx.state.flags);if(!route){tx.emit('core.travelBlocked',{from,to,text:`You cannot reach ${pack.locations.find(l=>l.id===to).name} from here.`},[player]);return null;}for(let i=1;i<route.length;i++){tx.set(['actors',player,'location'],route[i]);tx.emit('core.moved',{actor:player,from:route[i-1],to:route[i],text:`You go to ${pack.locations.find(l=>l.id===route[i]).name}.`},[player]);}return route;}
 export function meetingArrival(tx,world,pack,id,to,arrival){if(tx.state.actors[id].location===to)return true;const location=scheduledLocation(world,pack,id,arrival);if(location!==to){const at=nextArrivalTick(pack,id,to,arrival);const when=at===null?'':` They are scheduled back at ${pack.locations.find(l=>l.id===to).name} from ${calendarFor(at,pack).weekday} ${calendarFor(at,pack).daypart}.`;tx.emit('world.meetingUnavailable',{character:id,location:to,nextArrival:at,text:`${tx.state.actors[id].name} is not at ${pack.locations.find(l=>l.id===to).name} when you arrive.${when}`},[pack.playerId]);return false;}tx.set(['actors',id,'location'],to);tx.emit('world.actorArrived',{actor:id,location:to,text:`${tx.state.actors[id].name} arrives at ${pack.locations.find(l=>l.id===to).name}.`},[pack.playerId,id]);return true;}
-export function digest(x) { let h=2166136261; for(const c of JSON.stringify(x)) h=Math.imul(h^c.charCodeAt(0),16777619); return (h>>>0).toString(16); }
+// Index loop, not for…of (hot: every execute hashes the pack). Skipping a pair's low surrogate keeps the old code-point hash, so saves still match.
+const hash=s=>{ let h=2166136261; for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);h=Math.imul(h^c,16777619);if(c>=0xD800&&c<0xDC00&&(s.charCodeAt(i+1)&0xFC00)===0xDC00)i++;} return (h>>>0).toString(16); };
+export function digest(x) { return hash(JSON.stringify(x)); }
 // Only the fields execute()/createWorld() actually depend on: state-affecting rules, IDs, schemas. Prose and
 // presentation (names, descriptions, portraits, phrases, prompts) are deliberately left out so editing them
 // never invalidates a save.
@@ -81,7 +84,9 @@ export function mechanicsShape(pack) {
   startOptions:(pack.startOptions||[]).map(s=>pick(s,['id','playerLocation','tick'])),
  };
 }
-export function mechanicsDigest(pack) { return digest(mechanicsShape(pack)); }
+// Memoised per pack; the cached JSON is compared in full, so a pack edited in place still re-hashes.
+const digests=new WeakMap();
+export function mechanicsDigest(pack) { const s=JSON.stringify(mechanicsShape(pack)),hit=digests.get(pack); if(hit?.s===s)return hit.h; const h=hash(s); digests.set(pack,{s,h}); return h; }
 // A human-readable preview of what a mechanics change would do, for migration UIs.
 export function describeMechanicsChange(oldPack,newPack) {
  const a=mechanicsShape(oldPack),b=mechanicsShape(newPack),changes=[];
@@ -174,14 +179,26 @@ export function createWorld(pack,registry,id='campaign',seed=42,startId,options=
 }
 function put(state,path,value) {assert(Array.isArray(path)&&path.length>0&&path.every(x=>typeof x==='number'||safeKey(x)),'Invalid patch path');let p=state;for(const k of path.slice(0,-1)){assert(p[k]!==undefined,'Missing patch parent');p=p[k];}p[path.at(-1)]=clone(value);}
 export function replay(initial,events) {const s=clone(initial);for(const e of events)if(e.type==='core.patch')put(s,e.payload.path,e.payload.value);return s;}
-export function execute(world,command,pack,registry) {
+// Generation failed after commit. Record the refund as an engine patch so event replay agrees with the save.
+// Retrying prose does not refund a second time. Import reconstructs this patch from the recorded settlement.
+export function refundSceneExchange(state,turn,sceneId){
+ assert(EXCHANGE_COMMANDS.has(turn.command.type),'Only a conversation turn can refund an exchange');
+ assert(state.scene?.id===sceneId,'Exchange refund refers to an inactive scene');
+ const spent=turn.events.find(e=>e.type==='core.patch'&&JSON.stringify(e.payload.path)==='["scene","exchanges"]');
+ if(!spent)return;
+ const id=`${turn.id}.refund`;if(turn.events.some(e=>e.id===id))return;
+ const value=Math.max(0,(state.scene.exchanges||0)-1),event={id,type:'core.patch',payload:{path:['scene','exchanges'],value},tick:state.tick,visibility:[]};
+ state.scene.exchanges=value;turn.events.push(event);state.events.push(event);
+}
+export function execute(world,command,pack,registry,packChecked=false) {
   if(world.turns[command.id])return {state:world,turn:world.turns[command.id],duplicate:true};
-  assert(world.packDigest===mechanicsDigest(pack),'Pack changed: migration required');
+  assert(packChecked||world.packDigest===mechanicsDigest(pack),'Pack changed: migration required');
   assert(safeKey(command.id),'Invalid turn ID');assert(command.expectedRevision===world.revision,'Stale revision; refresh and try again');
   assert(command.actorId===pack.playerId,'Only the player can submit commands');
   assert(command.args&&typeof command.args==='object'&&!Array.isArray(command.args),'args must be an object');
   assert(!world.modules['story.endings']?.selected,'The story has ended. Start a new campaign to play again.');
-  if(world.modules['story.scenes']?.pending)assert(['story.choose','story.respond','story.leave','social.withdrawConsent'].includes(command.type)||FREE_ACTIONS.has(command.type),'Choose an option, reply in your own words, withdraw consent, or leave the active scene first');
+  // A director incident is a model-played moment, so its conversation can end like any other (the scenes module then dismisses it).
+  if(world.modules['story.scenes']?.pending)assert(['story.choose','story.respond','story.leave','social.withdrawConsent'].includes(command.type)||FREE_ACTIONS.has(command.type)||command.type==='core.endScene'&&pack.scriptedScenes?.find(x=>x.id===world.modules['story.scenes'].pending)?.template?.delivery==='incident','Choose an option, reply in your own words, withdraw consent, or leave the active scene first');
   const mods=resolveModules(pack,registry), state=clone(world), emitted=[];let steps=0,waitTicks=0,meetingBlocked=false;
   // Continuous style (Venus University): an activity opens one scene, talk inside it is free, and the period is spent when the scene ends.
   const continuous=pack.gameProject?.conversationStyle==='continuous',interval=pack.daypart?.interval||4;
@@ -196,7 +213,7 @@ export function execute(world,command,pack,registry) {
     // until: skip ahead to the start of the next Morning, Afternoon or Evening (the hub's "Skip to Evening").
     'core.wait'(tx,args={}){if(args.until){assert(PERIODS.includes(args.until),'Unknown part of the day');assert(!tx.state.scene?.characters?.length,'Finish the conversation first');}tx.emit('core.waited',{...(args.until?{until:args.until}:{}),text:args.until?`You let the time slide by until ${args.until.toLowerCase()}.`:'You wait and watch the world move.'},[pack.playerId]);},
     'core.waitUntil'(tx,args){const to=args.location||state.actors[pack.playerId].location;assert(pack.actors.some(a=>a.id===args.actor&&a.id!==pack.playerId),'Unknown character to wait for');assert(pack.locations.some(l=>l.id===to),'Unknown wait location');assert(state.actors[pack.playerId].location===to,'Wait where you are');assert(state.actors[args.actor].location!==to,'That character is already here');const at=nextArrivalTick(pack,args.actor,to,world.tick);assert(at&&at>world.tick,'That character has no upcoming stop here soon');waitTicks=at-world.tick;const name=state.actors[args.actor].name;tx.emit('core.waited',{actor:args.actor,location:to,tick:at,text:`You wait until ${name} arrives here.`},[pack.playerId]);},
-    'core.endScene'(tx,args){assert(tx.state.scene,'There is no active conversation to end');const reason=args.reason||'player';assert(['player','natural'].includes(reason),'Unknown scene end reason');const cast=tx.state.scene.characters,activity=tx.state.scene.activity;releaseScene(tx);tx.emit('core.sceneEnded',{reason,characters:cast,text:reason==='natural'?'The conversation comes to a natural close.':['talk','meet','continue'].includes(activity)?'You end the conversation.':'You wrap up what you were doing.'},[pack.playerId,...cast]);},
+    'core.endScene'(tx,args){assert(tx.state.scene,'There is no active conversation to end');const reason=args.reason||'player';assert(['player','natural','safety'].includes(reason),'Unknown scene end reason');if(reason==='safety')assert((tx.state.scene.exchanges||0)>=(pack.gameProject?.sceneTurns??12),'Scene safety cap has not been reached');const cast=tx.state.scene.characters,activity=tx.state.scene.activity;releaseScene(tx);tx.emit('core.sceneEnded',{reason,characters:cast,text:reason==='safety'?'The conversation pauses as the period moves on.':reason==='natural'?'The conversation comes to a natural close.':['talk','meet','continue'].includes(activity)?'You end the conversation.':'You wrap up what you were doing.'},[pack.playerId,...cast]);},
     'core.scene'(tx,args){
       assert(typeof args.text==='string'&&args.text.trim().length>0&&args.text.length<=2000,'Scene request must contain 1–2000 characters');
       assert(['rest','meet','explore','work','talk','other','continue'].includes(args.activity),'Unknown scene activity');
@@ -228,7 +245,7 @@ export function execute(world,command,pack,registry) {
           // who is elsewhere now and not scheduled to arrive in time is worth a redirect.
           const away=cast.filter(id=>tx.state.actors[id].location!==to&&scheduledLocation(world,pack,id,arrival)!==to);
           if(away.length===cast.length){
-            const place=pack.locations.find(l=>l.id===to)?.name||to,whereNow=id=>{const at=scheduledLocation(world,pack,id,tx.state.tick);return pack.locations.find(l=>l.id===at)?.name||at;};
+            const place=pack.locations.find(l=>l.id===to)?.name||to,whereNow=id=>{const at=tx.state.actors[id].location;return pack.locations.find(l=>l.id===at)?.name||at;};
             const lines=away.map(id=>{const name=tx.state.actors[id].name,at=nextArrivalTick(pack,id,to,arrival),when=at===null?'':` They are scheduled to be at ${place} from ${calendarFor(at,pack).weekday} ${calendarFor(at,pack).daypart}.`;return {character:id,nextArrival:at,text:`${name} is not at ${place}: they are at ${whereNow(id)} right now.${when}`};});
             tx.emit('world.meetingRedirect',{characters:away,location:to,nextArrival:lines.find(x=>x.nextArrival!==null)?.nextArrival??null,text:lines.map(x=>x.text).join(' ')},[pack.playerId]);meetingBlocked=true;return;
           }
@@ -246,8 +263,9 @@ export function execute(world,command,pack,registry) {
       if(args.itemAction==='give')assert(present.includes(args.itemTarget),'Recipient is unavailable when you arrive');
       if(cast.length&&!present.length){tx.set(['scene'],null);return;}
       if(args.activity==='rest')tx.set(['scene'],null);
-      // A budgeted scene (game-tier packs) closes itself on the input that reaches the budget; the service writes that closing reply.
-      else if(args.activity!=='continue'){const budget=activity?.inputBudget??pack.gameProject?.sceneBudget;tx.set(['scene'],{id:command.id,location:to,characters:present,activity:args.activity,startedTick:world.tick,...(budget&&present.length?{focus:activity?.character||present[0],budget,inputs:1}:{})});}
+      // A budgeted scene (authored game-tier packs) closes itself on the input that reaches the budget; the service writes that closing reply.
+      // Continuous scenes never take the budget: they end only when the model or the player ends them (sceneLifecycle holds the safety cap).
+      else if(args.activity!=='continue'){const budget=activity?.inputBudget??pack.gameProject?.sceneBudget;tx.set(['scene'],{id:command.id,location:to,characters:present,activity:args.activity,startedTick:world.tick,...(present.length?{focus:activity?.character||present[0]}:{}),...(!continuous&&budget&&present.length?{budget,inputs:1}:{})});}
       else if(tx.state.scene.budget)tx.set(['scene','inputs'],tx.state.scene.inputs+1);
       tx.emit(args.activity==='continue'?'core.sceneContinued':'core.sceneStarted',{activity:args.activity,location:to,characters:present,text:args.text},[pack.playerId,...present]);
       if(args.activity==='talk'&&present.length===1&&pack.modules['social.conversation']){const utterance=spokenLine(args.text);tx.emit('social.spoke',{actor:pack.playerId,target:present[0],location:to,utterance,promise:/\bpromise\b/i.test(args.text),source:'scene',text:`You talk to ${tx.state.actors[present[0]].name}: ${utterance}`},[pack.playerId,present[0]]);}
@@ -294,10 +312,12 @@ export function execute(world,command,pack,registry) {
   const advance=n=>{if(n>0){const before=state.tick,to=state.run?Math.min(before+n,state.run.endTick):before+n;if(to===before)return;tx.set(['tick'],to);tx.emit('core.timeAdvanced',{from:before,to:state.tick,sceneCast:state.scene?.characters||[]},[]);}};
   let reacted=0;const react=()=>{for(;reacted<emitted.length;reacted++){const e=emitted[reacted];if(e.type==='core.patch')continue;for(const m of mods)m.react?.(tx,e);}};
   const closes=continuous&&world.scene&&!state.scene&&!['world.nextDaypart','core.waitUntil'].includes(command.type)&&!(command.type==='core.scene'&&command.args.activity==='rest'),boundary=(Math.floor(world.tick/interval)+1)*interval;
-  advance(kept&&!['core.wait','core.waitUntil'].includes(command.type)?0:opened?travelCost:soloClosed?Math.max(travelCost,boundary-state.tick):closes?Math.max(cost,boundary-state.tick):cost);react();
-  if(continuous&&world.scene)sceneLifecycle(tx,world,emitted,kept&&!['core.wait','core.waitUntil'].includes(command.type));else if(world.scene){sceneLifecycle(tx,world,emitted,false,false);react();}
+  // Venus-style pacing (gameProject.goodbyeEndsDay): when the other person ends the conversation, the day is over, not just the period.
+  const until=()=>pack.gameProject?.goodbyeEndsDay&&emitted.some(e=>e.type==='core.sceneEnded'&&e.payload.reason!=='player'&&e.payload.characters?.length)?(Math.floor(world.tick/(interval*PERIODS.length))+1)*interval*PERIODS.length:boundary;
+  advance(kept&&!['core.wait','core.waitUntil'].includes(command.type)?0:opened?travelCost:soloClosed?Math.max(travelCost,boundary-state.tick):closes?Math.max(cost,until()-state.tick):cost);react();
+  if(continuous&&world.scene)sceneLifecycle(tx,world,emitted,kept&&EXCHANGE_COMMANDS.has(command.type),true,command.deferExchangeCap===true);else if(world.scene){sceneLifecycle(tx,world,emitted,false,false);react();}
   // The period is spent once, when its scene closes: whoever ended it, the clock moves to the next morning, afternoon or evening.
-  if(continuous&&world.scene&&!state.scene&&!['world.nextDaypart','core.waitUntil'].includes(command.type)&&!(command.type==='core.scene'&&command.args.activity==='rest')){advance(boundary-state.tick);react();}
+  if(continuous&&world.scene&&!state.scene&&!['world.nextDaypart','core.waitUntil'].includes(command.type)&&!(command.type==='core.scene'&&command.args.activity==='rest')){advance(until()-state.tick);react();}
   tx.set(['revision'],world.revision+1);
   const turn={id:command.id,command:clone(command),events:emitted,narrative:null,status:'pending'};
   state.events.push(...emitted);state.turns[command.id]=turn;return {state,turn,duplicate:false};
@@ -309,11 +329,17 @@ const activityDayCount=(world,pack,id)=>{const uses=(world.activityDayUses||{})[
 function activityActions(world,pack,loc){return (pack.activities||[]).filter(a=>a.location===loc.id&&(!a.character||world.actors[a.character]?.location===loc.id)&&(!a.requiresFlag||world.flags[a.requiresFlag])&&!(a.once&&(world.activityUses||{})[a.id])&&(!a.perDay||activityDayCount(world,pack,a.id)<a.perDay)&&!closedReason(pack,world,world.tick,a.location)).map(a=>({label:a.name,type:'core.scene',args:{text:a.name,location:a.location,characters:a.character?[a.character]:[],activity:'other',activityId:a.id,itemAction:'',itemId:'',itemTarget:''},storylet:{title:a.name,who:a.character?[pack.actors.find(c=>c.id===a.character)?.name||a.character]:[],where:loc.name,timeCost:a.duration,hint:effectSummary(pack,a.effects)||a.description||''}}));}
 export function actions(world,pack,registry){
   if(world.modules['story.endings']?.selected)return [];
-  if(world.modules['story.scenes']?.pending)return resolveModules(pack,registry).flatMap(m=>m.actions?.(world,pack)||[]).filter(a=>['story.choose','story.leave','social.withdrawConsent'].includes(a.type)).map((a,i)=>{try{execute(world,{...a,id:`preview-choice-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry);return {...a,enabled:true};}catch(e){return {...a,enabled:false,reason:e.message};}});
+  // One pack check per call; each preview below would otherwise re-hash the pack.
+  const ok=world.packDigest===mechanicsDigest(pack);
+  if(world.modules['story.scenes']?.pending)return resolveModules(pack,registry).flatMap(m=>m.actions?.(world,pack)||[]).filter(a=>['story.choose','story.leave','social.withdrawConsent'].includes(a.type)).map((a,i)=>{try{execute(world,{...a,id:`preview-choice-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry,ok);return {...a,enabled:true};}catch(e){return {...a,enabled:false,reason:e.message};}});
   const loc=pack.locations.find(l=>l.id===world.actors[pack.playerId].location);
   const extra=resolveModules(pack,registry).flatMap(m=>m.actions?.(world,pack)||[]),look=extra.filter(a=>a.type==='core.inspect'),cueTo=new Map(extra.filter(a=>a.type==='core.move').map(a=>[a.args.to,a])),list=[...(look.length?look:[{label:'Look around',type:'core.inspect',args:{}}]),{label:'Wait',type:'core.wait',args:{}},...(world.scene?[{label:world.scene.characters.length?'End conversation':'Finish activity',type:'core.endScene',args:{}}]:[]),...loc.exits.map(e=>cueTo.get(e.to)||{label:`Go to ${pack.locations.find(l=>l.id===e.to).name}`,type:'core.move',args:{to:e.to}}),...activityActions(world,pack,loc),...extra.filter(a=>!['core.inspect','core.move'].includes(a.type))];
-  return list.map((a,i)=>{try{execute(world,{...a,id:`preview-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry);return {...a,enabled:true};}catch(e){return {...a,enabled:false,reason:e.message};}});
+  return list.map((a,i)=>{try{execute(world,{...a,id:`preview-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry,ok);return {...a,enabled:true};}catch(e){return {...a,enabled:false,reason:e.message};}});
 }
 // Bookkeeping that takes no story time: looking, dressing, reading the phone.
 export const FREE_ACTIONS=new Set(['core.inspect','items.equip','items.unequip','social.readFeed','social.readThread','social.reactToPost','social.setRumorStance','social.resolveConfrontation','social.scoreFirst','social.stopFirst','world.pushLuck']);
+// The typed turns a model scene answers inside an open continuous scene: the only ones that count toward the
+// sceneTurns safety cap. Score sub-turns (priceActs, scoreFirst, resolveConfrontation), waits and rules-only
+// commands are not conversation, and failed generations are refunded by the service, so none of them spend the scene.
+export const EXCHANGE_COMMANDS=new Set(['core.scene','social.speak','story.respond']);
 export function fallback(turn){return turn.events.filter(e=>e.visibility==='public'||e.visibility.includes(turn.command.actorId)).map(e=>e.payload.text).filter(Boolean).join('\n')||'Action completed.';}

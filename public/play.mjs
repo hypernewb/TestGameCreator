@@ -1,9 +1,10 @@
 // Showcase-styled play screen on the same /api as the classic UI (index.html). Presentation only: no game rules here.
 import {sceneLines} from '/vendor/venus/sceneText.mjs';
+import {linesFor} from './turn-presentation.mjs';
 import {calendarFor} from './calendar.mjs';
 import {openGallery,readKey} from './gallery.mjs';
 import {play as playGame} from './minigames-ui.mjs';
-import {firstProgress,firstOffers,firstTurn} from './firsts-ui.mjs';
+import {firstProgress,firstOffers} from './firsts-ui.mjs';
 import {featuredFirst,isCampus,dayCard,newDay,hub,goals,activityCommand,promptFill,speakCommand,actionHint,endCard,journal,phone,poseFor,PHONE_ACTIONS} from './campus.mjs';
 const $=s=>document.querySelector(s),el=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const fontStacks={source:"'VN Source Sans 3','Segoe UI',sans-serif",noto:"'VN Noto Sans','Arial',sans-serif",open:"'VN Open Sans','Tahoma',sans-serif",lato:"'VN Lato','Trebuchet MS',sans-serif",custom:"'Player Uploaded Font','Segoe UI',sans-serif"};
@@ -25,20 +26,11 @@ async function title(){stopAuto();current=null;setPlaying(false);$('#sprites').r
  $('#title-packs').replaceChildren(...featuredFirst(data.packs).flatMap(p=>(p.starts?.length?p.starts:[{id:'',title:'Begin'}]).map(start=>row(`${p.title}${start.id?` · ${start.title}`:''}`,start.description||p.subtitle,()=>api('/api/new',{packId:p.id,sceneWriter:$('#title-writer').value,...(start.id?{startId:start.id}:{})}).then(render).catch(e=>showError('Could not start',e.message))))));
  n=0;$('#title-campaigns').replaceChildren(...(data.campaigns.length?data.campaigns.slice(0,8).map(c=>row(`Campaign ${c.id.slice(0,8)}`,`${c.revision} turns`,()=>api('/api/load',{id:c.id}).then(render).catch(e=>showError('Could not load',e.message)))):[el('p','No campaigns yet.','muted')]));}
 
-// Same page source as the classic VN: generated reply > scripted beat > turn pages > narrative, plus visible results (stat checks, rank-ups, endings).
-function linesFor(data){const {state:s,pack:p}=data,turn=Object.values(s.turns).at(-1),scene=p.scriptedScenes?.find(x=>x.id===s.modules['story.scenes']?.pending),active=scene?.beats?.find(b=>b.id===s.modules['story.scenes']?.pendingBeat)||scene,d=data.diagnostics||{};
- const first=firstTurn(s,p),source=first?.source||turn;
- const base=source?.command?.type==='story.respond'&&source.sceneLines?.length?source.sceneLines:active?[{speaker:'',text:active.opening},...active.pages||[]]:source?.sceneLines?.length?[...source.sceneLines]:source?.narrative?sceneLines(source.narrative,p,source.command.args?.target||source.command.args?.char):[{speaker:'',text:p.locations.find(l=>l.id===s.actors[p.playerId].location)?.description||''}];
- if(first?.opening&&!base.some(l=>l.text===first.opening))base.unshift({speaker:'',text:first.opening});
- if(first?.cue&&!base.some(l=>l.text===first.cue))base.push({speaker:first.first.character,text:first.cue});
- if(first?.ended&&!base.some(l=>l.text===first.ended.text))base.push({speaker:'',text:first.ended.text,...(first.cg?{cg:first.cg}:{})});
- const said=new Set(base.map(l=>l.text?.trim()));return [...base.filter(l=>l.text),...(d.highlights||[]).filter(h=>!said.has(h.text?.trim())).map(h=>({speaker:'',kind:'RESULT',text:h.text})),...(d.ended?[{speaker:'',kind:'THE END',text:`${d.ended.name}. ${d.ended.text}`}]:[])];}
-
 function render(data){current=data;const {state:s,pack:p}=data;localStorage.setItem('story-last',s.campaignId);setPlaying(true);
  const loc=p.locations.find(l=>l.id===s.actors[p.playerId].location),clock=calendarFor(s.tick,p),turn=Object.values(s.turns).at(-1),scene=p.scriptedScenes?.find(x=>x.id===s.modules['story.scenes']?.pending),beat=scene?.beats?.find(b=>b.id===s.modules['story.scenes']?.pendingBeat)||scene;
  $('#place-index').textContent=String(p.locations.indexOf(loc)+1).padStart(2,'0');$('#pack-title').textContent=p.title.toUpperCase();$('#place').textContent=loc.name;$('#weekday').textContent=String(clock.weekday).slice(0,3).toUpperCase();$('#day').textContent=`Day ${clock.day}`;$('#daypart').textContent=String(clock.daypart).toUpperCase();$('#menu-where').textContent=`${loc.name} · ${clock.weekday} ${clock.daypart}`;
  const nextKey=`${s.campaignId}:${turn?.id||'start'}:${scene?.id||''}:${s.modules['story.scenes']?.pendingBeat||''}`;if(nextKey!==key){key=nextKey;lines=linesFor(data);cursor=0;$('#choices').hidden=true;$('#hub').hidden=true;$('.dialogue').hidden=false;queueCards(data);}
- const here=s.actors[p.playerId].location,present=id=>s.actors[id]?.location===here,voiced=beat&&![...(beat.pages||[]).map(x=>x.speaker),...Object.keys(beat.when?.charactersAt||{})].some(id=>id&&present(id)),blocked=beat?.allowInput===false||voiced||Boolean(data.diagnostics?.ended);$('#player-prompt').disabled=blocked||busy;$('#player-prompt').placeholder=blocked?'Choose one of the options':'What do you say or do?';
+ const here=s.actors[p.playerId].location,present=id=>s.actors[id]?.location===here,voiced=beat&&![...(beat.pages||[]).map(x=>x.speaker),...Object.keys(beat.when?.charactersAt||{}),...Object.values(scene?.template?.roles||{}),...(s.scene?.characters||[])].some(id=>id&&present(id)),blocked=beat?.allowInput===false||voiced||Boolean(data.diagnostics?.ended);$('#player-prompt').disabled=blocked||busy;$('#player-prompt').placeholder=blocked?'Choose one of the options':'What do you say or do?';
  renderFirstControls();retryId=turn?.fallback?turn.id:null;if(busy)return;if(retryId)showError('The writing was interrupted',`Your action was saved. ${turn.failureReason||''}`.trim(),true);else if(data.clarification)showError('Could you say that differently?',data.clarification);else clearState();
  renderChoices();showLine();}
 
@@ -60,7 +52,7 @@ function renderChoices(){const acts=current.actions||[],main=acts.filter(a=>!GRO
  const back=el('button',useHub()?'Back to the map':'Back to the scene','choices__back');back.type='button';back.onclick=()=>{box.hidden=true;if(useHub())renderHub();else $('.dialogue').hidden=false;};box.append(back);}
 
 function next(){if(cursor<lines.length-1){cursor++;showLine();return;}stopAuto();if(firstProgress(current.state,current.pack)){$('#player-prompt').focus();return;}$('.dialogue').hidden=true;if(useHub())return renderHub();$('#choices').hidden=false;}
-const useHub=()=>isCampus(current?.pack)&&!current.state.scene&&!current.state.modules['social.firsts']?.active&&!current.diagnostics?.ended;
+const useHub=()=>isCampus(current?.pack)&&!current.state.scene&&!current.state.modules['story.scenes']?.pending&&!current.state.modules['social.firsts']?.active&&!current.diagnostics?.ended;
 
 // Campus layer: end card, then the day card, once per turn / per day. Views come from campus.mjs; the engine still decides.
 function queueCards(data){const {state:s,pack:p}=data;if(!isCampus(p)&&!p.firsts?.length)return;const fresh=seen.campaign!==s.campaignId;if(fresh)seen={campaign:s.campaignId,tick:undefined,end:''};

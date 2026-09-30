@@ -239,7 +239,8 @@ test('scene classifier drops fabricated cast and unknown destination',async()=>{
  const {normalizeSceneVerdict}=await import('../vendor/venus/sceneClassifier.mjs');
  assert.deepEqual(normalizeSceneVerdict({characters:['ada','fake','ada'],mentionedOnly:['ada','brin'],sceneLocation:'invented palace',activity:'meet'},living),{characters:['ada'],mentionedOnly:['brin'],location:null,activity:'meet',activityId:'',itemAction:'',itemId:'',itemTarget:''});
 });
-test('unavailable meeting returns committed failure without calling narrator',async()=>{
+// Venus rebase: a typed turn the map turns away is still one model scene, told the refusal as a fact.
+test('unavailable meeting stays put and the narrator is told why',async()=>{
  const seen=[];const provider=new CompatibleProvider({endpoint:'http://127.0.0.1:1234/v1/chat/completions',model:'stub',fetchImpl:async(_url,request)=>{
   const body=JSON.parse(request.body);seen.push(body);
   const content=body.response_format?.json_schema?.name==='visual_novel_scene'?JSON.stringify({lines:[{speaker:'',text:'You made it to the Meeting Room.'}]}):JSON.stringify({characters:['ada'],mentionedOnly:[],sceneLocation:'meeting',activity:'meet'});
@@ -248,8 +249,8 @@ test('unavailable meeting returns committed failure without calling narrator',as
  const {store,service:svc}=service(living,provider);try{
   const r=await svc.act('test',{id:'scene-ai',expectedRevision:0,input:'Go meet Ada in the Meeting Room'});
   assert.notEqual(r.state.actors.player.location,'meeting');assert.equal(r.state.actors.ada.location,'hub');assert.ok(r.turn.events.some(e=>e.type==='world.meetingRedirect'));
-  assert.match(r.turn.narrative,/Ada is not at Meeting Room/);assert.equal(r.turn.fallback,false);
-  assert.equal(seen[0].response_format.type,'json_schema');assert.equal(seen.length,1);
+  assert.equal(r.turn.fallback,false);assert.equal(seen[0].response_format.type,'json_schema');assert.equal(seen.length,2);
+  assert.match(JSON.stringify(seen[1].messages),/Ada is not at Meeting Room[^]*nobody moves/);
  }finally{store.close();}
 });
 test('scene continuation keeps cast and location while ledger memory survives export',async()=>{

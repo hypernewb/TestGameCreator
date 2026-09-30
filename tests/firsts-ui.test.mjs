@@ -70,6 +70,6 @@ test('a completed free first unlocks its CG and replays stored prose and cues wi
 
 test('play wires persistent Stop outside dialogue and choices, dots, hub/phone offers and first replies',()=>{
  const read=f=>readFileSync(new URL(`../public/${f}`,import.meta.url),'utf8'),html=read('play.html'),js=read('play.mjs'),css=read('play.css');
- assert.match(html,/<section class="first-controls"[^]*id="first-stop"/);assert.match(js,/firstProgress\(current.state,current.pack\)/);assert.match(js,/firstOffers\(s,p,current.actions\)/);assert.match(js,/firstTurn\(s,p\)/);
+ assert.match(html,/<section class="first-controls"[^]*id="first-stop"/);assert.match(js,/firstProgress\(current.state,current.pack\)/);assert.match(js,/firstOffers\(s,p,current.actions\)/);assert.match(js,/import \{linesFor\} from '\.\/turn-presentation\.mjs'/);assert.match(readFileSync(new URL('../public/turn-presentation.mjs',import.meta.url),'utf8'),/firstTurn\(s,p\)/);
  assert.match(js,/#first-stop'\).onclick[^]*social.stopFirst/);assert.match(js,/offers.length\?\[offerList\(\)\]/);assert.match(js,/hubTab==='places'&&offers.length/);assert.match(css,/\.first-controls\[hidden\]/);
 });

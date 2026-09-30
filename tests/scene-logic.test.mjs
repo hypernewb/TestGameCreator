@@ -99,9 +99,9 @@ test('conversation cannot accept a classifier-invented destination or substitute
 });
 
 test('failed conversation attempt cannot generate a fictional arrival; unresolved pronoun does not commit',async()=>{
- const p=pack();let calls=0;const provider={name:'probe',async interpretScene(){return {characters:['brin'],location:'workshop',activity:'talk'};},async generateScene(){calls++;throw Error('Must not narrate absent target');}};
+ const p=pack();let calls=0;const provider={name:'probe',async interpretScene(){return {characters:['brin'],location:'workshop',activity:'talk'};},async generateScene(c){calls++;assert.deepEqual(c.stagedCast,[]);assert.match(c.direction,/Brin is not at Hub[^]*nobody moves/);return {lines:[{speaker:'',text:'The hub is quiet.'}]};}};
  const store=new Store();store.insert(createWorld(p,registry,'absent'));const service=new GameService(store,{[p.id]:p},registry,provider);
- try{let r=await service.act('absent',{id:'talk',expectedRevision:0,input:'Ask Brin how she is doing'});assert.match(r.turn.narrative,/Brin is not at Hub/);assert.equal(r.state.scene,null);assert.equal(calls,0);r=await service.act('absent',{id:'pronoun',expectedRevision:1,input:'Flirt with her'});assert.ok(r.clarification);assert.equal(r.state.revision,1);assert.equal(calls,0);}finally{store.close();}
+ try{let r=await service.act('absent',{id:'talk',expectedRevision:0,input:'Ask Brin how she is doing'});assert.equal(r.state.actors.player.location,'hub');assert.equal(r.state.scene,null);assert.equal(calls,1);r=await service.act('absent',{id:'pronoun',expectedRevision:1,input:'Flirt with her'});assert.ok(r.clarification);assert.equal(r.state.revision,1);assert.equal(calls,1);}finally{store.close();}
 });
 
 test('naming an absent character redirects for free instead of taxing a failed meeting',()=>{
@@ -113,6 +113,18 @@ test('naming an absent character redirects for free instead of taxing a failed m
  assert.equal(r.state.actors.player.location,w.actors.player.location);
  assert.equal(r.state.tick,w.tick);
  assert.equal(r.state.scene,null);
+});
+
+test('a cloud model gets style lints as warnings without a repair call; a local model still repairs',async()=>{
+ const p=pack(),draft=n=>n===1?'It is Sunday morning and the room is quiet.':'The room is quiet.',c={stagedCast:[],absentCharacters:[],sceneHistory:[],location:p.locations[0],weekday:'Monday'};
+ const run=async endpoint=>{const provider=new CompatibleProvider({endpoint,model:'test'});let calls=0;provider.complete=async()=>JSON.stringify({lines:[{speaker:'',text:draft(++calls)}]});return {r:await provider.generateScene(c,p),calls,remote:provider.remote};};
+ const cloud=await run('https://example.com/v1/chat/completions');assert.equal(cloud.remote,true);assert.equal(cloud.calls,1);assert.match(cloud.r.lines[0].text,/Sunday/);assert.equal(cloud.r.lintTrace[0].check,'calendar');assert.equal(cloud.r.lintTrace[0].warned,true);
+ const local=await run('http://localhost:1234/v1/chat/completions');assert.equal(local.remote,false);assert.equal(local.calls,2);assert.equal(local.r.lines[0].text,'The room is quiet.');assert.equal(local.r.lintTrace[0].check,'calendar');
+});
+
+test('a cloud model is still repaired for an off-stage entrance',async()=>{
+ const p=pack(),provider=new CompatibleProvider({endpoint:'https://example.com/v1/chat/completions',model:'test'});let calls=0;provider.complete=async()=>JSON.stringify({lines:[{speaker:'',text:++calls===1?'Brin peeks in, smiling.':'The room remains quiet.'}]});
+ const r=await provider.generateScene({stagedCast:[],absentCharacters:[{id:'brin',name:'Brin'}],sceneHistory:[],location:p.locations[0]},p);assert.equal(calls,2);assert.equal(r.lintTrace[0].check,'attendance');assert.equal(r.lintTrace[0].resolved,true);
 });
 
 test('narrator repairs an explicit off-stage entrance even when hidden in narration',async()=>{
@@ -127,11 +139,11 @@ test('narrator repairs a line that leaks a fact outside its knownBy',async()=>{
  const r=await provider.generateScene(c,p);assert.equal(calls,2);assert.equal(r.lines[0].text,'I have no idea what the code is.');assert.equal(r.lintTrace[0].check,'knowledge');assert.equal(r.lintTrace[0].resolved,true);
 });
 
-test('narrator repairs explicit prose when the content level is set to fade',async()=>{
+test('explicit prose is not rewritten by a word filter, even at the fade level',async()=>{
  const p=pack();p.intimacySettings={contentLevel:'fade'};const provider=new CompatibleProvider({endpoint:'http://localhost:1234/v1/chat/completions',model:'test'});let calls=0;
- provider.complete=async()=>++calls===1?JSON.stringify({lines:[{speaker:'ada',text:'She thrusts closer, breathless.'}]}):JSON.stringify({lines:[{speaker:'ada',text:'The scene fades to morning.'}]});
+ provider.complete=async()=>++calls===1?JSON.stringify({lines:[{speaker:'',text:'She thrusts closer, breathless.'},{speaker:'ada',text:'Closer.'}]}):JSON.stringify({lines:[{speaker:'ada',text:'The scene fades to morning.'}]});
  const c={stagedCast:['ada'],sceneHistory:[],location:p.locations[0]};
- const r=await provider.generateScene(c,p);assert.equal(calls,2);assert.equal(r.lines[0].text,'The scene fades to morning.');assert.equal(r.lintTrace[0].check,'content');assert.equal(r.lintTrace[0].resolved,true);
+ const r=await provider.generateScene(c,p);assert.equal(calls,1);assert.equal(r.lines[0].text,'She thrusts closer, breathless.');assert.ok(!r.lintTrace?.some(t=>t.check==='content'));
 });
 
 test('scene summary persists and a natural ending settles without a second writing call',async()=>{

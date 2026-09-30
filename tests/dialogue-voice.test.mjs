@@ -108,7 +108,7 @@ test('the engine directs each NPC beat from the authored profile, deterministica
  assert.doesNotMatch(at('Go see Rowan',[],'opening',['rowan']),/disagree|dodge/);assert.match(at('Go see Rowan',[],'opening',['rowan']),/^Rowan \(Direct, restless, and sincere beneath casual jokes\): start on what they want \(Tell the player face to face about the two-year fellowship abroad that starts next month\), then .+\. Keep it to one brief narration entry, then four or five entries mostly in the character’s own spoken voice\./);
  const asked=at('What made you start drawing, anyway?');
  assert.match(asked,/^Mina \(Careful, perceptive, and wry when nervous\): answer the question directly from what is true \(Started drawing on the backs of bus transfers during a two-hour commute\), then /);assert.doesNotMatch(asked,/dodge/);
- assert.match(at('Honestly that sucks. I will miss you.'),/respond to how the player feels/);assert.match(at('Tell me something dumb you will miss.'),/answer the question directly/);assert.match(at('Nice frames.'),/four or five entries mostly in the character’s own spoken voice\. Plain talk, no speeches; don't echo the player\..*Sound like "[^"]+" \(the voice, not those words\)\.$/);assert.match(at('Nice frames.'),/After answering, move the moment on their own way/);assert.match(at('Nice frames.'),/never reuse a gesture or mannerism/);
+ assert.match(at('Honestly that sucks. I will miss you.'),/respond to how the player feels/);assert.match(at('Tell me something dumb you will miss.'),/answer the question directly/);assert.match(at('Nice frames.'),/four or five entries mostly in the character’s own spoken voice\. Plain talk, no speeches; don't echo the player\..*Sound like "[^"]+" \(the voice, not those words\)\.$/);assert.match(at('Nice frames.'),/Stay on what the player brought up.*need not end on a question/);assert.doesNotMatch(at('Nice frames.'),/Find fresh physical business|ask the player something back/);assert.match(at('Nice frames.'),/never reuse a gesture or mannerism/);
  // The voice sample is one of the authored lines and rotates with the scene; no examples, no sample.
  const voices=new Set(Array.from({length:4},(_,i)=>/Sound like "([^"]+)"/.exec(at('Nice frames.',Array(i).fill({input:'',text:''})))[1]));assert.deepEqual([...voices].sort(),[...mina.examples].sort());
  // A question about the player is a memory check: answered from what they said, and without a voice sample to copy.
@@ -268,4 +268,10 @@ test('an NPC has a mood some days, the same all day, and authored moods replace 
  assert.ok(Array.from({length:30},(_,i)=>head(i+1,{scriptedScene:{id:'x'}})).every(t=>!/today$/.test(t)));assert.doesNotMatch(head(undefined),/today/);
  const authored={...p,actors:p.actors.map(a=>a.id==='mina'?{...a,moods:['humming under her breath']}:a)};
  assert.ok(Array.from({length:30},(_,i)=>head(i+1,{},authored)).filter(t=>/humming under her breath$/.test(t)).length===moody.length);
+});
+test('mid-scene a sheet topic only comes up when the player gave nothing to follow',()=>{
+ const p=JSON.parse(readFileSync(new URL('../packs/crossed-plans.json',import.meta.url))),at=(input,seed)=>beatDirection({stagedCast:['mina'],scenePhase:'continuation',playerAction:input,sceneHistory:[]},p,seed);
+ const seeds=Array.from({length:40},(_,i)=>`t${i}`);
+ assert.ok(seeds.some(s=>/then bring up /.test(at('Go on.',s))),'filler input can drift to a topic');
+ assert.ok(!seeds.some(s=>/then bring up /.test(at('I spent the whole summer fixing my uncle\'s boat',s))),'a real subject is never swapped for a sheet topic');
 });

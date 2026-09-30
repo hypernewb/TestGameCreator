@@ -25,8 +25,8 @@ test('model act tags are filtered to the closed list, four at most, with short s
 });
 
 test('a scene with an act profile asks for tags and records them as a social.priceActs turn before the close',async()=>{
- const p=pack(),seen=[];
- const provider={name:'probe',async generateScene(context){seen.push({memories:context.memories.map(m=>m.text),tags:context.actTags,schema:sceneResponseFormat(context,p).json_schema.schema.properties.acts,prompt:scenePromptMessages(context,p)[0].content});return {lines:[{speaker:'',text:'You smile at her.'},{speaker:'ada',text:'Nice try.'}],acts:[{kind:'flirt',target:'Smile',size:'large'},{kind:'marry',target:'now'}]};}};
+ const p=pack(),seen=[];let calls=0;
+ const provider={name:'probe',async generateScene(context){calls++;seen.push({memories:context.memories.map(m=>m.text),tags:context.actTags,schema:sceneResponseFormat(context,p).json_schema.schema.properties.acts,prompt:scenePromptMessages(context,p)[0].content});return {lines:[{speaker:'',text:'You smile at her.'},{speaker:'ada',text:'Nice try.'}],acts:[{kind:'flirt',target:'Smile',size:'large'},{kind:'marry',target:'now'}],...(calls===2?{end_scene:true}:{})};}};
  const store=new Store();store.insert(createWorld(p,reg,'acts'));const service=new GameService(store,{[p.id]:p},reg,provider);
  try{
   await service.act('acts',{id:'open',expectedRevision:0,command:{type:'core.scene',args:talk('I smile at Ada.')}});

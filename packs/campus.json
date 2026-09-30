@@ -90,6 +90,7 @@
       "startDate": "2026-09-07"
     },
     "sceneBudget": 4,
+    "goodbyeEndsDay": true,
     "ai": {
       "intent": "Interpret the player's words as one grounded action or spoken response without inventing results.",
       "scene": "Continue the conversation naturally. Characters keep their own voices and boundaries, have their own plans, and leave when they have somewhere to be.",

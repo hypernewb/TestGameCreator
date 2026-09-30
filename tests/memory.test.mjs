@@ -13,6 +13,17 @@ import {scenePromptMessages,absentView} from '../vendor/venus/scenePrompt.mjs';
 const pack=()=>JSON.parse(readFileSync(new URL('../packs/neutral.json',import.meta.url)));
 const said=(input,names=['Ada'])=>{const c=classifyUtterance(input,names);return {kind:c.kind,text:memoryText(c.kind,c.said,'Ada')};};
 
+test('indirect instructions retain player ownership, including real Ashford phrasings',()=>{
+ assert.deepEqual(said('Tell her you will go with her to the beach on sunday'),{kind:'promise',text:'the player promised Ada: the player will go with her to the beach on sunday'});
+ assert.equal(said('Tell her she looks lovely and you would love to get some coffee').text,'the player told Ada she looks lovely and the player would love to get some coffee');
+ assert.equal(said('Tell Ada your favorite color is teal').text,'the player told Ada: the player’s favorite color is teal');
+ assert.equal(said('Tell her "I love your lathe"').text,'the player told Ada: the player loves Ada’s lathe');
+ assert.equal(said('Talk to Ada: I love your lathe').text,'the player told Ada: the player loves Ada’s lathe');
+ const p=pack(),state={turns:{},modules:{'social.conversation':{memories:[{source:'beach',knownBy:['player','ada'],text:'You talk to Ada: Tell her you will go with her to the beach on sunday'}]}}};
+ assert.match(playerStatements(state,p,'ada')[0].text,/the player will go with her/);
+ assert.deepEqual(playerStatements(state,p,'brin'),[],'an absent character does not acquire the promise');
+});
+
 test('player utterances are classified so questions are dropped and disclosures keep their speaker',()=>{
  assert.deepEqual(said('Tell Ada my name is Mara and I grew up by the harbor'),{kind:'disclosure',text:'the player told Ada: the player’s name is Mara and the player grew up by the harbor'});
  assert.equal(said('Tell Ada I am nervous and I love your lathe').text,'the player told Ada: the player is nervous and the player loves Ada’s lathe');

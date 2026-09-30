@@ -13,10 +13,18 @@ const PROMISE=/\bpromise[sd]?\b|\b(?:i'll|i will|i swear|i vow)\b/i;
 /** Classifies one player utterance: question | promise | disclosure (about the player) | statement. */
 export function classifyUtterance(input,names=[]){
  const text=String(input||'').trim();if(!text)return {kind:'statement',said:''};
- const who=names.filter(Boolean).map(escape).join('|')||'(?!)';
+ const who=[...names.filter(Boolean).map(escape),'her','him','them'].join('|');
  // Strip the addressing wrapper players type in scene mode: "Tell Brin (that) …", "Talk to Brin: …".
- const said=text.replace(new RegExp(`^\\s*talk to (?:${who})\\s*:\\s*`,'i'),'')
+ let said=text.replace(new RegExp(`^\\s*talk to (?:${who})\\s*:\\s*`,'i'),'')
   .replace(new RegExp(`^\\s*(?:i\\s+)?(?:tell|tells|say|says|mention|explain|admit|confess|reveal|share|whisper|remind|inform|reply|answer)(?:\\s+to)?\\s+(?:${who})\\b[\\s,:]*(?:that\\s+)?`,'i'),'').trim();
+ // In an indirect instruction, "you" is the player: "Tell her you would love coffee".
+ // Explicit quotations and colon-addressed dialogue keep "you" as the listener.
+ const indirect=new RegExp(`^\\s*(?:tell|say|whisper|remind|inform|explain)(?:\\s+to)?\\s+(?:${who})\\b\\s+(?:that\\s+)?(?!["“])`,'i').test(text);
+ if(indirect&&!FIRST_PERSON.test(said.replace(/"[^"]*"|“[^”]*”/gu,''))){
+  said=said.split(/("[^"]*"|“[^”]*”)/u).map((part,i)=>i%2?part:part.replace(/\byou['’]re\b/gi,"I'm").replace(/\byou['’]ve\b/gi,"I've").replace(/\byou['’]ll\b/gi,"I'll").replace(/\byou['’]d\b/gi,"I'd")
+   .replace(/\byou are\b/gi,'I am').replace(/\byou were\b/gi,'I was').replace(/\byou have\b/gi,'I have')
+   .replace(/\byour\b/gi,'my').replace(/\byou\b/gi,'I')).join('');
+ }
  if(ASKING.test(text))return {kind:'question',said};
  if(PROMISE.test(said))return {kind:'promise',said};
  if(/\?\s*$/.test(said)||INTERROGATIVE.test(said))return {kind:'question',said};

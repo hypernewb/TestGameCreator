@@ -85,7 +85,7 @@ test('in a scene, an Ask button fills the prompt box instead of acting; outside 
 test('outside a scene, Talk and Ask open a focused talk scene with her, so what you say is priced',()=>{
  const p=pack(),g=run(p,'talk'),speaks=actions(g.state,p,registry).filter(a=>a.type==='social.speak');assert.ok(speaks.length);
  for(const a of speaks){const c=speakCommand(g.state,p,a);assert.equal(c.type,'core.scene');assert.deepEqual(c.args.characters,[a.args.target]);assert.equal(c.args.activity,'talk');assert.equal(c.args.location,g.state.actors[p.playerId].location);}
- const a=speaks[0];g.act('core.scene',speakCommand(g.state,p,a).args);assert.equal(g.state.scene.focus,a.args.target);assert.ok(g.state.scene.budget);
+ const a=speaks[0];g.act('core.scene',speakCommand(g.state,p,a).args);assert.equal(g.state.scene.focus,a.args.target);assert.ok(p.actProfiles?.some(x=>x.character===a.args.target),'a talk scene is focused on a priceable character');
  assert.deepEqual(speakCommand(g.state,p,a),{type:a.type,args:a.args},'in a scene, speech is not rerouted');
  const other=actions(g.state,p,registry).find(x=>x.type!=='social.speak');if(other)assert.deepEqual(speakCommand(g.state,p,other),{type:other.type,args:other.args});
  assert.match(read('play.mjs'),/speakCommand\(current\.state,current\.pack,a\)/);
@@ -112,7 +112,7 @@ test('every heroine first shows its own CG, and the art sheet renders each one a
 
 // Live run 3: the tester typed into Jana's first night while she was booked elsewhere and got "No character is present to answer this reply" twice.
 test('the prompt box locks during a scripted scene when nobody in it is here to answer',()=>{
- const src=read('play.mjs');assert.match(src,/voiced=beat&&!\[\.\.\.\(beat\.pages\|\|\[\]\)\.map\(x=>x\.speaker\),\.\.\.Object\.keys\(beat\.when\?\.charactersAt\|\|\{\}\)\]\.some\(id=>id&&present\(id\)\)/);
+ const src=read('play.mjs');assert.match(src,/voiced=beat&&!\[\.\.\.\(beat\.pages\|\|\[\]\)\.map\(x=>x\.speaker\),\.\.\.Object\.keys\(beat\.when\?\.charactersAt\|\|\{\}\),\.\.\.Object\.values\(scene\?\.template\?\.roles\|\|\{\}\),\.\.\.\(s\.scene\?\.characters\|\|\[\]\)\]\.some\(id=>id&&present\(id\)\)/);
  assert.match(src,/blocked=beat\?\.allowInput===false\|\|voiced\|\|/);
 });
 

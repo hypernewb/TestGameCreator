@@ -7,14 +7,34 @@ import {Store} from '../packages/persistence/store.mjs';
 import {GameService} from '../packages/ai/service.mjs';
 import {CompatibleProvider} from '../packages/ai/providers.mjs';
 import {estimateTokens,messageTokens,calibrate,allocate,lods,replyReserve} from '../packages/ai/budget.mjs';
-import {budgetSceneContext,turnDigest,recapGroups} from '../packages/ai/context-budget.mjs';
+import {budgetSceneContext,turnDigest,recapGroups,sceneTranscript} from '../packages/ai/context-budget.mjs';
 import {bm25Index,bm25Score,terms} from '../packages/ai/retrieval.mjs';
-import {selectLore} from '../packages/ai/context.mjs';
-import {detectContextWindow,effectiveWindow,validateContextSize} from '../packages/ai/local-settings.mjs';
+import {selectLore,contextFor} from '../packages/ai/context.mjs';
+import {detectContextWindow,effectiveWindow,validateContextSize,contextPreset,isLoopback,CLOUD_WINDOW} from '../packages/ai/local-settings.mjs';
 import {createApp} from '../server.mjs';
 import {scenePromptMessages} from '../vendor/venus/scenePrompt.mjs';
 const pack=()=>JSON.parse(readFileSync(new URL('../packs/neutral.json',import.meta.url)));
 const item=(key,pool,tier,rank,...texts)=>({key,pool,tier,rank,lods:lods(texts.map((t,i)=>[`l${i}`,t]))});
+
+test('sceneTranscript skips score sub-turns between conversation turns',()=>{
+ const line=(id,command,narrative,text)=>({id,status:'complete',command:{type:command,args:{text:id}},input:id,narrative,sceneLines:[{speaker:'ada',text}],events:[]});
+ const world={scene:{id:'s1'},events:[],turns:{
+  t1:line('t1','core.scene','Ada: Hello there.','Hello there.'),
+  t1acts:{id:'t1-acts',status:'complete',command:{type:'social.priceActs',args:{}},input:undefined,narrative:'Ada: Trust 45 → 50',sceneLines:[{speaker:'',text:'Ada: Trust 45 → 50'}],events:[]},
+  t2:line('t2','core.scene','Ada: Nice weather.','Nice weather.'),
+  t2first:{id:'t2-first',status:'complete',command:{type:'social.scoreFirst',args:{}},input:undefined,narrative:'Checkpoint reached.',sceneLines:[{speaker:'',text:'Checkpoint reached.'}],events:[]}}};
+ const history=sceneTranscript(world,{id:'t3',events:[]},['ada']);
+ assert.deepEqual(history.map(h=>h.text),['Ada: Hello there.','Ada: Nice weather.']);
+});
+
+test('score events never reach the model context as recent actions',()=>{
+ const p=pack(),s=createWorld(p,registry,'ctx-score');
+ s.events.push({id:'e1',tick:0,type:'social.relationshipChanged',visibility:['player'],payload:{actor:'ada',toward:'player',old:45,value:50,text:'Ada: Trust 45 → 50'}},
+  {id:'e2',tick:0,type:'world.moneyChanged',visibility:['player'],payload:{delta:30,balance:130,text:'Balance: $130.'}},
+  {id:'e3',tick:0,type:'world.activityCompleted',visibility:['player'],payload:{activity:'shift',text:'You finished the diner shift.'}});
+ const actions=contextFor(s,p).recentActions;
+ assert.deepEqual(actions.map(a=>a.text),['You finished the diner shift.']);
+});
 
 test('token estimate counts dense scripts per character and Latin text per four characters',()=>{
  assert.equal(estimateTokens('abcdefgh'),2);
@@ -170,6 +190,12 @@ test('context size presets cap the window without exceeding what the model repor
  assert.equal(effectiveWindow(32768,'max'),32768);
  assert.equal(effectiveWindow(2048,'minimal'),2048);
  assert.equal(effectiveWindow(null,'max'),8192);
+ // A cloud model: large window when undetected, and 'default' no longer caps it or digests old turns.
+ assert.equal(effectiveWindow(null,'default',true),CLOUD_WINDOW);
+ assert.equal(effectiveWindow(1048576,'default',true),1048576);
+ assert.equal(effectiveWindow(null,'minimal',true),4096);
+ assert.equal(contextPreset('default',true).verbatim,Infinity);assert.equal(contextPreset('default',false).verbatim,16);
+ assert.equal(isLoopback('http://127.0.0.1:1234/v1'),true);assert.equal(isLoopback('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions'),false);
  assert.throws(()=>validateContextSize('huge'),/minimal, default, or max/);
 });
 

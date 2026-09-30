@@ -13,6 +13,8 @@ export function validateConditions(when,p,label){
  if(when.weekdays)assert(Array.isArray(when.weekdays)&&when.weekdays.every(day=>WEEKDAYS.includes(day)),`${label}.weekdays: invalid`);
  if(when.dayparts)assert(Array.isArray(when.dayparts)&&when.dayparts.every(part=>PERIODS.includes(part)),`${label}.dayparts: invalid`);
  for(const [id,place] of Object.entries(when.charactersAt||{}))assert(actors.has(id)&&id!==p.playerId&&locations.has(place),`${label}.charactersAt: invalid`);
+ for(const id of when.present||[])assert(actors.has(id)&&id!==p.playerId,`${label}.present: invalid`);
+ for(const [id,min] of Object.entries(when.attention||{}))assert(actors.has(id)&&id!==p.playerId&&p.modules['story.director']&&Number.isInteger(min)&&min>=1&&min<=10,`${label}.attention: expected 1–10 with story.director present`);
  for(const k of ['minTick','maxTick'])if(when[k]!==undefined)assert(Number.isInteger(when[k])&&when[k]>=0,`${label}.${k}: invalid`);
  if(when.maxTick!==undefined&&when.minTick!==undefined)assert(when.maxTick>=when.minTick,`${label}: invalid time range`);
  const variables=new Set((p.storyVariables||[]).map(x=>x.id));for(const [id,value] of Object.entries(when.flags||{}))assert(safeKey(id)&&(!variables.size||variables.has(id))&&typeof value==='boolean',`${label}.flags: invalid or undefined variable ${id}`);
@@ -43,6 +45,8 @@ export function conditionReasons(when,state,pack,pages=[]){
   if(when.weekdays?.length&&!when.weekdays.includes(clock.weekday))reasons.push(`Weekday: ${clock.weekday}; needs ${when.weekdays.join(' or ')}`);
   if(when.dayparts?.length&&!when.dayparts.includes(clock.daypart))reasons.push(`Daypart: ${clock.daypart}; needs ${when.dayparts.join(' or ')}`);
   for(const [id,place] of Object.entries(when.charactersAt||{}))if(state.actors[id]?.location!==place)reasons.push(`${id} is at ${state.actors[id]?.location}; needs ${place}`);
+  for(const id of when.present||[])if(state.actors[id]?.location!==location)reasons.push(`${id} is at ${state.actors[id]?.location}; needs to be here`);
+  for(const [id,min] of Object.entries(when.attention||{})){const actual=state.modules['story.director']?.attention?.[id]||0;if(actual<min)reasons.push(`Recent time with ${id}: ${actual}; needs ${min}`);}
   if(when.minTick!==undefined&&state.tick<when.minTick)reasons.push(`Tick ${state.tick}; starts at ${when.minTick}`);
   if(when.maxTick!==undefined&&state.tick>when.maxTick)reasons.push(`Tick ${state.tick}; ended at ${when.maxTick}`);
   for(const [id,value] of Object.entries(when.flags||{}))if(Boolean(state.flags[id])!==value)reasons.push(`Flag ${id}: ${Boolean(state.flags[id])}; needs ${value}`);

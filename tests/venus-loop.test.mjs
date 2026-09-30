@@ -81,3 +81,50 @@ test('the hub\'s Skip button reaches the engine through the service with its day
  const p=load('campus'),provider=probe(),{store,service}=serve(p,'skipsvc',provider);
  try{const r=await service.act('skipsvc',{id:'k',expectedRevision:0,command:{type:'core.wait',args:{until:'Evening'}}});assert.equal(r.state.tick,2*(p.daypart?.interval||4));assert.equal(provider.contexts.length,0,'a button wait needs no model call');}finally{store.close();}
 });
+
+test('the scene prompt never asks the model to restate the player action (the UI already shows it)',()=>{
+ const p=load('neutral');for(const sceneWriter of ['venus','framework'])for(const scenePhase of ['opening','continuation']){
+  const all=scenePromptMessages({stagedCast:['brin'],scenePhase,sceneWriter,playerAction:'Ask Brin about the job.'},p).map(m=>m.content).join('\n');
+  assert.doesNotMatch(all,/restating only|echoing only|acknowledge the player/i,`${sceneWriter} ${scenePhase}`);assert.match(all,/never restate/i,`${sceneWriter} ${scenePhase}`);}
+});
+
+// Playtest 2026-09-30: a director incident is a moment played by the model with the people it names, not pasted authored prose.
+const campusDirector=async()=>{const {readPack}=await import('../packages/cards/director-library.mjs');return readPack(fileURLToPath(new URL('../packs/campus.json',import.meta.url)));};
+const withFire={...registry,'story.scenes':{...registry['story.scenes'],commands:{...registry['story.scenes'].commands,'test.incident'(tx,a){tx.emit('story.incident',{incident:a.id});}}}};
+const fire=(w,p,id)=>execute(w,{id:`f${w.revision}`,actorId:p.playerId,type:'test.incident',args:{id},expectedRevision:w.revision},p,withFire);
+test('a bad-day incident brings her to you, and typing to her is a model scene with the mood as direction',async()=>{
+ const p=await campusDirector();let w=createWorld(p,withFire,'bad');w.actors[p.playerId].location='langley';
+ const r=fire(w,p,'bad-day.jana'),start=r.turn.events.find(e=>e.type==='story.sceneStarted');w=r.state;
+ assert.equal(w.actors.jana.location,'langley');assert.equal(w.modules['story.scenes'].pending,'director.bad-day.jana');assert.deepEqual(start.payload.cast,['jana']);assert.doesNotMatch(start.payload.text,/snaps|you say|every/i);
+ const store=new Store();store.insert(w);const provider=probe(['jana']),service=new GameService(store,{[p.id]:p},withFire,provider);
+ try{const out=await service.act('bad',{id:'t',expectedRevision:w.revision,input:'Hey, you okay?'}),c=provider.contexts[0];
+  assert.equal(provider.contexts.length,1);assert.ok(c.stagedCast.includes('jana'));assert.match(c.direction,/Right now: Jana has had a rotten day/);assert.ok(out.state.scene?.characters.includes('jana'));}finally{store.close();}
+});
+test('an incident is over when its scene is: leaving or her goodbye clears it, so typing never waits on it',async()=>{
+ const p=await campusDirector(),run=(w,type,args={})=>execute(w,{id:`c${w.revision}`,actorId:p.playerId,type,args,expectedRevision:w.revision},p,withFire);
+ for(const end of ['leave','goodbye']){let w=createWorld(p,withFire,end);w.actors[p.playerId].location='langley';
+  w=fire(w,p,'bad-day.jana').state;if(!w.scene)w=run(w,'story.respond',{text:'Hey.'}).state;assert.ok(w.scene?.characters.includes('jana'),end);
+  const r=end==='leave'?run(w,'story.leave'):run(w,'core.endScene',{reason:'natural'});assert.equal(r.state.modules['story.scenes'].pending,null,end);assert.equal(r.state.scene,null,end);}
+});
+test('talking about a plan is conversation, not a move',async()=>{
+ const {futurePlan}=await import('../packages/ai/service.mjs');
+ for(const t of ["Let's go to the beach on Sunday","We should go to the gym tomorrow","Want to go out some time?"])assert.ok(futurePlan(t),t);
+ for(const t of ['Go to the gym','Let us leave','Head to the library'])assert.ok(!futurePlan(t),t);
+});
+test('the weekday check only rejects a line that says today is another day',async()=>{
+ const {todayClaims}=await import('../packages/ai/narration-lint.mjs');
+ assert.deepEqual(todayClaims('She wants to try the beach on Sunday.'),[]);assert.deepEqual(todayClaims('Next Friday there is a party.'),[]);
+ assert.deepEqual(todayClaims('It is Sunday and the hall is quiet.'),['sunday']);assert.deepEqual(todayClaims('Sunday morning light fills the room.'),['sunday']);
+});
+test('a first talk opens with a greeting and one thread, not her life goal or a topic from her sheet',async()=>{
+ const {beatDirection}=await import('../packages/ai/beats.mjs'),p=load('campus'),jana=p.actors.find(a=>a.id==='jana');
+ for(const seed of ['a','b','c','d','e']){const d=beatDirection({stagedCast:['jana'],scenePhase:'opening',playerAction:'Hey Jana.',sceneHistory:[],actor:{id:'jana',relationshipToPlayer:20},memories:[]},p,seed);
+  assert.match(d,/greet the player their own way/,seed);assert.ok(!d.includes(jana.goal.replace(/\.$/,'')),seed);assert.doesNotMatch(d,/bring up/,seed);assert.match(d,/one thread/,seed);}
+ assert.match(beatDirection({stagedCast:['jana'],scenePhase:'opening',playerAction:'Hey Jana.',sceneHistory:[],actor:{id:'jana',relationshipToPlayer:60},memories:[]},p,'a'),/start on what they want/,'a friend may open on what is on her mind');
+});
+test('when she says goodbye the day is over; when you walk away only the period is',()=>{
+ const p=load('campus');assert.equal(p.gameProject.goodbyeEndsDay,true);
+ for(const [reason,tick] of [['natural',12],['player',4]]){let w=createWorld(p,registry,reason);w.actors[p.playerId].location=w.actors.jana.location;
+  const run=(type,args)=>{w=execute(w,{id:`g${w.revision}`,actorId:p.playerId,type,args,expectedRevision:w.revision},p,registry).state;};
+  run('core.scene',{text:'Hey Jana.',location:w.actors.jana.location,characters:['jana'],activity:'talk'});assert.ok(w.scene,reason);run('core.endScene',{reason});assert.equal(w.tick,tick,reason);}
+});

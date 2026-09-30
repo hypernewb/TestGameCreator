@@ -106,6 +106,8 @@ function effects(tx,effects){const {state,pack}=tx;
   }
 }
 
+// Firsts (social.firsts) pay through the same effect vocabulary as authored choices, so both modes move the same numbers.
+export const applyEffects=effects;
 export const scenes={id:'story.scenes',version:'0.1.0',coreApi:'0.1.0',requires:[],
   validate(p){
     assert(Array.isArray(p.scriptedScenes||[]),'scriptedScenes: expected array');

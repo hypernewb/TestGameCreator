@@ -50,10 +50,11 @@ function stepProposal(){
    h('details',{},h('summary',{},'More: hangouts, gifts, likes, quirk'),h('div',{class:'row'},x.hangouts.map((_,j)=>field(`Hangout ${j+1}`,x.hangouts,j,{opts:['',...places]})),field('Quirk to notice',x,'quirk'),field('Compliment that misses',x,'looks')),
     h('div',{class:'row'},field('Loved gift',x,'loved',{opts:items}),field('Liked gift',x,'liked',{opts:items}),field('Disliked gift',x,'disliked',{opts:items}),field('Buys you',x,'buy',{opts:items})),h('div',{class:'row'},csv('likes'),csv('dislikes'))),
    h('div',{class:'bar'},del(p.heroines,i)));};
- p.player||={name:'',age:21};p.tone||='soap';
+ p.player||={name:'',age:21};p.tone||='soap';p.firsts??='free';
  return [h('section',{},h('h2',{},'World'),h('div',{class:'row'},field('Title',p,'title'),field('Player name',p.player,'name'),field('Player age',p.player,'age',{type:'number',num:true})),
    field('Premise',p,'premise',{type:'area'}),field('Setting',p,'setting',{type:'area'}),
-   h('div',{class:'row'},field('Drama ceiling',p,'tone',{opts:(O.tones||['soap']).map(t=>[t,{grounded:'grounded: small everyday trouble',soap:'soap: jealousy and rumors',melodrama:'melodrama: public clashes, close calls'}[t]||t])}))),
+   h('div',{class:'row'},field('Drama ceiling',p,'tone',{opts:(O.tones||['soap']).map(t=>[t,{grounded:'grounded: small everyday trouble',soap:'soap: jealousy and rumors',melodrama:'melodrama: public clashes, close calls'}[t]||t])}),
+    field('Firsts',p,'firsts',{opts:[['free','free: the player types; code holds the checkpoints'],['authored','authored: classic choice scenes']]}))),
   list('Places','places',x=>[field('Name',x,'name',{onchange:rerender}),field('Kind',x,'kind',{opts:O.placeKinds}),field('About',x,'about')],()=>({name:'',kind:'public',about:''}),'The first place is the player\'s home. Code links the places together.'),
   list('Things to buy or gift','items',x=>[field('Name',x,'name',{onchange:rerender}),field('Sold at',x,'at',{opts:places}),field('Price',x,'price',{opts:O.prices}),h('div',{},h('label',{},'Drink'),h('input',{type:'checkbox',checked:!!x.drink,onchange:e=>{x.drink=e.target.checked;keep();}}))],()=>({name:'',at:places[0]||'',price:'mid'})),
   list('Activities','activities',x=>[field('Name',x,'name'),field('Where',x,'at',{opts:places}),field('Trains',x,'gives',{opts:[...O.stats,'money']}),field('Done with',x,'with',{opts:['',...hs]}),field('About',x,'about')],()=>({name:'',at:places[0]||'',gives:'charm',with:''}),'Code sets the rewards: paid jobs +30, training +2, with a love interest +1 and trust.'),
@@ -76,7 +77,8 @@ async function draftRun(){
  say(stop?'Stopped. Draft the rest when ready.':S.batches.length?`${S.batches.length} cards still have blanks: draft again, or fill them by hand in review.`:'Every card is drafted.');
  if(!stop&&!S.batches.length)go(4);
 }
-const cardName=id=>{if(id==='world')return 'World';if(id.startsWith('director:'))return `Director · ${id.slice(9)}`;const [hid,r]=id.split(':');return `${getPath(S.spec,`heroines.${hid}.actor.name`)||hid} · ${r}`;};
+const cardName=id=>{if(id==='world')return 'World';if(id.startsWith('director:'))return `Director · ${id.slice(9)}`;const [hid,r]=id.split(':'),mode=r&&getPath(S.spec,`heroines.${hid}.rungs.${r}.mode`),eff=mode||S.spec?.world?.firsts||(r?'authored':'');
+ return `${getPath(S.spec,`heroines.${hid}.actor.name`)||hid} · ${r}${eff==='free'?' (free)':''}${mode==='authored'&&S.spec?.world?.firsts==='free'?' (authored)':''}`;};
 function stepDraft(){
  const cards=S.cards||[];
  return [S.notes?.length?h('section',{},h('h2',{},'What code changed'),h('ul',{class:'notes'},S.notes.map(n=>h('li',{},n)))):null,
@@ -87,15 +89,19 @@ function stepDraft(){
 }
 
 // Review: one card per scene; every field editable; choices show their tone; Redraft rewrites just that card.
-const pretty=rel=>rel.replace(/(\w+?)s?\.(\d+)(?=\.|$)/g,(_,k,n)=>`${k} ${+n+1}`).replace(/\.(text|label)$/,'').replace(/\.result$/,'.what happens').replace(/checkIn/g,'check-in').replaceAll('.',' › ');
+const pretty=rel=>rel.replace(/(\w+?)s?\.(\d+)(?=\.|$)/g,(_,k,n)=>`${k} ${+n+1}`).replace(/\.(text|label)$/,'').replace(/\.result$/,'.what happens').replace(/checkIn/g,'check-in').replace(/checkpoints\.([\w-]+)$/,'cue ($1)').replaceAll('.',' › ');
 const blankCount=()=>(S.cards||[]).reduce((n,c)=>n+c.paths.filter(p=>!String(getPath(S.spec,p)??'').trim()).length,0);
 function card(c){
  const base=c.id==='world'?'':c.id.startsWith('director:')?'director.beats.':`heroines.${c.id.split(':')[0]}.${c.id.endsWith(':profile')?'':`rungs.${c.id.split(':')[1]}.`}`;
- const ORDER=['title','name','description','voice','opening','pages','choices','lead','rush','checkIn','peak','stop'],rank=p=>{const i=ORDER.indexOf(p.slice(base.length).split('.')[0]);return i<0?ORDER.length:i;};
+ const ORDER=['title','name','description','voice','opening','checkpoints','pages','choices','lead','rush','checkIn','peak','stop'],rank=p=>{const i=ORDER.indexOf(p.slice(base.length).split('.')[0]);return i<0?ORDER.length:i;};
  const fields=[...c.paths].sort((a,b)=>rank(a)-rank(b)).map(p=>{const rel=p.slice(base.length),v=String(getPath(S.spec,p)??''),m=rel.match(/^(.*choices\.\d+)\.label$/),tone=m&&getPath(S.spec,`${base}${m[1]}.tone`),short=/(^|\.)(title|label|name|stop)$/.test(rel)||/\.ranks\.\d+$|^ranks\.\d+$/.test(rel);
   const wrap=h('div',{class:'f'+(v.trim()?'':' blank')}),mark=e=>{setPath(S.spec,p,e.target.value);wrap.className='f'+(e.target.value.trim()?'':' blank');keep();foot();};
   wrap.append(h('label',{},pretty(rel),tone?h('span',{class:`tone ${tone}`},tone):null),short?h('input',{value:v,oninput:mark}):h('textarea',{value:v,rows:Math.min(8,Math.ceil(v.length/110)+1),oninput:mark}));return wrap;});
- const el=h('div',{class:'card'},h('header',{},h('h3',{},cardName(c.id)),h('button',{onclick:e=>busy(e.target,`Redrafting ${cardName(c.id)}…`,async()=>{const r=await api('fill',{spec:S.spec,batches:[c.id],redo:true,style:S.style});S.spec=r.spec;keep();el.replaceWith(card(c));foot();say(r.errors.length?r.errors.join('; '):'Redrafted.',r.errors.length);})},'Redraft')),fields);
+ // O1: a rung card can flip its first between free (typed, checkpoint cues) and authored (choice scenes); the card set is re-derived.
+ const rung=c.id.includes(':')&&!c.id.startsWith('director:')&&!c.id.endsWith(':profile')?c.id.split(':')[1]:null;
+ const modeSel=rung?h('select',{title:'How this first plays',onchange:e=>busy(e.target,'Switching…',async()=>{setPath(S.spec,`${base}mode`,e.target.value);keep();const r=await api('check',{spec:S.spec});Object.assign(S,{cards:r.cards,batches:r.batches});render();say('');})},
+  [['','world setting'],['free','free'],['authored','authored']].map(([v,t])=>h('option',{value:v,selected:(getPath(S.spec,`${base}mode`)??'')===v},t))):null;
+ const el=h('div',{class:'card'},h('header',{},h('h3',{},cardName(c.id)),modeSel,h('button',{onclick:e=>busy(e.target,`Redrafting ${cardName(c.id)}…`,async()=>{const r=await api('fill',{spec:S.spec,batches:[c.id],redo:true,style:S.style});S.spec=r.spec;keep();el.replaceWith(card(c));foot();say(r.errors.length?r.errors.join('; '):'Redrafted.',r.errors.length);})},'Redraft')),fields);
  return el;
 }
 let footEl;

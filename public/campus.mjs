@@ -1,6 +1,7 @@
 // Campus-sim screens (day card, hub, end card, journal) as pure view models over (state, pack). The browser cannot
 // import packages/, so the few reads below mirror acts.knownActs / arc.stageOf / acts.sceneVerdicts (tests pin them).
 import {calendarFor,WEEKDAYS} from './calendar.mjs';
+import {firstEndCard} from './firsts-ui.mjs';
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const nameOf=(pack,id)=>pack.actors.find(a=>a.id===id)?.name||id;
 // Campus is the showcase world: it leads the start screens, everything else keeps the server's order.
@@ -51,7 +52,8 @@ export function goals(state,pack){
 // The core.scene command a hub activity sends (authored id in activityId; see engine scene handling).
 // What an activity pays, as the hub shows it (owner call 2026-09-29): money exact, your stats as arrows, her trust as a heart, never a number for either.
 export const yields=(pack,a)=>(a.effects||[]).map(e=>e.type==='money'?`${e.delta<0?'−':'+'}$${Math.abs(e.delta)}`:e.type==='stat'?`${(pack.statDefinitions||[]).find(x=>x.id===e.stat)?.name||e.stat} ${(e.delta<0?'↓':'↑').repeat(Math.min(3,Math.abs(e.delta)))}`:e.type==='trust'?`${nameOf(pack,e.character)} ♥`:'').filter(Boolean).join(' · ');
-export const activityCommand=(pack,id)=>{const a=pack.activities.find(x=>x.id===id);return {type:'core.scene',args:{text:a.name,location:a.location,characters:a.character?[a.character]:[],activity:'other',activityId:a.id}};};
+// M5: `result` is the widget's tier (skip|ok|good|great); left out, the engine pays the base yield.
+export const activityCommand=(pack,id,result)=>{const a=pack.activities.find(x=>x.id===id);return {type:'core.scene',args:{text:a.name,location:a.location,characters:a.character?[a.character]:[],activity:'other',activityId:a.id,...(result?{result}:{})}};};
 // In a scene, an "Ask her about…" suggestion is a line to type, not a menu pick: typed lines are what she prices.
 export const promptFill=(state,a)=>state?.scene&&a.type==='social.speak'&&a.args?.text||null;
 // Outside a scene, talking to her opens a short focused talk scene, so what you say there is priced (M0 interview: "Talk opens a scene").
@@ -59,6 +61,7 @@ export const speakCommand=(state,pack,a)=>!state?.scene&&isCampus(pack)&&a.type=
 
 // End card: when the newest turn closed a scene, one row per priced act of that scene: who, why, and ♥+ / ♥− (never a number).
 export function endCard(state,pack){
+ const first=firstEndCard(state,pack);if(first)return first;
  const turn=Object.values(state.turns||{}).at(-1);if(!turn?.events?.some(e=>e.type==='core.sceneEnded'))return null;
  const events=state.events||[],end=events.findLastIndex(e=>e.type==='core.sceneEnded'),priced=events.slice(0,end).filter(e=>e.type==='social.actPriced'),sceneId=priced.at(-1)?.payload.sceneId;
  const since=events.slice(0,end).findLastIndex(e=>e.type==='core.sceneEnded'),rows=sceneId?priced.filter(e=>e.payload.sceneId===sceneId&&events.indexOf(e)>since).map(e=>({character:e.payload.character,name:nameOf(pack,e.payload.character),text:e.payload.text,mark:e.payload.verdict==='liked'?'up':e.payload.verdict==='disliked'?'down':'none'})):[];

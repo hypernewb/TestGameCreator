@@ -4,7 +4,7 @@ import {heldBy,transfer} from './inventory.mjs';
 import {changeMoney} from './economy.mjs';
 import {addPoints} from './romance-tempo.mjs';
 
-const path=['modules','social.acts'],kinds=['flirt','compliment','gift','touch','insult','buy','invite','tease','listen','boast','pushy'],sizes=['small','medium','large'];
+const path=['modules','social.acts'],kinds=['flirt','compliment','gift','touch','insult','buy','invite','tease','listen','boast','pushy','ask'],sizes=['small','medium','large'];
 export const actProfileOf=(pack,character)=>(pack.actProfiles||[]).find(x=>x.character===character);
 export const knownActs=(state,pack,character)=>{const profile=actProfileOf(pack,character),known=state.modules['social.acts']?.characters?.[character]?.known||[];return (profile?.entries||[]).filter(x=>known.includes(x.id)).map(({id,kind,target,reason,points})=>({id,kind,target,reason,liked:points>0}));};
 export const narratorBrief=(state,pack,character)=>(actProfileOf(pack,character)?.entries||[]).filter(x=>x.when?.private!==false).slice(0,4).map(x=>`${x.points>0?'Likes':'Avoids'} ${x.kind}:${x.target} (${x.reason.slice(0,36)})`);

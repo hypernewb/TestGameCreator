@@ -46,3 +46,16 @@ export const ENDING_PRIORITY={route:20,together:10,fallback:-10};
 // Model-facing guidance is part of the engine contract, not world prose: every world starts from these and may override per key.
 export const AI_GUIDANCE={intent:'Interpret the player\'s words as one grounded action or spoken response without inventing results.',scene:'Continue the conversation naturally. Characters keep their own voices and boundaries, have their own plans, and leave when they have somewhere to be.',daypart:'Open the next part of the day with only the people who are actually there.'};
 export const DEFAULT_CHOICE_TONES=['best','light','miss']; // a rung with no authored choices: one that lands, one that half-lands, one that misses
+// O1 free-typed firsts: the checkpoints each rung holds and the act kinds that read her right there (docs/FIRSTS-PLAN.md).
+// A creator writes only her cue per checkpoint. strict: after an earlier miss only best counts. required: no light by stalling.
+// Night pays NIGHT per checkpoint (pay: verdict -> NIGHT key, like the authored night's three choices); the rest pay TONES once.
+// open: the physical beat, where a wanted act she doesn't dislike is best (profiles rarely list touch/flirt as liked; the likes puzzle lives elsewhere).
+export const FIRST_CHECKPOINTS={
+ talk:[{id:'opening-up',want:['listen','compliment']},{id:'your-turn',want:['tease','flirt','listen']}],
+ date:[{id:'arrival',want:['compliment','gift']},{id:'noticing',want:['listen','compliment']},{id:'moment',want:['invite','touch','flirt'],open:true}],
+ kiss:[{id:'reading',want:['listen','compliment']},{id:'leaning-in',want:['touch','flirt'],strict:true,open:true},{id:'after',want:['tease','listen']}],
+ night:[{id:'lead',want:['touch','flirt'],open:true,pay:{best:'lead',light:'yes',miss:'rush'}},{id:'check-in',want:['ask'],required:true,pay:{best:'honest',light:'yes'}},{id:'peak',want:['touch','flirt','listen'],pay:{best:'close',light:'more',miss:'rush'}}],
+};
+export const FIRST_INPUTS=2; // a checkpoint with no best or miss resolves light after this many typed turns: no stalling, no fishing
+// One TONES tone for a whole talk/date/kiss first, from its checkpoint verdicts: the same scale the authored single choice pays.
+export const firstTone=vs=>{const n=k=>vs.filter(v=>v===k).length,best=n('best'),miss=n('miss');return !miss?best===vs.length?'best':best?'good':'light':best>miss?'spark':best?'flat':'miss';};

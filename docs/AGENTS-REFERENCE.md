@@ -14,7 +14,7 @@
 - `server.mjs` — `createApp({dataPath,provider})` HTTP API; `vendor/venus/` — ported scene-prompt code; `integrations/` — SillyTavern
 
 ## Docs
-- Current: `docs/GAME-DESIGN.md` (product design, read first), `docs/NEXT-MILESTONES.md` (roadmap; Game tier M0 → M3 → M2 → M5 first), `docs/research/venus-university/design-patterns.md` (free-typing scene rules), `docs/CONTEXT-BUDGET.md`, `docs/AUTHORING.md`, `docs/SOCIAL-DATING.md`, `docs/ROMANCE-NETWORK.md`, `docs/SOCIAL-INTIMACY.md`, `docs/MILESTONES.md`
+- Current: `docs/GAME-DESIGN.md` (product design, read first), `docs/NEXT-MILESTONES.md` (roadmap; M5, then the Open-play tier (O1 first); shipped work is in `docs/COMPLETED-MILESTONES.md`), `docs/research/venus-university/design-patterns.md` (free-typing scene rules), `docs/CONTEXT-BUDGET.md`, `docs/AUTHORING.md`, `docs/SOCIAL-DATING.md`, `docs/ROMANCE-NETWORK.md`, `docs/SOCIAL-INTIMACY.md`, `docs/MILESTONES.md`
 - `docs/DESIGN.md` is large (65 KB). Grep it for the section you need.
 - Historical, only if asked: `docs/FUN-PASS.md` (superseded F1–F12 rationale), `docs/VENUS-*`, `docs/SCENE-LOGIC-1.15/1.16`, `docs/SCENE-LIFECYCLE-1.17`, `docs/SILLYTAVERN.md`
 

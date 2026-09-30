@@ -55,13 +55,23 @@ test('a model that skips slots gets a second pass for only what is left, then th
  const dead=await draftWorld(tiny(),{complete:async()=>'{}',rounds:2});assert.ok(dead.missing.length>50);validatePack(dead.pack,registry);
 });
 
-test('structureOnly strips campus to picks: every prose slot is blank but ids, gates, choice ids and numbers are unchanged',async()=>{
+test('structureOnly strips campus to picks: every prose slot is blank but ids, gates, checkpoints and numbers are unchanged',async()=>{
  const c=JSON.parse(readFileSync(new URL('../packs/campus.json',import.meta.url))),cast={jana:{temperament:'torn',pace:'steady'},monique:{temperament:'guarded',pace:'slow'},nova:{temperament:'prickly',pace:'casual'},abigail:{temperament:'practical',pace:'easy'}};
  const full=assemble(specFromPack(c,{cast})).pack,s=structureOnly(specFromPack(c,{cast})),{pack,missing}=assemble(s);validatePack(pack,registry);
- assert.ok(missing.length>250);assert.ok(missing.includes('heroines.jana.rungs.night.peak.close.label'));assert.ok(!missing.includes('project.premise'),'the owner premise is kept');
+ assert.ok(missing.length>150,missing.length);assert.ok(missing.includes('heroines.jana.rungs.night.checkpoints.peak'));assert.ok(!missing.includes('project.premise'),'the owner premise is kept');
  const mask=p=>JSON.stringify(p,(k,v)=>typeof v==='string'&&(v.startsWith('[[')||/[ A-Z]/.test(v))?'':v);
- for(const k of ['scriptedScenes','romanceTempoProfiles','arcTracks','endings','intimacyProfiles','items','locations'])assert.equal(mask(pack[k]),mask(full[k]),k);
- const {pack:drafted,missing:left}=await draftWorld(s,{complete:echo});assert.deepEqual(left,[]);assert.equal(mask(drafted.scriptedScenes),mask(full.scriptedScenes));
+ for(const k of ['firsts','scriptedScenes','romanceTempoProfiles','arcTracks','endings','intimacyProfiles','items','locations'])assert.equal(mask(pack[k]),mask(full[k]),k);
+ const {pack:drafted,missing:left}=await draftWorld(s,{complete:echo});assert.deepEqual(left,[]);assert.equal(mask(drafted.firsts),mask(full.firsts));
+});
+test('O1: a free rung keeps its mode through structureOnly, its cues come back as blanks, and the drafter fills them',async()=>{
+ const free=()=>{const t=tiny();t.world.firsts='free';return t;};
+ const {missing}=assemble(structureOnly(free()));
+ assert.ok(missing.includes('heroines.ava.rungs.kiss.checkpoints.reading'),'cue slots survive the picks pass');
+ assert.ok(missing.includes('heroines.ava.rungs.night.checkpoints.check-in'),'the night keeps its check-in cue');
+ assert.ok(!missing.some(m=>/rungs\.\w+\.choices/.test(m)),'no choice slots are drafted for free rungs');
+ const {pack,missing:left}=await draftWorld(free(),{complete:echo});
+ assert.deepEqual(left,[]);assert.equal(pack.firsts.find(f=>f.rung==='kiss').checkpoints.find(cp=>cp.id==='reading').cue,'text for heroines.ava.rungs.kiss.checkpoints.reading');
+ assert.equal(pack.scriptedScenes.length,0);validatePack(pack,registry);
 });
 test('a batch whose call throws stays missing and the next round retries it; the run never dies',async()=>{
  let n=0;const seen=[];const r=await draftWorld(tiny(),{rounds:2,onBatch:x=>seen.push(x),complete:async m=>{if(n++===1)throw new Error('timeout');return echo(m);}});

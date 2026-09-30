@@ -1,5 +1,6 @@
 import {assert} from '../core/engine.mjs';
 import {setDatingPhase,changeSatisfaction} from './dating.mjs';
+import {changeStat} from './stats.mjs';
 
 const path=['modules','social.secrecy'];
 const DEFAULTS={curiousAt:30,confrontAt:70,decayPerTick:2,deadlineTicks:12};
@@ -46,6 +47,8 @@ function suspect(tx,observer,subject,strength,summary,sourceEvent,weight){
 function ruleMatches(rule,event){return rule.event===event.type&&Object.entries(rule.match||{}).every(([key,value])=>event.payload[key]===value);}
 function ruleSeeds(rule,event,pack){const ids=new Set(pack.actors.map(x=>x.id)),raw=rule.seedFrom==='visibility'?event.visibility:event.payload.witnesses||[];return [...new Set((Array.isArray(raw)?raw:[]).filter(x=>ids.has(x)))];}
 
+function changeReputation(tx,slug,delta,reason){const rep=tx.pack.reputation;if(!rep||!delta||!tx.pack.modules['character.stats'])return;changeStat(tx,tx.pack.playerId,rep.stat,delta,reason);}
+
 export const secrecy={id:'social.secrecy',version:'0.2.0',coreApi:'0.1.0',requires:['social.dating'],
  validate(p){
   const settings=p.suspicionSettings||{};for(const key of ['curiousAt','confrontAt'])assert(settings[key]===undefined||Number.isInteger(settings[key])&&settings[key]>=0&&settings[key]<=100,`suspicionSettings.${key} invalid`);
@@ -57,6 +60,7 @@ export const secrecy={id:'social.secrecy',version:'0.2.0',coreApi:'0.1.0',requir
   const suspicionProfiles=new Set();assert(Array.isArray(p.suspicionProfiles||[])&&(p.suspicionProfiles||[]).length<=30,'suspicionProfiles invalid');
   for(const profile of p.suspicionProfiles||[]){assert(npcs.has(profile.character)&&profiles.has(profile.character)&&!suspicionProfiles.has(profile.character),'suspicion profile needs a distinct dating-profile character');suspicionProfiles.add(profile.character);for(const key of ['curiousAt','confrontAt'])assert(profile[key]===undefined||Number.isInteger(profile[key])&&profile[key]>=0&&profile[key]<=100,`suspicionProfiles.${key} invalid`);assert((profile.confrontAt??settings.confrontAt??DEFAULTS.confrontAt)>=(profile.curiousAt??settings.curiousAt??DEFAULTS.curiousAt),'suspicion profile: confrontAt must be >= curiousAt');for(const key of ['decayPerTick','deadlineTicks'])assert(profile[key]===undefined||Number.isInteger(profile[key])&&profile[key]>=1&&profile[key]<=1000,`suspicionProfiles.${key} invalid`);}
   const rules=new Set();assert(Array.isArray(p.suspicionRules||[])&&(p.suspicionRules||[]).length<=30,'suspicionRules: expected up to 30 rules');
+  const rep=p.reputation;if(rep!==undefined){assert(rep&&typeof rep==='object'&&!Array.isArray(rep)&&typeof rep.stat==='string'&&rep.stat.trim()&&rep.stat.length<=40,'reputation config invalid');for(const key of ['perPublicReveal','perCaught'])assert(rep[key]===undefined||Number.isInteger(rep[key])&&Math.abs(rep[key])<=100,`reputation.${key} invalid`);}
   for(const rule of p.suspicionRules||[]){assert(typeof rule.id==='string'&&/^[a-z][a-z0-9-]*$/.test(rule.id)&&!rules.has(rule.id),'suspicion rule ID invalid or duplicate');rules.add(rule.id);assert(typeof rule.event==='string'&&rule.event&&!['core.patch','core.timeAdvanced','social.suspicionSurfaced','social.secretCaught','social.secretWatched','social.confrontationStarted','social.confrontationResolved'].includes(rule.event),'suspicion rule event invalid');assert(Number.isInteger(rule.weight)&&rule.weight>=1&&rule.weight<=100,'suspicion rule weight invalid');assert(typeof rule.summary==='string'&&rule.summary.trim()&&rule.summary.length<=300,'suspicion rule summary invalid');assert(['hard','soft'].includes(rule.strength||'soft'),'suspicion rule strength invalid');assert(['witnesses','visibility'].includes(rule.seedFrom||'witnesses'),'suspicion rule seed source invalid');assert(rule.match===undefined||rule.match&&typeof rule.match==='object'&&!Array.isArray(rule.match),'suspicion rule match invalid');assert(rule.subjectKey===undefined||typeof rule.subjectKey==='string'&&rule.subjectKey.length<=40,'suspicion rule subject key invalid');}
  },
  init(p){return {edges:Object.fromEntries((p.initialSecrets||[]).map(x=>[x.character,{visibility:'secret',knownBy:[...(x.knownBy||[])],sinceTick:0}])),suspicions:{},evidence:{},confrontations:{},serial:0};},
@@ -77,12 +81,12 @@ export const secrecy={id:'social.secrecy',version:'0.2.0',coreApi:'0.1.0',requir
  },
  react(tx,event){
   const s=tx.state.modules['social.secrecy'];
-  if(event.type==='social.dateAccepted'){
+  if(event.type==='social.dateAccepted'||event.type==='social.relationshipAgreementChanged'&&event.payload.to==='monogamous'){
    const character=event.payload.character,competitor=committedPartnerOf(tx.state,tx.pack,character),edge=edgeOf(tx.state,character);
    if(competitor&&(!edge||edge.visibility!=='secret')){tx.set([...path,'edges',character],{visibility:'secret',knownBy:[],sinceTick:tx.state.tick});tx.emit('social.affairStarted',{character,partner:competitor,text:`You and ${tx.state.actors[character].name} both understand this stays quiet — you are committed to ${tx.state.actors[competitor].name}.`},[tx.pack.playerId,character]);}
    return;
   }
-  if(event.type==='social.relationshipRevealed'){const partner=committedPartnerOf(tx.state,tx.pack,event.payload.character);if(partner)suspect(tx,partner,tx.pack.playerId,'hard',`you introduced ${tx.state.actors[event.payload.character].name} as your partner`,event.id,REVEAL_WEIGHT);return;}
+  if(event.type==='social.relationshipRevealed'){const partner=committedPartnerOf(tx.state,tx.pack,event.payload.character);if(partner)suspect(tx,partner,tx.pack.playerId,'hard',`you introduced ${tx.state.actors[event.payload.character].name} as your partner`,event.id,REVEAL_WEIGHT);if(event.payload.witnesses?.length)changeReputation(tx,'reveal',tx.pack.reputation?.perPublicReveal??2,'a public relationship reveal');return;}
   if(event.type==='social.intimacyExposed'){for(const witness of event.payload.witnesses||[])if(witness!==event.payload.character)suspect(tx,witness,tx.pack.playerId,'hard',`saw you and ${tx.state.actors[event.payload.character].name}: ${event.payload.category}`,event.id,HARD_WEIGHT);return;}
   if(event.type==='social.rumorBelieved'){const{subject,character,summary}=event.payload;if(subject===tx.pack.playerId)suspect(tx,character,tx.pack.playerId,'soft',`heard that ${summary}`,event.id,SOFT_WEIGHT);return;}
   if(event.type==='core.timeAdvanced'){
@@ -92,7 +96,7 @@ export const secrecy={id:'social.secrecy',version:'0.2.0',coreApi:'0.1.0',requir
     const settings=settingsOf(tx.pack,observer);let{score,status,deadlineTick}=susp;
     if(status==='pending'&&event.payload.to>=deadlineTick){
      const hard=(s.evidence[observer]||[]).some(x=>x.subject===subject&&x.strength==='hard');
-     if(hard){setDatingPhase(tx,observer,'broken','she found out',profileOf(tx.pack,observer)?.maintenance?.breakupCooldown||0);tx.emit('social.secretCaught',{observer,subject,outcome:'breakup',text:`${tx.state.actors[observer].name} found out. It is over.`},[tx.pack.playerId,observer]);status='resolved';}
+     if(hard){setDatingPhase(tx,observer,'broken','she found out',profileOf(tx.pack,observer)?.maintenance?.breakupCooldown||0);tx.emit('social.secretCaught',{observer,subject,outcome:'breakup',text:`${tx.state.actors[observer].name} found out. It is over.`},[tx.pack.playerId,observer]);changeReputation(tx,'caught',tx.pack.reputation?.perCaught??-10,'caught hiding a relationship');status='resolved';}
      else{changeSatisfaction(tx,observer,-20,'she suspects something');tx.emit('social.secretWatched',{observer,subject,text:`${tx.state.actors[observer].name} gives you a look that says she knows something. The moment passes, badly.`},[tx.pack.playerId,observer]);status='watching';deadlineTick=event.payload.to+settings.deadlineTicks;}
     }
     score=Math.max(0,score-settings.decayPerTick*elapsed);

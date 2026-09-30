@@ -1,7 +1,7 @@
 // M2 assembler: a world spec (world data + one short spec per love interest) -> a playable pack. The structure comes from the beat
 // library; the spec only fills text slots. Anything left blank becomes a visible [[slot]] placeholder and is listed in `missing`.
 import {withDirector} from './director-library.mjs';
-import {TEMPERAMENTS,PACES,SHARED_ACTS,RANK_POINTS,THRESHOLDS,WANT_WEIGHTS,INTIMACY_CATEGORIES,RUNGS,TONES,NIGHT,STOP_LABEL,STOP_TRUST,ENDING_PRIORITY,slug,idOf,AI_GUIDANCE,DEFAULT_CHOICE_TONES} from './beat-library.mjs';
+import {TEMPERAMENTS,PACES,SHARED_ACTS,RANK_POINTS,THRESHOLDS,WANT_WEIGHTS,INTIMACY_CATEGORIES,RUNGS,FIRST_CHECKPOINTS,TONES,NIGHT,STOP_LABEL,STOP_TRUST,ENDING_PRIORITY,slug,idOf,AI_GUIDANCE,DEFAULT_CHOICE_TONES} from './beat-library.mjs';
 
 const MODULES=['social.conversation','social.relationships','world.schedule','items.inventory','world.economy','character.stats','world.calendar','world.moments','social.dating','social.romance-tempo','social.intimacy','social.acts','character.arc','character.sobriety','social.phone','story.endings','story.scenes'];
 const VERSIONS={'items.inventory':'0.2.0','world.economy':'0.2.0','social.romance-tempo':'0.2.0'};
@@ -9,12 +9,13 @@ const assert=(ok,msg)=>{if(!ok)throw new Error(`world spec: ${msg}`);};
 
 export function assemble(spec){
  const missing=[],text=(v,path)=>typeof v==='string'&&v.trim()?v:(missing.push(path),`[[${path}]]`);
- const w=spec.world||{},hs=spec.heroines||[];assert(hs.length>=1&&hs.length<=6,'1–6 love interests');
+ const w=spec.world||{},hs=spec.heroines||[];assert(hs.length>=1&&hs.length<=6,'1–6 love interests');assert(!w.firsts||w.firsts==='free'||w.firsts==='authored','world.firsts: must be "free" or "authored"');
  const run={days:spec.days||28,defaultEnding:spec.fallback?.id||'run-ends'},overFlag=spec.fallback?.flag||'run-over';
  const parts=hs.map(h=>heroine(h,spec,text));
+ const firsts=parts.flatMap(x=>x.firsts);
  const cast=[{id:'player',name:'You',pronouns:'you',location:w.locations?.[0]?.id,...spec.player,identityTags:['adult']},...parts.map(x=>x.actor),...(spec.friends||[]).map(f=>({...f,identityTags:['adult']}))];
  for(const a of cast)assert(Number.isInteger(a.age)&&a.age>=18,`${a.id}: every character is an adult with an age`);
- const modules=Object.fromEntries(MODULES.filter(m=>m!=='character.sobriety'||w.sobriety).filter(m=>m!=='social.phone'||w.phoneContacts?.length).map(m=>[m,VERSIONS[m]||'0.1.0']));
+ const modules=Object.fromEntries(MODULES.filter(m=>m!=='character.sobriety'||w.sobriety).filter(m=>m!=='social.phone'||w.phoneContacts?.length).map(m=>[m,VERSIONS[m]||'0.1.0']).concat(firsts.length?[['social.firsts','0.1.0']]:[]));
  const pack={schemaVersion:1,id:spec.id,version:spec.version||'0.1.0',title:text(spec.title,'title'),...(spec.subtitle?{subtitle:spec.subtitle}:{}),playerId:'player',
   calendar:w.calendar||{},modules,gameProject:{presentation:'visual-novel',conversationStyle:'continuous',sceneBudget:4,...spec.project,ai:{...AI_GUIDANCE,...spec.project?.ai},premise:text(spec.project?.premise,'project.premise'),setting:text(spec.project?.setting,'project.setting')},run,
   locations:w.locations||[],actors:cast,initialRelationships:[...parts.map(x=>x.relationship),...(w.initialRelationships||[])],
@@ -26,7 +27,7 @@ export function assemble(spec){
   ...(w.phoneContacts?.length?{phoneContacts:w.phoneContacts,phoneMessages:w.phoneMessages||[]}:{}),
   momentsProfile:w.momentsProfile||{chancePercent:25,dryStepPercent:15,perDay:3,cooldown:12,generate:false},moments:w.moments||[],
   endings:[...parts.flatMap(x=>x.endings),{id:run.defaultEnding,name:text(spec.fallback?.name,'fallback.name'),priority:ENDING_PRIORITY.fallback,requires:{flags:{[overFlag]:true}},text:text(spec.fallback?.text,'fallback.text')}],
-  scriptedScenes:parts.flatMap(x=>x.scenes)};
+  scriptedScenes:parts.flatMap(x=>x.scenes),...(firsts.length?{firsts}:{})};
  // M3: the director library over every love interest; its text slots go through the same blank-tracking filler.
  return {pack:spec.director?withDirector(pack,{beats:spec.director.beats,tone:spec.director.tone,text}):pack,missing};
 }
@@ -49,11 +50,18 @@ function heroine(h,spec,text){
  const interest={id:`${c}-${h.interest?.id||'pace'}`,category:P.casual?'fling':'first-night',label:text(h.interest?.label,at('interest.label')),visibility:'discoverable'};
  const aftercare={id:`${c}-${h.aftercare||'talk'}`,option:h.aftercare||'talk',reaction:'liked',satisfactionDelta:8,visibility:'discoverable'};
  const actor={...h.actor,id:c,identityTags:['adult']};for(const k of ['name','description','voice'])actor[k]=text(h.actor?.[k],at(`actor.${k}`));
+ // M5: her line after an activity with you, per result tier (the play UI's minigame).
+ actor.reactions=Object.fromEntries(['skip','ok','good','great'].map(r=>[r,text(h.actor?.reactions?.[r],at(`actor.reactions.${r}`))]));
  const E=h.endings||{},endings=[
   {id:E.route?.id||`${c}-route`,name:text(E.route?.name,at('endings.route.name')),character:c,priority:ENDING_PRIORITY.route,requires:{flags:{[arcFlag]:true},romanceRanks:{[c]:ranks[3].id}},text:text(E.route?.text,at('endings.route.text'))},
   {id:`${c}-together`,name:text(E.together?.name,at('endings.together.name')),character:c,priority:ENDING_PRIORITY.together,requires:{datingPhases:{[c]:'exclusive'}},text:text(E.together?.text,at('endings.together.text'))}];
- const prefIds=new Set(wants.map(x=>x.id)),scenes=['talk','date','kiss'].map(r=>first(h,r,{c,at,text,prefIds,friend:ranks[1].id,interest:interest.id})).concat(night(h,{c,at,text,interest:interest.id}));
- return {actor,relationship:{character:c,trust:h.trust??T.initial.trust},endings,scenes,
+ const prefIds=new Set(wants.map(x=>x.id));
+ // O1: each rung is authored (today's choice scenes) or free (typed, engine-held checkpoints); the rung overrides the world. Default authored, so existing worlds build unchanged.
+ const mode=r=>{const m=h.rungs?.[r]?.mode;if(m!==undefined)assert(m==='free'||m==='authored',`heroines.${c}.rungs.${r}.mode: must be "free" or "authored"`);return m||spec.world?.firsts||'authored';};
+ const scenes=[],firsts=[];
+ for(const r of ['talk','date','kiss']){const ctx={c,at,text,prefIds,friend:ranks[1].id,interest:interest.id};mode(r)==='free'?firsts.push(freeFirst(h,r,{...ctx})):scenes.push(first(h,r,ctx));}
+ if(mode('night')==='free')firsts.push(freeFirst(h,'night',{c,at,text,prefIds,interest:interest.id}));else scenes.push(night(h,{c,at,text,interest:interest.id}));
+ return {actor,relationship:{character:c,trust:h.trust??T.initial.trust},endings,scenes,firsts,
   dating:{character:c,initialChemistry:T.chemistry,initialPhase:'available',agreements:P.casual?['casual','monogamous']:['monogamous'],thresholds:THRESHOLDS,preferences:wants,signals:[
    {id:`liked-${c}`,event:'social.actPriced',match:{character:c,verdict:'liked'},delta:2,label:'something you did that she liked',repeatable:true},
    {id:`disliked-${c}`,event:'social.actPriced',match:{character:c,verdict:'disliked'},delta:-1,label:'something you did that she did not like',repeatable:true},
@@ -76,6 +84,17 @@ function first(h,rung,{c,at,text,prefIds,friend,interest}){
  assert(choices.some((_,i)=>['best','good'].includes((x.choices?.length?x.choices:DEFAULT_CHOICE_TONES.map(tone=>({tone})))[i]?.tone)),`${path}: needs one best or good choice`);
  const match=R.match(c);if('to' in match)match.to=rung==='talk'?friend:match.to;
  return {id:`${c}-${rung}`,title:text(x.title,`${path}.title`),opening:text(x.opening,`${path}.opening`),trigger:{event:R.event,match},pages:pages(x.pages,c,path,text),choices,...cg(x)};
+}
+
+// O1 free mode: no choice menu. The entry names the trigger, her opening line, and one cue per code-owned checkpoint
+// (FIRST_CHECKPOINTS in beat-library.mjs). The creator writes cues, never the checkpoint list, so the night's check-in
+// can't be removed; blank cues are [[slot]] placeholders the drafter fills, like every other prose slot.
+function freeFirst(h,rung,{c,at,text,prefIds,friend,interest}){
+ const R=RUNGS[rung],x=h.rungs?.[rung]||{},path=at(`rungs.${rung}`);
+ const cue=cp=>{const v=x.checkpoints?.[cp.id];return typeof v==='string'?v:v?.cue;},discover=cp=>{const d=x.checkpoints?.[cp.id]?.discover,pref=d&&`${c}-${d}`;assert(!pref||prefIds.has(pref),`${path}.checkpoints.${cp.id}: discovers unknown preference ${pref}`);return pref?{discover:pref}:{};};
+ const match=R.match(c);if('to' in match)match.to=rung==='talk'?friend:match.to;
+ return {id:`${c}-${rung}`,character:c,rung,title:text(x.title,`${path}.title`),opening:text(x.opening,`${path}.opening`),trigger:{event:R.event,match},
+  checkpoints:FIRST_CHECKPOINTS[rung].map(cp=>({id:cp.id,cue:text(cue(cp),`${path}.checkpoints.${cp.id}${typeof x.checkpoints?.[cp.id]==='object'?'.cue':''}`),...discover(cp)})),...(rung==='night'?{interest}:{}),...cg(x)};
 }
 
 function night(h,{c,at,text,interest}){
@@ -111,9 +130,18 @@ export function specFromPack(p,{cast}){
   h.harp=(a.dislikes||[]).map(d=>acts.find(e=>e.kind==='pushy'&&e.target===slug(d))?.reason);
   const scene=r=>p.scriptedScenes.find(s=>s.id===`${c}-${r}`),tone=ch=>{const f=t=>ch.effects.find(e=>e.type===t)?.delta||0,v=[f('chemistry'),f('trust')];return Object.keys(TONES).find(k=>TONES[k][0]===v[0]&&TONES[k][1]===v[1])||'flat';};
   const txt=s=>({title:s.title,opening:s.opening,pages:s.pages,...(s.cg?{cg:s.cg}:{})}),opt=ch=>({id:ch.id,label:ch.label,result:ch.result});
-  h.rungs=Object.fromEntries(['talk','date','kiss'].map(r=>{const s=scene(r);return [r,{...txt(s),choices:s.choices.map(ch=>{const d=ch.effects.find(e=>e.type==='discoverPreference');return {...opt(ch),tone:tone(ch),...(d?{discover:strip(c,d.preference)}:{}),...(ch.effects.some(e=>e.type==='discoverIntimacyInterest')?{learn:true}:{})};})}];}));
-  const n=scene('night'),[ci,pk]=n.beats;
-  h.rungs.night={...txt(n),lead:opt(n.choices[0]),rush:opt(n.choices[1]),stop:n.choices[2].result,checkIn:{opening:ci.opening,pages:ci.pages,honest:opt(ci.choices[0]),yes:opt(ci.choices[1]),stop:ci.choices[2].result},peak:{opening:pk.opening,...(pk.pages?{pages:pk.pages}:{}),close:opt(pk.choices[0]),more:opt(pk.choices[1]),stop:pk.choices[2].result}};
+  // O1: free rungs read back from pack.firsts keyed by checkpoint kind; when a pack mixes modes, every rung carries its mode
+  // explicitly so the round trip is exact (world.firsts alone could not express the mix).
+  const free=r=>(p.firsts||[]).find(f=>f.character===c&&f.rung===r),anyFirst=Boolean(p.firsts?.length);
+  const freeRung=f=>({mode:'free',title:f.title,opening:f.opening,...(f.cg?{cg:f.cg}:{}),checkpoints:Object.fromEntries(f.checkpoints.map(cp=>[cp.id,cp.discover?{cue:cp.cue,discover:strip(c,cp.discover)}:cp.cue]))});
+  const authored=x=>anyFirst?{mode:'authored',...x}:x;
+  h.rungs=Object.fromEntries(['talk','date','kiss'].map(r=>{const f=free(r);if(f)return [r,freeRung(f)];
+   const s=scene(r),choices=s.choices.map(ch=>{const d=ch.effects.find(e=>e.type==='discoverPreference');return {...opt(ch),tone:tone(ch),...(d?{discover:strip(c,d.preference)}:{}),...(ch.effects.some(e=>e.type==='discoverIntimacyInterest')?{learn:true}:{})};});
+   return [r,authored({...txt(s),choices})];}));
+  const nf=free('night');
+  if(nf)h.rungs.night=freeRung(nf);
+  else{const n=scene('night'),[ci,pk]=n.beats;
+   h.rungs.night=authored({...txt(n),lead:opt(n.choices[0]),rush:opt(n.choices[1]),stop:n.choices[2].result,checkIn:{opening:ci.opening,pages:ci.pages,honest:opt(ci.choices[0]),yes:opt(ci.choices[1]),stop:ci.choices[2].result},peak:{opening:pk.opening,...(pk.pages?{pages:pk.pages}:{}),close:opt(pk.choices[0]),more:opt(pk.choices[1]),stop:pk.choices[2].result}});}
   const end=pr=>p.endings.find(e=>e.character===c&&e.priority===pr);h.endings={route:{id:end(20).id,name:end(20).name,text:end(20).text},together:{name:end(10).name,text:end(10).text}};
   return h;});
  const fb=p.endings.find(e=>e.id===p.run.defaultEnding),hero=new Set(ids);
@@ -121,5 +149,6 @@ export function specFromPack(p,{cast}){
   friends:p.actors.filter(a=>a.id!==p.playerId&&!hero.has(a.id)),fallback:{id:fb.id,name:fb.name,text:fb.text,flag:Object.keys(fb.requires?.flags||{})[0]},heroines,
   world:{calendar:p.calendar,locations:p.locations,statDefinitions:p.statDefinitions,initialStats:p.initialStats,items:p.items,activities:p.activities,schedules:p.schedules,initialMoney:p.initialMoney,economySettings:p.economySettings,sobriety:p.sobriety,
    phoneContacts:p.phoneContacts,phoneMessages:p.phoneMessages,momentsProfile:p.momentsProfile,moments:p.moments,contentLevel:p.intimacySettings.contentLevel,privateLocations:p.intimacySettings.privateLocations,aftercareOptions:p.intimacySettings.aftercareOptions,
+   ...(p.firsts?.length?{firsts:'free'}:{}),
    initialRelationships:p.initialRelationships.filter(r=>!hero.has(r.character))}};
 }

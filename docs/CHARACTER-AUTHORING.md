@@ -26,7 +26,7 @@ Start an OpenAI-compatible model server, then run:
 node scripts/character-author.mjs generate `
   --pack packs/my-game.json `
   --prompts cast-prompts.json `
-  --model qwen3.5-text-9b-nsfw-rp-roleplay-i1 `
+  --model qwen/qwen3.8-27b `
   --out cast.batch.json
 ```
 

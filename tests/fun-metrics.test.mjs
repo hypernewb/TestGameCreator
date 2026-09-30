@@ -30,7 +30,7 @@ test('fun metrics: firsts, dead turns, streaks, storylets and gallery unlocks',(
  assert.deepEqual([m.deadTurns,m.longestDeadStreak,m.deadByCommand],[3,2,{'core.wait':2,'core.inspect':1}]);
  assert.deepEqual([m.choices,m.typed,m.storylets],[2,1,{seen:1,total:2}]);assert.equal(m.repeatedProse,0.5);assert.equal(m.ending,'good');
  const gate=Object.fromEntries(funGate(m).map(g=>[g.id,g.pass]));
- assert.deepEqual(gate,{'first-choice':true,'first-payoff':true,'dead-turns':false,'run-length':false,drama:false,'repeated-prose':false});
+ assert.deepEqual(gate,{'first-choice':true,'first-discovery':null,'first-payoff':true,'dead-turns':false,'typed-effective':false,'run-length':false,drama:false,'world-quiet':null,'repeated-prose':false});
  assert.match(funLine(m),/1st payoff 2\.5m\/t5/);assert.match(gateLine(funGate(m)),/^gate: first-choice ok/);
 });
 
@@ -43,7 +43,19 @@ test('fun metrics: timing falls back from measured to playedAt stamps to a readi
 test('fun metrics: gates without evidence stay unknown, not failed',()=>{
  const m=funMetrics(world([turn('t1','core.wait',[ev('core.timeAdvanced')])]),{...pack,datingProfiles:[]});m.ending=null;
  const gate=Object.fromEntries(funGate(m).map(g=>[g.id,g.pass]));assert.equal(gate['first-choice'],null);assert.equal(gate['first-payoff'],null);assert.equal(gate['run-length'],null);
+ assert.equal(gate['typed-effective'],null);assert.equal(gate['first-discovery'],null);assert.equal(gate['world-quiet'],null); // no typed turns, no discovery, no director profile
  assert.deepEqual(narrativeDupes(['short line','short line']),[]);
+});
+
+test('fun metrics: quiet dayparts accumulate without director beats and reset on one',()=>{
+ const withDirector={...pack,directorProfile:{}},day=(id,events)=>turn(id,'core.waitUntil',events);
+ const m=funMetrics(world([
+  day('d1',[ev('world.daypartStarted',{daypart:'morning'})]),
+  day('d2',[ev('world.daypartStarted',{daypart:'afternoon'})]),
+  day('d3',[ev('world.daypartStarted',{daypart:'evening'}),ev('story.teaser',{incident:'x'})]),
+  day('d4',[ev('world.daypartStarted',{daypart:'night'})])]),withDirector);
+ assert.equal(m.maxQuietDayparts,2); // d3's teaser was dealt on the crossing, so only d1–d2 ran quiet
+ assert.equal(Object.fromEntries(funGate(m).map(g=>[g.id,g.pass]))['world-quiet'],false);
 });
 
 test('persona playtest: seeded, player-like, and reaches authored content',()=>{

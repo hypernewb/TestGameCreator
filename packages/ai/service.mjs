@@ -14,13 +14,14 @@ import {replyReserve} from './budget.mjs';
 import {CONTEXT_SIZES} from './local-settings.mjs';
 import {actsEnabled,sceneActs,typedListen,typedDislike,ACTS_RULE,sceneClaims,CLAIMS_RULE} from './scene-acts.mjs';
 import {sobrietyLevel} from '../modules/intimacy.mjs';
+import {firstBrief,typedStop} from '../modules/firsts.mjs';
 // A scene's start/continue events carry the player's own words; echoing them back reads as if the story repeated
 // the player. Keep only real outcomes (travel, items, time) and say plainly that the reply failed.
 const ECHO=new Set(['core.sceneStarted','core.sceneContinued','social.spoke']);
 // Mechanical actions settle by rules alone: no model call, just the engine's own outcome text.
 // Results the player must read before the next scripted page, so a chained scene never swallows them.
 export const OUTCOME_EVENTS=new Set(['story.choiceResolved','world.activityCompleted','character.statChanged','social.relationshipChanged','social.chemistryChanged','world.moneyChanged','story.checkResolved','social.attractionChanged','social.bondChanged']);
-export const RULES_ONLY=new Set([...FREE_ACTIONS,'social.priceActs','story.leave','core.move','core.wait','core.waitUntil','items.take','items.place','items.give','items.use','items.craft','world.buy','world.sell','world.buyService','world.use','world.explore']);
+export const RULES_ONLY=new Set([...FREE_ACTIONS,'social.priceActs','social.scoreFirst','social.stopFirst','story.leave','core.move','core.wait','core.waitUntil','items.take','items.place','items.give','items.use','items.craft','world.buy','world.sell','world.buyService','world.use','world.explore']);
 // A solo authored activity is fully described by its pack text and effects; it needs no narrator.
 export const soloActivity=turn=>turn.command.type==='core.scene'&&Boolean(turn.command.args?.activityId)&&!(turn.command.args.characters||[]).length;
 const rulesOnly=turn=>RULES_ONLY.has(turn.command.type)||soloActivity(turn);
@@ -67,7 +68,10 @@ export class GameService {
     if(request.input!==undefined){
       assert(typeof request.input==='string'&&request.input.trim().length>0&&request.input.length<=2000,'Input must be 1–2000 characters');
       const exact=available.find(a=>a.enabled&&a.label.toLowerCase()===request.input.trim().toLowerCase());
-      if(exact)proposal={type:exact.type,args:exact.args};
+      const first=firstBrief(world,pack);
+      if(first&&['kiss','night'].includes(first.rung)&&typedStop(request.input))proposal={type:'social.stopFirst',args:{}};
+      else if(exact)proposal={type:exact.type,args:exact.args};
+      else if(first)proposal={type:'core.scene',args:{text:request.input.trim(),location:world.actors[pack.playerId].location,characters:[first.character],activity:world.scene?.characters?.length===1&&world.scene.characters[0]===first.character?'continue':'talk'}};
       else if(world.modules['story.scenes']?.pending){const scene=pack.scriptedScenes.find(x=>x.id===world.modules['story.scenes'].pending),beat=scene?.beats?.find(x=>x.id===world.modules['story.scenes'].pendingBeat)||scene;const pick=choiceFor(available,request.input,beat,pack.statDefinitions),gear=!pick&&gearFor(available,pack,request.input);if(pick)proposal={type:pick.type,args:pick.args};else if(gear)proposal={type:gear.type,args:gear.args};else if(/^(leave|walk away|step away|excuse myself)\b/i.test(request.input.trim()))proposal={type:'story.leave',args:{scene:scene.id}};else if(beat?.allowInput!==false)proposal={type:'story.respond',args:{text:request.input.trim()}};else return {clarification:'Choose one of the available options to continue this scene.',state:world};}
       else if(pack.modules['world.economy']&&/^\s*(?:buy|purchase|sell)\b/i.test(request.input)){
         const wanted=/^\s*sell\b/i.test(request.input)?'world.sell':'world.buy';
@@ -163,6 +167,14 @@ export class GameService {
     const datingPhases=Object.fromEntries((context.dating||[]).map(row=>[row.character,row.phase]));context.touchStage=Object.fromEntries(cast.map(id=>[id,['crush','dating','exclusive'].includes(datingPhases[id])]));
     // Secrecy (M4): a suspecting cast member shows it through behavior; an active confrontation gets the evidence brief and the claim classifier.
     if(pack.modules['social.secrecy']&&cast.length){const sec=await import('../modules/secrecy.mjs').catch(()=>null);if(sec?.suspicionLinesFor){const suspicionLines=sec.suspicionLinesFor(world,pack,cast);if(suspicionLines.length)context.suspicions=suspicionLines;const confrontation=sec.confrontationFor(world,pack,cast);if(confrontation){context.confrontation=confrontation;context.claimsTags=CLAIMS_RULE;}}}
+    const first=firstBrief(world,pack),firstStarted=turn.events.some(e=>e.type==='social.firstStarted');
+    if(first&&cast.includes(first.character)){
+      context.first=first;context.scenePhase=context.sceneHistory.length?'continuation':'opening';
+      context.sceneBudget={...context.sceneBudget,focus:first.character};
+      context.actTags=!firstStarted&&actsEnabled(context,pack)?ACTS_RULE:'';
+      context.actBrief=context.actTags?(await import('../modules/acts.mjs')).narratorBrief(world,pack,first.character):[];
+      context.direction='Stay in this moment, don’t skip past it. Respond to the player within the current checkpoint and leave room for their next input.';
+    }
     // Intimacy hard rule: without a consented, active encounter in state the lint caps prose at suggestive whatever the pack allows, and the prompt says how to decline.
     if(pack.modules['social.intimacy']&&cast.length){const intimate=world.modules['social.intimacy']?.characters||{},open=cast.some(id=>intimate[id]?.active),drunk=cast.filter(id=>sobrietyLevel(world,pack,id)!=='sober').map(id=>pack.actors.find(a=>a.id===id)?.name||id);context.intimacyGate={open};if(!open)context.intimacyRule='Nothing sexual happens in this scene. If the player pushes for more, the character turns it down in their own way.'+(drunk.length?` ${drunk.join(' and ')} ${drunk.length>1?'have':'has'} been drinking: any move gets a warm but firm "ask me again when I'm sober".`:'');}
     const repeatAsk=turn.events.find(e=>e.type==='social.spoke'&&e.payload.repeat);context.repeatAsk=repeatAsk?pack.actors.find(a=>a.id===repeatAsk.payload.target)?.name||null:null;
@@ -182,13 +194,20 @@ export class GameService {
     let ledger=[];if(!failed)ledger=this.provider.bundlesSceneMetadata?bundledMemories:typeof this.provider.generateLedger==='function'?await this.provider.generateLedger(turn,text,pack,signal):[];
     let generatedFacts=[];const factCandidate=turn.events.some(e=>['core.sceneStarted','core.sceneContinued','social.spoke','world.hangoutStarted','story.sceneStarted','story.sceneResumed'].includes(e.type));if(!failed&&factCandidate&&pack.modules['story.facts'])try{const rawFacts=this.provider.bundlesSceneMetadata?bundledFacts:typeof this.provider.generateFacts==='function'?await this.provider.generateFacts(turn,text,pack,signal):[];generatedFacts=validateGeneratedFacts(rawFacts,pack,turn,text);}catch{generatedFacts=[];}
     // A continuous scene is closed by the engine (core.endScene), so the clock and attendance settle like any other exit.
-    const continuous=pack.gameProject?.conversationStyle==='continuous',settled=world.scene&&cast.length&&!failed?{sceneId:world.scene.id,sceneSummary:sceneSummary||world.scene.summary||'',sceneEnded:sceneEnded&&!continuous&&!budgetDone}:{};
+    const continuous=pack.gameProject?.conversationStyle==='continuous',settled=world.scene&&cast.length&&!failed?{sceneId:world.scene.id,sceneSummary:sceneSummary||world.scene.summary||'',sceneEnded:sceneEnded&&!continuous&&!budgetDone&&!context.first}:{};
     let state=this.store.narrative(id,turnId,text,{sceneRequest:{writer:context.sceneWriter,phase:context.scenePhase,playerAction:context.playerAction,cast,history:context.sceneHistory,...(this.provider instanceof CompatibleProvider?{messages:scenePromptMessages(context,pack)}:{})},scenePlan,sceneLines:visualLines||sceneLines(text,pack,actor),ledger,...(pack.modules['story.facts']?{generatedFacts}:{}),...(lintTrace.length?{lintTrace}:{}),...settled,fallback:failed,failureReason:failed?failureReason:null,retry,...(context.loreTrace?.activated?.length?{loreActivations:{tick:context.loreTrace.tick,ids:context.loreTrace.activated.filter(id=>context.lorebook.some(e=>e.id===id))}}:{}),contextSources:[...context.sceneHistory.map(m=>m.source),...context.pastScenes.map(m=>m.source),...context.memories.map(m=>m.source),...context.generatedFacts.map(f=>f.id),...context.lorebook.map(e=>e.id),...context.recentActions.map(e=>e.source)],contextReport,promptVersion:visualLines?'scene_structured_v1':context.promptVersion,provider:this.provider.name},pack);this.previews.delete(id);
     // Model tags become one recorded social.priceActs turn, so replay never calls the model; it lands before the close so the end card sees it.
     if(priced.length&&!failed&&state.scene?.id===world.scene.id){const actsId=`${turnId}-acts`.slice(0,100);try{const r=execute(state,{type:'social.priceActs',args:{character:context.sceneBudget.focus,sceneId:world.scene.id,source:turnId,private:cast.length===1,acts:priced},id:actsId,actorId:pack.playerId,expectedRevision:state.revision},pack,this.registry);this.store.commit(r.state,state.revision);state=(await this.finish(id,actsId,signal)).state;}catch(e){if(e.name==='AbortError')throw e;}}
+    // Empty tags still consume an input. The score command reads engine-priced events, never model numbers.
+    const firstInput=['core.scene','social.speak','story.respond'].includes(turn.command.type);
+    if(context.first&&!firstStarted&&firstInput&&!failed&&state.modules['social.firsts']?.active?.first===context.first.first){
+      const scoreId=`${turnId}-first`.slice(0,100),r=execute(state,{type:'social.scoreFirst',args:{source:turnId,text:context.playerAction},id:scoreId,actorId:pack.playerId,expectedRevision:state.revision},pack,this.registry);
+      this.store.commit(r.state,state.revision);state=(await this.finish(id,scoreId,signal)).state;
+    }
     // A classified claim prices the confrontation immediately; replay never calls the model (the tag is the recorded command).
     if(claimStance&&!failed&&state.modules['social.secrecy']?.confrontations?.[pack.playerId]?.observer){const claimId=`${turnId}-claim`.slice(0,100);try{const r=execute(state,{type:'social.resolveConfrontation',args:{character:state.modules['social.secrecy'].confrontations[pack.playerId].observer,stance:claimStance},id:claimId,actorId:pack.playerId,expectedRevision:state.revision},pack,this.registry);this.store.commit(r.state,state.revision);state=(await this.finish(id,claimId,signal)).state;}catch(e){if(e.name==='AbortError')throw e;}}
-    if((continuous&&sceneEnded||budgetDone)&&!failed&&state.scene?.id===world.scene.id){const endId=`${turnId}-end`.slice(0,100);try{const r=execute(state,{type:'core.endScene',args:{reason:'natural'},id:endId,actorId:pack.playerId,expectedRevision:state.revision},pack,this.registry);this.store.commit(r.state,state.revision);const ended=await this.finish(id,endId,signal);return {state:ended.state,turn:ended.state.turns[turnId]};}catch(e){if(e.name==='AbortError')throw e;}}
+    const closeScene=!state.modules['social.firsts']?.active&&(context.first||continuous&&sceneEnded||budgetDone);
+    if(closeScene&&!failed&&state.scene&&state.scene.id===world.scene?.id){const endId=`${turnId}-end`.slice(0,100);try{const r=execute(state,{type:'core.endScene',args:{reason:'natural'},id:endId,actorId:pack.playerId,expectedRevision:state.revision},pack,this.registry);this.store.commit(r.state,state.revision);const ended=await this.finish(id,endId,signal);return {state:ended.state,turn:ended.state.turns[turnId]};}catch(e){if(e.name==='AbortError')throw e;}}
     return {state,turn:state.turns[turnId]};
   }
   async retry(id,turnId,signal){assert(!this.locks.has(id),'A turn is already in progress');this.locks.add(id);try{const s=this.store.load(id);assert(Object.values(s.turns).at(-1)?.id===turnId,'Only the latest turn can be retried');return await this.finish(id,turnId,signal,true);}finally{this.locks.delete(id);this.previews.delete(id);}}

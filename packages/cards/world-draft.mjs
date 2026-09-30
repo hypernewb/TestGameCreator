@@ -11,12 +11,14 @@ const HINTS=[
  [/^title$/,'the world\'s title, 1–4 words'],[/^project\.premise$/,'one or two sentences: who the player is and what the run is about'],[/^project\.setting$/,'one or two sentences: the place'],
  [/^fallback\.name$/,'ending title when the run ends with nobody'],[/^fallback\.text$/,'2–3 sentences, bittersweet, no one chosen'],
  [/actor\.description$/,'one sentence a stranger sees: look, age range, what she does'],[/actor\.voice$/,'how she talks, 1 sentence, with one sample line'],
+ [/actor\.reactions\.(\w+)$/,'her line right after doing an activity with the player that went "$1" (skip = the player bailed on it); her voice, under 15 words, speech plus at most a small action'],
  [/ranks\.(\d)$/,'name of relationship rank $1 of 0–3 (0 stranger … 3 in love), 1–3 words'],[/stages\.(\d)\.name$/,'name of her personal arc stage $1 of 0–2, 1–3 words'],[/stages\.(\d)\.voice$/,'how she acts at arc stage $1, one sentence'],
  [/reasons\.(\w[\w-]*)$/,'hidden reason she reacts to the player act "$1" the way she does; 4–10 words, lower case, starts with "you"'],
  [/interest\.label$/,'a tender intimate thing she likes, 2–5 words'],
  [/endings\.route\.name$/,'title of her best ending (her arc finished and she loves you)'],[/endings\.route\.text$/,'3–4 sentences, her arc resolved, together'],
  [/endings\.together\.name$/,'title of the ending where you are simply together at the end'],[/endings\.together\.text$/,'2–3 sentences'],
  [/rungs\.(\w+)\.title$/,'scene title for the first $1'],[/rungs\.\w+\.(checkIn|peak)\.opening$/,'what she says/does at the $1 beat, 1–2 sentences'],[/rungs\.(\w+)\.opening$/,'first line of the $1 scene, 1–2 sentences, present tense'],
+ [/rungs\.(\w+)\.checkpoints\.([\w-]+)(?:\.cue)?$/,'her cue at the "$2" checkpoint of the free-typed $1 first: what she says or does that opens the moment and invites the player\'s move, 1 sentence, in her voice'],
  [/pages\.\d+\.text$/,'one more short paragraph of the scene, 2–3 sentences'],
  [/\.stop$/,'what she says when the player asks to stop: warm, no guilt, 1 sentence'],
  [/\.label$/,'the player\'s choice, first person, under 10 words'],[/\.result$/,'what happens after that choice, 1–2 sentences'],
@@ -80,7 +82,9 @@ export async function draftWorld(spec,{complete,rounds=2,style,onBatch}={}){
 const pick=(o,ks)=>Object.fromEntries(ks.filter(k=>o?.[k]!==undefined).map(k=>[k,o[k]]));
 const tones=cs=>cs?.length?{choices:cs.map(c=>pick(c,['id','tone','discover','learn']))}:{},skel=ps=>ps?.length?{pages:ps.map(p=>pick(p,['speaker']))}:{};
 const ids=(x,ks)=>Object.fromEntries(ks.filter(k=>x?.[k]?.id).map(k=>[k,{id:x[k].id}])),beat=(x,ks)=>({...skel(x.pages),...ids(x,ks)});
-const rung=x=>({...pick(x,['cg']),...beat(x,['lead','rush']),...tones(x.choices),...(x.checkIn?{checkIn:beat(x.checkIn,['honest','yes'])}:{}),...(x.peak?{peak:beat(x.peak,['close','more'])}:{})});
+// A free checkpoint's discover is a pick, not prose: it stays, and its cue becomes the blank.
+const cps=x=>{const d=Object.entries(x.checkpoints||{}).filter(([,v])=>v?.discover);return d.length?{checkpoints:Object.fromEntries(d.map(([k,v])=>[k,{discover:v.discover}]))}:{};};
+const rung=x=>({...pick(x,['cg','mode']),...cps(x),...beat(x,['lead','rush']),...tones(x.choices),...(x.checkIn?{checkIn:beat(x.checkIn,['honest','yes'])}:{}),...(x.peak?{peak:beat(x.peak,['close','more'])}:{})});
 export function structureOnly(spec){
  const heroines=spec.heroines.map(h=>({...pick(h,['id','temperament','pace','trust','topic','looks','quirk','invite','gifts','buy','activities','wants','rankIds','arcFlag','harp','aftercare']),
   actor:pick(h.actor,['id','name','age','pronouns','location','identityTags','appearance','portrait','poses','cg']),...(h.stages?{stages:h.stages.map(s=>pick(s,['id']))}:{}),...(h.interest?{interest:pick(h.interest,['id'])}:{}),

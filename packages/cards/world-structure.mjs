@@ -5,6 +5,8 @@ import {parseModelObject} from '../ai/json.mjs';
 import {readCard,clean} from './character-card.mjs';
 import {TONE_CEILINGS} from './director-library.mjs';
 
+// M5: a paid job that trains no stat plays the widget its place suggests (serving drinks is rhythm, a till is quick sums).
+export const JOB_GAMES={bar:'rhythm',shop:'quiz',outdoors:'timing',public:'memory',home:'memory'};
 export const PLACE_KINDS=['home','public','shop','bar','outdoors'],PRICES={cheap:5,mid:15,pricey:40},STATS=['charm','wit','fitness','focus'],WANT_MIN={some:5,lots:8};
 const RANKS={charm:['Awkward','Likable','Magnetic','Irresistible'],wit:['Slow','Quick','Sharp','Brilliant'],fitness:['Soft','Fit','Athletic','Peak'],focus:['Scattered','Steady','Driven','Top of the class']};
 export const STAT_KIT=STATS.map(id=>({id,name:id[0].toUpperCase()+id.slice(1),min:0,max:20,visibility:'public',learnFromFailure:1,ranks:[0,4,8,13].map((min,i)=>({min,name:RANKS[id][i]}))}));
@@ -62,9 +64,9 @@ export function structureFromProposal(p){
  const hero=n=>{const x=byName.get(key(n));return x?.heroine;};
  const activities=list(p.activities).slice(0,14).map(a=>{const at=place(a.at,home),w=hero(a.with),money=a.gives==='money',stat=STATS.includes(a.gives)?a.gives:money?null:'charm';
   const act={id:idFor(a.name,taken),name:String(a.name).trim(),description:a.about||'',location:at.id,duration:4,phrases:[String(a.name).trim().toLowerCase()],
-   effects:[...(money?[{type:'money',delta:30}]:[]),...(stat?[{type:'stat',stat,delta:w?1:2}]:[]),...(w?[{type:'trust',character:w,delta:2}]:[])],...(w?{character:w,perDay:1}:{})};
+   effects:[...(money?[{type:'money',delta:30}]:[]),...(stat?[{type:'stat',stat,delta:w?1:2}]:[]),...(w?[{type:'trust',character:w,delta:2}]:[])],...(w?{character:w,perDay:1}:{}),...(money&&!stat?{game:JOB_GAMES[at.kind]||'timing'}:{})};
   if(w)heroines.find(h=>h.id===w).activities.push(act.id);return act;});
- if(!activities.some(a=>a.effects.some(e=>e.type==='money'))){activities.push({id:idFor('Odd job',taken),name:'Odd job',description:'',location:shop.id,duration:4,phrases:['odd job','work'],effects:[{type:'money',delta:30}]});notes.push('no paid job was proposed: added "Odd job"');}
+ if(!activities.some(a=>a.effects.some(e=>e.type==='money'))){activities.push({id:idFor('Odd job',taken),name:'Odd job',description:'',location:shop.id,duration:4,phrases:['odd job','work'],effects:[{type:'money',delta:30}],game:JOB_GAMES[shop.kind]||'timing'});notes.push('no paid job was proposed: added "Odd job"');}
  const exits=x=>{const i=places.indexOf(x),n=places.length,to=new Set(i?[home.id]:places.slice(1).map(y=>y.id));if(i){to.add(places[i%(n-1)+1].id);to.add(places[(i-2+n-1)%(n-1)+1].id);}to.delete(x.id);return [...to].map(t=>({to:t}));};
  const drinks=items.filter(i=>i.drink).map(i=>i.id);items.forEach(i=>delete i.drink);
  const weather=list(p.weather).slice(0,3).map((w,i)=>({id:idFor(w.name,new Set()),name:String(w.name).trim(),weight:[50,30,20][i],text:w.text||''}));
@@ -72,7 +74,7 @@ export function structureFromProposal(p){
   project:{premise:p.premise||'',setting:p.setting||''},
   world:{locations:places.map(x=>({id:x.id,name:x.name,description:x.about,exits:exits(x)})),items,activities,statDefinitions:STAT_KIT,initialStats:STATS.map(stat=>({character:'player',stat,value:2})),
    schedules:heroines.map(h=>({actor:h.id,period:12,stops:h._stops.map((location,i)=>({at:i*4,location}))})),calendar:{startDate:'2026-09-07',...(weather.length?{weather}:{})},
-   initialMoney:60,economySettings:{debtLimit:10},privateLocations:[...new Set([home.id,...places.filter(x=>x.kind==='home').map(x=>x.id)])],...(drinks.length?{sobriety:{drinkItems:drinks,tipsyAt:2,drunkAt:3,soberPerDaypart:1}}:{})},
+   initialMoney:60,economySettings:{debtLimit:10},privateLocations:[...new Set([home.id,...places.filter(x=>x.kind==='home').map(x=>x.id)])],...(drinks.length?{sobriety:{drinkItems:drinks,tipsyAt:2,drunkAt:3,soberPerDaypart:1}}:{}),...(p.firsts?{firsts:p.firsts}:{})},
   heroines:heroines.map(({_stops,...h})=>h),director:{tone:TONE_CEILINGS.includes(p.tone)?p.tone:'soap'}};
  if(!Number.isInteger(spec.player.age)||spec.player.age<18){spec.player.age=21;notes.push('player age set to 21');}
  // The card's text rides along so every draft of her keeps the card's voice.

@@ -2,9 +2,45 @@
 
 Fully shipped milestones (Done when: —), moved out of [NEXT-MILESTONES.md](NEXT-MILESTONES.md) to keep that file focused on remaining work. Read this file only when you need history on a specific shipped system.
 
+## Game tier (built 2026-09-29 → 30)
+
+Design: [GAME-DESIGN.md](GAME-DESIGN.md). Committed in `d217b78` ("Game tier snapshot") unless noted. Some Done-when lines are human checks ("the owner plays…", "a player can name…"). Those now roll into the retooled [fun gate](NEXT-MILESTONES.md#fun-gate) rather than being signed off one by one.
+
+| Milestone | What was built | Done when (as written) |
+|---|---|---|
+| M0.1 Scene feel | **Fixed typing:** the input box always accepts text, and no action is discarded, including the one that hits the budget. **Free-typing scene contract:** one focus NPC, an echo line, 1–3 sentence beats, a 3–5 input budget, a closing reply that answers the last input, the narrator in the scene's voice, and the model completing the player's action. Reuses the `service.mjs` scene path, `beats.mjs`, `scene-boundaries.mjs`, `narration-lint.mjs` and `vendor/venus/`. | A 5-scene typed run breaks none of the contract rules. Tests cover budget close and no dropped input. |
+| M0.2 Free text becomes state | **Tagger → engine pricing:** the model tags acts (flirt, gift, touch, insult, buy, invite…) and their size. The engine prices money, affection and calendar invites against hidden likes, prices and caps. **End card** with liked/disliked reasons and the heart change. **NPC memories** from the model. Tags are committed events, so replay never calls the model. Reuses `romance-tempo`, `economy`, `phone`/`timed-events` and `memory.mjs`. | "Buy her a drink" bills money and moves affection. "Hang out Sunday" lands on the calendar, and missing it costs. Sweet talk can't exceed the caps. Replay is identical. |
+| M0.3 Model check | **Superseded 2026-09-30.** The owner now plays on a cloud model and tests on the local 27b model, so separating what the 9b model costs from what our systems cost no longer matters. | — |
+| M0.4 Campus world | `packs/campus.json`: 4 romanceable heroines plus a friend, places, activities, a calendar and endings. Each love interest has a likes and limits table, a trait track and a ladder of firsts. It replaces `after-hours` as the showcase. | `npm run validate` passes and a bot run reaches an ending. |
+| M0.5 Deduction and change arc | Hidden likes and limits, surfaced through reasons and a discoveries journal. Hidden traits plus named stages that change her voice, outfits and what she'll agree to. | A player can name 2+ likes per love interest after an hour of play (now part of the fun gate). |
+| M0.6 Erotic payoff | Authored ladder of firsts with gallery unlocks, mood/privacy/sobriety state, and the intimacy hard rule: state wins and the engine blocks before the model writes. "Drunk and willing" becomes an "ask me when I'm sober" hook, and a pushy advance becomes a remembered rejection. | Tests show no path into intimate prose without consent in state, including typed attempts. The first payoff lands within 15 minutes. |
+| M0.7 Hub | Map plus phone, a morning day card, activity yields (`+$30 · Charm ↑`, `Jana ♥`), a goal line for all four love interests generated from engine state in words, and a focused talk scene for talking to someone outside a scene. "Risky" dislike questions. | Every slot offers 3+ things to do plus free text, and the player can always say what they're working toward. |
+| Conversation economy (2026-09-29, `3dbb012`) | Trust from talk is novelty-weighted: generic small talk earns nothing, new substantive content pays the once-a-day bump, and repeats never pay. Re-asking something she already heard is a free clarification. Typed conversation no longer fails with "unavailable action" once the suggestion buttons run out. The playtest harness gained a `maxConsecutiveSpeak` gate. | — |
+| M2. Creator wizard | A premise or ST card → structure pass → cloud draft → `/creator.html` wizard → an assembled pack. See [M2-CREATOR-PLAN.md](M2-CREATOR-PLAN.md). Proof 1 (a campus round trip) and proof 2 (an ST card world) both pass. Left for later: the looks anchor, touch pacing for guarded heroines, lore consistency across drafted scenes. | Rebuild campus from a premise, then a second world from an ST card. |
+| M3. Director v2 | A code-owned library of 12 beats (events, obstacles, goals, temptations) with drafted `{lead}`/`{rival}` text, adaptive dealing, a tone ceiling set in the creator, phone invites and goals with deadlines. Acceptance met 2026-09-30. See [M3-DIRECTOR-PLAN.md](M3-DIRECTOR-PLAN.md). | Seeded runs never go more than 1 quiet daypart. Every beat has provenance. Play style changes what gets dealt. |
+| M5 steps 1–6 (uncommitted) | Minigame result tiers, mishap → director beat, co-op reactions, witnessed touch, four widgets, and the creator mapping. See [M5-ACTIVITY-PLAN.md](M5-ACTIVITY-PLAN.md). | The social-link unlocks are still open (see NEXT-MILESTONES). |
+| M4 engine (uncommitted) | `social.secrecy` 0.2.0: secret edges and `knownBy`, suspicion scores from authored `suspicionRules`, hard and soft evidence, decay, and a deadline after which she decides. A confrontation flow (`social.confront` / `social.resolveConfrontation`) where the model classifies your claims and the engine prices them. `social.negotiateAgreement` with authored gates. Affairs become secret automatically. Jealousy from rumors she believes. An optional `reputation` hook. The campus showcase. Tests: `secrecy`, `suspicion` and `agreements`. | Studio forms, persona-bot validation and fun-gate play are still open (see NEXT-MILESTONES). |
+
 ## Fun tier (superseded 2026-09-29)
 
-Superseded by the Game tier in [NEXT-MILESTONES.md](NEXT-MILESTONES.md#game-tier--the-venus-style-loop-do-first) and [GAME-DESIGN.md](GAME-DESIGN.md). Kept for history; the verdict per milestone is in NEXT-MILESTONES. The table as it stood on 2026-09-29:
+Superseded by the Game tier (above) and [GAME-DESIGN.md](GAME-DESIGN.md). Kept for history. The verdict per milestone:
+
+| Milestone | Verdict |
+|---|---|
+| F1 after-hours pack | **Retire.** It stays as a test fixture until the campus world replaces it in tests, then gets deleted in a reviewed change. |
+| F2 storylet hand | **Demote** to the later roguelike card layer. It is no longer the core loop. |
+| F3 run calendar | **Keep.** It is the default run shape. |
+| F4 stat checks | **Keep** for authored choices. The M0.2 tagger supersedes its "map typed text onto checks" deferral. |
+| F5 intimacy beats | **Keep** as the authored first time (M0.6). Free-typed firsts (O1) make it a creator option. |
+| F6 visible progress | **Keep.** Hearts stay visible (owner call 2026-09-29). Likes and limits stay hidden. |
+| F7 escalation ladder | **Keep** as the ladder of firsts. |
+| F8 drama director | **Keep** as the timing core of director v2 (M3). |
+| F9 player-only chrome | **Keep.** |
+| F10 gallery | **Keep.** It is the collection half of the erotic payoff. |
+| F11 role-slot templates | **Keep** as the base for director and first-time templates. |
+| F12 fun metrics | **Keep.** Adds the typed-turns-that-changed-state metric. |
+
+The table as it stood on 2026-09-29:
 
 Each milestone reuses existing modules where possible. "Steals from" names the design reference; the design is borrowed, not the code. Details are in [FUN-PASS.md](FUN-PASS.md).
 
@@ -39,15 +75,78 @@ Each milestone reuses existing modules where possible. "Steals from" names the d
 |---|---|
 | 6. Mechanics/content digest split | `mechanicsShape`/`mechanicsDigest` (`packages/core/engine.mjs`) hash only state-affecting fields (schema, module set, actor locations, exits, shop/hidden item flags, activity effects, schedules, relationships, start options) — prose, names, and presentation are excluded and no longer invalidate a save. `describeMechanicsChange` previews a diff between two packs; `migratePack`/`Store.migratePack` apply a real mechanics change, re-validate the new pack, and append an audit entry to `world.migrations`. `execute()` still hard-fails with "Pack changed: migration required" until a migration runs. |
 | 7. Automated test-play mode | `scripts/audit-playtest.mjs` supports command-line audits. Studio now runs every authored opening across three deterministic seeds, reports action failures, orphaned beats, queue evictions, paused/active scenes and never-fired route content, and presents per-scene completion coverage with exact scene IDs. The live-provider playtest separately reports clarifications, context pressure, recall, echoes, and fallbacks. |
+| 9. Checkpoints, rewind, and branches | Named manual checkpoints, automatic scene/daypart checkpoints, restore-impact previews, and branch-from-checkpoint controls in the player UI. Branching opens a new campaign and leaves the source history unchanged. Restoring keeps a recovery snapshot of the state it replaces. |
+| M-A. Deterministic speaker plan | `scenePlanForTurn` returns `speakers`. The JSON-schema enum, `normalizeSceneLines` and every service path (preview, final, closing pass) run `guardSceneLines`, which drops voices that aren't on the slate and reattributes `Name:` narration. Group scenes never invent a speaker outside the committed cast. |
+| M-B. State-conditioned lore with tick timers | `packages/modules/conditions.mjs` is the single `when` evaluator/validator for scenes, choices and lorebook entries. Lore adds `when`, `delay`, `sticky` and `cooldown` in ticks, derived from `loreActivations` on committed turns. Scene actions also key lore retrieval. |
+| M-D. Reject model-maintained state blocks | `stripStateSyntax` removes CBS var macros, `<UpdateVariable>` blocks and `_.set` patch lines from scene, plain and daypart output. The non-goal is documented in `docs/AUTHORING.md`. |
 
 ## P2 — Core game depth
 
 | Milestone | What changed |
 |---|---|
 | 22. Cross-setting template packs | Campus Nights, After Hours Bar, and Moonlit Town templates run the same schedule, timed-event, economy, phone, feed, dating, explicit-intimacy, and ending modules. An acceptance test executes equivalent communication and wage flows in all three. |
+| 16. NPC run-ins, overlays, and gossip (`social.npc` v0.2) | `npcGroups`, witnessed `social.npcEncounter`, capped per-day `social.npcRunIn` overlays, pair-private `social.npcFriendship` memories, `{field}` gossip summaries with `sourceEvent` provenance, `npcSimulation` frequency/caps, and Studio controls. Tests: `tests/npc-life.test.mjs`. |
+| M-E. Relationship tempo (core) | `social.romance-tempo`: point banks, rank ceilings, authored rank-up scene effects, gift limits per period, repeat decay, tastes, chemistry/satisfaction consequences. v0.2 adds cooldowns on repeatable signals, witnessed-only `jealousy` presets, `birthday` gifts and forgotten-birthday penalties, an opt-in `neglect` bomb, and Studio controls. Tests: `tests/romance-tempo.test.mjs`. |
+| M-G. Character-card V2/V3 import/export | `packages/cards/character-card.mjs` reads V1/V2/V3 JSON and PNG cards, resolves `{{char}}`/`{{user}}`, strips state-mutating syntax, and maps `character_book` entries to character-scoped lore. Card-only fields are kept verbatim in `actor.card` and never reach a prompt. Export to V2/V3 JSON or PNG is lossless for SF→card→SF. Available through `npm run card`, `POST /api/studio/import-card` and `GET /api/studio/export-card`. Tests: `tests/character-card.test.mjs`. The Studio buttons are still open (see NEXT-MILESTONES). |
+| 13. Item operations (`items.inventory` 0.2.0) | Quantities and stacks per (item, holder), exact-unit transfers, stack caps, shop stock that depletes and restocks daily (`world.economy` 0.2.0), consumables (`items.use`), charged items that deplete and break, and `items.craft` recipes. Failures are atomic: every check runs before state changes. Persistent item attributes are still open. |
+| 21. Economy depth (`world.economy` v0.2, foundation) | Bounded debt, authored purchasable services, event-driven wages with cooldowns, multiple location-based shops, and real stock through stackable inventory. |
 
 ## P3 — Presentation and player experience
 
 | Milestone | What changed |
 |---|---|
 | 23. VN playback polish | Searchable full backlog, persistent read tracking, auto-forward, skip-read-only, keyboard controls, per-page transitions, explicit departures, and streamed generation progress are implemented. Auto/skip stop at choices, player input, and adult consent/boundary pages. |
+
+## Background and decisions (moved from NEXT-MILESTONES 2026-09-30)
+
+### Baseline as of September 2026
+
+Product direction: the first full deliverable is an adult dating sim with optional NSFW narration. Route difficulty and length are authored per character. Consent and 18+ validation are mandatory regardless of route difficulty.
+
+Already implemented before the Game tier: deterministic event replay, revision-safe SQLite saves, authoritative inventory and money, generated-fact review, schedules and dayparts, pinned scene casts, structured scene sanitation, scene summaries and closing, scripted multi-beat scenes, trigger priority and a bounded queue, a scene escape hatch, plans with kept/broken events, relationship dimensions, character stats, relationship-state graphs, player/NPC dating, NPC romance networks and rival turning points, NPC pair simulation, equipment, activities, shops, and event diagnostics. On reliability, it also had the v1→v2 save-envelope migration, bounded recovery snapshots with a restore UI, SSE scene previews with authoritative final sanitation, and a shared cast/location scene plan.
+
+Honest assessment at the time: the engine-to-content ratio was badly inverted (about 590 KB of code against a 19 KB largest pack). Free text had no mechanical weight, feedback was a raw number diff, and the main screen showed developer tools. Intimate scenes were a gate followed by unstructured prose. F1–F12 fixed the buttons-and-numbers half, but the owner's playtest of `after-hours` still felt far worse than Venus:
+- typing didn't work;
+- replies were one sentence long;
+- the speaker jumped between characters;
+- there was no liked/disliked feedback;
+- buying a drink changed nothing.
+
+That led to the Game tier. Evidence is in [research/venus-university/](research/venus-university/).
+
+### Recommended attraction model
+
+There is no universal attractiveness stat. Each character has an authored attraction profile, and readiness is computed from independent parts:
+- **eligibility:** adult validation, orientation, availability, hard boundaries and dealbreakers, which points cannot offset;
+- **personal preferences:** weighted, possibly private or discovered;
+- **experienced behavior:** trust, kept/broken plans, gifts, witnessed conduct and conflicts, which should outweigh sheet optimisation;
+- **chemistry and context:** pair compatibility, mood, privacy, events, cooldowns and phase;
+- **agency:** crossing a threshold makes authored choices eligible and never forces a transition.
+
+Creators see an explanation trace. AI prose receives the resulting state but can never emit these events itself. Stats stay pack-defined.
+
+### Venus-fidelity module decisions (2026-09)
+
+- **Kept:**
+  - phone and feed;
+  - dating and intimacy, optional and layered;
+  - economy v0.2, narrowed (no business ownership);
+  - NPC overlays and gossip, before romance;
+  - automated test-play;
+  - the mechanics/content digest split;
+  - the cross-scene graph upgrade, merged into scene-plan authoring;
+  - the three cross-setting templates;
+  - streaming previews;
+  - checkpoints and rewind.
+- **Deferred:** education (P4), and ComfyUI, audio and animation (P3, last).
+- **Replaced:** unstructured intimate prose, first by authored beats (F5/M0.6) and now by free-typed firsts with checkpoints (O1).
+- **Adopted:** the Game tier comes before creator completeness.
+
+### Release sequence steps 1–6 (done)
+
+1. The reliability release (milestones 1–5).
+2. The creator-safety release (6–12, partly: see NEXT-MILESTONES).
+3. Items, relationship progression, stats, schedule exceptions and NPC witnesses.
+4. `social.dating`, then `social.intimacy`, with non-explicit fallbacks.
+5. Phone, feed and economy depth, validated in Campus, Bar and Fantasy Town.
+6. The 50-turn campaign evaluation exposed in Studio.

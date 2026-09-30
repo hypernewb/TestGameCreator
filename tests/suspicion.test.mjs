@@ -95,6 +95,30 @@ test('suspicion authoring is validated',()=>{
  assert.doesNotThrow(()=>validatePack(base({suspicionSettings:{curiousAt:20,confrontAt:60,decayPerTick:1,deadlineTicks:6},suspicionProfiles:[{character:'jana',confrontAt:50}],suspicionRules:[{id:'flaunt',event:'social.spoke',match:{target:'monique'},weight:40,summary:'too cozy with {target}',seedFrom:'visibility',subjectKey:'target'}]}),registry));
 });
 
+test('a believed rumor about the player becomes soft evidence on the committed partner',()=>{
+ const p={schemaVersion:1,id:'test.rumor',version:'0.1.0',title:'Rumor test',subtitle:'gossip to suspicion',playerId:'player',calendar:'Shift',
+  modules:{'social.conversation':'0.1.0','social.relationships':'0.1.0','social.dating':'0.1.0','social.secrecy':'0.2.0','world.schedule':'0.1.0','social.npc':'0.2.0','social.gossip':'0.1.0','items.inventory':'0.2.0'},
+  locations:[{id:'home',name:'Home',description:'Quiet.',exits:[{to:'market'}]},{id:'market',name:'Market',description:'Busy.',exits:[{to:'home'}]}],
+  actors:[
+   {id:'player',name:'You',location:'market',description:'An adult.',style:'Direct',goal:'Get by.'},
+   {id:'jana',name:'Jana',location:'home',description:'An adult partner.',style:'Warm',goal:'Trust.'},
+   {id:'brin',name:'Brin',location:'market',description:'An adult regular.',style:'Chatty',goal:'Gossip.'}],
+  items:[{id:'note',name:'Note',owner:'market'}],
+  schedules:[{actor:'jana',period:8,stops:[{at:2,location:'market'}]}],
+  gossipRules:[{id:'sneak',event:'items.transferred',subjectKey:'from',summary:'{from} was seen sneaking around with {to}',seedFrom:'visibility',credibility:80,ttl:60}],
+  datingProfiles:[{character:'jana',initialPhase:'exclusive',initialAgreement:'monogamous',thresholds:{crush:-100,date:-100,exclusive:-100}}]};
+ const c=run(p);
+ c.act('items.take',{item:'note'});
+ c.act('items.give',{item:'note',target:'brin'});
+ const rumor=c.s.modules['social.gossip'].rumors.find(r=>r.subject==='player');
+ assert.ok(rumor&&rumor.holders.brin);
+ for(let i=0;i<40&&!events(c.s,'social.rumorBelieved').some(e=>e.payload.character==='jana'&&e.payload.subject==='player');i++)c.act('core.wait');
+ const believed=events(c.s,'social.rumorBelieved').find(e=>e.payload.character==='jana'&&e.payload.subject==='player');
+ assert.ok(believed&&believed.payload.subject==='player');
+ const susp=suspicionOf(c.s,'jana','player');assert.ok(susp&&susp.score>=15);
+ assert.equal(evidenceOf(c.s,'jana','player')[0].strength,'soft');
+});
+
 test('suspicion state replays deterministically',()=>{
  const p=base();const play=seed=>{const c=run(p,seed);startAffair(c);c.act('social.requestIntimacy',{character:'monique',category:'kiss'});c.act('social.beginIntimacy',{character:'monique',category:'kiss'});for(let i=0;i<20;i++)c.act('core.wait');return c.s;};
  const a=play(11),b=play(11);

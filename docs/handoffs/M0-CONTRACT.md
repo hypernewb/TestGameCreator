@@ -2,7 +2,7 @@
 
 Status: 2026-09-29. Three agents work on M0 **in the same checkout** at the same time, so this file fixes the interfaces between them. Change a shape here only after asking the owner in chat, and note the change at the bottom.
 
-Design: [../GAME-DESIGN.md](../GAME-DESIGN.md). Roadmap: [../NEXT-MILESTONES.md](../NEXT-MILESTONES.md#game-tier--the-venus-style-loop-do-first).
+Design: [../GAME-DESIGN.md](../GAME-DESIGN.md). Roadmap: [../NEXT-MILESTONES.md](../NEXT-MILESTONES.md#game-tier-whats-left).
 
 ## Lanes and file ownership
 Only edit files your lane owns. If you need a change in someone else's file, write it under "Requests" at the bottom of this file and tell the owner in chat.

@@ -9,7 +9,7 @@ import {createApp} from '../server.mjs';
 import {funMetrics,funGate,funLine,gateLine} from '../packages/testing/fun-metrics.mjs';
 const arg=(k,d)=>{const i=process.argv.indexOf('--'+k);return i<0?d:process.argv[i+1];},flag=k=>process.argv.includes('--'+k);
 const size=arg('size','minimal'),filler=+arg('filler',12),verbose=flag('verbose'),packId=arg('pack','sample.living-world');
-const endpoint=arg('endpoint',process.env.STORY_ENDPOINT||'http://localhost:1234/v1'),model=arg('model',process.env.STORY_MODEL||'qwen3.5-text-9b-nsfw-rp-roleplay-i1');
+const endpoint=arg('endpoint',process.env.STORY_ENDPOINT||'http://localhost:1234/v1'),model=arg('model',process.env.STORY_MODEL||'qwen/qwen3.8-27b');
 // Facts planted early, then asked back after filler turns push them out of the verbatim window.
 const setup=["Go to the workshop and find Brin","Tell Brin my name is Mara, my favorite color is teal, and I grew up by the harbor","Tell Brin about the storm that sank my father's boat","Tell Brin I once built a kite that flew for an hour","Tell Brin I am nervous about the meeting with Ada"];
 const fillers=["Ask Brin what he is building","Ask Brin how long he has worked here","Ask Brin what tools he likes best","Ask Brin whether he has family nearby","Ask Brin what he does on rest days","Ask Brin what the hardest project he ever finished was","Ask Brin what he thinks of Cyra","Ask Brin whether the workshop gets cold at night","Ask Brin what music he listens to while working","Ask Brin whether he ever wanted a different job","Tell Brin a joke about a clockmaker","Ask Brin what he would build with unlimited brass","Ask Brin what he had for breakfast","Ask Brin whether he believes in luck"];

@@ -1,6 +1,6 @@
 // F12 fun report. Two sources:
 //   node scripts/fun-report.mjs --campaign <id|latest> [--db data/campaigns.sqlite]   a human run, opened read-only
-//   node scripts/fun-report.mjs --pack packs/after-hours.json [--turns 200] [--seeds 11,42] [--personas romancer,explorer,achiever] [--json]
+//   node scripts/fun-report.mjs [--pack packs/campus.json] [--turns 200] [--seeds 11,42] [--personas romancer,explorer,achiever] [--json]
 // Bot runs have no narration, so timing is the reading-speed estimate and repeated prose is always 0.
 import {readFileSync,readdirSync,existsSync} from 'node:fs';
 import {resolve} from 'node:path';
@@ -19,7 +19,7 @@ if(arg('campaign')){
  if(!pack)throw new Error(`Pack ${state.packId} not found`);
  const m=funMetrics(state,pack);out.push({source:`campaign ${row.id}`,metrics:m,gate:funGate(m)});
 }else{
- const pack=JSON.parse(readFileSync(resolve(arg('pack','packs/after-hours.json')),'utf8')),turns=+arg('turns',200);
+ const pack=JSON.parse(readFileSync(resolve(arg('pack','packs/campus.json')),'utf8')),turns=+arg('turns',200);
  for(const persona of arg('personas',Object.keys(PERSONAS).join(',')).split(','))for(const seed of arg('seeds','11,42').split(',').map(Number)){
   const {state,errors}=runPersonaPlaytest(pack,registry,{turns,seed,persona}),m=funMetrics(state,pack);out.push({source:`${pack.id} ${persona} seed ${seed}`,errors:errors.length,metrics:m,gate:funGate(m)});
  }

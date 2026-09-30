@@ -46,9 +46,9 @@ export function releaseScene(tx){
  tx.set(['scene'],null);
 }
 // A continuous scene also ends from the NPC's side: they run out of time after the pack's exchange budget, or leave when a
-// boundary is crossed (a declined advance, a sharp loss of trust), or the run reaches its last tick. Scripted scenes hold the scene open until they resolve.
+// boundary is crossed (a declined advance, a sharp loss of trust), or the run reaches its last tick. Scripted scenes and free firsts hold the scene open until they resolve.
 export function sceneLifecycle(tx,world,emitted,exchange,continuous=true){
- const s=tx.state,pack=tx.pack,scene=s.scene;if(!scene||scene.id!==world.scene.id||s.modules['story.scenes']?.pending||!scene.characters.length)return;
+ const s=tx.state,pack=tx.pack,scene=s.scene;if(!scene||scene.id!==world.scene.id||s.modules['story.scenes']?.pending||s.modules['social.firsts']?.active||!scene.characters.length)return;
  const closing=s.run&&s.tick>=s.run.endTick;if(!continuous&&!closing)return;
  const cast=scene.characters,hurt=continuous&&emitted.find(e=>cast.includes(e.payload?.actor??e.payload?.character)&&(e.type==='social.consentDeclined'||e.type==='social.relationshipChanged'&&e.payload.toward===pack.playerId&&Number.isInteger(e.payload.old)&&e.payload.value-e.payload.old<=-5));
  const count=(scene.exchanges||0)+(exchange?1:0),cap=pack.gameProject?.sceneTurns??12;
@@ -202,7 +202,7 @@ export function execute(world,command,pack,registry) {
       assert(Array.isArray(args.characters)&&args.characters.length<=pack.actors.length,'Invalid scene cast');
       const cast=[...new Set(args.characters)];assert(cast.length===args.characters.length&&cast.every(id=>id!==pack.playerId&&pack.actors.some(a=>a.id===id)),'Unknown scene character');
       const activity=args.activityId?(pack.activities||[]).find(a=>a.id===args.activityId):null;
-      assert(!args.activityId||activity,'Unknown authored activity');
+      assert(!args.activityId||activity,'Unknown authored activity');assert(args.result===undefined||activity&&['skip','ok','good','great'].includes(args.result),'Unknown activity result');
       if(activity){
         assert(args.activity!=='continue','Start an authored activity in a new scene');
         assert(args.location===activity.location,'Activity location does not match its authored place');
@@ -262,7 +262,7 @@ export function execute(world,command,pack,registry) {
           if(effect.type==='money')changeMoney(tx,effect.delta);
           if(effect.type==='stat')changeStat(tx,pack.playerId,effect.stat,effect.delta,`activity ${activity.id}`);
         }
-        tx.emit('world.activityCompleted',{activity:activity.id,location:to,characters:cast,text:activity.description||activity.name},[pack.playerId,...cast]);
+        tx.emit('world.activityCompleted',{activity:activity.id,location:to,characters:cast,...(args.result?{result:args.result}:{}),text:activity.description||activity.name},[pack.playerId,...cast]);
       }
       if(args.itemAction){
         assert(pack.modules['items.inventory']&&['take','place','give'].includes(args.itemAction),'Inventory action unavailable');
@@ -311,5 +311,5 @@ export function actions(world,pack,registry){
   return list.map((a,i)=>{try{execute(world,{...a,id:`preview-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry);return {...a,enabled:true};}catch(e){return {...a,enabled:false,reason:e.message};}});
 }
 // Bookkeeping that takes no story time: looking, dressing, reading the phone.
-export const FREE_ACTIONS=new Set(['core.inspect','items.equip','items.unequip','social.readFeed','social.readThread','social.reactToPost','social.setRumorStance','social.resolveConfrontation']);
+export const FREE_ACTIONS=new Set(['core.inspect','items.equip','items.unequip','social.readFeed','social.readThread','social.reactToPost','social.setRumorStance','social.resolveConfrontation','social.scoreFirst','social.stopFirst','world.pushLuck']);
 export function fallback(turn){return turn.events.filter(e=>e.visibility==='public'||e.visibility.includes(turn.command.actorId)).map(e=>e.payload.text).filter(Boolean).join('\n')||'Action completed.';}

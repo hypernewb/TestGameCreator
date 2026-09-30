@@ -49,3 +49,12 @@ test('proposeWorld prompts for the shape, then the draft pass finishes a playabl
  const d=prompts.filter(p=>/"director\.beats\./.test(p));assert.ok(d.length>=4&&d.every(p=>/write \{lead\} and \{rival\} literally/.test(p)));assert.ok(prompts.indexOf(d[0])>prompts.findLastIndex(p=>/"heroines\./.test(p)));
  assert.ok(!pack.scriptedScenes.some(s=>/\{(lead|rival)\}/.test(JSON.stringify(s))),'names are baked in');
 });
+
+test('M5 creator mapping: every drafted activity gets the widget of the stat it trains, and each heroine has four reaction slots to draft',async()=>{
+ const {gameOf,GAMES}=await import('../packages/modules/minigames.mjs'),{spec}=structureFromProposal(proposal()),{pack,missing}=assemble(spec);
+ const want=a=>GAMES[(a.effects||[]).find(e=>e.type==='stat'&&GAMES[e.stat])?.stat];
+ for(const a of pack.activities){assert.ok(Object.values(GAMES).includes(gameOf(a)),a.id);if(want(a))assert.equal(gameOf(a),want(a),a.id);}
+ const byName=n=>pack.activities.find(a=>a.name===n);assert.equal(gameOf(byName('Haul ropes')),'timing');assert.equal(gameOf(byName('Chart reading')),'memory');assert.equal(gameOf(byName('Card night')),'quiz');
+ for(const h of ['mara','zoe'])for(const r of ['skip','ok','good','great'])assert.ok(missing.includes(`heroines.${h}.actor.reactions.${r}`),`${h} ${r}`);
+ assert.equal(gameOf(byName('Bar shift')),'rhythm');const q=proposal();q.activities=q.activities.filter(a=>a.gives!=='money');assert.equal(gameOf(assemble(structureFromProposal(q).spec).pack.activities.find(a=>a.name==='Odd job')),'rhythm');
+});

@@ -3,9 +3,11 @@
 export function scenePlanForTurn(world,pack,turn){
  const sceneEvent=turn.events.find(e=>e.type==='core.sceneStarted'||e.type==='core.sceneContinued');
  const hangout=turn.events.find(e=>e.type==='world.hangoutStarted');
+  const first=turn.events.find(e=>e.type==='social.firstStarted');
  let cast=[],location=world.actors[pack.playerId].location,source='solo';
  if(sceneEvent){cast=sceneEvent.payload.characters||[];location=sceneEvent.payload.location||location;source=sceneEvent.type;}
  else if(hangout){cast=hangout.payload.char?[hangout.payload.char]:[];location=hangout.payload.location||location;source=hangout.type;}
+  else if(first){cast=[first.payload.character];source=first.type;}
  else if(turn.command.type==='social.speak'){
   const id=turn.command.args.target;if(world.actors[id]?.location===location)cast=[id];source='social.spoke';
  }

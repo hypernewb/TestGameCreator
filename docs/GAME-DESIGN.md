@@ -1,8 +1,39 @@
 # Game design
 
-Status: agreed 2026-09-29 in a design interview with the project owner. Notes and reasoning: [research/design-interview.md](research/design-interview.md). Venus evidence: [research/venus-university/](research/venus-university/). Roadmap: [NEXT-MILESTONES.md](NEXT-MILESTONES.md#game-tier--the-venus-style-loop-do-first).
+Status: agreed 2026-09-29 in a design interview with the project owner. Notes and reasoning: [research/design-interview.md](research/design-interview.md). Venus evidence: [research/venus-university/](research/venus-university/). Roadmap: [NEXT-MILESTONES.md](NEXT-MILESTONES.md#game-tier-whats-left).
 
 This replaces [FUN-PASS.md](FUN-PASS.md) as the product direction. The engine and modules stay. What changes is the core loop. It is no longer a hand of authored storylets with a narrator on top. It is Venus-style free play where typed text changes state, with authored scenes where authoring pays off.
+
+**Revised 2026-09-30 (freedom interview):** the player gets more freedom, and structure becomes a creator option. See [Freedom model](#freedom-model-2026-09-30) below. Where it conflicts with older text on this page, the freedom model wins. Roadmap: [Open-play tier](NEXT-MILESTONES.md#open-play-tier-2026-09-30).
+
+## Freedom model (2026-09-30)
+The problem the owner saw in play: typed actions didn't happen, clever input got flattened into a generic tag, structure blocked reasonable intents, nothing lasted, the world felt closed, and the firsts felt on-rails. The core rule still holds: **the model tags, the engine prices, and state wins for intimacy.** What goes away is the assumption that anything with state must already exist in the pack.
+
+- **A freedom dial per world.** The creator sets how much the model may invent and how much structure is authored. Campus is set to **mostly open**:
+  - authored: the heroines, their likes and limits, and the ladder of firsts;
+  - open: places, items, threads and how scenes flow.
+- **Structure is a creator option, not a default.** Every authored mechanic that the open version replaces is kept as a per-world (and where it makes sense, per-rung) setting. Firsts: `free` (typed, with engine-held checkpoints) or `authored` (today's choice scenes).
+- **The model may invent, and inventions persist:**
+  - new places and items: the model proposes numbers, and the engine clamps them to per-world bands (price ranges, how private a place is). Inventions live in state with provenance, not in the pack;
+  - plot threads: player goals, promises and plans, hooks that NPCs start.
+  - Not new NPCs, and not freely invented character facts.
+- **Typed actions happen.** "Take her to the roof", "buy her a necklace" and "let's do karaoke Saturday" move people, bill money and land on the calendar, even when the place or item is new.
+- **Creativity pays.**
+  - Specific input gets a bonus: an act that references her memory, one of her likes, a place or an earlier moment is sized up.
+  - An act that matches nothing in her table is judged by the model with a wider clamp.
+  - Surprise discoveries are a reward.
+- **Saying no:**
+  - explain why in the fiction;
+  - offer the closest alternatives as buttons, and ask again what the player wants to do;
+  - if the player keeps trying, redirect inside the story.
+  - The game-master voice speaks these, never system error strings.
+- **Time is a clock.** The day shows real clock time ("Tue 7:40 pm"). Every option shows how long it takes ("Gym · 1h"), and places have opening hours. Scenes keep the 3–5 input budget, and the player can extend one by paying clock time. Her schedule decides when she has to leave.
+- **Likes puzzles get deeper.** The player sees hints, never exact answers ("she lights up around old things", not "likes: vintage"). Each character's likes list is open or closed, set by the creator:
+  - closed: the authored list is the exact answer (for characters built as puzzles);
+  - open: a model-judged hit becomes a saved like, still shown only as a vague hint.
+  - Clues come from acts that land, friends' gossip, the game master's recap, and surprise discoveries.
+- **Routes never close** (per world, but that's the default). Rejection, dealbreakers and breakups become hurdles with a way back: a cooldown plus a repair thread. If she's with someone else, you can still have an affair with her. Her partner becomes a source of suspicion, confrontations and getting caught.
+- **Play model:** cloud models are fine for now (target: 1–2 hours on the Gemini free tier). Explicit content works on cloud models (the owner checked with Venus University). **Fun first, optimise later:** no work on call counts or context size until the fun gate passes.
 
 ## What we're building
 - **A creator** that outputs Venus University-style dating sims across many worlds and settings, with modules on top. It is for other creators from day one.
@@ -21,7 +52,7 @@ This replaces [FUN-PASS.md](FUN-PASS.md) as the product direction. The engine an
   4. director surprises.
 
 ## Day loop
-- **Time is slots** (dayparts). Every morning shows a **day card**: date, days left, weather, a callback to yesterday, and one rumor that names a place and a lead.
+- **Time is a clock** (revised 2026-09-30, replacing hidden dayparts): the player sees the clock, every option shows how long it takes, and places have opening hours. The engine still counts in ticks, but a tick is now a fixed number of minutes. Every morning shows a **day card**: date, days left, weather, a callback to yesterday, and one rumor that names a place and a lead.
 - **Hub: map plus phone.**
   - The map shows places with this slot's activities. Each activity shows its stat and gold ranges, and who might be there.
   - The phone gets texts, invites, rumors and director events.
@@ -36,7 +67,7 @@ Creators can override the type per activity.
 | Activity (work, gym, study) | none | a quick minigame (skippable) | a result card; may proc an encounter |
 | Encounter / hangout / date | narrates | free typing, 3–5 inputs | an end card with liked/disliked reasons |
 | Director event | none for the opener | choices, or a short free-typing middle | effects plus a follow-up hook |
-| Intimate, first time | none, or voicing authored beats | authored choices that read her cues | a milestone and a gallery unlock |
+| Intimate, first time | narrates around engine-held checkpoints (`free`, the default); or voices authored beats (`authored`, a creator option) | free typing that reads her cues (`free`); authored choices (`authored`) | a milestone, per-checkpoint verdicts and a gallery unlock |
 | Intimate, repeat | narrates | free typing, gated by consent | an end card and memories |
 
 **Encounters from activities.** A chance roll or a met condition can turn an activity into a free-typing scene where a character drops by. Touch is allowed in any scene (work, gym, study), and it has consequences: witnesses, coworkers, the boss.
@@ -97,7 +128,8 @@ Full rules are in [design-patterns.md](research/venus-university/design-patterns
 ## Erotic loop
 - **Discovery:** turn-ons and limits are found by deduction and recorded in the journal.
 - **Ladder of firsts.** Each rung is an authored milestone with a gallery unlock.
-  - The first time is authored, with choices where knowing her mood and traits picks the best option.
+  - **Default (`free`, revised 2026-09-30):** the first time is a free-typed scene with 2–3 checkpoints the engine holds. At each checkpoint she gives a cue, and your typed acts are scored against it: best, light or miss, the same scale the old choices used. For the first night, the check-in is required and held by the engine, and a Stop button is always visible. Plan: [FIRSTS-PLAN.md](FIRSTS-PLAN.md).
+  - **Creator option (`authored`):** the first time is an authored scene with choices, where knowing her mood and traits picks the best option. Worlds that want more structure keep this, per world or per rung.
   - Repeats are free-typed, for replayability.
 - **Mood and moment:** privacy, her mood, sobriety, time of day. The director creates moments. The player recognizes them and takes them.
 - **Mastery and variety:** preferred styles, locations, public vs private risk.
@@ -119,6 +151,14 @@ Full rules are in [design-patterns.md](research/venus-university/design-patterns
   - later: lots of cheating → suspicion.
 - **Tone ceiling:** set by the creator per world, so a chill world never spawns heavy crises.
 - **Base:** `story.director` (tension score, decks, cooldowns, honest teasers, the narrator brief). The storyteller presets become internal defaults.
+- **Revised 2026-09-30: the director becomes a game master** ("player vs director, like D&D"):
+  - **Stance** (friendly, fair, adversarial) is set by the creator per world, next to the tone ceiling.
+  - **Moves**, a list defined in code, each with limits on what effects it can have: complicate, consequence, advance an agenda, world event, reveal, tempt, callback, deadline.
+  - **Mix:** about 40% of beats come from the template library and 60% are invented from the move list. Every beat still has provenance.
+  - **Mid-scene:** a complication rides along on the next scene call as a one-line brief, instead of waiting for the current scene to close and arriving as a menu of choices.
+  - **NPC agendas off-screen:** the creator seeds 1–2 per heroine, and the game master adds small ones from open threads. Rival partners become ongoing agendas, not one-time turning points.
+  - **Voice:** a separate `dm` line type, used for short asides in scenes, for explaining a "no" (with alternatives), and for a recap at the end of each day.
+  - **Stakes:** bad or missed endings, reputation, and getting caught. Losing a heroine for good is not a stake (routes never close).
 
 ## Activities and minigames
 - **Every activity offers its minigame.**
@@ -136,6 +176,14 @@ Full rules are in [design-patterns.md](research/venus-university/design-patterns
 - **Entry points:** one or more SillyTavern cards, a one-paragraph premise, or a structured form.
 - **Guided wizard:** premise → cast → places and activities → arcs and firsts → director events. The AI drafts each step, and the creator edits and approves it before the next.
 - **First times and arc stages** come from a shared library of beat templates with role slots. The AI drafts world-specific text at creation time, and the creator reviews it.
+- **Structure settings (2026-09-30).** The wizard asks for:
+  - the freedom dial;
+  - the firsts mode (`free` or `authored`, per world with a per-rung override);
+  - per-world bands for invented places and items;
+  - open or closed likes per character;
+  - her cues for each checkpoint (`free` firsts) or the choices (`authored`);
+  - agenda seeds for each heroine;
+  - the game-master stance.
 - **Proof worlds:**
   1. a Venus-like campus, built as structured data in M0 and rebuilt through the wizard in M2;
   2. a very different setting, made from one of the owner's SillyTavern cards.
@@ -144,5 +192,5 @@ Full rules are in [design-patterns.md](research/venus-university/design-patterns
 ## Non-negotiables
 - Every character is an explicit adult. Consent is specific, current, withdrawable, and held in state.
 - Model output is untrusted text. Only engine-priced tags, engine checks and authored effects change numbers or gates. Memories are the one exception.
-- The `minimal` preset (4k window, local 9b model) is the target. Every prompt token has to earn its place.
+- ~~The `minimal` preset (4k window, local 9b model) is the target.~~ Revised 2026-09-30: cloud play is fine for now, and the fun comes first. Prompt size and call counts get optimised after the fun gate passes. Keep one model call per typed turn as the design shape, so optimising later stays possible.
 - Replay stays deterministic. Model tags are recorded as events, so replay never calls the model.

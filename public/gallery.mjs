@@ -1,15 +1,27 @@
 // F10: scene gallery + skip-to-unseen. Pure helpers (tested in tests/gallery.test.mjs) plus the dialog that shows them.
+import {sceneLines} from '../vendor/venus/sceneText.mjs';
 // Ren'Py keys read text by script line, not by playthrough: the same words are "read" in a replay, a new run or a repeat encounter.
 export const readKey=(packId,line)=>{const t=`${line?.speaker||''}|${line?.text||''}`;let h=2166136261;for(let i=0;i<t.length;i++)h=Math.imul(h^t.charCodeAt(i),16777619);return `${packId||''}:${(h>>>0).toString(36)}:${t.length}`;};
 const beatsOf=x=>[x,...(x.beats||[])],said=x=>beatsOf(x).flatMap(b=>[...(b.pages||[]).map(pg=>pg.speaker),...(b.choices||[]).flatMap(c=>[...(c.effects||[]),...(c.check?.fail?.effects||[])].map(e=>e.character))]);
 // A scene belongs to whoever it is most about: most lines spoken plus relationship effects. Storylets with nobody in particular go under "The city".
 export const routeOf=(x,p)=>{const n={};for(const id of said(x))if(id&&id!==p.playerId&&p.actors?.some(a=>a.id===id))n[id]=(n[id]||0)+1;return Object.entries(n).sort((a,b)=>b[1]-a[1])[0]?.[0]||'';};
 const runsOf=(s,id)=>{const out=[];for(const h of s.modules['story.scenes']?.history||[])if(h.scene===id){if(h.beat==='opening'||!out.length)out.push([]);out.at(-1).push(h);}return out;};
+const firstRuns=(s,id)=>{const runs=[];let live=null;for(const t of Object.values(s.turns||{})){
+ if(t.events?.some(e=>e.type==='social.firstStarted'&&e.payload.first===id))live=[];
+ if(live)live.push(t);
+ if(t.events?.some(e=>['social.firstStopped','social.firstRejected'].includes(e.type)&&e.payload.first===id))live=null;
+ if(live&&t.events?.some(e=>e.type==='social.firstCompleted'&&e.payload.first===id)){runs.push(live);live=null;}
+ }return runs;};
 export function galleryOf(s,p){const routes=new Map([...(p.datingProfiles||[]).map(d=>d.character),''].map(id=>[id,[]]));
  for(const x of p.scriptedScenes||[]){const runs=runsOf(s,x.id).filter(r=>r.some(h=>h.status==='resolved')),r=routeOf(x,p);if(!routes.has(r))routes.set(r,[]);routes.get(r).push({id:x.id,title:x.title||x.id,cg:beatsOf(x).find(b=>b.cg)?.cg||null,unlocked:runs.length>0,plays:runs.length});}
+ for(const x of p.firsts||[]){if(!routes.has(x.character))routes.set(x.character,[]);const plays=firstRuns(s,x.id).length;routes.get(x.character).push({id:x.id,title:x.title,cg:x.cg||null,unlocked:(s.modules['social.firsts']?.completed||[]).includes(x.id),plays});}
  return [...routes].filter(([,xs])=>xs.length).sort((a,b)=>(a[0]==='')-(b[0]==='')).map(([id,scenes])=>({route:id,name:p.actors?.find(a=>a.id===id)?.name||'The city',scenes,seen:scenes.filter(x=>x.unlocked).length}));}
 // Replay = the committed history re-read against the pack. It never builds a command, so it cannot commit anything.
-export function replayLines(s,p,id,run=-1){const x=(p.scriptedScenes||[]).find(x=>x.id===id),r=runsOf(s,id).filter(r=>r.some(h=>h.status==='resolved')).at(run);if(!x||!r)return [];
+export function replayLines(s,p,id,run=-1){const first=(p.firsts||[]).find(x=>x.id===id);if(first){const turns=firstRuns(s,id).at(run);if(!turns)return [];const lines=[{speaker:'',text:first.opening}];
+ for(const t of turns){if(!['social.priceActs','social.scoreFirst'].includes(t.command.type)){if(t.input)lines.push({speaker:p.playerId,text:t.input});lines.push(...(t.sceneLines||sceneLines(t.narrative||'',p)));}
+  for(const e of t.events||[])if(e.type==='social.firstCheckpoint'&&e.payload.cue)lines.push({speaker:first.character,text:e.payload.cue});}
+ return lines.filter(l=>l.text).map(l=>({...l,...(first.cg?{cg:first.cg}:{})}));}
+ const x=(p.scriptedScenes||[]).find(x=>x.id===id),r=runsOf(s,id).filter(r=>r.some(h=>h.status==='resolved')).at(run);if(!x||!r)return [];
  return r.flatMap(h=>{const b=h.beat==='opening'?x:x.beats?.find(b=>b.id===h.beat);if(!b)return [];const c=b.choices?.find(c=>c.id===h.choice),pic=b.cg||x.cg;
   return [{speaker:'',text:b.opening||'',...(pic?{cg:pic}:{})},...(b.pages||[]),...(c?[{speaker:p.playerId,text:`▸ ${c.label}`},{speaker:'',text:h.passed===false&&c.check?.fail?.result||c.result||''}]:[])].filter(l=>l.text);});}
 

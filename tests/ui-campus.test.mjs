@@ -102,9 +102,9 @@ test('hub activities say what they pay: money exact, stats as arrows, her trust 
 });
 
 // M0.5, owner call 2026-09-29: a CG for every rung (talk, date, kiss, night) of all four heroines, rendered at the NovelAI free tier.
-test('every heroine rung scene shows its own CG, and the art sheet renders each one at the free tier',async()=>{
+test('every heroine first shows its own CG, and the art sheet renders each one at the free tier',async()=>{
  const {existsSync}=await import('node:fs'),{buildRequest}=await import('../packages/assets/novelai.mjs'),p=pack(),sheet=JSON.parse(readFileSync(new URL('../art/cg/campus.json',import.meta.url)));
- for(const h of ['jana','monique','nova','abigail'])for(const r of ['talk','date','kiss','night']){const id=`${h}-${r}`,s=p.scriptedScenes.find(x=>x.id===id),cg=sheet.cgs.find(x=>x.id===id);
+ for(const h of ['jana','monique','nova','abigail'])for(const r of ['talk','date','kiss','night']){const id=`${h}-${r}`,s=p.firsts.find(x=>x.id===id),cg=sheet.cgs.find(x=>x.id===id);
   assert.ok(s&&cg,id);assert.match(s.cg,new RegExp(`^assets/campus/cg/${id}_v\\d+\\.png$`));assert.ok(existsSync(new URL(`../public/${s.cg}`,import.meta.url)),`${id} rendered`);
   assert.doesNotThrow(()=>buildRequest(sheet,cg),`${id} fits the free tier`);assert.match(sheet.characters[cg.cast[0].id],/adult woman/);}
  assert.match(sheet.negative,/child, loli, shota, underage/,'every CG, explicit or not, blocks anything underage');for(const c of sheet.cgs.filter(c=>!/-night$/.test(c.id)))assert.match(c.negative||'',/nsfw/,`${c.id} stays SFW`);
@@ -114,4 +114,18 @@ test('every heroine rung scene shows its own CG, and the art sheet renders each 
 test('the prompt box locks during a scripted scene when nobody in it is here to answer',()=>{
  const src=read('play.mjs');assert.match(src,/voiced=beat&&!\[\.\.\.\(beat\.pages\|\|\[\]\)\.map\(x=>x\.speaker\),\.\.\.Object\.keys\(beat\.when\?\.charactersAt\|\|\{\}\)\]\.some\(id=>id&&present\(id\)\)/);
  assert.match(src,/blocked=beat\?\.allowInput===false\|\|voiced\|\|/);
+});
+
+test('M5 widgets: every campus activity resolves the same game in the UI and the engine, and the tier rides on the command', async()=>{
+ const {gameFor,tierFor,zoneFor,timingHit,beatScore,memoryScore,deal,question,GAMES:UI}=await import('../public/minigames-ui.mjs'),{gameOf,GAMES}=await import('../packages/modules/minigames.mjs');
+ const p=pack();assert.deepEqual(UI,GAMES);for(const a of p.activities)assert.equal(gameFor(a),gameOf(a),a.id);assert.equal(new Set(p.activities.map(gameFor)).size,4);
+ assert.equal(activityCommand(p,p.activities[0].id).args.result,undefined);assert.equal(activityCommand(p,p.activities[0].id,'great').args.result,'great');
+ const g=run(pack(),'mg-ui'),a=p.activities.find(x=>!x.character&&x.location===g.state.actors[p.playerId].location&&!x.requiresFlag)||p.activities.find(x=>!x.character&&!x.requiresFlag),c=activityCommand(p,a.id,'good');g.act(c.type,c.args);
+ assert.equal(g.state.events.findLast(e=>e.type==='world.activityCompleted')?.payload.result,'good');
+ assert.deepEqual([0,0.49,0.5,0.79,0.8,1].map(tierFor),['ok','ok','good','good','great','great']);
+ const z=zoneFor(0);assert.ok(timingHit(z.centre,z)&&!timingHit(z.centre+z.width,z));assert.ok(zoneFor(4).width>0.1);
+ assert.deepEqual([0,-90,150,-250].map(beatScore),[1,1,0.5,0]);assert.equal(memoryScore(6,6,4),1);assert.ok(memoryScore(6,6,10)<1&&memoryScore(3,6,0)===0.5);
+ let seed=7;const rand=()=>(seed=(seed*16807)%2147483647)/2147483647,cards=deal(rand);assert.equal(cards.length,12);assert.ok(cards.every(f=>cards.filter(x=>x===f).length===2));
+ for(let i=0;i<50;i++){const q=question(rand);assert.equal(new Set(q.options).size,4);assert.ok(q.options.includes(q.answer)&&q.options.every(v=>v>0));}
+ const js=read('play.mjs');assert.match(js,/from '\.\/minigames-ui\.mjs'/);assert.match(js,/activityCommand\(p,a\.id,tier\)/);assert.match(js,/world\.pushLuck/);
 });

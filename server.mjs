@@ -30,7 +30,7 @@ import {characterMessages,normalizeCharacter,characterResponseFormat} from './pa
 import {creatorRoutes} from './packages/cards/creator-routes.mjs';
 import {openRouterComplete} from './packages/cards/openrouter.mjs';
 // Moments the player should notice this turn: check results with the numbers, rank-ups, endings and kept or broken plans.
-const turnHighlights=(events=[],p)=>events.filter(e=>['story.checkResolved','character.statChanged','story.endingUnlocked','story.endingChosen','story.planKept','story.planBroken','story.goalMissed'].includes(e.type)&&e.payload.text&&(e.type!=='character.statChanged'||e.payload.character===p.playerId)).map(e=>({type:e.type,rankUp:Boolean(e.payload.rankUp),passed:e.payload.passed,text:e.type==='story.checkResolved'?`${e.payload.text} (${e.payload.value} vs ${e.payload.target})`:e.payload.text}));
+const turnHighlights=(events=[],p)=>events.filter(e=>['story.checkResolved','character.statChanged','story.endingUnlocked','story.endingChosen','story.planKept','story.planBroken','story.goalMissed','world.minigameScored','world.coopReaction','world.luckPushed','world.activityMishap','social.touchWitnessed'].includes(e.type)&&e.payload.text&&(e.type!=='character.statChanged'||e.payload.character===p.playerId)).map(e=>({type:e.type,rankUp:Boolean(e.payload.rankUp),passed:e.payload.passed,text:e.type==='story.checkResolved'?`${e.payload.text} (${e.payload.value} vs ${e.payload.target})`:e.payload.text}));
 const endedView=(s,p)=>{const id=s.modules['story.endings']?.selected,e=id&&(p.endings||[]).find(x=>x.id===id);return e?{name:e.name,text:e.text||`${e.name} begins.`}:null;};
 export function isFileWithin(base,file,pathApi={relative:pathRelative,isAbsolute,sep}) {
   const child=pathApi.relative(base,file);

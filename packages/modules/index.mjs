@@ -28,7 +28,9 @@ import {acts} from './acts.mjs';
 import {arc} from './arc.mjs';
 import {sobriety} from './sobriety.mjs';
 import {secrecy} from './secrecy.mjs';
-export const registry=Object.fromEntries([conversation,relationships,schedule,quests,inventory,abilities,objects,daypart,worldEvents,scenes,facts,equipment,bonds,npcSocial,economy,stats,progression,dating,romanceNetwork,intimacy,gossip,romanceTempo,phone,feed,endings,timedEvents,director,moments,calendarWorld,acts,arc,sobriety,secrecy].map(m=>[m.id,m]));
+import {minigames} from './minigames.mjs';
+import {firsts} from './firsts.mjs';
+export const registry=Object.fromEntries([conversation,relationships,schedule,quests,inventory,abilities,objects,daypart,worldEvents,scenes,facts,equipment,bonds,npcSocial,economy,stats,progression,dating,romanceNetwork,intimacy,gossip,romanceTempo,phone,feed,endings,timedEvents,director,moments,calendarWorld,acts,arc,sobriety,secrecy,minigames,firsts].map(m=>[m.id,m]));
 const descriptions={
  'social.conversation':['Character conversation','Enables conversations with characters who share the player’s location.'],
  'social.relationships':['Relationships','Tracks trust changes from recorded conversations.'],
@@ -57,11 +59,13 @@ const descriptions={
  'social.feed':['Social feed','Adds persistent event-triggered posts, unread state, and authored reactions.'],
  'story.timed-events':['Timed events','Adds missable tick-window events, attendance checks, and deterministic missed-event recaps.'],
  'world.moments':['Ambient moments','Small things between scenes: found cash, stat nudges, characters dropping in, and chance hooks for authored scenes on moves, waits and exploring.'],
+ 'world.minigames':['Activity minigames','Real-time widgets report a result tier on activities: good and great runs add to the base yield, and a great run can push its luck with a rising mishap chance that the director picks up.'],
  'story.director':['Drama director','Watches story tension and fires authored complication scenes when play goes quiet: Left 4 Dead pacing, RimWorld storyteller presets, deck-style cooldowns.'],
  'world.calendar':['Holidays, closures, weather','Adds authored holidays, location closures, and daily weather with conditions for scenes, shops, activities, and schedules.'],
  'social.acts':['Likes and limits','Prices scene acts against a character’s likes and limits.'],
  'character.arc':['Character change arc','Drifts hidden traits and reaches named character stages.'],
  'character.sobriety':['Sobriety','Tracks drinks and recovery as dayparts advance.'],
- 'social.secrecy':['Secrets and suspicion','Tracks secret relationships, who knows, suspicion with evidence, confrontations, and public reveals.']
+ 'social.secrecy':['Secrets and suspicion','Tracks secret relationships, who knows, suspicion with evidence, confrontations, and public reveals.'],
+ 'social.firsts':['Free-typed firsts','Talk, date, kiss and first night play as typed scenes with engine-held checkpoints scored from act tags; the first-night check-in is required and Stop is always there.']
 };
 export const moduleCatalog=Object.fromEntries(Object.values(registry).map(m=>[m.id,{id:m.id,version:m.version,requires:m.requires||[],title:descriptions[m.id][0],description:descriptions[m.id][1],group:m.id.split('.')[0]}]));

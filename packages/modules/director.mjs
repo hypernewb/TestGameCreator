@@ -58,6 +58,12 @@ function eligible(tx,entries,settings,cal,tier,deck,recycle=false){
    &&(scene.repeatable||!st.completed.includes(scene.id))&&!(st.queue||[]).some(x=>x.scene===scene.id);
  });
 }
+// An event-driven beat (mishap, witnessed touch): an incident right now, ignoring the daily cap; armed behind an open scene.
+function dealNow(tx,current,pick,deck,cal,mode,extra){
+ if(tx.state.modules['story.scenes']?.pending){tx.set(path,{...current,armed:{id:pick.id,delivery:'incident'}});return;}
+ tx.emit('story.incident',{incident:pick.id,scene:pick.scene,kind:pick.kind||'complication',intensity:pick.intensity??1,mode,recycled:false,armed:false,tension:current.tension,quiet:current.quiet,template:pick.template||null,roles:pick.roles||{},tone:pick.tone??1,...extra,text:pick.text||'Something goes wrong.'},[tx.pack.playerId]);
+ tx.set(path,{...current,quiet:0,armed:null,uses:{...deck.uses,[pick.id]:(deck.uses[pick.id]||0)+1},lastUse:{...deck.lastUse,[pick.id]:tx.state.tick},recent:[...deck.recent,pick.id].slice(-5),fired:current.fired+1,lastDay:cal.day,firedToday:cal.day===current.lastDay?current.firedToday+1:1,lastTick:tx.state.tick,lastKind:pick.kind||'complication'});
+}
 // Deal one authored event action into state.offers: it shows up as a choosable action (startOfferedScene) whose
 // timeCost is the scene's — a whole daypart by design. Offers expire at dawn; taking one counts its uses.
 const deal=(tx,current,settings,cal,entries,deck,extra,selected=null,mode='quiet')=>{
@@ -101,6 +107,23 @@ function react(tx,event){
   if(st&&!st.pending&&tx.state.tick>=settings.firstTick&&settings.interruptionChancePercent>0&&budgetLeft(current,settings,cal,tx.state.tick)&&tx.random()*100<settings.interruptionChancePercent)
    deal(tx,current,settings,cal,profile.opportunities||[],deckOf(current,'o'),c=>c.match?.activity===event.payload.activity&&(!settings.adaptive||c.template));
   return;
+ }
+ // M5: a push-your-luck mishap costs nothing directly; the director answers it with in-scene trouble, around whoever was there.
+ // It ignores the daily cap (a mishap always lands) and waits, armed, behind an open scene.
+ if(event.type==='world.activityMishap'){
+  if(!settings.adaptive)return;const cal=calendarFor(tx.state.tick,tx.pack),deck=deckOf(current,''),there=event.payload.characters||[];
+  const pool=[false,true].map(r=>eligible(tx,profile.complications||[],settings,cal,tierOf(settings,cal),deck,r).filter(({c})=>c.template)).find(x=>x.length)||[];
+  const near=pool.filter(({c})=>Object.values(c.roles||{}).some(id=>there.includes(id))),pick=bestOf(near.length?near:pool,tx,settings,deck);if(!pick)return;
+  return dealNow(tx,current,pick,deck,cal,'mishap',{activity:event.payload.activity});
+ }
+ // M5: a touch seen at work, the gym or study. A heroine who saw it gets the saw-you beat with the one touched as lead; else a rumor about her.
+ // Same delivery as a mishap (now, in-scene, armed behind an open scene); trust gates still apply, so a stranger's touch is only gossip.
+ if(event.type==='social.touchWitnessed'){
+  if(!settings.adaptive)return;const cal=calendarFor(tx.state.tick,tx.pack),deck=deckOf(current,''),{character,rivals=[]}=event.payload;
+  const fits=c=>c.template&&c.roles?.lead===character&&(c.template==='saw-you'?rivals.includes(c.roles.rival):c.template==='rumor');
+  const pool=[false,true].map(r=>eligible(tx,profile.complications||[],settings,cal,tierOf(settings,cal),deck,r).filter(({c})=>fits(c))).find(x=>x.length)||[];
+  const saw=pool.filter(({c})=>c.template==='saw-you'),pick=bestOf(saw.length?saw:pool,tx,settings,deck);if(!pick)return;
+  return dealNow(tx,current,pick,deck,cal,'witnessed',{location:event.payload.location});
  }
  // Authored scenes can weight their own beats: scene.tension replaces the flat default when that scene resolves.
  const sceneTension=(tx.pack.scriptedScenes||[]).find(x=>x.id===event.payload?.scene)?.tension;

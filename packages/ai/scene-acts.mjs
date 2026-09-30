@@ -1,6 +1,6 @@
 // The model tags what the player did; the engine (social.acts) prices it. Tags are untrusted text: a closed kind list,
 // short slug targets, at most four per reply. See docs/handoffs/M0-CONTRACT.md §1.
-export const ACT_KINDS=['flirt','compliment','gift','touch','insult','buy','invite','tease','listen','boast','pushy'];
+export const ACT_KINDS=['flirt','compliment','gift','touch','insult','buy','invite','tease','listen','boast','pushy','ask'];
 const SIZES=['small','medium','large'];
 export const actsEnabled=(context,pack)=>Boolean(pack.modules?.['social.acts']&&context.sceneBudget?.focus&&(pack.actProfiles||[]).some(p=>p.character===context.sceneBudget.focus));
 export function sceneActs(raw){
@@ -11,7 +11,7 @@ export function sceneActs(raw){
  return out;
 }
 export const actsSchema={type:'array',maxItems:4,items:{type:'object',properties:{kind:{type:'string',enum:ACT_KINDS},target:{type:'string'},size:{type:'string',enum:SIZES},landed:{type:'boolean'}},required:['kind','target']}};
-export const ACTS_RULE='In acts, tag what the player did to the focus character this turn, at most four: {kind,target,size,landed}. kind is one of '+ACT_KINDS.join(', ')+'; target is one or two words (looks, coffee, saturday@cafe); size is small, medium or large; landed is your read of whether it went over well. Tag only what the player action did, never the NPC. Return [] for plain talk.';
+export const ACTS_RULE='In acts, tag what the player did to the focus character this turn, at most four: {kind,target,size,landed}. kind is one of '+ACT_KINDS.join(', ')+'; ask means asking her what she wants or checking in (for example, "Is this okay?"). target is one or two words (looks, coffee, saturday@cafe); size is small, medium or large; landed is your read of whether it went over well. Tag only what the player action did, never the NPC. Do not supply scores, rewards, checkpoint verdicts, completion, or consent. Return [] for plain talk.';
 // Deterministic floor (owner call 2026-09-29): a typed question that names one of her likes is a small listen even when a small model tags it as plain talk. Repeat decay in social.acts stops farming.
 const STOP=new Set(['the','and','for','old','being','about','asked','taken','seriously','good','with','that','your','their','her','back','people','who','anyone','dominik','told','what','she','wants','called']);
 const slug=x=>String(x).toLowerCase().trim().replace(/\s+/g,'-').replace(/[^a-z0-9@:_-]/g,'').slice(0,40);

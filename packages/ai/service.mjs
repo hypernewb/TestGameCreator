@@ -22,7 +22,7 @@ const ECHO=new Set(['core.sceneStarted','core.sceneContinued','social.spoke']);
 // Results the player must read before the next scripted page, so a chained scene never swallows them.
 export const OUTCOME_EVENTS=new Set(['story.choiceResolved','world.activityCompleted','character.statChanged','social.relationshipChanged','social.chemistryChanged','world.moneyChanged','story.checkResolved','social.attractionChanged','social.bondChanged']);
 export const RULES_ONLY=new Set([...FREE_ACTIONS,'social.priceActs','social.scoreFirst','social.stopFirst','story.leave','core.move','core.wait','core.waitUntil','items.take','items.place','items.give','items.use','items.craft','world.buy','world.sell','world.buyService','world.use','world.explore']);
-// A solo authored activity is fully described by its pack text and effects; it needs no narrator.
+// A solo authored activity: the model narrates it from its committed outcomes (Venus rebase); rulesText stays for rules-only turns.
 export const soloActivity=turn=>turn.command.type==='core.scene'&&Boolean(turn.command.args?.activityId)&&!(turn.command.args.characters||[]).length;
 const rulesOnly=turn=>RULES_ONLY.has(turn.command.type)||soloActivity(turn);
 export function rulesText(world,pack,turn){if(soloActivity(turn)){const first=e=>e.type==='world.activityCompleted'?0:1;return turn.events.filter(e=>OUTCOME_EVENTS.has(e.type)&&e.payload?.text).sort((x,y)=>first(x)-first(y)).map(e=>e.payload.text).join('\n');}const here=world.actors[pack.playerId].location,loc=pack.locations.find(l=>l.id===here),present=pack.actors.filter(a=>a.id!==pack.playerId&&world.actors[a.id]?.location===here).map(a=>a.name);
@@ -99,6 +99,11 @@ export class GameService {
       const mentions=pack.actors.filter(a=>a.id!==pack.playerId&&(' '+request.input.toLowerCase().split(/[^\p{L}\p{N}_-]+/u).join(' ')+' ').includes(' '+a.name.toLowerCase()+' ')).map(a=>a.id);
       const currentLocation=world.actors[pack.playerId].location;
       const liveCast=(world.scene?.location===currentLocation?world.scene.characters:[]).filter(id=>world.actors[id]?.location===currentLocation);
+      // With no conversation open, "her/them" points at whoever is standing here: one person, or everyone for "them".
+      // A gendered pronoun skips people whose pronouns say otherwise; just after naming someone who is elsewhere, it means them, so it stays unresolved.
+      const said=/\b(them|they)\b/i.test(request.input)?null:/\b(her|she)\b/i.test(request.input)?/\b(she|her)\b/i:/\b(him|he)\b/i.test(request.input)?/\b(he|him)\b/i:null,fits=id=>{const pr=pack.actors.find(a=>a.id===id)?.pronouns;return !said||!pr||said.test(pr);};
+      const lastNamed=(({args}={})=>[...(args?.characters||[]),args?.target].filter(Boolean))(Object.values(world.turns).at(-1)?.command),here=pack.actors.filter(a=>a.id!==pack.playerId&&world.actors[a.id]?.location===currentLocation&&fits(a.id)).map(a=>a.id);
+      const pronoun=!mentions.length&&!lastNamed.some(id=>world.actors[id]?.location!==currentLocation)&&/\b(her|him|them|they|she|he)\b/i.test(request.input),pronounCast=!pronoun?[]:liveCast.length?liveCast:here.length===1||!said?here:[];
       // Talking *about* someone elsewhere ("I'm nervous about the meeting with Ada") discusses them; it does not summon them.
       // The person named right after the verb ("Ask Brin …") is still addressed even when absent, so that fails honestly.
       const addressee=speech?mentions.find(id=>new RegExp(`^\\s*(?:i\\s+)?\\S+(?:\\s+(?:to|with))?\\s+${pack.actors.find(a=>a.id===id).name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`,'i').test(request.input)):null;
@@ -106,21 +111,26 @@ export class GameService {
       const vocative=id=>{const n=pack.actors.find(a=>a.id===id).name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');return new RegExp(`^\\s*(?:(?:hey|hi|hello|yo|oi)[,!]?\\s+${n}\\b|${n}\\s*(?:[,!?:]|$))`,'i').test(request.input);};
       const addressed=speech?mentions.filter(id=>id===addressee||world.actors[id]?.location===currentLocation):liveCast.length&&!actionWords?mentions.filter(id=>world.actors[id]?.location===currentLocation||vocative(id)):mentions;
       const previous=Object.values(world.turns).at(-1),previousTarget=previous?.command.type==='social.speak'?previous.command.args.target:null;
-      if(!proposal&&!activityRequested&&!actionWords&&!previousTarget&&!mentions.length&&/\b(her|him|them)\b/i.test(request.input)&&liveCast.length!==1)return {clarification:liveCast.length?'Who do you mean? '+liveCast.map(id=>world.actors[id].name).join(' or '):'Who do you want to meet? No character is in your current conversation.',state:world};
+      if(!proposal&&!activityRequested&&!actionWords&&!previousTarget&&!mentions.length&&/\b(her|him|them)\b/i.test(request.input)&&liveCast.length!==1&&!(!liveCast.length&&pronounCast.length))return {clarification:liveCast.length||here.length?'Who do you mean? '+(liveCast.length?liveCast:here).map(id=>world.actors[id].name).join(' or '):'Who do you mean? Nobody else is here.',state:world};
       if(!proposal&&!activityRequested&&!actionWords&&previousTarget&&world.actors[previousTarget]?.location===world.actors[pack.playerId].location&&addressed.every(id=>id===previousTarget))proposal={type:'social.speak',args:{target:previousTarget,text:request.input.trim()}};
       if(!proposal&&world.scene&&liveCast.length===world.scene.characters.length&&!activityRequested&&!actionWords&&addressed.every(id=>world.scene.characters.includes(id)))proposal={type:'core.scene',args:{text:request.input.trim(),location:world.scene.location,characters:world.scene.characters,activity:'continue'}};
       if(!proposal){const verdict=await this.provider.interpretScene(request.input,world,pack,signal);
         // A local model may turn an ordinary private activity into a conversation merely because an NPC shares
         // the location. Unless the player names someone, common solo verbs always stay solo.
-        if(!mentions.length&&(soloRequested||actionWords&&!world.scene)){verdict.characters=[];if(verdict.activity==='talk'||verdict.activity==='meet')verdict.activity='explore';}
-        const movementRequested=!speech&&/\b(go|leave|exit|travel|meet|visit|head|move|walk|run|return|follow|sleep|rest)\b/i.test(request.input),namedLocation=movementRequested?resolveSceneLocation(pack,request.input):null;
+        if(pronounCast.length&&!soloRequested){verdict.characters=pronounCast;if(!['talk','meet','continue'].includes(verdict.activity))verdict.activity='talk';}
+        else if(!mentions.length&&(soloRequested||actionWords&&!world.scene)){verdict.characters=[];if(verdict.activity==='talk'||verdict.activity==='meet')verdict.activity='explore';}
+        const movementRequested=!speech&&/\b(go|leave|exit|travel|meet|visit|head|move|walk|run|return|follow|sleep|rest|find|look for|track down|catch up with|join)\b/i.test(request.input),namedLocation=movementRequested?resolveSceneLocation(pack,request.input):null;
         if(namedLocation)verdict.location=namedLocation;
-        if(!movementRequested&&!activityRequested&&!soloRequested){verdict.location=currentLocation;verdict.characters=addressed.length?addressed:liveCast;verdict.activity='talk';}
+        // "Go find Abigail" names a person, not a place: go where she is now instead of letting the engine turn you away.
+        const sought=movementRequested&&!namedLocation&&mentions.find(id=>world.actors[id]?.location!==currentLocation&&!(verdict.mentionedOnly||[]).includes(id));if(sought){verdict.location=world.actors[sought].location;verdict.characters=[...new Set([sought,...verdict.characters.filter(id=>world.actors[id]?.location===verdict.location)])];if(!verdict.activityId)verdict.activity='meet';}
+        else if(pronounCast.length&&!namedLocation)verdict.location=currentLocation;
+        if(!movementRequested&&!activityRequested&&!soloRequested){verdict.location=currentLocation;verdict.characters=addressed.length?addressed:liveCast.length?liveCast:pronounCast;verdict.activity=verdict.characters.length?'talk':'explore';}
         const rule=(pack.activities||[]).find(a=>a.id===verdict.activityId),location=rule?.location||verdict.location||(verdict.activity==='rest'?pack.daypart?.introLocation||pack.startOptions?.[0]?.playerLocation||null:verdict.activity==='meet'&&verdict.characters.length?world.actors[verdict.characters[0]].location:null);if(movementRequested&&!location)return {clarification:`Where do you want to go? Try ${pack.locations.map(l=>l.name).join(', ')}.`,state:world};proposal={type:'core.scene',args:{text:request.input.trim(),location,characters:rule?.character?[...new Set([...verdict.characters,rule.character])]:verdict.characters,activity:verdict.activity,activityId:rule?.id||'',itemAction:verdict.itemAction||'',itemId:verdict.itemId||'',itemTarget:verdict.itemTarget||''}};}
     }
     // social.speak is validated by its own command (target exists, co-located, text bounds); running it through
     // parseIntent would demand a suggestion button, breaking typed conversation once the authored topics run dry.
-    assert(proposal,'Missing command');if(!['core.scene','story.respond','social.invite','social.speak','items.equip','items.unequip'].includes(proposal.type))proposal=parseIntent(proposal,available);
+    assert(proposal,'Missing command');if(proposal.type==='core.wait'&&typeof proposal.args?.until==='string')proposal={type:'core.wait',args:{until:proposal.args.until}};// "Skip to Evening": the engine checks the daypart
+    else if(!['core.scene','story.respond','social.invite','social.speak','items.equip','items.unequip'].includes(proposal.type))proposal=parseIntent(proposal,available);
     if(proposal.type==='clarify')return {clarification:proposal.args.question,state:world};
     // Re-asking something the person already heard costs their patience in life and a tick here: answer for free
     // (0-tick clarification, no turn committed) instead of charging for a deflection the model has to invent.
@@ -144,7 +154,7 @@ export class GameService {
       const text=lines.map(line=>`${line.speaker?`${pack.actors.find(a=>a.id===line.speaker)?.name}: `:''}${line.text}`).join('\n');
       const state=this.store.narrative(id,turnId,text,{sceneLines:lines,ledger:[],fallback:false,retry,provider:drafted?this.provider.name:'Authored scene',promptVersion:drafted?'director_draft_v1':'authored_scene_v1'});return {state,turn:state.turns[turnId]};
     }
-    if(rulesOnly(turn)){const text=rulesText(world,pack,turn);const state=this.store.narrative(id,turnId,text,{sceneLines:text.split('\n').map(t=>({speaker:'',text:t})),ledger:[],fallback:false,retry,provider:'Game rules',promptVersion:'rules_v1'});return {state,turn:state.turns[turnId]};}
+    if(RULES_ONLY.has(turn.command.type)){const text=rulesText(world,pack,turn);const state=this.store.narrative(id,turnId,text,{sceneLines:text.split('\n').map(t=>({speaker:'',text:t})),ledger:[],fallback:false,retry,provider:'Game rules',promptVersion:'rules_v1'});return {state,turn:state.turns[turnId]};}
     if(turn.command.type==='core.endScene'){
       const text=fallback(turn);const state=this.store.narrative(id,turnId,text,{sceneLines:[{speaker:'',text}],ledger:[],fallback:false,retry,provider:'Game rules',promptVersion:'scene_end_v1'});return {state,turn:state.turns[turnId]};
     }

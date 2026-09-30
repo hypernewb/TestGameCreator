@@ -23,14 +23,14 @@ test('Venus-inspired prompt keeps the shared contract and requests a full scene 
  const context={sceneWriter:'venus',stagedCast:['ada'],scenePhase:'continuation',sceneBudget:{budget:3,inputs:2,focus:'ada'},sceneHistory:[],playerAction:'How was your day?'};
  const [system,user]=scenePromptMessages(context,pack);
  assert.match(system.content,/VENUS SCENE STRUCTURE/);
- assert.match(system.content,/5–6 visual-novel entries/);
- assert.match(system.content,/at least three of the remaining entries NPC dialogue/);
+ assert.match(system.content,/6–9 visual-novel entries/);
+ assert.match(system.content,/at least four of the remaining entries NPC dialogue/);
  assert.match(system.content,/End with a specific question or offer/);
  assert.match(system.content,/OUTPUT CONTRACT: Return one JSON object/);
  assert.match(user.content,/Respond directly to the latest player words or action/);
  assert.doesNotMatch(system.content,/Then 2–5 short entries/);
  const [original]=scenePromptMessages({...context,sceneWriter:'framework'},pack);
  assert.doesNotMatch(original.content,/VENUS SCENE STRUCTURE/);
- assert.match(original.content,/5–6 visual-novel entries/);
+ assert.match(original.content,/6–9 visual-novel entries/);
  assert.match(original.content,/pursue the beat direction/);
 });

@@ -11,6 +11,8 @@ export function scenePlanForTurn(world,pack,turn){
  else if(turn.command.type==='social.speak'){
   const id=turn.command.args.target;if(world.actors[id]?.location===location)cast=[id];source='social.spoke';
  }
+ // A drop-in encounter this turn comes over, so it joins the cast instead of standing as a silent bystander.
+ cast=[...cast,...turn.events.filter(e=>e.type==='world.moment'&&e.payload.kind==='encounter').map(e=>e.payload.character)];
  cast=[...new Set(cast)].filter(id=>id!==pack.playerId&&world.actors[id]?.location===location&&pack.actors.some(a=>a.id===id));
  // The speaker slate is the only set of IDs that may voice a line this beat; narration stays unattributed.
  return {cast,speakers:[...cast],location,source,actor:cast[0]||pack.playerId,sceneId:world.scene?.id||null,started:Boolean(sceneEvent||hangout),continuing:sceneEvent?.type==='core.sceneContinued'};

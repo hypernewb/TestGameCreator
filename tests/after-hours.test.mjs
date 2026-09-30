@@ -189,13 +189,14 @@ test('typed play: a phrase inside a longer sentence starts the shift, choices an
  }finally{store.close();}
 });
 
-test('each place lists its activities with what they raise, and doing a solo one is resolved by the rules alone',async()=>{
+// Venus rebase: a solo activity is still a model scene; the rules commit the stat first and the model narrates from that outcome.
+test('each place lists its activities with what they raise, and doing a solo one is narrated by the model from its committed outcome',async()=>{
  const {Store}=await import('../packages/persistence/store.mjs'),{GameService}=await import('../packages/ai/service.mjs');
- let calls=0;const no=async()=>{calls++;throw Error('model called');},model={name:'must-not-run',generateScene:no,interpretScene:no,generateLedger:no,interpret:no,narrate:no};
+ let calls=0;const seen=[],model={name:'probe',async generateScene(context){calls++;seen.push(context);return {lines:[{speaker:'',text:'You work the crossword down to the last clue.'}]};},async generateLedger(){return [];}};
  const store=new Store();store.insert(createWorld(pack,registry,'solo'));const svc=new GameService(store,{[pack.id]:pack},registry,model);
  try{const card=actions(store.load('solo'),pack,registry).find(a=>a.args?.activityId==='crosswords');assert.ok(card?.enabled);assert.equal(card.storylet.hint,'+2 Wit');assert.equal(card.storylet.timeCost,4);
-  const r=await svc.act('solo',{id:'c1',expectedRevision:store.load('solo').revision,command:{type:card.type,args:card.args}});assert.equal(r.turn.provider,'Game rules');assert.equal(calls,0);
-  assert.match(r.turn.narrative,/^An afternoon of anagrams/);assert.match(r.turn.narrative,/Wit/);assert.equal(r.state.modules['character.stats'].values['player--wit'],5);
+  const r=await svc.act('solo',{id:'c1',expectedRevision:store.load('solo').revision,command:{type:card.type,args:card.args}});assert.equal(r.turn.provider,'probe');assert.equal(calls,1);
+  assert.match(r.turn.narrative,/last clue/);assert.ok(seen[0].outcomes.some(o=>/anagrams/.test(JSON.stringify(o))),'the committed outcome reaches the model');assert.equal(r.state.modules['character.stats'].values['player--wit'],5);
   const bar=actions(r.state,pack,registry);assert.ok(!bar.some(a=>a.args?.activityId==='open-mic'),'activities elsewhere are not offered here');
  }finally{store.close();}
 });

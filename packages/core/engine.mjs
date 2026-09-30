@@ -1,4 +1,4 @@
-import {calendarFor} from '../../public/calendar.mjs';
+import {calendarFor,PERIODS} from '../../public/calendar.mjs';
 import {spokenLine} from '../../vendor/venus/sceneText.mjs';
 import {changeMoney} from '../modules/economy.mjs';
 import {changeStat} from '../modules/stats.mjs';
@@ -8,6 +8,7 @@ import {closedReason,holidayOf} from '../modules/calendar.mjs';
 export const CORE_API = '0.1.0';
 export const clone = x => structuredClone(x);
 export function assert(ok, message) { if (!ok) throw new Error(message); }
+const untilTicks=(tick,part,n)=>{const slot=Math.floor(tick/n),d=((PERIODS.indexOf(part)-slot%3+3)%3)||3;return (slot+d)*n-tick;};
 export function safeKey(s) { return typeof s === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,99}$/.test(s) && !['__proto__','constructor','prototype'].includes(s); }
 export function routeBetween(pack,from,to,flags={}) { const queue=[[from]],seen=new Set([from]);while(queue.length){const path=queue.shift(),at=path.at(-1);if(at===to)return path;for(const e of pack.locations.find(l=>l.id===at)?.exits||[])if(!seen.has(e.to)&&(!e.flag||flags[e.flag])){seen.add(e.to);queue.push([...path,e.to]);}}return null; }
 export function scheduleDestination(pack,schedule,tick) {const exception=(pack.scheduleExceptions||[]).find(x=>x.actor===schedule.actor&&tick>=x.startTick&&tick<=x.endTick);if(exception)return exception.location;for(const stop of schedule.stops||[])if(tick%schedule.period===stop.at)return stop.location;const interval=pack.daypart?.interval||4;if(tick%interval===0){const clock=calendarFor(tick,pack);for(const stop of schedule.weekly||[])if(stop.weekday===clock.weekday&&stop.daypart===clock.daypart&&!(stop.skipHolidays&&holidayOf(pack,clock)))return stop.location;}return null;}
@@ -192,7 +193,8 @@ export function execute(world,command,pack,registry) {
   const base={
     'core.move'(tx,args){const from=tx.state.actors[pack.playerId].location;const exit=pack.locations.find(l=>l.id===from).exits.find(e=>e.to===args.to);assert(exit,'No route to that location');assert(!exit.flag||tx.state.flags[exit.flag],exit.reason||'This route is locked');releaseScene(tx);tx.set(['actors',pack.playerId,'location'],args.to);tx.emit('core.moved',{actor:pack.playerId,from,to:args.to,text:`Travelled to ${pack.locations.find(l=>l.id===args.to).name}.`});},
     'core.inspect'(tx){const l=pack.locations.find(l=>l.id===state.actors[pack.playerId].location);tx.emit('core.inspected',{text:l.description||l.name,location:l.id},[pack.playerId]);},
-    'core.wait'(tx){tx.emit('core.waited',{text:'You wait and watch the world move.'},[pack.playerId]);},
+    // until: skip ahead to the start of the next Morning, Afternoon or Evening (the hub's "Skip to Evening").
+    'core.wait'(tx,args={}){if(args.until){assert(PERIODS.includes(args.until),'Unknown part of the day');assert(!tx.state.scene?.characters?.length,'Finish the conversation first');}tx.emit('core.waited',{...(args.until?{until:args.until}:{}),text:args.until?`You let the time slide by until ${args.until.toLowerCase()}.`:'You wait and watch the world move.'},[pack.playerId]);},
     'core.waitUntil'(tx,args){const to=args.location||state.actors[pack.playerId].location;assert(pack.actors.some(a=>a.id===args.actor&&a.id!==pack.playerId),'Unknown character to wait for');assert(pack.locations.some(l=>l.id===to),'Unknown wait location');assert(state.actors[pack.playerId].location===to,'Wait where you are');assert(state.actors[args.actor].location!==to,'That character is already here');const at=nextArrivalTick(pack,args.actor,to,world.tick);assert(at&&at>world.tick,'That character has no upcoming stop here soon');waitTicks=at-world.tick;const name=state.actors[args.actor].name;tx.emit('core.waited',{actor:args.actor,location:to,tick:at,text:`You wait until ${name} arrives here.`},[pack.playerId]);},
     'core.endScene'(tx,args){assert(tx.state.scene,'There is no active conversation to end');const reason=args.reason||'player';assert(['player','natural'].includes(reason),'Unknown scene end reason');const cast=tx.state.scene.characters,activity=tx.state.scene.activity;releaseScene(tx);tx.emit('core.sceneEnded',{reason,characters:cast,text:reason==='natural'?'The conversation comes to a natural close.':['talk','meet','continue'].includes(activity)?'You end the conversation.':'You wrap up what you were doing.'},[pack.playerId,...cast]);},
     'core.scene'(tx,args){
@@ -255,14 +257,16 @@ export function execute(world,command,pack,registry) {
         const day=calendarFor(tx.state.tick,pack).day,dayUses=tx.state.activityDayUses||{};
         if(!tx.state.activityDayUses)tx.set(['activityDayUses'],{});
         tx.set(['activityDayUses',activity.id],dayUses[activity.id]&&dayUses[activity.id].day===day?{day,count:dayUses[activity.id].count+1}:{day,count:1});
+        // Opportunity cost: spending the activity with company (anyone it does not require) halves its stat gain; the time went to them.
+        const company=present.filter(id=>id!==activity.character),cut=d=>company.length&&d>0?Math.floor(d/2):d;
         for(const effect of activity.effects||[]){
           if(effect.type==='flag')tx.set(['flags',effect.id],effect.value);
           if(effect.type==='trust'){const key=`${effect.character}--${pack.playerId}`,old=tx.state.modules['social.relationships'].edges[key]||0;tx.set(['modules','social.relationships','edges',key],Math.max(0,Math.min(100,old+effect.delta)));const value=tx.state.modules['social.relationships'].edges[key];tx.emit('social.relationshipChanged',{actor:effect.character,toward:pack.playerId,old,value,delta:value-old,text:`${tx.state.actors[effect.character].name}: Trust ${old} → ${value}`},[pack.playerId,effect.character]);}
           if(effect.type==='item')transfer(tx,pack.items.find(i=>i.id===effect.id),to,pack.playerId,1,`You receive ${pack.items.find(i=>i.id===effect.id).name}.`);
           if(effect.type==='money')changeMoney(tx,effect.delta);
-          if(effect.type==='stat')changeStat(tx,pack.playerId,effect.stat,effect.delta,`activity ${activity.id}`);
+          if(effect.type==='stat'&&cut(effect.delta))changeStat(tx,pack.playerId,effect.stat,cut(effect.delta),`activity ${activity.id}`);
         }
-        tx.emit('world.activityCompleted',{activity:activity.id,location:to,characters:cast,...(args.result?{result:args.result}:{}),text:activity.description||activity.name},[pack.playerId,...cast]);
+        tx.emit('world.activityCompleted',{activity:activity.id,location:to,characters:cast,...(args.result?{result:args.result}:{}),...(company.length?{company}:{}),text:(activity.description||activity.name)+(company.length?` You spend part of it with ${company.map(id=>tx.state.actors[id].name).join(' and ')}, so it counts for less.`:'')},[pack.playerId,...cast]);
       }
       if(args.itemAction){
         assert(pack.modules['items.inventory']&&['take','place','give'].includes(args.itemAction),'Inventory action unavailable');
@@ -285,7 +289,7 @@ export function execute(world,command,pack,registry) {
   const invited=command.type==='social.invite'&&state.scene?.id===command.id;
   const route=command.type==='core.scene'||invitation||phoneOffer||invited?routeBetween(pack,world.actors[pack.playerId].location,invitationLocation||phoneOffer?.location||(invited?command.args.to:null)||command.args.location||world.actors[pack.playerId].location,world.flags):null;
   const travelCost=route?route.length-1:0;
-  const cost=meetingBlocked?0:offeredScene?(offeredScene.timeCost??pack.daypart?.interval??1):command.type==='core.waitUntil'?waitTicks:command.type==='world.nextDaypart'?pack.daypart.interval-state.tick%pack.daypart.interval:invitation||phoneOffer||invited?route?travelCost+1:0:command.type==='social.invite'?0:continuous&&['story.choose','story.respond','story.leave','social.withdrawConsent'].includes(command.type)?0:command.type==='core.scene'&&!route?0:authored?travelCost+authored.duration:command.type==='core.scene'&&command.args.activity==='rest'?(continuous?Math.max(travelCost,(pack.daypart?.interval||4)-state.tick%(pack.daypart?.interval||4)):travelCost+(pack.daypart?.interval||4)-state.tick%(pack.daypart?.interval||4)):command.type==='core.scene'?travelCost+(command.args.activity==='continue'?0:1):pack.durations?.[command.type]??(FREE_ACTIONS.has(command.type)?0:1);assert(Number.isInteger(cost)&&cost>=0&&cost<=100,'Invalid action duration');
+  const cost=meetingBlocked?0:offeredScene?(offeredScene.timeCost??pack.daypart?.interval??1):command.type==='core.waitUntil'?waitTicks:command.type==='world.nextDaypart'?pack.daypart.interval-state.tick%pack.daypart.interval:invitation||phoneOffer||invited?route?travelCost+1:0:command.type==='social.invite'?0:continuous&&['story.choose','story.respond','story.leave','social.withdrawConsent'].includes(command.type)?0:command.type==='core.scene'&&!route?0:authored?travelCost+authored.duration:command.type==='core.scene'&&command.args.activity==='rest'?(continuous?Math.max(travelCost,(pack.daypart?.interval||4)-state.tick%(pack.daypart?.interval||4)):travelCost+(pack.daypart?.interval||4)-state.tick%(pack.daypart?.interval||4)):command.type==='core.scene'?travelCost+(command.args.activity==='continue'?0:1):command.type==='core.wait'&&command.args?.until?untilTicks(state.tick,command.args.until,pack.daypart?.interval||4):pack.durations?.[command.type]??(FREE_ACTIONS.has(command.type)?0:1);assert(Number.isInteger(cost)&&cost>=0&&cost<=100,'Invalid action duration');
   const kept=continuous&&state.scene&&world.scene?.id===state.scene.id,opened=continuous&&state.scene&&!kept,soloClosed=continuous&&command.type==='core.scene'&&emitted.some(e=>e.type==='core.sceneStarted'&&!(e.payload.characters||[]).length)&&emitted.some(e=>e.type==='core.sceneEnded');
   const advance=n=>{if(n>0){const before=state.tick,to=state.run?Math.min(before+n,state.run.endTick):before+n;if(to===before)return;tx.set(['tick'],to);tx.emit('core.timeAdvanced',{from:before,to:state.tick,sceneCast:state.scene?.characters||[]},[]);}};
   let reacted=0;const react=()=>{for(;reacted<emitted.length;reacted++){const e=emitted[reacted];if(e.type==='core.patch')continue;for(const m of mods)m.react?.(tx,e);}};

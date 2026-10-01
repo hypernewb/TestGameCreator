@@ -28,3 +28,13 @@ Big picture: every mechanic choice should become a per-world option in the game 
 - 2026-10-01 Repair gate: per heroine (each sheet sets her own rapport bar for reconciliation).
 - 2026-10-01 Planner slots: 1 activity = 1 slot, including travel and the conversation.
 - 2026-10-01 Sheet lists (traits, gift categories, experience levels, body regions/sensitivity): a worker drafts from rp-master + Venus, owner approves before the T-009 build.
+
+## Batch 8 (2026-10-01, Heartmorrow + RisuAI digests)
+- 2026-10-01 Hidden daily need: rerolls once per day per heroine.
+- 2026-10-01 Same-day gift repeats: 1 / 0.5 / 0 (replaces current damping, no stacking).
+- 2026-10-01 Heroine texts: authored triggers only (neglect, stage change), max 1/day.
+- 2026-10-01 Anniversaries: every 28 game days, with a callback memory.
+- 2026-10-01 Lore scan window: last 4 messages.
+- 2026-10-01 Lore chaining: only creator-declared links (explicit IDs), no automatic recursion.
+- 2026-10-01 Memory split: 50% recent / 50% important.
+- 2026-10-01 Player persona: set at creation only, locked after.

@@ -7,15 +7,15 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
   - tags: [writer, opencode-longcat-free]
   - waits on: T-003 merge
 
-### T-009 Full-depth character sheet schema (rp-master level)
-  - planned: gpt-6.1-sol (Codex)
-  - tags: [implementer, codex]
-
 ### T-012 Relationship stages + repairable breakups
   - planned: gpt-6.1-sol (Codex)
   - tags: [implementer, codex]
 
 ## Doing
+
+### T-009a Full character sheet: schema + creator tabs (Suggest = T-009b later)
+  - model: gpt-6.1-sol (Codex)
+  - tags: [implementer, codex]
 
 ### T-010 Daily flirt cap + "she has to go" cue
   - model: gpt-6.1-sol (Codex)

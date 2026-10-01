@@ -29,6 +29,9 @@ export interface SceneFeedbackPack { chips?:boolean; mood?:boolean }
 export interface SceneFeedbackChip { character:string; stat:string; value:number; delta:number }
 export interface SceneFeedbackMood { character:string; name:string; score:number; tier:number; label:string }
 export interface SceneFeedback { chips:SceneFeedbackChip[]; moods:SceneFeedbackMood[] }
+export type UnwelcomeStyle='deflect'|'tease_back'|'shut_down';
+export interface UnwelcomeTuning { deflect:{like:number;trust:number;lust:number};tease_back:{like:number;trust:number;lust:number;minTrust:number};shut_down:{like:number;trust:number;lust:number} }
+export interface UnwelcomeFlirtPack { unwelcomeFlirt?:UnwelcomeTuning }
 export interface SocialPacing { flirt?:{mode:'off'|'cap';dailyLimit?:number}; departure?:{enabled:boolean;graceTurns:number} }
 export interface FlirtAllowance { day:number;count:number;cued:boolean }
 export interface FlirtDeparture { sceneId:string;destination:string|null;remaining:number;origin:string;lastTurn:string }
@@ -51,9 +54,9 @@ export interface CharacterSheet {
  personality:{traits:SheetTrait[];notes:string;voice:string;examples:string[];fingerprint:string};
  appearance:{description:string;style:string;portrait:string;poses:{id:string;image:string;[key:string]:unknown}[];notes:string};
  tastes:{likes:string[];dislikes:string[];likedCategories:GiftCategory[];dislikedCategories:GiftCategory[];itemOverrides:{item:string;reaction:'loved'|'liked'|'neutral'|'disliked'|'hated';points?:number;[key:string]:unknown}[];notes:string};
- dating:{history:string;experience:SheetExperience|null;body:Record<BodyRegion,{sensitivity:0|1|2|3|null;limit:BodyLimit|null}>;preferences:string;limitsNotes:string;policyOverrides:Record<string,unknown>;repairTrustBar?:number|null};
+ dating:{ladderPace?:'slow'|'normal'|'fast';history:string;experience:SheetExperience|null;body:Record<BodyRegion,{sensitivity:0|1|2|3|null;limit:BodyLimit|null}>;preferences:string;limitsNotes:string;policyOverrides:Record<string,unknown>;repairTrustBar?:number|null};
  routine:{weekly:SheetWeeklyStop[];exceptions:SheetException[];notes:string};
- behavior:{rules:SheetRule[];notes:string;stages:Record<string,string>};
+ behavior:{unwelcomeStyle?:UnwelcomeStyle;rules:SheetRule[];notes:string;stages:Record<string,string>};
  social:{links:SheetSocialLink[];notes:string};
  arc:{goal:string;tracks:ArcTrack[];payoffs:Record<string,unknown>[];notes:string};
  lore:{backstory:string;entries:Record<string,unknown>[];authorNotes:string};

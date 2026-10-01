@@ -2735,6 +2735,7 @@
     "soberPerDaypart": 1
   },
   "intimacySettings": {
+    "hardLimit": {"trust":70,"stage":"dating"},
     "difficulty": "normal",
     "contentLevel": "explicit",
     "privateLocations": [

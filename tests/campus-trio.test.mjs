@@ -12,10 +12,10 @@ const HEROINES=['yuna','haruka','minji'];
 const REGIONS=['face','lips','neck','arms_hands','chest','back','belly_waist','hips_butt','thighs_legs','intimate'];
 
 test('trio body maps are complete, distinct and bounded, without changing eligibility or source data',()=>{
- const original=campus(),before=structuredClone(original),generated=reskin(original),saved=file();assert.deepEqual(original,before);assert.deepEqual(saved,generated);
+ assert.deepEqual(file().intimacySettings.hardLimit,{trust:70,stage:'dating'});const original=campus(),before=structuredClone(original),generated=reskin(original),saved=file();assert.deepEqual(original,before);assert.deepEqual(saved,generated);
  for(const p of [saved,generated]){const maps=[];for(const c of HEROINES){const s=p.characterSheets.find(s=>s.actorId===c),body=s.dating.body,values=Object.values(body);assert.deepEqual(Object.keys(body).sort(),[...REGIONS].sort());
-   for(const r of REGIONS){assert.deepEqual(Object.keys(body[r]).sort(),['limit','sensitivity']);assert.ok(Number.isInteger(body[r].sensitivity)&&body[r].sensitivity>=0&&body[r].sensitivity<=3,`${c}.${r} sensitivity`);assert.ok(['ok','ask_first','never'].includes(body[r].limit),`${c}.${r} limit`);}
-   assert.ok(values.some(v=>v.limit==='never'));assert.ok(values.filter(v=>v.limit==='ask_first').length>=3);assert.equal(s.dating.limitsNotes.split(/(?<=[.!?])\s+/).length,2);maps.push(JSON.stringify(body));
+   for(const r of REGIONS){assert.deepEqual(Object.keys(body[r]).sort(),['limit','sensitivity']);assert.ok(Number.isInteger(body[r].sensitivity)&&body[r].sensitivity>=0&&body[r].sensitivity<=3,`${c}.${r} sensitivity`);assert.ok(['ok','ask_first','hard'].includes(body[r].limit),`${c}.${r} limit`);}
+   assert.ok(values.some(v=>v.limit==='hard'));assert.ok(values.every(v=>v.limit!=='never'));assert.doesNotMatch(s.dating.limitsNotes,/\bnever\b/i);assert.ok(values.filter(v=>v.limit==='ask_first').length>=3);assert.equal(s.dating.limitsNotes.split(/(?<=[.!?])\s+/).length,2);maps.push(JSON.stringify(body));
    const old={yuna:'jana',haruka:'nova',minji:'abigail'}[c],base=original.characterSheets.find(s=>s.actorId===old);for(const k of Object.keys(base.dating).filter(k=>!['body','limitsNotes'].includes(k)))assert.deepEqual(s.dating[k],base.dating[k]);
    for(const key of ['datingProfiles','intimacyProfiles']){const profile=p[key].find(x=>x.character===c),expected=JSON.parse(JSON.stringify(original[key].find(x=>x.character===old)).replaceAll(old,c));assert.deepEqual(profile,expected);}}
   assert.equal(new Set(maps).size,3);const counts=HEROINES.map(c=>Object.values(p.characterSheets.find(s=>s.actorId===c).dating.body).filter(v=>v.limit==='ok').length);assert.ok(counts[0]<counts[1]&&counts[1]<counts[2]);}

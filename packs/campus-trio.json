@@ -2311,6 +2311,10 @@
     "soberPerDaypart": 1
   },
   "intimacySettings": {
+    "hardLimit": {
+      "trust": 70,
+      "stage": "dating"
+    },
     "difficulty": "normal",
     "contentLevel": "explicit",
     "privateLocations": [
@@ -3241,7 +3245,7 @@
           },
           "hips_butt": {
             "sensitivity": 2,
-            "limit": "never"
+            "limit": "hard"
           },
           "thighs_legs": {
             "sensitivity": 1,
@@ -3253,7 +3257,7 @@
           }
         },
         "preferences": "",
-        "limitsNotes": "My hand or a gentle touch on my back is a comfortable start when we both want it; please ask about the other places and let me take my time, because I notice even small touches. Hips and bottom are off limits, and a strong reaction is not me saying yes.",
+        "limitsNotes": "My hand or a gentle touch on my back is a comfortable start when we both want it; please ask about the other places and let me take my time, because I notice even small touches. Hips and bottom are not ready yet; you would have to earn that closeness, and a strong reaction is not me saying yes.",
         "policyOverrides": {}
       },
       "routine": {
@@ -4249,7 +4253,7 @@
         "body": {
           "face": {
             "sensitivity": 2,
-            "limit": "never"
+            "limit": "hard"
           },
           "lips": {
             "sensitivity": 2,
@@ -4289,7 +4293,7 @@
           }
         },
         "preferences": "",
-        "limitsNotes": "Hands, back, legs: comfortable territory when we both want it; everywhere else needs a real question, even if I am making a joke, and my face is off limits. My waist is ticklish and my neck reacts strongly, so ask before making either part of the bit.",
+        "limitsNotes": "Hands, back, legs: comfortable territory when we both want it; everywhere else needs a real question, even if I am making a joke, and touching my face is not something I am ready for yet; you would have to earn it. My waist is ticklish and my neck reacts strongly, so ask before making either part of the bit.",
         "policyOverrides": {}
       },
       "routine": {
@@ -5228,7 +5232,7 @@
           },
           "neck": {
             "sensitivity": 3,
-            "limit": "never"
+            "limit": "hard"
           },
           "arms_hands": {
             "sensitivity": 1,
@@ -5260,7 +5264,7 @@
           }
         },
         "preferences": "",
-        "limitsNotes": "Simple version: face, hands, back, waist and legs are comfortable when we both want it; ask clearly before kissing or touching my chest, hips or intimate areas. No neck touching, ever: that strong response is discomfort, and I would rather tell you directly than have you guess.",
+        "limitsNotes": "Simple version: face, hands, back, waist and legs are comfortable when we both want it; ask clearly before kissing or touching my chest, hips or intimate areas. Neck touching is not something I am ready for yet: you would have to earn that trust, and I would rather tell you directly than have you guess.",
         "policyOverrides": {}
       },
       "routine": {

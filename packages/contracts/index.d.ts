@@ -38,7 +38,7 @@ export type SheetTrait='warm'|'sporty'|'curious'|'homesick'|'stubborn'|'ambitiou
 export type GiftCategory='romantic'|'cute'|'luxury'|'glamour'|'cozy'|'practical'|'nerdy'|'artsy'|'treats'|'edgy'|'vintage'|'novelty';
 export type SheetExperience='none'|'first_encounter'|'occasional'|'recurring'|'extensive';
 export type BodyRegion='face'|'lips'|'neck'|'arms_hands'|'chest'|'back'|'belly_waist'|'hips_butt'|'thighs_legs'|'intimate';
-export type BodyLimit='ok'|'ask_first'|'never';
+export type BodyLimit='ok'|'ask_first'|'hard'|'never';
 export type SheetCondition=({type:'always'}|{type:'flag';flag:string;value:boolean}|{type:'stat';stat:string;op:'eq'|'lt'|'lte'|'gt'|'gte';value:number}|{type:'stage';stage:string})&{actorId?:string};
 export type SheetEffect=({type:'note';text:string}|{type:'stat';stat:string;delta:number}|{type:'flag';flag:string;value:boolean}|{type:'limit';region:BodyRegion;limit:BodyLimit})&{actorId?:string};
 export interface SheetRule { id:string;event:string;enabled:boolean;condition:SheetCondition;effect:SheetEffect;notes?:string }
@@ -61,7 +61,7 @@ export interface CharacterSheet {
  [key:string]:unknown;
 }
 export interface CharacterSheetPack { characterSheets?:CharacterSheet[] }
-export interface BodyIntimacySettings { sensitivityScale?:[number,number,number,number] }
+export interface BodyIntimacySettings { sensitivityScale?:[number,number,number,number]; hardLimit?:{trust:number;stage:'acquaintance'|'dating'|'exclusive'} }
 export interface RegionAgreementRuntime { regionAgreements?:Partial<Record<BodyRegion,string>> }
 export interface TouchRefusedEvent { character:string;region?:BodyRegion;step?:string;verdict:'refuse'|'hesitate';reason:string;trustDelta:number;lustDelta:number;text:string }
 export interface RelationshipStageSettings { stages?:['acquaintance','dating','exclusive']; strainTrustFloor?:number; strainDays?:number; scar?:{trust?:number;chemistry?:number}; repairDelayDays?:number; repairTrustBar?:number }

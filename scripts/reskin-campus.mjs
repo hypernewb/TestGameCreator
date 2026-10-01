@@ -9,13 +9,13 @@ export const DROP=['monique','kaylee'],RENAME={jana:['yuna','Yuna'],nova:['haruk
 export const EXPRESSIONS=['neutral','smile','concerned','frustrated','embarrassed','smug','surprised'];
 const NIGHT_CG={yuna:'missionary',haruka:'missionary',minji:'cowgirl'};
 const BODY={
- jana:{face:[1,'ask_first'],lips:[2,'ask_first'],neck:[3,'ask_first'],arms_hands:[1,'ok'],chest:[2,'ask_first'],back:[1,'ok'],belly_waist:[2,'ask_first'],hips_butt:[2,'never'],thighs_legs:[1,'ask_first'],intimate:[3,'ask_first']},
- nova:{face:[2,'never'],lips:[2,'ask_first'],neck:[3,'ask_first'],arms_hands:[1,'ok'],chest:[2,'ask_first'],back:[0,'ok'],belly_waist:[3,'ask_first'],hips_butt:[1,'ask_first'],thighs_legs:[1,'ok'],intimate:[2,'ask_first']},
- abigail:{face:[0,'ok'],lips:[1,'ask_first'],neck:[3,'never'],arms_hands:[1,'ok'],chest:[2,'ask_first'],back:[1,'ok'],belly_waist:[1,'ok'],hips_butt:[2,'ask_first'],thighs_legs:[0,'ok'],intimate:[3,'ask_first']}};
+ jana:{face:[1,'ask_first'],lips:[2,'ask_first'],neck:[3,'ask_first'],arms_hands:[1,'ok'],chest:[2,'ask_first'],back:[1,'ok'],belly_waist:[2,'ask_first'],hips_butt:[2,'hard'],thighs_legs:[1,'ask_first'],intimate:[3,'ask_first']},
+ nova:{face:[2,'hard'],lips:[2,'ask_first'],neck:[3,'ask_first'],arms_hands:[1,'ok'],chest:[2,'ask_first'],back:[0,'ok'],belly_waist:[3,'ask_first'],hips_butt:[1,'ask_first'],thighs_legs:[1,'ok'],intimate:[2,'ask_first']},
+ abigail:{face:[0,'ok'],lips:[1,'ask_first'],neck:[3,'hard'],arms_hands:[1,'ok'],chest:[2,'ask_first'],back:[1,'ok'],belly_waist:[1,'ok'],hips_butt:[2,'ask_first'],thighs_legs:[0,'ok'],intimate:[3,'ask_first']}};
 const LIMITS_NOTES={
- jana:'My hand or a gentle touch on my back is a comfortable start when we both want it; please ask about the other places and let me take my time, because I notice even small touches. Hips and bottom are off limits, and a strong reaction is not me saying yes.',
- nova:'Hands, back, legs: comfortable territory when we both want it; everywhere else needs a real question, even if I am making a joke, and my face is off limits. My waist is ticklish and my neck reacts strongly, so ask before making either part of the bit.',
- abigail:'Simple version: face, hands, back, waist and legs are comfortable when we both want it; ask clearly before kissing or touching my chest, hips or intimate areas. No neck touching, ever: that strong response is discomfort, and I would rather tell you directly than have you guess.'};
+ jana:'My hand or a gentle touch on my back is a comfortable start when we both want it; please ask about the other places and let me take my time, because I notice even small touches. Hips and bottom are not ready yet; you would have to earn that closeness, and a strong reaction is not me saying yes.',
+ nova:'Hands, back, legs: comfortable territory when we both want it; everywhere else needs a real question, even if I am making a joke, and touching my face is not something I am ready for yet; you would have to earn it. My waist is ticklish and my neck reacts strongly, so ask before making either part of the bit.',
+ abigail:'Simple version: face, hands, back, waist and legs are comfortable when we both want it; ask clearly before kissing or touching my chest, hips or intimate areas. Neck touching is not something I am ready for yet: you would have to earn that trust, and I would rather tell you directly than have you guess.'};
 const BIO={
  jana:{age:20,description:'Yuna Han, 20, a Korean exchange student in English and Literature, here for one semester from Seoul. Petite, long black hair worn half-up with a ribbon, doe eyes, rosy cheeks. Your roommate.',
   traits:['warm','homesick','reserved','insecure'],style:'Off-shoulder blouses, pastel midi skirts, ribbons; soft pinks and whites.',goal:'Work out whether the life her parents planned for her is the one she wants.',

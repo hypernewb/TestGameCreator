@@ -31,14 +31,14 @@ test('only upside: skip and ok give the base yield, good and great add to it',()
 
 test('push your luck: free, pays per round, a rising mishap ends it without taking anything back',()=>{
  let mishaps=0,paid=0;
- for(let i=1;i<=40;i++){const seed=Math.imul(i,2654435761)>>>0,p=pack(),g=run(p,seed);doing(g,p,'workout','great');const tick=g.s.tick,after=statValue(g.s,p.playerId,'fitness');
+ for(let i=1;i<=40;i++){const seed=Math.imul(i,2654435761)>>>0,p=pack();p.gameProject.timeMode='clock';const g=run(p,seed);doing(g,p,'workout','great');const tick=g.s.tick,after=statValue(g.s,p.playerId,'fitness');
   assert.ok(actions(g.s,p,registry).some(a=>a.type==='world.pushLuck'));
   for(let k=0;k<PUSH_MISHAP.length&&g.s.modules['world.minigames'].run;k++){const before=statValue(g.s,p.playerId,'fitness'),ev=g.act('world.pushLuck'),bad=ev.find(e=>e.type==='world.activityMishap');
    if(bad){mishaps++;assert.equal(bad.payload.activity,'workout');assert.equal(statValue(g.s,p.playerId,'fitness'),before,'a mishap costs nothing directly');}else{paid++;assert.equal(statValue(g.s,p.playerId,'fitness'),Math.min(before+1,p.statDefinitions.find(d=>d.id==='fitness').max));}}
   assert.equal(g.s.tick,tick,'pushing takes no time');assert.ok(statValue(g.s,p.playerId,'fitness')>=after,'never below what was banked');
   assert.throws(()=>g.act('world.pushLuck'),/no run/);}
  assert.ok(mishaps>=15&&paid>=15,`mishaps ${mishaps}, paid rounds ${paid}`);
- const p=pack(),g=run(p);doing(g,p,'workout','great');g.act('core.wait');assert.throws(()=>g.act('world.pushLuck'),/no run/,'the offer lapses once time moves');
+ const p=pack();p.gameProject.timeMode='clock';const g=run(p);doing(g,p,'workout','great');g.act('core.wait');assert.throws(()=>g.act('world.pushLuck'),/no run/,'the offer lapses once time moves');
 });
 
 test('co-op: the heroine you did it with warms to a good run, more to a great one',()=>{

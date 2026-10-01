@@ -2,6 +2,7 @@
 import {sceneLines} from '/vendor/venus/sceneText.mjs';
 import {linesFor} from './turn-presentation.mjs';
 import {calendarFor} from './calendar.mjs';
+import {plannerReady,renderPlanner} from './planner.mjs';
 import {openGallery,readKey} from './gallery.mjs';
 import {play as playGame} from './minigames-ui.mjs';
 import {firstProgress,firstOffers} from './firsts-ui.mjs';
@@ -52,7 +53,7 @@ function renderChoices(){const acts=current.actions||[],main=acts.filter(a=>!GRO
  const back=el('button',useHub()?'Back to the map':'Back to the scene','choices__back');back.type='button';back.onclick=()=>{box.hidden=true;if(useHub())renderHub();else $('.dialogue').hidden=false;};box.append(back);}
 
 function next(){if(cursor<lines.length-1){cursor++;showLine();return;}stopAuto();if(firstProgress(current.state,current.pack)){$('#player-prompt').focus();return;}$('.dialogue').hidden=true;if(useHub())return renderHub();$('#choices').hidden=false;}
-const useHub=()=>isCampus(current?.pack)&&!current.state.scene&&!current.state.modules['story.scenes']?.pending&&!current.state.modules['social.firsts']?.active&&!current.diagnostics?.ended;
+const useHub=()=>(plannerReady(current.state,current.pack)||isCampus(current?.pack)&&!current.state.scene&&!current.state.modules['story.scenes']?.pending&&!current.state.modules['social.firsts']?.active)&&!current.diagnostics?.ended;
 
 // Campus layer: end card, then the day card, once per turn / per day. Views come from campus.mjs; the engine still decides.
 function queueCards(data){const {state:s,pack:p}=data;if(!isCampus(p)&&!p.firsts?.length)return;const fresh=seen.campaign!==s.campaignId;if(fresh)seen={campaign:s.campaignId,tick:undefined,end:''};
@@ -68,6 +69,7 @@ for(const id of ['day-card','end-card'])$('#'+id).addEventListener('close',()=>s
 
 // Hub: places (what you can do and who is around), phone, and everything else the engine offers. Free text stays open below.
 function renderHub(){const {state:s,pack:p}=current,box=$('#hub'),go=command=>act({command});box.hidden=false;
+ if(plannerReady(s,p))return renderPlanner(box,current,go,busy);
  const offers=firstOffers(s,p,current.actions),offerList=()=>{const list=el('div',undefined,'hub__firsts');list.append(...offers.map(o=>{const b=el('button',o.label,'hub__first');b.type='button';b.disabled=busy||!o.command;b.append(el('small',o.hint));b.onclick=async()=>{const result=await go(o.command);if(!result||result.clarification||!o.travel||current.state.modules['social.firsts']?.active)return;const start=(current.actions||[]).find(a=>a.type==='social.startFirst'&&a.args.first===o.id&&a.enabled!==false);if(start)await go({type:start.type,args:start.args});};return b;}));return list;};
  const threads=phone(s,p),unread=threads.reduce((n,t)=>n+t.unread,0),tab=(id,label)=>{const b=el('button',label,'hub__tab');b.type='button';b.setAttribute('aria-pressed',String(hubTab===id));b.onclick=()=>{hubTab=id;renderHub();};return b;};
  const tabs=el('nav',undefined,'hub__tabs');tabs.append(tab('places','Places'),tab('phone',unread?`Phone · ${unread}`:'Phone'),tab('more','Other'));

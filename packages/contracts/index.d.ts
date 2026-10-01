@@ -1,4 +1,9 @@
 export interface Command { id:string; actorId:string; type:string; args:Record<string,unknown>; expectedRevision:number }
+export type TimeMode='clock'|'planner';
+export interface PlannerOptions { timeMode?:TimeMode }
+export interface PlannerProgress { id:string; endTick:number }
+export interface World { planner?:PlannerProgress|null }
+export interface Action { planner?:boolean }
 export interface Event { id:string; type:string; payload:Record<string,unknown>; tick:number; visibility:'public'|string[] }
 export interface World { schemaVersion:number; campaignId:string; packId:string; packVersion:string; packDigest:string; moduleVersions:Record<string,string>; revision:number; tick:number; rng:number; actors:Record<string,{name:string;location:string}>; flags:Record<string,boolean>; modules:Record<string,unknown>; events:Event[]; turns:Record<string,Turn>; migrations?:{tick:number;from:string;to:string;changes:string[]}[] }
 export interface Turn { id:string; command:Command; events:Event[]; narrative:string|null; status:'pending'|'complete'; fallback?:boolean; context?:unknown }

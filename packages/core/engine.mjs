@@ -8,6 +8,7 @@ import {heldBy,transfer} from '../modules/inventory.mjs';
 import {closedReason,holidayOf} from '../modules/calendar.mjs';
 export const CORE_API = '0.1.0';
 export const clone = x => structuredClone(x);
+export const plannerMode = pack => pack.gameProject?.timeMode==='planner';
 export function assert(ok, message) { if (!ok) throw new Error(message); }
 const untilTicks=(tick,part,n)=>{const slot=Math.floor(tick/n),d=((PERIODS.indexOf(part)-slot%3+3)%3)||3;return (slot+d)*n-tick;};
 export function safeKey(s) { return typeof s === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,99}$/.test(s) && !['__proto__','constructor','prototype'].includes(s); }
@@ -70,7 +71,7 @@ export function digest(x) { return hash(JSON.stringify(x)); }
 const pick=(o,keys)=>Object.fromEntries(keys.filter(k=>o[k]!==undefined).map(k=>[k,o[k]]));
 export function mechanicsShape(pack) {
  return {
-  schemaVersion:pack.schemaVersion,id:pack.id,version:pack.version,modules:pack.modules,playerId:pack.playerId,
+  schemaVersion:pack.schemaVersion,id:pack.id,version:pack.version,modules:pack.modules,playerId:pack.playerId,...(plannerMode(pack)?{timeMode:'planner'}:{}),
   locations:pack.locations.map(l=>({id:l.id,exits:(l.exits||[]).map(e=>pick(e,['to','flag']))})),
   actors:pack.actors.map(a=>({id:a.id,location:a.location})),
   items:(pack.items||[]).map(i=>pick(i,['id','shop','hidden','stack','stock','restock','use'])),
@@ -102,7 +103,7 @@ export function describeMechanicsChange(oldPack,newPack) {
    else if(JSON.stringify(bx)!==JSON.stringify(ax))changes.push(`${kind}.${id}: changed`);
   }
  }
- for(const key of ['schedules','daypart','initialRelationships','startOptions','directorProfile','recipes','calendar'])if(JSON.stringify(a[key])!==JSON.stringify(b[key]))changes.push(`${key}: changed`);
+ for(const key of ['schedules','daypart','initialRelationships','startOptions','directorProfile','recipes','calendar','timeMode'])if(JSON.stringify(a[key])!==JSON.stringify(b[key]))changes.push(`${key}: changed`);
  return changes;
 }
 // Applies a mechanics change to an existing world: re-validates the new pack, then records the change so
@@ -124,6 +125,7 @@ export function resolveModules(pack, registry) {
 }
 export function validatePack(pack, registry) {
   assert(pack && pack.schemaVersion===1,'pack.schemaVersion: expected 1');
+  assert(pack.gameProject?.timeMode===undefined||['clock','planner'].includes(pack.gameProject.timeMode),'gameProject.timeMode: expected clock or planner');
   assert(safeKey(pack.id),'pack.id: invalid ID'); assert(typeof pack.title==='string','pack.title: required');
   assert(/^\d+\.\d+\.\d+$/.test(pack.version),'pack.version: expected x.y.z');
   assert(pack.modules && typeof pack.modules==='object' && !Array.isArray(pack.modules),'pack.modules: required');
@@ -203,7 +205,8 @@ export function execute(world,command,pack,registry,packChecked=false) {
   if(world.modules['story.scenes']?.pending)assert(['story.choose','story.respond','story.leave','social.withdrawConsent'].includes(command.type)||FREE_ACTIONS.has(command.type)||command.type==='core.endScene'&&pack.scriptedScenes?.find(x=>x.id===world.modules['story.scenes'].pending)?.template?.delivery==='incident','Choose an option, reply in your own words, withdraw consent, or leave the active scene first');
   const mods=resolveModules(pack,registry), state=clone(world), emitted=[];let steps=0,waitTicks=0,meetingBlocked=false;
   // Continuous style (Venus University): an activity opens one scene, talk inside it is free, and the period is spent when the scene ends.
-  const continuous=pack.gameProject?.conversationStyle==='continuous',interval=pack.daypart?.interval||4;
+  const planner=plannerMode(pack),continuous=planner||pack.gameProject?.conversationStyle==='continuous',interval=pack.daypart?.interval||4;
+  if(planner&&world.planner)assert(command.type!=='core.scene'||!command.args.activityId||['continue','rest'].includes(command.args.activity),'Finish the current planner activity first');
   const tx={state,pack,world,commandId:command.id,
     emit(type,payload,visibility='public'){assert(++steps<=200,'Event reaction limit exceeded');const event={id:`${command.id}.${emitted.length}`,type,payload:clone(payload),tick:state.tick,visibility:clone(visibility)};emitted.push(event);return event;},
     set(path,value){put(state,path,value);this.emit('core.patch',{path,value},[]);},
@@ -240,7 +243,7 @@ export function execute(world,command,pack,registry,packChecked=false) {
       const from=tx.state.actors[pack.playerId].location,to=args.location||from;
       // Naming a character who will not be there is answered for free, before any travel: spending the trip
       // only to report an empty room taught testers (and players) nothing but the tick price.
-      if(!['continue','rest'].includes(args.activity)&&cast.length){
+      if(!planner&&!['continue','rest'].includes(args.activity)&&cast.length){
         const ahead=routeBetween(pack,from,to,tx.state.flags);
         if(ahead){
           const duration=continuous?0:activity?activity.duration:1,arrival=tx.state.tick+ahead.length-1+duration;
@@ -257,11 +260,13 @@ export function execute(world,command,pack,registry,packChecked=false) {
       if(args.activity!=='continue'&&tx.state.scene)releaseScene(tx);
       // A closed place refuses new scenes (the player may finish whatever is already open inside); the
       // check answers before any travel, so being turned away costs nothing.
-      if(pack.modules['world.calendar']&&args.activity!=='continue'&&args.activity!=='rest'&&from!==to){const path=routeBetween(pack,from,to,tx.state.flags);if(path){const closed=closedReason(pack,tx.state,tx.state.tick+path.length-1,to);assert(!closed,`${pack.locations.find(l=>l.id===to)?.name||to} is closed today${closed&&closed!=='closed'?`: ${closed}`:''}.`);}}
+      if(!planner&&pack.modules['world.calendar']&&args.activity!=='continue'&&args.activity!=='rest'&&from!==to){const path=routeBetween(pack,from,to,tx.state.flags);if(path){const closed=closedReason(pack,tx.state,tx.state.tick+path.length-1,to);assert(!closed,`${pack.locations.find(l=>l.id===to)?.name||to} is closed today${closed&&closed!=='closed'?`: ${closed}`:''}.`);}}
       const route=travel(tx,pack,from,to,pack.playerId);if(!route)return;
       const periodRemaining=interval-world.tick%interval,routeTicks=route.length-1;
+      if(planner&&!['continue','rest'].includes(args.activity)&&closedReason(pack,tx.state,tx.state.tick+Math.min(routeTicks,Math.max(0,periodRemaining-1)),to)){tx.set(['scene'],null);tx.emit('world.meetingUnavailable',{location:to,text:'The destination is closed when you arrive.'},[pack.playerId]);meetingBlocked=true;return;}
       const duration=continuous&&args.activity!=='rest'?0:activity?activity.duration:args.activity==='rest'?(continuous?Math.max(0,periodRemaining-routeTicks):periodRemaining):args.activity==='continue'?0:1;
-      const arrival=tx.state.tick+route.length-1+duration,present=cast.filter(id=>meetingArrival(tx,world,pack,id,to,arrival));
+      const arrival=tx.state.tick+(planner?Math.min(routeTicks,Math.max(0,periodRemaining-1)):routeTicks+duration),present=cast.filter(id=>{if(planner&&scheduledLocation(world,pack,id,arrival)!==to){tx.emit('world.meetingUnavailable',{character:id,location:to,text:`${tx.state.actors[id].name} is unavailable when you arrive.`},[pack.playerId]);return false;}return meetingArrival(tx,world,pack,id,to,arrival);});
+      if(planner&&activity?.character&&!present.includes(activity.character)){tx.set(['scene'],null);meetingBlocked=true;return;}
       if(activity?.character)assert(present.includes(activity.character),`${pack.actors.find(c=>c.id===activity.character)?.name||activity.character} isn't there right now, so you can't ${activity.name.toLowerCase()}.`);
       if(args.itemAction==='give')assert(present.includes(args.itemTarget),'Recipient is unavailable when you arrive');
       if(cast.length&&!present.length){tx.set(['scene'],null);return;}
@@ -298,7 +303,7 @@ export function execute(world,command,pack,registry,packChecked=false) {
       }
       // A solo activity is the period's complete action: with no conversation partner to keep the scene
       // open, close it in this same deterministic turn while preserving its sceneStarted event for narration.
-      if(args.activity!=='rest'&&args.activity!=='continue'&&!present.length&&tx.state.scene){releaseScene(tx);tx.emit('core.sceneEnded',{reason:'natural',characters:[],text:'The activity comes to a close.'},[pack.playerId]);}
+      if(args.activity!=='rest'&&args.activity!=='continue'&&!present.length&&tx.state.scene&&!(planner&&args.activity==='explore')){releaseScene(tx);tx.emit('core.sceneEnded',{reason:'natural',characters:[],text:'The activity comes to a close.'},[pack.playerId]);}
     }
   };
   const handler=base[command.type]||mods.map(m=>m.commands?.[command.type]).find(Boolean);assert(handler,`Unsupported command: ${command.type}`); handler(tx,command.args);
@@ -310,18 +315,22 @@ export function execute(world,command,pack,registry,packChecked=false) {
   const invited=command.type==='social.invite'&&state.scene?.id===command.id;
   const route=command.type==='core.scene'||invitation||phoneOffer||invited?routeBetween(pack,world.actors[pack.playerId].location,invitationLocation||phoneOffer?.location||(invited?command.args.to:null)||command.args.location||world.actors[pack.playerId].location,world.flags):null;
   const travelCost=route?route.length-1:0;
-  const cost=meetingBlocked?0:offeredScene?(offeredScene.timeCost??pack.daypart?.interval??1):command.type==='core.waitUntil'?waitTicks:command.type==='world.nextDaypart'?pack.daypart.interval-state.tick%pack.daypart.interval:invitation||phoneOffer||invited?route?travelCost+1:0:command.type==='social.invite'?0:continuous&&['story.choose','story.respond','story.leave','social.withdrawConsent'].includes(command.type)?0:command.type==='core.scene'&&!route?0:authored?travelCost+authored.duration:command.type==='core.scene'&&command.args.activity==='rest'?(continuous?Math.max(travelCost,(pack.daypart?.interval||4)-state.tick%(pack.daypart?.interval||4)):travelCost+(pack.daypart?.interval||4)-state.tick%(pack.daypart?.interval||4)):command.type==='core.scene'?travelCost+(command.args.activity==='continue'?0:1):command.type==='core.wait'&&command.args?.until?untilTicks(state.tick,command.args.until,pack.daypart?.interval||4):pack.durations?.[command.type]??(FREE_ACTIONS.has(command.type)?0:1);assert(Number.isInteger(cost)&&cost>=0&&cost<=100,'Invalid action duration');
+  const cost=planner||meetingBlocked?0:offeredScene?(offeredScene.timeCost??pack.daypart?.interval??1):command.type==='core.waitUntil'?waitTicks:command.type==='world.nextDaypart'?pack.daypart.interval-state.tick%pack.daypart.interval:invitation||phoneOffer||invited?route?travelCost+1:0:command.type==='social.invite'?0:continuous&&['story.choose','story.respond','story.leave','social.withdrawConsent'].includes(command.type)?0:command.type==='core.scene'&&!route?0:authored?travelCost+authored.duration:command.type==='core.scene'&&command.args.activity==='rest'?(continuous?Math.max(travelCost,(pack.daypart?.interval||4)-state.tick%(pack.daypart?.interval||4)):travelCost+(pack.daypart?.interval||4)-state.tick%(pack.daypart?.interval||4)):command.type==='core.scene'?travelCost+(command.args.activity==='continue'?0:1):command.type==='core.wait'&&command.args?.until?untilTicks(state.tick,command.args.until,pack.daypart?.interval||4):pack.durations?.[command.type]??(FREE_ACTIONS.has(command.type)?0:1);assert(Number.isInteger(cost)&&cost>=0&&cost<=100,'Invalid action duration');
   const kept=continuous&&state.scene&&world.scene?.id===state.scene.id,opened=continuous&&state.scene&&!kept,soloClosed=continuous&&command.type==='core.scene'&&emitted.some(e=>e.type==='core.sceneStarted'&&!(e.payload.characters||[]).length)&&emitted.some(e=>e.type==='core.sceneEnded');
   const advance=n=>{if(n>0){const before=state.tick,to=state.run?Math.min(before+n,state.run.endTick):before+n;if(to===before)return;tx.set(['tick'],to);tx.emit('core.timeAdvanced',{from:before,to:state.tick,sceneCast:state.scene?.characters||[]},[]);}};
   let reacted=0;const react=()=>{for(;reacted<emitted.length;reacted++){const e=emitted[reacted];if(e.type==='core.patch')continue;for(const m of mods)m.react?.(tx,e);}};
   const closes=continuous&&world.scene&&!state.scene&&!['world.nextDaypart','core.waitUntil'].includes(command.type)&&!(command.type==='core.scene'&&command.args.activity==='rest'),boundary=(Math.floor(world.tick/interval)+1)*interval;
   // Venus-style pacing (gameProject.goodbyeEndsDay): when the other person ends the conversation, the day is over, not just the period.
-  const until=()=>pack.gameProject?.goodbyeEndsDay&&emitted.some(e=>e.type==='core.sceneEnded'&&e.payload.reason!=='player'&&e.payload.characters?.length)?(Math.floor(world.tick/(interval*PERIODS.length))+1)*interval*PERIODS.length:boundary;
+  const until=()=>!planner&&pack.gameProject?.goodbyeEndsDay&&emitted.some(e=>e.type==='core.sceneEnded'&&e.payload.reason!=='player'&&e.payload.characters?.length)?(Math.floor(world.tick/(interval*PERIODS.length))+1)*interval*PERIODS.length:boundary;
   // A kept conversation spends the day too: every gameProject.turnsPerTick exchanges (default 3) costs one tick, so a long talk visibly turns the clock without cutting the scene.
-  advance(kept?(!['core.wait','core.waitUntil'].includes(command.type)&&EXCHANGE_COMMANDS.has(command.type)&&((state.scene.exchanges||0)+1)%(pack.gameProject?.turnsPerTick??3)===0?1:0):opened?travelCost:soloClosed?Math.max(travelCost,boundary-state.tick):closes?Math.max(cost,until()-state.tick):cost);react();
+  if(planner){if(!state.planner&&!FREE_ACTIONS.has(command.type)&&(['core.scene','core.move','core.wait','core.waitUntil','world.nextDaypart','story.startOfferedScene','world.acceptHangout','social.acceptPhoneOffer'].includes(command.type)||state.scene||state.modules['story.scenes']?.pending||state.modules['social.firsts']?.active))tx.set(['planner'],{id:command.id,endTick:boundary});react();}
+  else{advance(kept?(!['core.wait','core.waitUntil'].includes(command.type)&&EXCHANGE_COMMANDS.has(command.type)&&((state.scene.exchanges||0)+1)%(pack.gameProject?.turnsPerTick??3)===0?1:0):opened?travelCost:soloClosed?Math.max(travelCost,boundary-state.tick):closes?Math.max(cost,until()-state.tick):cost);react();}
+  if(planner&&state.scene?.id===command.id&&state.scene.activity==='explore'&&!state.scene.characters.length){const cast=[...new Set(emitted.filter(e=>e.type==='world.moment'&&e.payload.kind==='encounter'&&state.actors[e.payload.character]?.location===state.scene.location).map(e=>e.payload.character))];if(cast.length){tx.set(['scene','characters'],cast);tx.set(['scene','focus'],cast[0]);}else if(!state.modules['story.scenes']?.pending){releaseScene(tx);tx.emit('core.sceneEnded',{reason:'natural',characters:[],text:'The activity comes to a close.'},[pack.playerId]);}react();}
   if(continuous&&world.scene)sceneLifecycle(tx,world,emitted,kept&&EXCHANGE_COMMANDS.has(command.type),true,command.deferExchangeCap===true);else if(world.scene){sceneLifecycle(tx,world,emitted,false,false);react();}
+  if(planner)react();
   // The period is spent once, when its scene closes: whoever ended it, the clock moves to the next morning, afternoon or evening.
-  if(continuous&&world.scene&&!state.scene&&!['world.nextDaypart','core.waitUntil'].includes(command.type)&&!(command.type==='core.scene'&&command.args.activity==='rest')){advance(until()-state.tick);react();}
+  if(planner&&state.planner&&!state.scene&&!state.modules['story.scenes']?.pending&&!state.modules['social.firsts']?.active){advance(state.planner.endTick-state.tick);tx.set(['planner'],null);react();}
+  else if(!planner&&continuous&&world.scene&&!state.scene&&!['world.nextDaypart','core.waitUntil'].includes(command.type)&&!(command.type==='core.scene'&&command.args.activity==='rest')){advance(until()-state.tick);react();}
   tx.set(['revision'],world.revision+1);
   const turn={id:command.id,command:clone(command),events:emitted,narrative:null,status:'pending'};
   state.events.push(...emitted);state.turns[command.id]=turn;return {state,turn,duplicate:false};
@@ -333,6 +342,10 @@ export const effectSummary=(pack,effects=[])=>effects.flatMap(e=>e.type==='stat'
 export const rankLock=(world,pack,a)=>{if(!a.minRank)return null;const ranks=(pack.romanceTempoProfiles||[]).find(p=>p.character===a.character)?.ranks||[],i=ranks.findIndex(r=>r.id===a.minRank);return i>(world.modules['social.romance-tempo']?.characters?.[a.character]?.rank||0)?ranks[i]:null;};
 const activityDayCount=(world,pack,id)=>{const uses=(world.activityDayUses||{})[id];return uses&&uses.day===calendarFor(world.tick,pack).day?uses.count:0;};
 function activityActions(world,pack,loc){return (pack.activities||[]).filter(a=>a.location===loc.id&&(!a.character||world.actors[a.character]?.location===loc.id)&&(!a.requiresFlag||world.flags[a.requiresFlag])&&!rankLock(world,pack,a)&&!(a.once&&(world.activityUses||{})[a.id])&&(!a.perDay||activityDayCount(world,pack,a.id)<a.perDay)&&!closedReason(pack,world,world.tick,a.location)).map(a=>({label:a.name,type:'core.scene',args:{text:a.name,location:a.location,characters:a.character?[a.character]:[],activity:'other',activityId:a.id,itemAction:'',itemId:'',itemTarget:''},storylet:{title:a.name,who:a.character?[pack.actors.find(c=>c.id===a.character)?.name||a.character]:[],where:loc.name,timeCost:a.duration,hint:effectSummary(pack,a.effects)||a.description||''}}));}
+function plannerChoices(world,pack,extra){
+ const here=world.actors[pack.playerId].location,known=id=>pack.gameProject?.characterLocationVisibility==='always'||world.actors[id]?.location===here;
+ return [...pack.locations.flatMap(loc=>routeBetween(pack,here,loc.id,world.flags)?activityActions(world,pack,loc).filter(a=>a.args.characters.every(known)):[]),...pack.actors.filter(a=>a.id!==pack.playerId&&known(a.id)&&!closedReason(pack,world,world.tick,world.actors[a.id].location)).map(a=>({label:`Talk to ${a.name}`,type:'core.scene',args:{text:`Talk to ${a.name}`,location:world.actors[a.id].location,characters:[a.id],activity:'talk'}})),...extra.filter(a=>a.type==='story.startOfferedScene'&&!a.disabledReason).filter(a=>{const scene=pack.scriptedScenes.find(s=>s.id===a.args.scene);return [...Object.keys(scene?.when?.charactersAt||{}),...(scene?.pages||[]).map(p=>p.speaker).filter(id=>id&&id!==pack.playerId)].every(known);}),{label:'Wait this slot',type:'core.wait',args:{}}].map(a=>({...a,planner:true,storylet:{...a.storylet,timeCost:1}}));
+}
 export function actions(world,pack,registry){
   if(world.modules['story.endings']?.selected)return [];
   // One pack check per call; each preview below would otherwise re-hash the pack.
@@ -340,6 +353,7 @@ export function actions(world,pack,registry){
   if(world.modules['story.scenes']?.pending)return resolveModules(pack,registry).flatMap(m=>m.actions?.(world,pack)||[]).filter(a=>['story.choose','story.leave','social.withdrawConsent'].includes(a.type)).map((a,i)=>{try{execute(world,{...a,id:`preview-choice-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry,ok);return {...a,enabled:true};}catch(e){return {...a,enabled:false,reason:e.message};}});
   const loc=pack.locations.find(l=>l.id===world.actors[pack.playerId].location);
   const extra=resolveModules(pack,registry).flatMap(m=>m.actions?.(world,pack)||[]),look=extra.filter(a=>a.type==='core.inspect'),cueTo=new Map(extra.filter(a=>a.type==='core.move').map(a=>[a.args.to,a])),list=[...(look.length?look:[{label:'Look around',type:'core.inspect',args:{}}]),{label:'Wait',type:'core.wait',args:{}},...(world.scene?[{label:world.scene.characters.length?'End conversation':'Finish activity',type:'core.endScene',args:{}}]:[]),...loc.exits.map(e=>cueTo.get(e.to)||{label:`Go to ${pack.locations.find(l=>l.id===e.to).name}`,type:'core.move',args:{to:e.to}}),...activityActions(world,pack,loc),...extra.filter(a=>!['core.inspect','core.move'].includes(a.type))];
+  if(plannerMode(pack)&&!world.scene){const choices=plannerChoices(world,pack,extra);list.splice(0,list.length,...choices,...list.filter(a=>!['core.scene','core.wait','core.waitUntil','story.startOfferedScene','world.nextDaypart','social.speak'].includes(a.type)));}
   return list.map((a,i)=>{try{execute(world,{...a,id:`preview-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry,ok);return {...a,enabled:true};}catch(e){return {...a,enabled:false,reason:e.message};}});
 }
 // Bookkeeping that takes no story time: looking, dressing, reading the phone.

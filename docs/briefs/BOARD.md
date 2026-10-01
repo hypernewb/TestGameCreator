@@ -19,10 +19,12 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ## Doing
 
-### T-032 Anniversaries · T-034 Jealousy
-  - model: space-bunny (OpenCode free) · resumed from partial work · C1
-
 ## Review
+
+### int-2 (all Review tickets merged together) · 1036/1040 pass (4 known art fails) · awaiting owner OK
+
+### T-032 Anniversaries · T-034 Jealousy
+  - model: space-bunny (OpenCode free) · resumed from partial work · C1 · branches t-032 b686cd9, t-034 78fba3b · 953/962 pass (4 known art fails)
 
 ### T-035 Mixed actions · T-028 Distinct voices · T-030 She texts first · T-031 Lust baseline
   - model: space-bunny (OpenCode free; T-035/T-028 first pass nemotron) · branches t-035 34405d5, t-028 daf1f57, t-030 d5f4ca2, t-031 e3e05c9 · 945/949/950/946 pass (4 known art fails) · awaiting int-2 + owner OK

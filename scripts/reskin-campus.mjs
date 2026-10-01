@@ -8,6 +8,14 @@ import {fileURLToPath} from 'node:url';
 export const DROP=['monique','kaylee'],RENAME={jana:['yuna','Yuna'],nova:['haruka','Haruka'],abigail:['minji','Min-ji']};
 export const EXPRESSIONS=['neutral','smile','concerned','frustrated','embarrassed','smug','surprised'];
 const NIGHT_CG={yuna:'missionary',haruka:'missionary',minji:'cowgirl'};
+const BODY={
+ jana:{face:[1,'ask_first'],lips:[2,'ask_first'],neck:[3,'ask_first'],arms_hands:[1,'ok'],chest:[2,'ask_first'],back:[1,'ok'],belly_waist:[2,'ask_first'],hips_butt:[2,'never'],thighs_legs:[1,'ask_first'],intimate:[3,'ask_first']},
+ nova:{face:[2,'never'],lips:[2,'ask_first'],neck:[3,'ask_first'],arms_hands:[1,'ok'],chest:[2,'ask_first'],back:[0,'ok'],belly_waist:[3,'ask_first'],hips_butt:[1,'ask_first'],thighs_legs:[1,'ok'],intimate:[2,'ask_first']},
+ abigail:{face:[0,'ok'],lips:[1,'ask_first'],neck:[3,'never'],arms_hands:[1,'ok'],chest:[2,'ask_first'],back:[1,'ok'],belly_waist:[1,'ok'],hips_butt:[2,'ask_first'],thighs_legs:[0,'ok'],intimate:[3,'ask_first']}};
+const LIMITS_NOTES={
+ jana:'My hand or a gentle touch on my back is a comfortable start when we both want it; please ask about the other places and let me take my time, because I notice even small touches. Hips and bottom are off limits, and a strong reaction is not me saying yes.',
+ nova:'Hands, back, legs: comfortable territory when we both want it; everywhere else needs a real question, even if I am making a joke, and my face is off limits. My waist is ticklish and my neck reacts strongly, so ask before making either part of the bit.',
+ abigail:'Simple version: face, hands, back, waist and legs are comfortable when we both want it; ask clearly before kissing or touching my chest, hips or intimate areas. No neck touching, ever: that strong response is discomfort, and I would rather tell you directly than have you guess.'};
 const BIO={
  jana:{age:20,description:'Yuna Han, 20, a Korean exchange student in English and Literature, here for one semester from Seoul. Petite, long black hair worn half-up with a ribbon, doe eyes, rosy cheeks. Your roommate.',
   traits:['warm','homesick','reserved','insecure'],style:'Off-shoulder blouses, pastel midi skirts, ribbons; soft pinks and whites.',goal:'Work out whether the life her parents planned for her is the one she wants.',
@@ -45,7 +53,7 @@ const deep=o=>typeof o==='string'?text(o):Array.isArray(o)?o.map(deep):o&&typeof
 
 export function reskin(campus){
  let p=prune(structuredClone(campus));
- if(p.characterSheets)p.characterSheets=p.characterSheets.filter(s=>!DROP.includes(s.actorId)).map(s=>{const bio=BIO[s.actorId];if(bio){Object.assign(s.source.actor,bio);s.personality.traits=[...bio.traits];s.personality.notes=s.personality.notes.split('\n').filter(n=>bio.traits.includes(n)).join('\n');for(const [field,section,key] of [['age','identity','age'],['description','appearance','description'],['style','appearance','style'],['voice','personality','voice'],['goal','arc','goal'],['backstory','lore','backstory']])if(bio[field]!==undefined)s[section][key]=bio[field];}return s;});
+ if(p.characterSheets)p.characterSheets=p.characterSheets.filter(s=>!DROP.includes(s.actorId)).map(s=>{const bio=BIO[s.actorId];if(bio){Object.assign(s.source.actor,bio);s.personality.traits=[...bio.traits];s.personality.notes=s.personality.notes.split('\n').filter(n=>bio.traits.includes(n)).join('\n');s.dating.body=Object.fromEntries(Object.entries(BODY[s.actorId]).map(([r,[sensitivity,limit]])=>[r,{sensitivity,limit}]));s.dating.limitsNotes=LIMITS_NOTES[s.actorId];for(const [field,section,key] of [['age','identity','age'],['description','appearance','description'],['style','appearance','style'],['voice','personality','voice'],['goal','arc','goal'],['backstory','lore','backstory']])if(bio[field]!==undefined)s[section][key]=bio[field];}return s;});
  p.actors=p.actors.map(a=>BIO[a.id]?{...a,...BIO[a.id]}:a);
  p=deep(p);
  Object.assign(p,{id:`${campus.id}-trio`,title:`${campus.title}: Yuna, Haruka and Min-ji`});

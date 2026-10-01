@@ -24,6 +24,8 @@ Gaps: durable breakup history/scar, coordinated stage changes and explicit repai
 - 2026-10-01 Repair: after 2 in-game days, rapport back to a set level, plus a reconciliation scene she accepts; restarts at dating.
 - 2026-10-01 Judging (aftercare, rapport): no extra AI calls; the engine judges from state plus the turn's interpreted action. One call per turn stays.
 - 2026-10-01 Repair gate: per heroine — each sheet sets her own rapport bar for reconciliation.
+- 2026-10-01 Repair rapport = Trust; world default bar = the dating-entry Trust bar; sheet may override.
+- 2026-10-01 Strain trigger: Trust falls below a floor (default 20, creator option) while dating or exclusive. Cheating/neglect triggers not in scope.
 Every mechanic choice is a per-world creator option; ship the simplest mode first ([owner answers](../research/owner-answers.md)).
 
 ## Creator option (field, modes, campus default; creator UI screen)
@@ -31,7 +33,7 @@ Proposed relationshipStageSettings holds mode, ladder, scar, visible-strain poli
 Basic ships the decided campus ladder, scar/history and repair; authored permits named commitment rungs and scene/event gates. Both retain repairability and affair possibilities.
 Available/crush remain readiness states, broken/strained remain conditions. Keep existing thresholds and character agreement support on import; missing settings preserve legacy behavior.
 Place Relationship stages beside Attraction and dating, above Relationship maintenance in public/studio.mjs. Keep authored progression graph editing separate from dating's commitment authority.
-Show scar recovery, remembered history and the next ask/repair requirements. The repair rapport metric/level remains an owner question.
+Show scar recovery, remembered history and the next ask/repair requirements. Repair rapport is Trust (see Owner decisions).
 Affairs remain possible without silently rewriting a monogamous agreement as open; preserve existing boundaries and secrecy/exposure consequences.
 
 ## Thin slice → full version

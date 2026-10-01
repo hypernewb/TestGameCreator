@@ -3,23 +3,25 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ## Todo
 
-### T-023 Save digest includes socialPacing / timeMode / sceneFeedback
-  - planned: gpt-6.1-sol (Codex)
-  - tags: [implementer, codex] · found in T-010 review
-
 ### T-008 Per-heroine ladder + unwelcome-flirt reactions by personality
   - tags: [writer, opencode-longcat-free]
   - waits on: T-003 merge
 
-### T-012 Relationship stages + repairable breakups
-  - planned: gpt-6.1-sol (Codex)
-  - tags: [implementer, codex]
 
 ## Doing
+
+### T-012 Relationship stages + repairable breakups
+  - planned: gpt-6.1-sol (Codex)
+  - tags: [implementer, codex] · owner: repair = Trust back to dating bar; strain = Trust < 20
 
 ## Review
 
 ## Done
+
+### T-023 Save digest includes socialPacing / timeMode / sceneFeedback
+  - model: gpt-6.1-sol (Codex)
+  - tags: [implementer, codex] · found in T-010 review
+  - merged 2026-10-01, npm test 868/868
 
 ### T-009a Full character sheet: schema + creator tabs (Suggest = T-009b later)
   - model: gpt-6.1-sol (Codex)

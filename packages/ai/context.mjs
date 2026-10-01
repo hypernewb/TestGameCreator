@@ -12,6 +12,7 @@ import {intimacyContext} from '../modules/intimacy.mjs';
 import {gossipContext} from '../modules/gossip.mjs';
 import {npcMemoriesFor} from '../modules/npc-social.mjs';
 import {romanceTempoContext} from '../modules/romance-tempo.mjs';
+import {jealousyContext} from '../modules/jealousy.mjs';
 import {phoneContext} from '../modules/phone.mjs';
 import {endingsContext} from '../modules/endings.mjs';
 import {feedContext} from '../modules/feed.mjs';
@@ -94,6 +95,7 @@ export function contextFor(s,p,actorId=p.playerId,turn=null,query='',opts={}){
  const touchLadder=s.modules['social.touch-ladder']?touchLadderContext(s,p,actorId):[];
  const rumors=s.modules['social.gossip']?gossipContext(s,actorId):[];
  const romanceTempo=s.modules['social.romance-tempo']?romanceTempoContext(s,p,actorId):[];
+  const jealousy=s.modules['social.jealousy']?jealousyContext(s,p,actorId):[];
  const phone=s.modules['social.phone']?phoneContext(s,p,actorId):null;
  const unlockedEndings=s.modules['story.endings']?endingsContext(s,p):[];
  const socialFeed=s.modules['social.feed']?feedContext(s,p,actorId):[];
@@ -111,6 +113,6 @@ export function contextFor(s,p,actorId=p.playerId,turn=null,query='',opts={}){
  const npcRelationships=Object.entries(s.modules['social.npc']?.pairs||{}).filter(([key])=>key.split('|').every(id=>s.actors[id]?.location===location)).map(([key,value])=>({characters:key.split('|'),...value}));
  const npcFriendshipMemories=actorId!==p.playerId?npcMemoriesFor(s,actorId):[];
  return {money:s.modules['world.economy']?.balance??null,npcRelationships,...(npcFriendshipMemories.length?{npcFriendshipMemories}:{}),promptVersion:'0.8',gameProject:p.gameProject||null,scriptedScene:scriptedScene?{id:sceneId,beat:s.modules['story.scenes']?.pendingBeat||'opening',title:scriptedScene.title,opening:sceneBeat.opening,stage:sceneBeat.stage||[],choices:sceneBeat.choices.map(c=>({id:c.id,label:c.label}))}:null,sceneWaiting:s.modules['story.scenes']?.waiting||null,sceneHistory:s.modules['story.scenes']?.history.slice(-5)||[],plans:(s.modules['story.scenes']?.plans||[]).filter(x=>x.status==='pending').sort((a,b)=>a.deadlineTick-b.deadlineTick),characterStats,relationshipProgression,actor:{id:actorId,name:own.name,pronouns:own.pronouns,style:own.style||'Natural and concise',goal:own.goal||'',traits:own.traits||[],backstory:own.backstory||'',likes:own.likes||[],dislikes:own.dislikes||[],voice:own.voice||'',year:own.year||null,major:own.major||null,dorm:own.dorm||null,appearance:own.appearance||'',relationshipToPlayer:s.modules['social.relationships']?.edges[`${actorId}--${p.playerId}`]??null},player:playerBlock,location:p.locations.find(l=>l.id===location),present:p.actors.filter(a=>s.actors[a.id].location===location).map(a=>({id:a.id,name:a.name,pronouns:a.pronouns,description:a.description||'',traits:a.traits||[],voice:a.voice||''})),backgroundCharacters,objects,items,carried,equipped,nearbyBonds,tick:s.tick,calendar:p.calendar,date:clock.date,day,week,weekday,daypart:part,activeEvents,...(timeNote?{timeNote}:{}),
-  dating,romanceTempo,romanceNetwork,phone,socialFeed,unlockedEndings,intimacy,touchLadder,rumors,director:directorContext(s,p),...(anniversary||{}),facts:(p.facts||[]).filter(f=>canSee(f.knownBy)&&!(p.facts||[]).some(n=>n.supersedes===f.id&&canSee(n.knownBy))).map(f=>({id:f.id,text:f.text})),generatedFacts:generatedFactTrace.selected.map(({id,subject,text,source,reason})=>({id,subject,text,source,reason})),generatedFactTrace,lorebook:lore.selected,loreTrace:lore,
+  dating,romanceTempo,romanceNetwork,jealousy,phone,socialFeed,unlockedEndings,intimacy,touchLadder,rumors,director:directorContext(s,p),...(anniversary||{}),facts:(p.facts||[]).filter(f=>canSee(f.knownBy)&&!(p.facts||[]).some(n=>n.supersedes===f.id&&canSee(n.knownBy))).map(f=>({id:f.id,text:f.text})),generatedFacts:generatedFactTrace.selected.map(({id,subject,text,source,reason})=>({id,subject,text,source,reason})),generatedFactTrace,lorebook:lore.selected,loreTrace:lore,
   memories:[...selected.map(m=>({source:m.source,text:m.text,promise:m.promise,kind:m.kind})),...ledger.map(m=>({source:m.source,text:m.text})),...(s.modules['story.scenes']?.memories||[]).filter(m=>canSee(m.knownBy)).slice(-8).map(m=>({source:`scene:${m.scene}`,text:m.text,character:m.character}))],dialogue:Object.values(s.turns).filter(t=>t.status==='complete'&&t.events.some(e=>e.type==='social.spoke'&&canSee(e.visibility))).slice(-6).map(t=>({source:t.id,text:t.narrative})),recentActions,outcomes:(turn?.events||[]).filter(e=>canSee(e.visibility)).map(e=>({type:e.type,...e.payload}))};
 }

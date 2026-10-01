@@ -34,9 +34,11 @@ import {touchLadder} from './touch-ladder.mjs';
 import {dailyNeed} from './daily-need.mjs';
 import {outreach} from './outreach.mjs';
 import {anniversary} from './anniversary.mjs';
-export const registry=Object.fromEntries([conversation,relationships,schedule,quests,inventory,abilities,objects,daypart,worldEvents,scenes,facts,equipment,bonds,npcSocial,economy,stats,progression,dating,romanceNetwork,intimacy,gossip,romanceTempo,phone,feed,endings,timedEvents,director,moments,calendarWorld,acts,arc,sobriety,secrecy,minigames,firsts,touchLadder,dailyNeed,outreach,anniversary].map(m=>[m.id,m]));
+import {jealousy} from './jealousy.mjs';
+export const registry=Object.fromEntries([conversation,relationships,schedule,quests,inventory,abilities,objects,daypart,worldEvents,scenes,facts,equipment,bonds,npcSocial,economy,stats,progression,dating,romanceNetwork,intimacy,gossip,romanceTempo,phone,feed,endings,timedEvents,director,moments,calendarWorld,acts,arc,sobriety,secrecy,minigames,firsts,touchLadder,dailyNeed,outreach,anniversary,jealousy].map(m=>[m.id,m]));
 const descriptions={
   'social.daily-need':['Hidden daily need','Picks a quiet daily want per character and rewards reading it from interpreted acts.'],
+  'social.jealousy':['Jealousy','Per-heroine meter that reacts to witnessed flirtation or intimacy with rivals, scaled by relationship stage and personality.'],
   'social.conversation':['Character conversation','Enables conversations with characters who share the player\'s location.'],
   'social.relationships':['Relationships','Tracks trust changes from recorded conversations.'],
   'world.schedule':['Character schedules','Moves characters between locations as time advances.'],

@@ -70,3 +70,7 @@ export interface Turn { refusal?:Refusal|null }
 export interface Action { refusal?:Refusal }
 export interface World { refusalHistory?:{scene:string;counts:Record<string,number>} }
 export interface ActionReply { state:World; turn?:Turn; refusal?:Refusal }
+
+export type RefusalStyle='hint'|'buttons';
+export interface RefusalPack { refusalStyle?:RefusalStyle }
+export interface Turn { refusalNarrated?:boolean }

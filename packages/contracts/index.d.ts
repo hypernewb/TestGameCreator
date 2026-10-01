@@ -86,3 +86,7 @@ export interface GiftPack { giftRepeatScale?:number[]; giftSettings?:GiftSetting
 export interface GiftItem { categories?:GiftCategory[] }
 export interface GiftKeepsake { item:string; tick:number; gain:number }
 export interface GiftRuntime { giftCounts?:Record<string,number>; keepsakes?:GiftKeepsake[] }
+export interface JealousySettings { max?:number; decayPerDay?:number; coolAt?:number; confrontAt?:number; trustDelta?:number; acquaintanceScale?:number; likeFloor?:number; flirtAmount?:number; intimacyAmount?:number; rumorAmount?:number }
+export interface JealousyProfile { character:string; insecureMultiplier?:number; guardedMultiplier?:number; competitiveMultiplier?:number }
+export interface JealousyPack { jealousySettings?:JealousySettings; jealousyProfiles?:JealousyProfile[] }
+export interface JealousyRuntime { characters?:Record<string,{meter:number;stage:'acquaintance'|'dating'|'exclusive';lastTrustHit:number|null}> }

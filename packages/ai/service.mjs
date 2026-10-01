@@ -18,6 +18,7 @@ import {contextPreset} from './local-settings.mjs';
 import {actsEnabled,sceneActs,typedListen,typedDislike,ACTS_RULE,sceneClaims,CLAIMS_RULE} from './scene-acts.mjs';
 import {sobrietyLevel} from '../modules/intimacy.mjs';
 import {firstBrief,typedStop} from '../modules/firsts.mjs';
+import {jealousyHint} from '../modules/jealousy.mjs';
 // A scene's start/continue events carry the player's own words; echoing them back reads as if the story repeated
 // the player. Keep only real outcomes (travel, items, time) and say plainly that the reply failed.
 const ECHO=new Set(['core.sceneStarted','core.sceneContinued','social.spoke']);
@@ -208,6 +209,8 @@ const budgetDone=Boolean(world.scene?.budget&&cast.length&&world.scene.inputs>=w
     const datingPhases=Object.fromEntries((context.dating||[]).map(row=>[row.character,row.phase]));context.touchStage=Object.fromEntries(cast.map(id=>[id,['crush','dating','exclusive'].includes(datingPhases[id])]));
     // Secrecy (M4): a suspecting cast member shows it through behavior; an active confrontation gets the evidence brief and the claim classifier.
     if(pack.modules['social.secrecy']&&cast.length){const sec=await import('../modules/secrecy.mjs').catch(()=>null);if(sec?.suspicionLinesFor){const suspicionLines=sec.suspicionLinesFor(world,pack,cast);if(suspicionLines.length)context.suspicions=suspicionLines;const confrontation=sec.confrontationFor(world,pack,cast);if(confrontation){context.confrontation=confrontation;context.claimsTags=CLAIMS_RULE;}}}
+    // Jealousy (C1): behaviour only, one private line per jealous cast member; the meter itself never reaches the prompt.
+    if(pack.modules['social.jealousy']&&cast.length){const jealous=cast.map(id=>{const hint=jealousyHint(world,pack,id);return hint?`${world.actors[id].name}: ${hint}`:'';}).filter(Boolean);if(jealous.length)context.jealousyHints=jealous;}
     const first=firstBrief(world,pack),firstStarted=turn.events.some(e=>e.type==='social.firstStarted');
     if(first&&cast.includes(first.character)){
       context.first=first;context.scenePhase=context.sceneHistory.length?'continuation':'opening';

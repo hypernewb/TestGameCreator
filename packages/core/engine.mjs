@@ -78,6 +78,7 @@ export function mechanicsShape(pack) {
  return {
   schemaVersion:pack.schemaVersion,id:pack.id,version:pack.version,modules:pack.modules,playerId:pack.playerId,...pick(pack.gameProject||{},['timeMode']),...pick(pack,['socialPacing','sceneFeedback']),
   ...(pack.dailyNeeds?{dailyNeeds:pack.dailyNeeds,dailyNeedTraits:pack.actors.filter(a=>a.id!==pack.playerId).map(a=>({id:a.id,traits:pack.characterSheets?.find(x=>x.actorId===a.id)?.personality?.traits||a.traits||[]}))}:{}),
+  ...(pack.jealousyProfiles?{jealousySettings:pack.jealousySettings||null,jealousyProfiles:pack.jealousyProfiles,jealousyTraits:pack.actors.filter(a=>a.id!==pack.playerId).map(a=>({id:a.id,traits:pack.characterSheets?.find(x=>x.actorId===a.id)?.personality?.traits||a.traits||[]}))}:{}),
   locations:pack.locations.map(l=>({id:l.id,exits:(l.exits||[]).map(e=>pick(e,['to','flag']))})),
   actors:pack.actors.map(a=>({id:a.id,location:a.location})),
   items:(pack.items||[]).map(i=>pick(i,['id','shop','hidden','stack','stock','restock','use'])),

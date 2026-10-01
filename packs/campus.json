@@ -69,6 +69,7 @@
     "world.minigames": "0.1.0",
     "social.dating": "0.1.0",
     "social.romance-tempo": "0.2.0",
+    "social.jealousy": "0.1.0",
     "social.intimacy": "0.1.0",
     "social.acts": "0.1.0",
     "social.daily-need": "0.1.0",
@@ -1860,6 +1861,33 @@
       "jealousy": {
         "preset": "secure"
       }
+    }
+  ],
+  "jealousySettings": {
+    "max": 10,
+    "decayPerDay": 1,
+    "coolAt": 3,
+    "confrontAt": 6,
+    "trustDelta": -2,
+    "acquaintanceScale": 0.5,
+    "likeFloor": 50,
+    "flirtAmount": 2,
+    "intimacyAmount": 3,
+    "rumorAmount": 1
+  },
+  "jealousyProfiles": [
+    {
+      "character": "jana"
+    },
+    {
+      "character": "monique",
+      "guardedMultiplier": 2
+    },
+    {
+      "character": "nova"
+    },
+    {
+      "character": "abigail"
     }
   ],
   "dailyNeeds": {
@@ -4357,6 +4385,11 @@
               }
             }
           ],
+          "jealousyProfiles": [
+            {
+              "character": "jana"
+            }
+          ],
           "actProfiles": [
             {
               "character": "jana",
@@ -5306,6 +5339,12 @@
               }
             }
           ],
+          "jealousyProfiles": [
+            {
+              "character": "monique",
+              "guardedMultiplier": 2
+            }
+          ],
           "actProfiles": [
             {
               "character": "monique",
@@ -6247,6 +6286,11 @@
               "jealousy": {
                 "preset": "secure"
               }
+            }
+          ],
+          "jealousyProfiles": [
+            {
+              "character": "nova"
             }
           ],
           "actProfiles": [
@@ -7206,6 +7250,11 @@
               "jealousy": {
                 "preset": "secure"
               }
+            }
+          ],
+          "jealousyProfiles": [
+            {
+              "character": "abigail"
             }
           ],
           "actProfiles": [

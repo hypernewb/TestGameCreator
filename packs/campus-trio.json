@@ -72,6 +72,7 @@
     "world.minigames": "0.1.0",
     "social.dating": "0.1.0",
     "social.romance-tempo": "0.2.0",
+    "social.jealousy": "0.1.0",
     "social.intimacy": "0.1.0",
     "social.acts": "0.1.0",
     "social.daily-need": "0.1.0",
@@ -1604,6 +1605,29 @@
       "jealousy": {
         "preset": "secure"
       }
+    }
+  ],
+  "jealousySettings": {
+    "max": 10,
+    "decayPerDay": 1,
+    "coolAt": 3,
+    "confrontAt": 6,
+    "trustDelta": -2,
+    "acquaintanceScale": 0.5,
+    "likeFloor": 50,
+    "flirtAmount": 2,
+    "intimacyAmount": 3,
+    "rumorAmount": 1
+  },
+  "jealousyProfiles": [
+    {
+      "character": "yuna"
+    },
+    {
+      "character": "haruka"
+    },
+    {
+      "character": "minji"
     }
   ],
   "dailyNeeds": {
@@ -3728,6 +3752,11 @@
               }
             }
           ],
+          "jealousyProfiles": [
+            {
+              "character": "yuna"
+            }
+          ],
           "actProfiles": [
             {
               "character": "yuna",
@@ -4722,6 +4751,11 @@
               }
             }
           ],
+          "jealousyProfiles": [
+            {
+              "character": "haruka"
+            }
+          ],
           "actProfiles": [
             {
               "character": "haruka",
@@ -5699,6 +5733,11 @@
               "jealousy": {
                 "preset": "secure"
               }
+            }
+          ],
+          "jealousyProfiles": [
+            {
+              "character": "minji"
             }
           ],
           "actProfiles": [

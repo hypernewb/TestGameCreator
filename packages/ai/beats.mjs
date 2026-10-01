@@ -26,6 +26,18 @@ export function topicSeeds(actor,said=''){
  const seen=new Set(content(said)),fresh=t=>{const w=content(t);return w.length&&w.filter(x=>seen.has(x)).length/w.length<0.5;};
  return [...[].concat(actor.likes||[]).map(x=>[x,`something they love: ${x}`]),...[].concat(actor.dislikes||[]).map(x=>[x,`something they can't stand: ${x}`]),...String(actor.backstory||'').split(/(?<=[.!?])\s+/u).filter(Boolean).map(x=>[x,`a piece of their past: ${x}`])].filter(([t])=>fresh(t)).map(([,s])=>s);
 }
+// A conservative, deterministic exhaustion signal: only a long scene with the same substantive request
+// three times in succession winds down. New information or a different subject resets the signal.
+export function topicExhaustion(context){
+ const history=context.sceneHistory||[];
+ if(context.scenePhase!=='continuation'||history.length<6)return false;
+ const tokens=text=>String(text||'').toLowerCase().match(/[\p{L}\p{N}]+/gu)||[],names=new Set((context.castProfiles||[]).flatMap(a=>tokens(a.name))),filler=new Set(['the','and','but','this','that','you','your','her','him','his','tell','ask','can','what','how','why','who','are','was','our','some','more','please','could','would','asked','asking','tells','telling','share','explain']),signature=input=>{
+  const words=tokens(input).filter(w=>(w.length>=3||/^\d+$/u.test(w))&&!STOP.has(w)&&!names.has(w)&&!filler.has(w));
+  return [...new Set(words)].sort().join(' ');
+ };
+ const tail=[...history.slice(-2).map(h=>h.input),context.playerAction].map(signature);
+ return Boolean(tail[0]&&tail.every(s=>s===tail[0]));
+}
 export function beatDirection(context,pack,seed=''){
  const cast=context.stagedCast||[],phase=context.scenePhase||'opening',input=String(context.playerAction||'');
  if(!cast.length||phase==='closing'||phase==='solo')return '';
@@ -60,14 +72,15 @@ export function beatDirection(context,pack,seed=''){
  const turn=hash(`${seed}:${actor.id}`)+history.length,move=pool[turn%pool.length];
  // A question the player walked away from outranks the routine beat: the character noticed the non-answer (Façade's beat of re-raising a dropped thread).
  const hang=context.hangingAsk&&context.hangingAsk.by===actor.name?`call back their own unanswered question ("${context.hangingAsk.text}") — the player left the last scene without answering it`:'';
- const beat=hang?hang:callback?(callback.promise?`ask whether the player kept their word ("${cb}")`:`follow up on something the player told them last time ("${cb}")`):move==='topic'?`bring up ${seeds[turn%seeds.length].replace(/[.!?]$/,'')}`:MOVES[move];
+ const calm=phase==='continuation'&&context.continuationStyle==='calm';
+ const beat=calm?'give a specific reaction on this same subject, without requiring a new plan or question':hang?hang:callback?(callback.promise?`ask whether the player kept their word ("${cb}")`:`follow up on something the player told them last time ("${cb}")`):move==='topic'?`bring up ${seeds[turn%seeds.length].replace(/[.!?]$/,'')}`:MOVES[move];
  const lead=opening?(first?'greet the player their own way and react to what they said':actor.goal?`start on what they want (${actor.goal.replace(/\.$/,'')})`:'greet the player their own way'):aboutPlayer?(recalled?`remind the player of what they told them: "${recalled.length>160?`${recalled.slice(0,160)}…`:recalled}"`:"answer from what the player has told them (if the player never said, admit not knowing)"):question?(ground?`answer the question directly from what is true (${ground.replace(/\.$/,'')})`:'answer the question directly and specifically'):/\b(?:sorry|apologi[sz]e)\b/i.test(input)?`accept or needle the player's apology their own way (the player is the one who is sorry, not ${actor.name.split(' ')[0]})`:FEELING.test(input)?'respond to how the player feels, their own way':'react to what the player just said';
  const size=context.sceneWriter==='venus'?'five or six visual-novel entries total, with brief narration and substantial character replies':'one brief narration entry, then four or five entries mostly in the character’s own spoken voice';
  // One authored line, rotating per turn, placed where the model reads last: small models copy a voice, not adjectives.
  // Left out of memory checks, where the model copies the sample's opener instead of recalling.
  const sample=[].concat(actor.examples||[]).filter(Boolean),voice=sample.length&&!aboutPlayer?` Sound like "${sample[turn%sample.length]}" (the voice, not those words).`:'';
  // A group scene where only the addressed NPC ever talks reads as a string of one-on-ones: every other turn, someone else cuts in.
- const others=actors.filter(a=>a!==actor),other=others[Math.floor(turn/2)%Math.max(1,others.length)],om=other&&movesOf(other),chime=other&&phase!=='opening'&&!aboutPlayer&&turn%2===0?` ${other.name} cuts in once, briefly, to ${MOVES[om[turn%om.length]]}.`:'';
+ const others=actors.filter(a=>a!==actor),other=others[Math.floor(turn/2)%Math.max(1,others.length)],om=other&&movesOf(other),chime=other&&!calm&&phase!=='opening'&&!aboutPlayer&&turn%2===0?` ${other.name} cuts in once, briefly, to ${MOVES[om[turn%om.length]]}.`:'';
  // Like Tokimeki Memorial's daily condition, some days a character is in a mood (authored `moods`, or a mild default), the
  // same all day, so today's Mina is not a copy of yesterday's. Never over an authored scene's mood; two days in three they are just themselves, at no token cost.
  const moods=[].concat(actor.moods||MOODS),dh=hash(`${actor.id}:day${context.day??''}`),mood=context.day!=null&&!context.scriptedScene&&dh%3===0?moods[(dh>>>2)%moods.length]:'';

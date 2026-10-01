@@ -41,7 +41,7 @@ export function venusStyleMessages(context,pack){
   'READER',`${reader?.name||'You'}: ${reader?.description||'the protagonist'}`,'',
   ...(profiles.length?['CAST',...profiles.map(a=>profileLine(a)+(bond(a.id)?` With the reader: ${bond(a.id)}.`:'')),'']:[]),
   ...(absent.length?[`NOT HERE (can be talked about, can't show up): ${list(absent)}`,'']:[]),
-  'NOW',`${context.weekday||''} ${context.date||''}, ${context.daypart||''}. ${context.location?.name||''}: ${context.location?.description||''}`.trim(),
+  'NOW',`${context.weekday||''} ${context.date||''}, ${context.daypart||''}. ${context.location?.name||''}: ${context.location?.description||''}${context.timeNote?` ${context.timeNote}`:''}`.trim(),
   ...(context.activeEvents?.length?[`Happening: ${context.activeEvents.map(e=>e.text||e.name||e).join(' ')}`]:[]),'',
   ...(past.length?['EARLIER',...past.map(t=>`- ${t}`),'']:[]),
   ...(memories.length?['WHAT THEY REMEMBER',...memories.map(t=>`- ${t}`),'']:[]),

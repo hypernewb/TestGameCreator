@@ -46,8 +46,8 @@ test('after naming something unknown or a missing choice falls back with a note;
  const p=huntrix(),c=normalizeCandidate({characters:[],scenes:[scene('p1'),scene('k1','main-party-room','mira',2,{after:'p1.nope'}),scene('k2','kitchen-bar','zoey',4,{after:'ghost'})]},p,{sceneCount:3});
  assert.deepEqual(c.scenes.find(s=>s.id==='k1').when.completedScenes,['p1']);assert.equal(c.scenes.find(s=>s.id==='k2').when?.completedScenes,undefined);
  assert.ok(c.warnings.includes('scene k1: after "p1.nope": p1 has no choice nope, so it follows the whole scene'));assert.ok(c.warnings.includes('scene k2: after "ghost" names no earlier scene, so it is not a follow-up'));
- const bad=scene('p2','the-moon'),d=normalizeCandidate({characters:[],scenes:[bad,scene('k3','main-party-room','mira',2,{after:'p2'})]},p,{sceneCount:2});
- assert.deepEqual(d.scenes,[]);assert.ok(d.dropped.some(x=>/follows p2, which was dropped/.test(x)));
+ const d=normalizeCandidate({characters:[],scenes:[scene('p2','the-moon'),scene('k3','main-party-room','mira',2,{after:'p2'}),scene('k4','kitchen-bar','zoey',4)]},p,{sceneCount:3});
+ assert.deepEqual(d.scenes.map(s=>s.id),['k4']);assert.ok(d.dropped.some(x=>/follows p2, which was dropped/.test(x)));
 });
 
 test('a moved scene says where from, and whether its text still names the old place; review attaches the note to the scene',()=>{

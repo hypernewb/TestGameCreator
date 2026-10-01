@@ -5,7 +5,7 @@ import {calendarFor} from './calendar.mjs';
 import {openGallery,readKey} from './gallery.mjs';
 import {play as playGame} from './minigames-ui.mjs';
 import {firstProgress,firstOffers} from './firsts-ui.mjs';
-import {featuredFirst,isCampus,dayCard,newDay,hub,goals,activityCommand,promptFill,speakCommand,actionHint,endCard,journal,phone,poseFor,PHONE_ACTIONS} from './campus.mjs';
+import {featuredFirst,isCampus,dayCard,newDay,hub,goals,activityCommand,promptFill,speakCommand,actionHint,endCard,journal,phone,poseFor,PHONE_ACTIONS,clockDigits} from './campus.mjs';
 const $=s=>document.querySelector(s),el=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const fontStacks={source:"'VN Source Sans 3','Segoe UI',sans-serif",noto:"'VN Noto Sans','Arial',sans-serif",open:"'VN Open Sans','Tahoma',sans-serif",lato:"'VN Lato','Trebuchet MS',sans-serif",custom:"'Player Uploaded Font','Segoe UI',sans-serif"};
 const GROUPS=[['Look around',t=>t.startsWith('world.')],['Clothes and belongings',t=>t.startsWith('items.')]];
@@ -28,7 +28,7 @@ async function title(){stopAuto();current=null;setPlaying(false);$('#sprites').r
 
 function render(data){current=data;const {state:s,pack:p}=data;localStorage.setItem('story-last',s.campaignId);setPlaying(true);
  const loc=p.locations.find(l=>l.id===s.actors[p.playerId].location),clock=calendarFor(s.tick,p),turn=Object.values(s.turns).at(-1),scene=p.scriptedScenes?.find(x=>x.id===s.modules['story.scenes']?.pending),beat=scene?.beats?.find(b=>b.id===s.modules['story.scenes']?.pendingBeat)||scene;
- $('#place-index').textContent=String(p.locations.indexOf(loc)+1).padStart(2,'0');$('#pack-title').textContent=p.title.toUpperCase();$('#place').textContent=loc.name;$('#weekday').textContent=String(clock.weekday).slice(0,3).toUpperCase();$('#day').textContent=`Day ${clock.day}`;$('#daypart').textContent=String(clock.daypart).toUpperCase();$('#menu-where').textContent=`${loc.name} · ${clock.weekday} ${clock.daypart}`;
+ $('#place-index').textContent=String(p.locations.indexOf(loc)+1).padStart(2,'0');$('#pack-title').textContent=p.title.toUpperCase();$('#place').textContent=loc.name;$('#weekday').textContent=String(clock.weekday).slice(0,3).toUpperCase();$('#day').textContent=`Day ${clock.day}`;$('#daypart').textContent=String(clock.daypart).toUpperCase();$('#tick-clock').textContent=clockDigits(s,p);$('#menu-where').textContent=`${loc.name} · ${clock.weekday} ${clock.daypart}`;
  const nextKey=`${s.campaignId}:${turn?.id||'start'}:${scene?.id||''}:${s.modules['story.scenes']?.pendingBeat||''}`;if(nextKey!==key){key=nextKey;lines=linesFor(data);cursor=0;$('#choices').hidden=true;$('#hub').hidden=true;$('.dialogue').hidden=false;queueCards(data);}
  const here=s.actors[p.playerId].location,present=id=>s.actors[id]?.location===here,voiced=beat&&![...(beat.pages||[]).map(x=>x.speaker),...Object.keys(beat.when?.charactersAt||{}),...Object.values(scene?.template?.roles||{}),...(s.scene?.characters||[])].some(id=>id&&present(id)),blocked=beat?.allowInput===false||voiced||Boolean(data.diagnostics?.ended);$('#player-prompt').disabled=blocked||busy;$('#player-prompt').placeholder=blocked?'Choose one of the options':'What do you say or do?';
  renderFirstControls();retryId=turn?.fallback?turn.id:null;if(busy)return;if(retryId)showError('The writing was interrupted',`Your action was saved. ${turn.failureReason||''}`.trim(),true);else if(data.clarification)showError('Could you say that differently?',data.clarification);else clearState();

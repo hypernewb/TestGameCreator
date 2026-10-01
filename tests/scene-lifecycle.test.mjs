@@ -5,16 +5,41 @@ import {createWorld,execute,replay} from '../packages/core/engine.mjs';
 import {registry} from '../packages/modules/index.mjs';
 import {Store,exportCampaign,validateImport} from '../packages/persistence/store.mjs';
 import {GameService} from '../packages/ai/service.mjs';
+import {topicExhaustion} from '../packages/ai/beats.mjs';
 
 const pack=(extra={})=>{const p=JSON.parse(readFileSync(new URL('../packs/neutral.json',import.meta.url)));p.gameProject={...JSON.parse(readFileSync(new URL('../packs/crossed-plans.json',import.meta.url))).gameProject,...extra};delete p.schedules;return p;};
 const run=(p,id)=>{let state=createWorld(p,registry,id);const act=(type,args={})=>{const r=execute(state,{id:`${id}-${state.revision}`,actorId:p.playerId,type,args,expectedRevision:state.revision},p,registry);state=r.state;return r;};return {act,get state(){return state;}};};
 const talk=(text,activity='talk')=>({text,location:'hub',characters:['ada'],activity});
 
-test('a continuous scene costs no time to open or continue, and its end advances to the next period once',()=>{
+test('topic exhaustion requires a long repeating thread and resets on new information',()=>{
+ const context={scenePhase:'continuation',sceneHistory:Array.from({length:6},()=>({input:'Tell me about the telescope.'})),playerAction:'Explain the telescope, please.'};
+ assert.equal(topicExhaustion(context),true);
+ assert.equal(topicExhaustion({...context,sceneHistory:context.sceneHistory.slice(0,3)}),false);
+ assert.equal(topicExhaustion({...context,playerAction:'What happened to your telescope during the storm?'}),false);
+ assert.equal(topicExhaustion({...context,playerAction:'Could we get coffee instead?'}),false);
+ assert.equal(topicExhaustion({...context,playerAction:'Tell me about the telescope and Mars.'}),false);
+ assert.equal(topicExhaustion({...context,playerAction:'Tell me about the telescope from 1920.'}),false);
+ assert.equal(topicExhaustion({...context,scenePhase:'opening'}),false);
+});
+
+test('an exhausted thread gets one closing reply and an engine close, without another model call',async()=>{
+ const p=pack();let calls=0,closing=false;
+ const replies=['The lens was a gift.','My aunt found it in a shop.','The brass is older than the glass.','It stands beside my workbench.','I keep the dust off its cover.','The screws needed replacing.','We can leave it there for now.'];
+ const provider={name:'fatigue',async generateScene(context){closing=context.scenePhase==='closing';return {lines:[{speaker:'ada',text:replies[calls++]}]};}};
+ const store=new Store();store.insert(createWorld(p,registry,'fatigue'));const service=new GameService(store,{[p.id]:p},registry,provider);
+ try{
+  let result;for(let i=0;i<7;i++)result=await service.act('fatigue',{id:`line-${i}`,expectedRevision:store.load('fatigue').revision,command:{type:'core.scene',args:talk('Tell me about the telescope.',i?'continue':'talk')}});
+  assert.equal(closing,true);assert.equal(calls,7);assert.equal(result.state.scene,null);assert.equal(result.state.tick,4);
+  assert.equal(result.state.turns['line-6-end'].events.find(e=>e.type==='core.sceneEnded').payload.reason,'topic');
+  assert.equal(validateImport(exportCampaign(result.state),p,registry).scene,null);
+ }finally{store.close();}
+});
+
+test('a continuous scene opens free, spends a tick every third exchange, and its end advances to the next period once',()=>{
  const c=run(pack(),'life');
  c.act('core.scene',talk('Hi Ada.'));assert.equal(c.state.tick,0);assert.deepEqual(c.state.scene.characters,['ada']);
  for(const line of ['How was your day?','Tell me more.','Really?'])c.act('core.scene',talk(line,'continue'));
- assert.equal(c.state.tick,0);assert.equal(c.state.scene.exchanges,3);
+ assert.equal(c.state.tick,1);assert.equal(c.state.scene.exchanges,3);
  const end=c.act('core.endScene');assert.equal(c.state.scene,null);assert.equal(c.state.tick,4);
  assert.equal(end.turn.events.filter(e=>e.type==='core.timeAdvanced').length,1);
 });

@@ -17,7 +17,7 @@ export function assemble(spec){
  for(const a of cast)assert(Number.isInteger(a.age)&&a.age>=18,`${a.id}: every character is an adult with an age`);
  const modules=Object.fromEntries(MODULES.filter(m=>m!=='character.sobriety'||w.sobriety).filter(m=>m!=='social.phone'||w.phoneContacts?.length).map(m=>[m,VERSIONS[m]||'0.1.0']).concat(firsts.length?[['social.firsts','0.1.0']]:[]));
  const pack={schemaVersion:1,id:spec.id,version:spec.version||'0.1.0',title:text(spec.title,'title'),...(spec.subtitle?{subtitle:spec.subtitle}:{}),playerId:'player',
-  calendar:w.calendar||{},modules,gameProject:{presentation:'visual-novel',conversationStyle:'continuous',sceneBudget:4,...spec.project,ai:{...AI_GUIDANCE,...spec.project?.ai},premise:text(spec.project?.premise,'project.premise'),setting:text(spec.project?.setting,'project.setting')},run,
+  calendar:w.calendar||{},romanceStats:w.romanceStats||{dailyGain:6},modules,gameProject:{presentation:'visual-novel',conversationStyle:'continuous',sceneBudget:4,...spec.project,ai:{...AI_GUIDANCE,...spec.project?.ai},premise:text(spec.project?.premise,'project.premise'),setting:text(spec.project?.setting,'project.setting')},run,
   locations:w.locations||[],actors:cast,initialRelationships:[...parts.map(x=>x.relationship),...(w.initialRelationships||[])],
   statDefinitions:w.statDefinitions||[],initialStats:w.initialStats||[],items:w.items||[],activities:w.activities||[],schedules:w.schedules||[],initialMoney:w.initialMoney??50,economySettings:w.economySettings||{debtLimit:10},
   datingProfiles:parts.map(x=>x.dating),romanceTempoProfiles:parts.map(x=>x.tempo),actProfiles:parts.map(x=>x.acts),arcTracks:parts.map(x=>x.arc),
@@ -33,20 +33,20 @@ export function assemble(spec){
 }
 
 function heroine(h,spec,text){
- const itemName=id=>spec.world?.items?.find(i=>i.id===id)?.name||id,c=h.id,T=TEMPERAMENTS[h.temperament],P=PACES[h.pace],at=p=>`heroines.${c}.${p}`;assert(safe(c),`bad id ${c}`);assert(T,`${c}: temperament must be one of ${Object.keys(TEMPERAMENTS)}`);assert(P,`${c}: pace must be one of ${Object.keys(PACES)}`);
+ const itemName=id=>spec.world?.items?.find(i=>i.id===id)?.name||id,c=h.id,T=TEMPERAMENTS[h.temperament],P=PACES[h.pace],trust0=h.trust??T?.initial.trust,at=p=>`heroines.${c}.${p}`;assert(safe(c),`bad id ${c}`);assert(T,`${c}: temperament must be one of ${Object.keys(TEMPERAMENTS)}`);assert(P,`${c}: pace must be one of ${Object.keys(PACES)}`);
  const topic=slug(h.topic||''),looks=slug(h.looks||'looks'),quirk=h.quirk&&slug(h.quirk),invite=h.invite||'*',gifts=h.gifts||{};assert(topic,`${c}: needs a topic she loves to talk about`);
  const fill=t=>t==='{topic}'?topic:t==='{looks}'?looks:t==='{quirk}'?quirk:t==='{invite}'?invite:t==='{gift}'?gifts.loved:t==='{buy}'?h.buy:t==='{badGift}'?gifts.disliked:t;
  const ranks=[0,1,2,3].map(i=>{const name=text(h.ranks?.[i],at(`ranks.${i}`));return {id:idOf(h.rankIds?.[i]||name)||`rank-${i}`,name,points:RANK_POINTS[i][0],ceiling:RANK_POINTS[i][1]};});
- const stages=[0,1,2].map(i=>{const s=h.stages?.[i]||{},name=text(s.name,at(`stages.${i}.name`));return {id:s.id||idOf(name)||`stage-${i}`,name,...(i?{when:{[T.second]:T.gates[i-1].second,trust:T.gates[i-1].trust}}:{}),voice:text(s.voice,at(`stages.${i}.voice`))};});
+ const stages=[0,1,2].map(i=>{const s=h.stages?.[i]||{},name=text(s.name,at(`stages.${i}.name`));return {id:s.id||idOf(name)||`stage-${i}`,name,...(i?{when:{[T.second]:T.gates[i-1].second,trust:trust0+T.gates[i-1].trust}}:{}),voice:text(s.voice,at(`stages.${i}.voice`))};});
  const arcFlag=h.arcFlag||`${c}-${stages[2].id}`;stages[2].flag=arcFlag;
  const wants=(h.wants||[]).slice(0,3).map((x,i)=>({id:`${c}-${x.id||x.stat}`,type:'stat',stat:x.stat,min:x.min,weight:x.turnoff?-5:WANT_WEIGHTS[i],visibility:x.visibility||['discoverable','public','private'][i]}));
  if(T.wantsHerCall)wants.push({id:arcFlag,type:'flag',flag:arcFlag,value:true,weight:T.wantsHerCall,visibility:'private'});
  const reason=(role,fallback)=>{const r=h.reasons?.[role];return typeof r==='object'&&r?r:{reason:r,fallback};};
  const acts=[...T.acts,...SHARED_ACTS].map(([role,kind,t,points,extra={}])=>{const target=fill(t);if(!target)return null;const r=reason(role);
   return {id:`${c}-${role}`,kind,target:target==='*'?'*':slug(target),points,reason:text(r.reason||(role==='bad-gift'?`you brought her ${itemName(target).toLowerCase()}`:''),at(`reasons.${role}`)),...(extra.memory&&r.memory?{memory:r.memory}:{}),...(extra.when?{when:extra.when}:{})};}).filter(Boolean);
- (h.actor?.dislikes||[]).forEach((d,i)=>acts.push({id:`${c}-harp-${i+1}`,kind:'pushy',target:slug(d),points:-3,reason:text(h.harp?.[i],at(`harp.${i}`))}));
+ (h.actor?.dislikes||[]).forEach((d,i)=>acts.push({id:`${c}-harp-${i+1}`,kind:'pushy',target:slug(d),points:-2,reason:text(h.harp?.[i],at(`harp.${i}`))}));
  const drift=T.drift.map(([act,t,trait,delta])=>{const target=t&&fill(t);if(t&&!target)return null;return {act,...(target?{target:slug(target)}:{}),trait:trait==='second'?T.second:trait,delta};}).filter(Boolean);
- const traits=[{id:T.second,initial:T.initial.second},{id:'trust',initial:T.initial.trust}];
+ const traits=[{id:T.second,initial:T.initial.second},{id:'trust',initial:trust0}];
  const interest={id:`${c}-${h.interest?.id||'pace'}`,category:P.casual?'fling':'first-night',label:text(h.interest?.label,at('interest.label')),visibility:'discoverable'};
  const aftercare={id:`${c}-${h.aftercare||'talk'}`,option:h.aftercare||'talk',reaction:'liked',satisfactionDelta:8,visibility:'discoverable'};
  const actor={...h.actor,id:c,identityTags:['adult']};for(const k of ['name','description','voice'])actor[k]=text(h.actor?.[k],at(`actor.${k}`));
@@ -61,14 +61,14 @@ function heroine(h,spec,text){
  const scenes=[],firsts=[];
  for(const r of ['talk','date','kiss']){const ctx={c,at,text,prefIds,friend:ranks[1].id,interest:interest.id};mode(r)==='free'?firsts.push(freeFirst(h,r,{...ctx})):scenes.push(first(h,r,ctx));}
  if(mode('night')==='free')firsts.push(freeFirst(h,'night',{c,at,text,prefIds,interest:interest.id}));else scenes.push(night(h,{c,at,text,interest:interest.id}));
- return {actor,relationship:{character:c,trust:h.trust??T.initial.trust},endings,scenes,firsts,
+ return {actor,relationship:{character:c,trust:trust0},endings,scenes,firsts,
   dating:{character:c,initialChemistry:T.chemistry,initialPhase:'available',agreements:P.casual?['casual','monogamous']:['monogamous'],thresholds:THRESHOLDS,preferences:wants,signals:[
    {id:`liked-${c}`,event:'social.actPriced',match:{character:c,verdict:'liked'},delta:2,label:'something you did that she liked',repeatable:true},
    {id:`disliked-${c}`,event:'social.actPriced',match:{character:c,verdict:'disliked'},delta:-1,label:'something you did that she did not like',repeatable:true},
    {id:`closer-${c}`,event:'social.romanceRankChanged',match:{character:c},delta:5,label:'the two of you got closer',repeatable:true}]},
   tempo:{character:c,advancement:'automatic',ranks,gifts:{periodTicks:12,limitPerPeriod:1,repeatDecayPercent:50,preferences:[
    ...(gifts.loved?[{item:gifts.loved,reaction:'loved',points:6,chemistry:2}]:[]),...[].concat(gifts.liked||[]).map(item=>({item,reaction:'liked',points:4,chemistry:1})),...(gifts.disliked?[{item:gifts.disliked,reaction:'disliked',points:-3}]:[])]},
-   signals:(h.activities||[]).map(a=>({id:`${c}-${a}`,event:'world.activityCompleted',match:{activity:a},points:3,cooldownTicks:12})),neglect:{afterTicks:36,fuseTicks:12,minPoints:20},jealousy:{preset:h.jealousy||'secure'}},
+   signals:(h.activities||[]).map(a=>({id:`${c}-${a}`,event:'world.activityCompleted',match:{activity:a},points:2,cooldownTicks:12})),jealousy:{preset:h.jealousy||'secure'}},
   acts:{character:c,entries:acts},arc:{character:c,traits,drift,stages},
   intimacy:{character:c,openness:P.openness,casual:P.casual,consentPolicy:'threshold',consentDuration:2,allowedCategories:P.categories,cooldown:12,requiresAgreement:[],requirements:{attraction:P.attraction,phases:P.phases},interests:[interest],aftercarePreferences:[aftercare]}};
 }
@@ -147,7 +147,7 @@ export function specFromPack(p,{cast}){
  const fb=p.endings.find(e=>e.id===p.run.defaultEnding),hero=new Set(ids);
  return {id:p.id,version:p.version,title:p.title,subtitle:p.subtitle,days:p.run.days,project:p.gameProject,player:p.actors.find(a=>a.id===p.playerId),
   friends:p.actors.filter(a=>a.id!==p.playerId&&!hero.has(a.id)),fallback:{id:fb.id,name:fb.name,text:fb.text,flag:Object.keys(fb.requires?.flags||{})[0]},heroines,
-  world:{calendar:p.calendar,locations:p.locations,statDefinitions:p.statDefinitions,initialStats:p.initialStats,items:p.items,activities:p.activities,schedules:p.schedules,initialMoney:p.initialMoney,economySettings:p.economySettings,sobriety:p.sobriety,
+  world:{calendar:p.calendar,romanceStats:p.romanceStats,locations:p.locations,statDefinitions:p.statDefinitions,initialStats:p.initialStats,items:p.items,activities:p.activities,schedules:p.schedules,initialMoney:p.initialMoney,economySettings:p.economySettings,sobriety:p.sobriety,
    phoneContacts:p.phoneContacts,phoneMessages:p.phoneMessages,momentsProfile:p.momentsProfile,moments:p.moments,contentLevel:p.intimacySettings.contentLevel,privateLocations:p.intimacySettings.privateLocations,aftercareOptions:p.intimacySettings.aftercareOptions,
    ...(p.firsts?.length?{firsts:'free'}:{}),
    initialRelationships:p.initialRelationships.filter(r=>!hero.has(r.character))}};

@@ -10,7 +10,7 @@ Rules that hold for every milestone:
 
 ## Order
 
-1. **Finish M5**: social-link unlocks.
+1. **Run the M5 fun gate** (M5 is done, social-link unlocks included).
 2. **Open-play tier:** O1 free-typed firsts first ([FIRSTS-PLAN.md](FIRSTS-PLAN.md)), with O0 alongside. Then O2 → O3 → O4 → O5 → O6.
 3. **Fun gate** runs on campus after M5, and again after O1, O2 and O5 (the milestones that change how play feels).
 4. **M4 leftovers**, the **Later** list, then **P1–P4**, where a Game or Open-play milestone needs them.
@@ -21,7 +21,7 @@ Rules that hold for every milestone:
 | Milestone | Remaining | Done when |
 |---|---|---|
 | **M0. First playable (campus)** | Everything is built. Only the human gate is left. | The owner plays campus on a cloud model and would rather keep going than switch to Venus, and the [fun gate](#fun-gate) proxies hold. |
-| **M5. Activity depth** | Steps 1–6 of [M5-ACTIVITY-PLAN.md](M5-ACTIVITY-PLAN.md) are done. **Still open:** social-link ranks unlock activities. | Every campus activity has a minigame. A mishap reliably produces a director beat. Getting handsy in front of a coworker has a consequence. |
+| **M5. Activity depth** | Steps 1–7 of [M5-ACTIVITY-PLAN.md](M5-ACTIVITY-PLAN.md) are done, social-link unlocks (`minRank`) included. | Every campus activity has a minigame. A mishap reliably produces a director beat. Getting handsy in front of a coworker has a consequence. |
 | **M2 leftovers** | The looks anchor, touch pacing for guarded heroines, lore consistency across drafted scenes. The Open-play creator additions below. | Done alongside the milestone that needs them. |
 | **M4. Secrecy and agreements** | The engine is shipped (uncommitted, see COMPLETED). **Still open:** Studio authoring forms, persona-bot validation on campus, fun-gate play. | Getting caught, negotiating an opening and ripple drama play out on campus, and the gate holds. |
 

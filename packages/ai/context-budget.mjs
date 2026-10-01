@@ -90,7 +90,7 @@ const compactProfile=a=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',p
  * part (rules, current state, committed outcomes, player action — tier 0) is measured, never trimmed.
  * Returns the budgeted context plus a report of what went in, at which detail level, and what was cut.
  */
-export function budgetSceneContext(context,pack,world,turnId,{window=8192,reply=1800,ratio=1,margin=0.06,render,tiers=DEFAULT_TIERS,verbatim=Infinity}={}){
+export function budgetSceneContext(context,pack,world,turnId,{window=8192,reply=1800,ratio=1,margin=0.06,render,tiers=DEFAULT_TIERS,verbatim=Infinity,wideContext=false}={}){
  const cast=context.stagedCast||[],surfaced=recentlySurfaced(world,turnId);
  const sticky=key=>surfaced.get(key)===1?4:0,stale=key=>surfaced.has(key)?-6/surfaced.get(key):0;
  const pools={castProfiles:[],sceneHistory:[],generatedFacts:[],facts:[],memories:[],lorebook:[],pastScenes:[],npcRelationships:[]};
@@ -101,8 +101,13 @@ export function budgetSceneContext(context,pack,world,turnId,{window=8192,reply=
  actors.forEach((a,i)=>add('castProfiles',1,`cast:${a.id}`,100-i,[['full',profileOf(a)],['compact',compactProfile(a)],['name',{id:a.id,name:a.name,pronouns:a.pronouns||'they/them'}]]));
  const history=context.sceneHistory||[];
  // `verbatim` caps how many recent turns may stay word for word even when they fit: a small model given 25 full turns
- // loses track of which question it is answering, and does better with a short transcript plus one-line digests.
- history.forEach((h,i)=>add('sceneHistory',2,`history:${h.source}`,i,[...(i>=history.length-verbatim?[['full',{source:h.source,input:h.input,text:h.text}],['tail',{source:h.source,input:clip(h.input,200),text:h.text.length>700?'…'+h.text.slice(-700):h.text}]]:[]),['digest',{source:h.source,compact:true,text:h.digest||turnDigest({input:h.input,events:[]})}]],{monotone:true}));
+  // loses track of which question it is answering, and does better with a short transcript plus one-line digests.
+ // wideContext grows the tail window (700 -> 1500 chars) and keeps full/tail LODs for any turn naming a cast member, so
+ // a character's continuity and recurring dialogue beats survive a tight budget instead of shrinking to a digest.
+ const focusNames=wideContext?cast.map(id=>pack.actors.find(a=>a.id===id)?.name).filter(Boolean):[];
+ const tailWindow=wideContext?1500:700;
+ const isCharLine=h=>wideContext&&focusNames.some(n=>n&&String(h.text+' '+(h.input||'')).includes(n));
+ history.forEach((h,i)=>{const verbatimEligible=i>=history.length-verbatim;const charLine=isCharLine(h);add('sceneHistory',2,`history:${h.source}`,i,[...(verbatimEligible||charLine?[['full',{source:h.source,input:h.input,text:h.text}],['tail',{source:h.source,input:clip(h.input,200),text:h.text.length>tailWindow?'…'+h.text.slice(-tailWindow):h.text}]]:[]),['digest',{source:h.source,compact:true,text:h.digest||turnDigest({input:h.input,events:[]})}]],{monotone:true});});
  (context.generatedFacts||[]).forEach(f=>add('generatedFacts',3,`fact:${f.id}`,(f.score??(f.reason==='current scene'?10:8))+sticky(`fact:${f.id}`),[['full',f]]));
  (context.facts||[]).forEach((f,i)=>add('facts',3,`authored:${f.id}`,5-i/1000,[['full',f]]));
  // What the player disclosed or promised outranks model-written impressions; words shared with the current action

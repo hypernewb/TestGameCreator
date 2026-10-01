@@ -40,7 +40,8 @@ test('tally and report count pairwise wins, failures and words for every variant
  const rows=[{scenario:'s',turn:0,phase:'opening',input:'hi',ours:{text:'a b',ms:1000},venus:{text:'a b c d',ms:3000},hybrid:{text:'a b c',ms:2000},verdicts:[v(['venus','ours'],'venus',[8,4]),v(['hybrid','venus'],'hybrid',[9,6]),v(['ours','hybrid'],'tie',[5,5])]},{scenario:'s',turn:1,phase:'continuation',input:'yo',ours:{error:'x'},venus:{text:'a b',ms:1000},hybrid:{text:'a',ms:1000},verdicts:[]}];
  const t=tally(rows,names);assert.deepEqual(t.versus,{'ours vs venus':{ours:0,venus:1,tie:0},'ours vs hybrid':{ours:0,hybrid:0,tie:1},'venus vs hybrid':{venus:0,hybrid:1,tie:0}});
  assert.equal(t.failed.ours,1);assert.equal(t.words.venus,3);assert.equal(t.mean.venus.fun,7);assert.equal(t.mean.hybrid.fun,7);
- assert.match(summaryLine(t),/^ours 0–1 venus \(tie 0\) \| ours 0–0 hybrid \(tie 1\) \| venus 0–1 hybrid \(tie 0\) \| fun ours 4\.5 \/ venus 7 \/ hybrid 7/);
+ assert.match(summaryLine(t),/^ours 0–1 venus \(tie 0, p≈1, 1 decisive\) \| ours 0–0 hybrid \(tie 1\) \| venus 0–1 hybrid \(tie 0, p≈1, 1 decisive\) \| fun ours 4\.5 \/ venus 7 \/ hybrid 7/);
+ assert.deepEqual(t.significance,{'ours vs venus':{wins:0,losses:1,ties:0,decisive:1,p:1},'ours vs hybrid':{wins:0,losses:0,ties:1,decisive:0,p:null},'venus vs hybrid':{wins:0,losses:1,ties:0,decisive:1,p:1}});
  assert.equal(sceneText([{speaker:'',text:'She waves.'},{speaker:'jana',text:'Hi.'}],pack),'She waves.\nJana: Hi.');
  assert.match(reportMarkdown(rows,{model:'m',judge:'j',drive:'ours',date:'d',names}),/\| criterion \| ours \| venus \| hybrid \|[\s\S]*venus vs hybrid: \*\*hybrid\*\*[\s\S]*_failed: x_/);
 });

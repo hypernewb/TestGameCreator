@@ -1,4 +1,5 @@
 import {assert} from '../core/engine.mjs';
+import {changeTrust} from './romance-stats.mjs';
 import {changeMoney} from './economy.mjs';
 import {changeStat} from './stats.mjs';
 
@@ -41,8 +42,7 @@ export const minigames={id:'world.minigames',version:'0.1.0',coreApi:'0.1.0',req
   if(her)tx.emit('world.coopReaction',{character:her,activity:a.id,result:r,text:reactionOf({...tx.pack.actors.find(x=>x.id===her),name:tx.state.actors[her].name},r)},[tx.pack.playerId,her]);
   if(!BONUS[r])return;
   // Co-op: the heroine you did it with notices a good run.
-  if(her&&tx.state.modules['social.relationships']){const key=`${a.character}--${tx.pack.playerId}`,old=tx.state.modules['social.relationships'].edges[key]||0,value=Math.min(100,old+(r==='great'?2:1));
-   tx.set(['modules','social.relationships','edges',key],value);tx.emit('social.relationshipChanged',{actor:a.character,toward:tx.pack.playerId,old,value,delta:value-old,text:`${tx.state.actors[a.character].name}: Trust ${old} → ${value}`},[tx.pack.playerId,a.character]);}
+  if(her)changeTrust(tx,a.character,r==='great'?2:1);
   if(her&&r==='great'&&tx.random()*100<SPARK_PERCENT)tx.emit('world.moment',{moment:`${her}-great-run`,kind:'encounter',character:her,location:event.payload.location,activity:a.id,text:`${tx.state.actors[her].name} hangs back after, in no hurry to leave.`},[tx.pack.playerId,her]);
   if(r==='great')tx.set([...path,'run'],{activity:a.id,tick:tx.state.tick,round:0,location:event.payload.location,characters:event.payload.characters});
   tx.emit('world.minigameScored',{activity:a.id,result:r,game:gameOf(a),canPush:r==='great',text:r==='great'?'Great run. One more round could pay more, or go wrong.':'Good run.'},[tx.pack.playerId]);

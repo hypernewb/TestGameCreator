@@ -3,6 +3,7 @@ import {calendarFor} from '../../public/calendar.mjs';
 import {conditionReasons,validateConditions} from './conditions.mjs';
 import {changeMoney} from './economy.mjs';
 import {changeStat} from './stats.mjs';
+import {changeTrust} from './romance-stats.mjs';
 import {heldBy,holdersOf,transfer,mint} from './inventory.mjs';
 // Small things happen between the big scenes: a note on the pavement, a lesson in nerve, someone you know walking over,
 // or a hook for an authored scene. Moves, waits and solo exploring roll for one; a dry streak raises the odds.
@@ -33,7 +34,7 @@ function apply(tx,m,vars){const {state:s,pack:p}=tx;for(const e of m.effects||[]
  if(e.type==='stat')changeStat(tx,p.playerId,e.stat,e.delta,'moment');
  if(e.type==='flag')tx.set(['flags',e.id],e.value??true);
  if(e.type==='item'){const item=p.items.find(i=>i.id===e.id),from=holdersOf(s,e.id)[0]?.[0];if(from)transfer(tx,item,from,p.playerId,1);else mint(tx,item,p.playerId,1);vars.item=p.items.find(i=>i.id===e.id)?.name||e.id;}
- if(e.type==='trust'){const edge=`${e.character}--${p.playerId}`,old=s.modules['social.relationships'].edges[edge]||0,value=Math.max(0,Math.min(100,old+e.delta));tx.set(['modules','social.relationships','edges',edge],value);tx.emit('social.relationshipChanged',{actor:e.character,toward:p.playerId,old,value,delta:value-old,text:`${s.actors[e.character].name}: Trust ${old} → ${value}`},[p.playerId,e.character]);}
+ if(e.type==='trust')changeTrust(tx,e.character,e.delta);
 }}
 function fire(tx,on){const {state:s,pack:p}=tx,st=s.modules['world.moments'],cfg=momentSettings(p),here=s.actors[p.playerId].location,day=calendarFor(s.tick,p).day;
  if(st.turn===tx.commandId)return;tx.set([...path,'turn'],tx.commandId);

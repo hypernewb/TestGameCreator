@@ -97,7 +97,7 @@ export class CompatibleProvider {
   name='Configured model';
   bundlesSceneMetadata=true;
   enqueue=createRequestQueue();
-  constructor({endpoint,model,key='',timeout=30000,maxRequests=10000,maxTokens=1800,contextWindow=null,fetchImpl=fetch}){const url=new URL(endpoint);assert(url.protocol==='https:'||url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname),'Endpoint must be HTTPS or local HTTP');assert(model,'Model ID is required');Object.assign(this,{endpoint,model,key,timeout,maxRequests,maxTokens,contextWindow,fetchImpl});this.remote=!isLoopback(endpoint);this.requests=0;this.usage=[];this.calibration={ratio:1,samples:0};this.reasoningParam=true;}
+  constructor({endpoint,model,key='',timeout=30000,maxRequests=10000,maxTokens=1800,contextWindow=null,fetchImpl=fetch,wideContext=false}){const url=new URL(endpoint);assert(url.protocol==='https:'||url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname),'Endpoint must be HTTPS or local HTTP');assert(model,'Model ID is required');Object.assign(this,{endpoint,model,key,timeout,maxRequests,maxTokens,contextWindow,fetchImpl,wideContext});this.remote=!isLoopback(endpoint);this.requests=0;this.usage=[];this.calibration={ratio:1,samples:0};this.reasoningParam=true;}
   // Local servers (Ollama num_ctx, LM Studio) drop the start of a prompt when prompt+max_tokens overflows the window; ask only for what is left.
   outputCap(messages){return this.contextWindow?Math.min(this.maxTokens,Math.max(256,this.contextWindow-Math.ceil(messageTokens(messages,this.calibration?.ratio||1)*1.03)-16)):this.maxTokens;}
   complete(messages,signal,responseFormat,onDelta){return this.enqueue(()=>this.performComplete(messages,signal,responseFormat,0,onDelta),signal);}

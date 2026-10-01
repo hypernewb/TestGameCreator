@@ -47,7 +47,7 @@ A mishap ends the run and keeps what was already banked, so it never goes below 
 
 ## Open
 
-- Social-link ranks unlocking activities (part of the M5 row). Deferred until the four widgets land, then an interview.
+- Social-link ranks unlocking activities: done (step 7). An activity may set `minRank`, a later rank id from its character's romance-tempo profile. Until then it stays out of the action list and the typed route, and the hub shows it greyed with "Unlocks at Friend with Jana". The rank-up line names what opened. Campus adds one rank-1 activity per heroine (darts with Jana, case prep with Monique, a script session with Nova, build night with Abigail). The owner interview was skipped. The existing activities stay open so early play isn't thinner.
 - Widget difficulty scaling with the stat (a higher stat gives an easier game). Not decided.
 
 ## Owner calls, round 2 (2026-09-30)

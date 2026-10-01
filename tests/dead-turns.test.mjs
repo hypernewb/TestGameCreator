@@ -44,8 +44,8 @@ test('an exit says so when arriving there would start a scene, without duplicati
  assert.equal(list.filter(l=>l.startsWith(`Go to ${quiet}`)).length,1);
 });
 
-test('typed, new speech is never a dead turn; a canned repeat still is',()=>{
- const turn=(id,input,repeat)=>({id,command:{type:'social.speak'},input:input?'hi':undefined,events:[{type:'social.spoke',payload:{repeat}}]});
- const m=funMetrics({actors:{},turns:{a:turn('a',true,false),b:turn('b',false,false),c:turn('c',true,true)}},{playerId:'player'});
- assert.equal(m.deadTurns,2);
+test('typed, new speech the game answers is never a dead turn; an unanswered line or a canned repeat is',()=>{
+ const turn=(id,input,repeat,answered)=>({id,command:{type:'social.speak'},input:input?'hi':undefined,events:[{type:'social.spoke',payload:{repeat}},...(answered?[{type:'social.chemistryChanged',payload:{character:'juno',delta:1}}]:[])]});
+ const m=funMetrics({actors:{},turns:{a:turn('a',true,false,true),b:turn('b',false,false),c:turn('c',true,true),d:turn('d',true,false,false)}},{playerId:'player'});
+ assert.equal(m.deadTurns,3);assert.equal(m.inputLost,2);
 });

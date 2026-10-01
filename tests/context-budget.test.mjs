@@ -216,3 +216,64 @@ test('context size API switches the active provider and reports the window in us
   assert.equal(config.contextSize,'minimal');assert.equal(config.contextWindow,4096);
  }finally{app.server.close();app.store.close();}
 });
+
+
+test('wideContext preserves character lines that mention a cast member',()=>{
+  const p=pack();
+  const charText='Ada nods and replies to the player. ';
+  const plainText='The sky grows darker without comment. ';
+  const history=[];
+  for(let i=0;i<6;i++){
+    history.push({source:`h${i}`,input:`Turn ${i}`,text:i%2===0?charText:plainText});
+  }
+  const base={stagedCast:['ada'],sceneHistory:history,memories:[],playerAction:'Go on'};
+  const render=c=>scenePromptMessages(c,p);
+
+  // verbatim:0 disables word-for-word preservation; without wideContext, charLines only have digest LOD
+  const {context:stdCtx}=budgetSceneContext({...base},p,{turns:{}},'now',{window:32768,reply:500,verbatim:0,render});
+  assert.ok(stdCtx.sceneHistory.every(h=>h.compact===true),
+    'all turns compacted to digest without wideContext');
+
+  const {context:wideCtx}=budgetSceneContext({...base},p,{turns:{}},'now',{window:32768,reply:500,verbatim:0,wideContext:true,render});
+  const wideChar=wideCtx.sceneHistory.find(h=>h.source==='h0');
+  assert.ok(!wideChar.compact,'character line preserved (not digest) with wideContext');
+  assert.equal(wideChar.text,charText,'character line keeps full text');
+  const widePlain=wideCtx.sceneHistory.find(h=>h.source==='h1');
+  assert.ok(widePlain.compact===true,'non-character line still compacted with wideContext');
+});
+
+test('wideContext tail window is 1500 chars instead of 700',()=>{
+  const p=pack();
+  // Long text (>3000 chars) mentioning Ada — full LOD should exceed a moderate budget, forcing tail LOD
+  const longText=('Ada discusses the harbor, the project, and many other details that need remembering. ').repeat(80);
+  assert.ok(longText.length>3000,'long text exceeds 3000 chars');
+  const base={stagedCast:['ada'],sceneHistory:[{source:'h0',input:'Long turn',text:longText}],memories:[],playerAction:'Go on'};
+  const render=c=>scenePromptMessages(c,p);
+  const opts={window:2000,reply:200,verbatim:0,render};
+
+  // Without wideContext: no full/tail LODs available (charLine disabled) → compacted to digest
+  const {context:stdCtx}=budgetSceneContext({...base},p,{turns:{}},'now',opts);
+  assert.ok(stdCtx.sceneHistory[0].compact===true,'long Ada turn compacted without wideContext');
+
+  // With wideContext: full/tail + digest available; budget should force tail LOD
+  const {context:wideCtx,report}=budgetSceneContext({...base},p,{turns:{}},'now',{...opts,wideContext:true});
+  const turn=wideCtx.sceneHistory[0];
+  assert.ok(!turn.compact,'long Ada turn preserved (not digest) with wideContext');
+
+  const level=report.included.find(([key])=>key==='history:h0')?.[1];
+  assert.ok(level,'history item appears in report.included');
+
+  // When the allocator chose 'tail', the text must be ellipsis + last 1500 chars (not 700)
+  if(level==='tail'){
+    assert.equal(turn.text,'…'+longText.slice(-1500),
+      'tail is ellipsis + last 1500 chars (not 700)');
+    assert.equal(turn.text.length,1501,
+      'tail text length is 1501 (1 ellipsis + 1500 chars)');
+    assert.notEqual(turn.text,'…'+longText.slice(-700),
+      'tail does not use the old 700-char window');
+  }else{
+    // If 'full' was chosen (budget was sufficient), the text equals the original
+    assert.equal(level,'full');
+    assert.equal(turn.text,longText);
+  }
+});

@@ -71,3 +71,8 @@ test('campus loads with its drafted director text: packs/director/campus.json is
  const ms=p.phoneMessages.filter(m=>m.directorTemplate);assert.ok(ms.length);for(const m of ms)assert.ok(m.text&&!/^\w+\s*:/.test(m.text),`${m.id} has no sender prefix`);
  assert.ok(!campus().scriptedScenes.some(x=>x.template?.kind),'the pack file itself stays untouched');
 });
+
+test('taking a phone invite walks you out of a conversation with someone else, and never back into it',()=>{const p=baked(),inv=p.directorProfile.opportunities.find(c=>c.template==='invite'&&c.roles.lead==='nova'),g=run(p,1),jana=p.actors.find(a=>a.id==='jana');
+ g.act('core.scene',{text:'Hi Jana.',location:jana.location,characters:['jana'],activity:'talk'});assert.deepEqual(g.s.scene?.characters,['jana']);
+ g.s.modules['story.director'].offers=[{id:inv.id,scene:inv.scene,template:'invite',roles:inv.roles}];const ev=g.act('story.startOfferedScene',{scene:inv.scene});
+ assert(ev.some(e=>e.type==='core.sceneEnded'&&e.payload.reason==='player'),'Jana\'s scene ends');assert(!g.s.scene?.characters?.includes('jana'),'no Jana scene to continue');assert.equal(g.s.modules['story.scenes'].pending,inv.scene);});

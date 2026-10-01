@@ -44,3 +44,8 @@ test('a typed approach in a live scene resolves the check instead of free replyi
   assert.ok(r.turn.events.some(e=>e.type==='story.checkResolved'&&e.payload.passed));assert.match(r.turn.narrative,/blinks first/);assert.equal(r.state.modules['story.scenes'].pending,null);assert.equal(calls,0);
  }finally{store.close();}
 });
+test('a name in a choice label is not a matching word: "Jana — wait… do it right" is not "I snap right back at Jana"',()=>{
+ const av=["I don't take it personally. I wait.",'I try to smooth it over now.','I snap right back at Jana.'].map((label,i)=>({type:'story.choose',label,args:{choice:'c'+i}}));
+ assert.equal(choiceFor(av,'I call after her: "Jana — wait. Let me actually do it right. Saturday. Deal?"'),null);
+ assert.equal(choiceFor(av,'I snap back at her')?.args.choice,'c2');
+});

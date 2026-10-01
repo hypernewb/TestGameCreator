@@ -127,3 +127,17 @@ test('a mixed world reads back with the mode on every rung, and rebuilds the sam
  assert.deepEqual(again.firsts,pack.firsts);
  assert.deepEqual(again.scriptedScenes,pack.scriptedScenes);
 });
+test('assembled worlds cap romance gains and set arc trust gates over her starting Trust',()=>{
+ const spec=specFromPack(campus(),{cast:CAST}),p=assemble(spec).pack;assert.deepEqual(p.romanceStats,{dailyGain:6});
+ for(const c of HEROINES){const t=p.initialRelationships.find(r=>r.character===c).trust,arc=p.arcTracks.find(a=>a.character===c);
+  assert.equal(arc.traits.find(x=>x.id==='trust').initial,t);assert.deepEqual(arc.stages.slice(1).map(s=>s.when.trust),[t+6,t+15]);}
+ const fresh=structuredClone(spec);delete fresh.world.romanceStats;fresh.heroines[0].trust=undefined;const q=assemble(fresh).pack,j=q.arcTracks[0];
+ assert.deepEqual(q.romanceStats,{dailyGain:6});assert.equal(j.traits.find(x=>x.id==='trust').initial,25,'torn preset start');assert.equal(j.stages[1].when.trust,31);
+});
+
+test('assembled worlds use the 6/20/32 rank scale, -3 loss cap, big gifts and no neglect',async()=>{
+ const {TEMPERAMENTS,SHARED_ACTS,RANK_POINTS}=await import('../packages/cards/beat-library.mjs');
+ assert.deepEqual(RANK_POINTS.map(r=>r[0]),[0,6,20,32]);assert.deepEqual(SHARED_ACTS.map(a=>a[3]),[6,2,-3]);
+ for(const t of rebuilt().pack.romanceTempoProfiles){assert.equal(t.neglect,undefined);assert.deepEqual(t.ranks.map(r=>r.points),[0,6,20,32]);}
+ for(const [k,T] of Object.entries(TEMPERAMENTS)){for(const a of T.acts)assert.ok(a[3]>=-3,`${k} ${a[0]}`);for(const d of T.drift)assert.ok(d[3]>=-3,`${k} drift`);}
+});

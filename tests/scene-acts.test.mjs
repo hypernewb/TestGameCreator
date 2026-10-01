@@ -6,7 +6,7 @@ import {registry} from '../packages/modules/index.mjs';
 import {Store} from '../packages/persistence/store.mjs';
 import {GameService} from '../packages/ai/service.mjs';
 import {sceneResponseFormat} from '../packages/ai/providers.mjs';
-import {sceneActs} from '../packages/ai/scene-acts.mjs';
+import {sceneActs,ACTS_RULE} from '../packages/ai/scene-acts.mjs';
 import {scenePromptMessages} from '../vendor/venus/scenePrompt.mjs';
 
 // Stands in for lane B's social.acts until it lands: records what it was asked to price.
@@ -44,4 +44,7 @@ test('a scene with an act profile asks for tags and records them as a social.pri
 test('without an act profile the prompt and schema stay unchanged',()=>{
  const p=pack();delete p.actProfiles;const ctx={stagedCast:['ada'],scenePhase:'opening',playerAction:'Hi.',actTags:''};
  assert.equal(sceneResponseFormat(ctx,p).json_schema.schema.properties.acts,undefined);assert.doesNotMatch(scenePromptMessages(ctx,p)[0].content,/In acts/);
+});
+test('the acts rule counts opening up as a small listen and keeps [] for lines that do nothing toward her',()=>{
+ assert.match(ACTS_RULE,/Sharing something personal with her[^.]*is a small listen/);assert.match(ACTS_RULE,/Return \[\] only when the player does nothing toward her/);assert.doesNotMatch(ACTS_RULE,/\[\] for plain talk/);
 });

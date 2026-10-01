@@ -33,7 +33,7 @@ export const newDay=(state,pack,prevTick)=>prevTick===undefined?state.tick===0:c
 export function hub(state,pack){
  const cal=calendarFor(state.tick,pack),here=state.actors[pack.playerId].location,daily=state.activityDayUses||{};
  return pack.locations.map(loc=>{const closed=closedWhy(state,pack,loc.id,cal),people=Object.keys(state.actors).filter(id=>id!==pack.playerId&&state.actors[id].location===loc.id).map(id=>({id,name:nameOf(pack,id),interest:loveInterests(pack).includes(id)}));
-  const activities=(pack.activities||[]).filter(a=>a.location===loc.id&&(!a.requiresFlag||state.flags?.[a.requiresFlag])&&!(a.once&&state.activityUses?.[a.id])).map(a=>{const used=a.perDay&&(daily[a.id]?.day===cal.day?daily[a.id].count:0)>=a.perDay,away=a.character&&state.actors[a.character]?.location!==loc.id;return {id:a.id,name:a.name,description:a.description||'',yields:yields(pack,a),character:a.character||null,available:!closed&&!used&&!away,why:closed||(used?'Done for today':away?`${nameOf(pack,a.character)} isn't here`:'')};});
+  const activities=(pack.activities||[]).filter(a=>a.location===loc.id&&(!a.requiresFlag||state.flags?.[a.requiresFlag])&&!(a.once&&state.activityUses?.[a.id])).map(a=>{const used=a.perDay&&(daily[a.id]?.day===cal.day?daily[a.id].count:0)>=a.perDay,away=a.character&&state.actors[a.character]?.location!==loc.id,ranks=a.minRank&&(pack.romanceTempoProfiles||[]).find(p=>p.character===a.character)?.ranks||[],need=ranks.findIndex(r=>r.id===a.minRank),lock=need>(state.modules?.['social.romance-tempo']?.characters?.[a.character]?.rank||0)?ranks[need]:null;return {id:a.id,name:a.name,description:a.description||'',yields:yields(pack,a),character:a.character||null,available:!closed&&!used&&!away&&!lock,why:closed||(lock?`Unlocks at ${lock.name||lock.id} with ${nameOf(pack,a.character)}`:used?'Done for today':away?`${nameOf(pack,a.character)} isn't here`:'')};});
   return {id:loc.id,name:loc.name,background:loc.background||null,here:loc.id===here,closed,people,activities};});
 }
 // M0.7 goal line: per love interest, her next first on the ladder (talk, date, kiss, night) and what gates it, in words, never numbers.
@@ -88,3 +88,5 @@ export function poseFor(state,pack,id){
 }
 // The engine's shared choice hint prints trust as a number; on campus an activity choice shows the hub's yields line instead.
 export const actionHint=(pack,a)=>{const act=isCampus(pack)&&a.args?.activityId&&pack.activities.find(x=>x.id===a.args.activityId);return act?yields(pack,act):a.storylet?.hint;};
+// Scene-header clock, just numbers: raw tick plus position within the daypart (T37 · 2/4), so a long talk visibly spends the day.
+export const clockDigits=(state,pack)=>{const interval=pack.daypart?.interval||4;return `T${state.tick} · ${(state.tick%interval)+1}/${interval}`;};

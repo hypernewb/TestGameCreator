@@ -11,6 +11,7 @@ export function expandDirectorTemplate(pack,template){
  if(template.focusRole)assert(Object.hasOwn(template.roles,template.focusRole),'Director template focusRole is not a role');
  return castings(pack,template.roles).map(roles=>{
   const id=[template.id,...Object.values(roles)].join('.'),sceneId=`director.${id}`,scene={...fill(template.scene,roles,pack),id:sceneId,template:{id:template.id,roles,kind:template.kind,delivery,tone:template.tone??1}};
+  if((template.maxUses??1)>1)scene.repeatable=true; // multi-use beats need a repeatable scene to re-fire
   assert(safeKey(id)&&safeKey(sceneId),'Director template instance ID is too long or invalid');
   if(delivery==='incident'){scene.trigger={event:'story.incident',match:{incident:id}};delete scene.offer;}else{scene.offer='director';scene.trigger={event:'story.opportunity'};}
   const common={id,scene:sceneId,kind:template.kind,tone:template.tone??1,weight:template.weight??10,maxUses:template.maxUses??1,...(template.focusRole?{focus:roles[template.focusRole]}:{}),template:template.id,roles};

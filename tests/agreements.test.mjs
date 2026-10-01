@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createWorld,execute,validatePack} from '../packages/core/engine.mjs';
+import {createWorld,execute,validatePack,replay} from '../packages/core/engine.mjs';
 import {registry} from '../packages/modules/index.mjs';
 import {secrecyOf,suspicionOf} from '../packages/modules/secrecy.mjs';
 
@@ -20,6 +20,24 @@ const base=(extra={})=>{
 };
 const run=(p,seed=7)=>{let s=createWorld(p,registry,'agreements',seed);const act=(type,args={})=>{const r=execute(s,{id:`c${s.revision}`,type,args,actorId:p.playerId,expectedRevision:s.revision},p,registry);s=r.state;return r;};return {act,get s(){return s;}};};
 const events=(s,type)=>s.events.filter(e=>e.type===type);
+
+test('agreement changes cannot be toggled for free; cooldown and cost replay deterministically',()=>{
+ const p=base({datingProfiles:[{character:'jana',initialPhase:'exclusive',initialAgreement:'monogamous',agreements:['monogamous','open'],agreementCooldownTicks:3,thresholds:{crush:-100,date:-100,exclusive:-100}}]}),c=run(p);
+ c.act('social.negotiateAgreement',{character:'jana',agreement:'open'});
+ const d=()=>c.s.modules['social.dating'].characters.jana;
+ assert.equal(d().satisfaction,45);assert.equal(d().agreementCooldownUntil,3);
+ const before=structuredClone(c.s);assert.throws(()=>c.act('social.negotiateAgreement',{character:'jana',agreement:'monogamous'}),/Give the current agreement time/);assert.deepEqual(c.s,before);
+ for(let i=0;i<3;i++)c.act('core.wait');
+ c.act('social.negotiateAgreement',{character:'jana',agreement:'monogamous'});
+ assert.equal(d().agreement,'monogamous');assert.equal(d().satisfaction,40);
+ assert.deepEqual(replay(createWorld(p,registry,'agreements',7),c.s.events).modules,c.s.modules);
+});
+
+test('agreement cooldown and costs are validated',()=>{
+ for(const extra of [{agreementCooldownTicks:-1},{agreementCooldownTicks:1.5},{agreementSatisfactionCost:5}]){
+  const p=base();Object.assign(p.datingProfiles[0],extra);assert.throws(()=>validatePack(p,registry),/agreement (?:cooldown|cost) invalid/);
+ }
+});
 
 test('an agreement gate blocks negotiation until the relationship earns it, then costs satisfaction',()=>{
  const p=base(),c=run(p);

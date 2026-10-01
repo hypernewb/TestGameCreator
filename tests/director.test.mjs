@@ -7,7 +7,7 @@ import {director,briefOf,directorContext,PRESETS} from '../packages/modules/dire
 import {statValue} from '../packages/modules/stats.mjs';
 import {contextFor} from '../packages/ai/context.mjs';
 
-const probe={id:'test.probe',version:'0.1.0',coreApi:'0.1.0',requires:[],commands:{'test.beat'(tx){tx.emit('story.choiceResolved',{scene:'elsewhere',beat:'opening',choice:'x',text:'A beat happened.'});},'test.calm'(tx){tx.emit('test.calm',{text:'The day cools down.'});},'test.trust'(tx){tx.set(['modules','social.relationships','edges','ada--player'],80);tx.emit('social.relationshipChanged',{actor:'ada',toward:'player',old:20,value:80,delta:60,text:'Ada: Trust 20 → 80'},['player','ada']);}}};
+const probe={id:'test.probe',version:'0.1.0',coreApi:'0.1.0',requires:[],commands:{'test.beat'(tx){tx.emit('story.choiceResolved',{scene:'elsewhere',beat:'opening',choice:'x',text:'A beat happened.'});},'test.calm'(tx){tx.emit('test.calm',{text:'The day cools down.'});},'test.trust'(tx){tx.set(['modules','social.relationships','edges','ada--player'],80);tx.emit('social.relationshipChanged',{actor:'ada',toward:'player',old:20,value:80,delta:60,text:'Ada: Trust 20 → 80'},['player','ada']);},'test.date'(tx){for(let i=0;i<10;i++){tx.emit('social.romancePointsChanged',{character:'ada',from:i,to:i+1,delta:1});tx.emit('social.relationshipChanged',{actor:'ada',toward:'player',old:i,value:i+1,delta:1});}},'test.hurt'(tx){tx.set(['modules','social.relationships','edges','ada--player'],10);tx.emit('social.relationshipChanged',{actor:'ada',toward:'player',old:20,value:10,delta:-10,text:'Ada: Trust 20 → 10'},['player','ada']);}}};
 const custom={...registry,[probe.id]:probe};
 const pack=(profile={},complications,opportunities)=>{
  const p=JSON.parse(readFileSync(new URL('../packs/neutral.json',import.meta.url)));delete p.modules['world.schedule'];
@@ -26,6 +26,12 @@ const pack=(profile={},complications,opportunities)=>{
  return p;};
 const run=p=>{validatePack(p,custom);let s=createWorld(p,custom,'director');const act=(type,args={})=>{const r=execute(s,{id:`t${s.revision}`,actorId:p.playerId,type,args,expectedRevision:s.revision},p,custom);s=r.state;return r;};return {act,get pack(){return p;},get s(){return s;},get director(){return s.modules['story.director'];},get pending(){return s.modules['story.scenes'].pending;},get incidents(){return s.events.filter(x=>x.type==='story.incident');}};};
 const waits=(c,n)=>{for(let i=0;i<n&&!c.pending;i++)c.act('core.wait');}; // play stops when a complication opens
+
+test('warm progress piles no tension, so a long good scene on one tick still leaves the daypart quiet; a loss still counts',()=>{
+ const c=run(pack({quietDayparts:1,firstTick:0}));c.act('test.date');assert.equal(c.director.tension,0);
+ waits(c,4);assert.equal(c.incidents.length,1,'the director steps in after the warm date');
+ const h=run(pack());h.act('test.hurt');assert.ok(h.director.tension>0);
+});
 
 test('a quiet streak draws an authored complication through the scene queue, and the spent one is not redrawn',()=>{
  const c=run(pack({quietDayparts:1,firstTick:0}));
@@ -151,14 +157,33 @@ test('the director pre-commits and teases one daypart ahead; the teased beat is 
  assert.equal(c.director.armed,null);
 });
 
-test('an eventful daypart forgets the tease',()=>{
+test('an eventful daypart forgets the tease, out loud',()=>{
  const c=run(pack({quietDayparts:2,firstTick:0,decayPerTick:0,activeThreshold:5,tensionEvents:[{event:'test.beat',weight:8}]},[{id:'jealous',scene:'sc-jealous'}]));
  waits(c,4);
  assert.ok(c.director.armed,'teased after one quiet daypart');
  c.act('test.beat');waits(c,4);
  assert.equal(c.director.armed,null,'the pressure released elsewhere');
+ const passed=c.s.events.filter(x=>x.type==='story.teaserPassed');
+ assert.equal(passed.length,1,'the release is announced, not silent');
+ assert.equal(passed[0].payload.reason,'released');assert.equal(passed[0].payload.incident,'jealous');
  waits(c,4);
  assert.equal(c.incidents.length,0,'a single quiet daypart is not enough again');
+});
+
+test('a teased beat that becomes impossible is released, never swapped for another draw',()=>{
+ const c=run(pack({quietDayparts:2,firstTick:0,decayPerTick:0,jitter:0},[{id:'jealous',scene:'sc-jealous',when:{trust:{ada:50}}},{id:'rival',scene:'sc-rival'}]));
+ c.act('test.trust');
+ waits(c,4); // quiet daypart 1: the tease pre-commits (equal weights, zero jitter → the first eligible wins)
+ const teasers=c.s.events.filter(x=>x.type==='story.teaser');
+ assert.equal(teasers.length,1);assert.equal(teasers[0].payload.incident,'jealous');
+ c.act('test.hurt');
+ waits(c,4); // the gated beat left the pool: the promise is released and nothing else fires in its place
+ assert.equal(c.incidents.length,0,'the promised beat did not silently become another beat');
+ const passed=c.s.events.filter(x=>x.type==='story.teaserPassed');
+ assert.equal(passed.length,1);assert.equal(passed[0].payload.reason,'ineligible');assert.equal(passed[0].payload.incident,'jealous');
+ assert.equal(c.director.armed,null);
+ waits(c,4); // the next quiet daypart draws honestly from what remains
+ assert.equal(c.incidents.length,1);assert.equal(c.incidents[0].payload.incident,'rival');
 });
 
 test('an empty deck starves out loud, once per streak',()=>{
@@ -268,4 +293,12 @@ test('director opportunities are validated',()=>{
  assert.throws(()=>validatePack(pack({opportunitiesPerDay:0}),custom),/opportunitiesPerDay/);
  assert.throws(()=>validatePack(pack({interruptionChancePercent:-5}),custom),/interruptionChancePercent/);
  assert.doesNotThrow(()=>validatePack(pack({opportunityChancePercent:50,interruptionChancePercent:25,opportunitiesPerDay:3},[],[{id:'luck',scene:'ev-luck',kind:'windfall',cooldownTicks:12,when:{flags:{}},text:'A stall appears.'},{id:'break',scene:'ev-break',match:{activity:'shift'}}]),custom));
+});
+
+test('a typed goodbye keeps its turn: a beat due on that clock waits for the next daypart',()=>{
+ const say={id:'test.say',version:'0.1.0',coreApi:'0.1.0',requires:[],commands:{'test.say'(tx,args){tx.emit('core.sceneContinued',{activity:'continue',location:'hub',characters:['ada'],text:args.text},[tx.pack.playerId]);}}};
+ const reg={...custom,[say.id]:say},play=text=>{const p=pack({quietDayparts:1,firstTick:0,decayPerTick:0});p.modules['test.say']='0.1.0';validatePack(p,reg);let s=createWorld(p,reg,'director');const act=(type,args={})=>{s=execute(s,{id:`t${s.revision}`,actorId:p.playerId,type,args,expectedRevision:s.revision},p,reg).state;};
+  while(s.tick%4<3)act('core.wait');act('test.say',{text});const now=s.events.filter(e=>e.type==='story.incident').length;for(let i=0;i<4&&!s.modules['story.scenes'].pending;i++)act('core.wait');return [now,s.events.filter(e=>e.type==='story.incident').length];};
+ assert.deepEqual(play('Tell her the lathe is jammed again'),[1,1],'an ordinary line still lets the beat land on its clock');
+ assert.deepEqual(play('Say I should get to class, see you tonight'),[0,1],'the goodbye plays out; the beat lands at the next daypart');
 });

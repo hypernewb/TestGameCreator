@@ -4,3 +4,9 @@ node_modules/
 .env
 model-evaluation-results.json
 ui-*.png
+
+# large local assets / scratch (director snapshot 2026-10-01)
+public/assets/campus/
+public/assets/characters/
+artifacts/chat-audit/
+tests/_tmp_*.mjs

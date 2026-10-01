@@ -1081,6 +1081,110 @@
           "delta": 2
         }
       ]
+    },
+    {
+      "id": "darts-with-jana",
+      "name": "Darts at Murphy's with Jana",
+      "description": "Jana keeps score in German and insists the board is crooked when she loses. It is not.",
+      "location": "murphys",
+      "duration": 4,
+      "character": "jana",
+      "minRank": "friend",
+      "perDay": 1,
+      "phrases": [
+        "play darts",
+        "darts with jana"
+      ],
+      "effects": [
+        {
+          "type": "stat",
+          "stat": "charm",
+          "delta": 1
+        },
+        {
+          "type": "trust",
+          "character": "jana",
+          "delta": 2
+        }
+      ]
+    },
+    {
+      "id": "case-prep",
+      "name": "Case prep with Monique",
+      "description": "Monique pitches her business plan across a café table and needs someone to argue with. Hard.",
+      "location": "campbells",
+      "duration": 4,
+      "character": "monique",
+      "minRank": "ally",
+      "perDay": 1,
+      "phrases": [
+        "case prep",
+        "help monique with her pitch"
+      ],
+      "effects": [
+        {
+          "type": "stat",
+          "stat": "wit",
+          "delta": 1
+        },
+        {
+          "type": "trust",
+          "character": "monique",
+          "delta": 2
+        }
+      ]
+    },
+    {
+      "id": "script-session",
+      "name": "Script session with Nova",
+      "description": "Nova reads you scenes from her short film and casts you as the villain, then rewrites your lines on a napkin.",
+      "location": "campbells",
+      "duration": 4,
+      "character": "nova",
+      "minRank": "partner-in-crime",
+      "perDay": 1,
+      "phrases": [
+        "script session",
+        "read lines with nova"
+      ],
+      "effects": [
+        {
+          "type": "stat",
+          "stat": "charm",
+          "delta": 1
+        },
+        {
+          "type": "trust",
+          "character": "nova",
+          "delta": 2
+        }
+      ]
+    },
+    {
+      "id": "build-night",
+      "name": "Build night with Abigail",
+      "description": "A soldering iron, a half-finished drone, and Abigail explaining control loops like gossip.",
+      "location": "langley",
+      "duration": 4,
+      "character": "abigail",
+      "minRank": "climbing-partner",
+      "perDay": 1,
+      "phrases": [
+        "build night",
+        "help abigail with the drone"
+      ],
+      "effects": [
+        {
+          "type": "stat",
+          "stat": "focus",
+          "delta": 1
+        },
+        {
+          "type": "trust",
+          "character": "abigail",
+          "delta": 2
+        }
+      ]
     }
   ],
   "schedules": [
@@ -1475,25 +1579,25 @@
           "id": "roommate",
           "name": "Roommate",
           "points": 0,
-          "ceiling": 30
+          "ceiling": 10
         },
         {
           "id": "friend",
           "name": "Friend",
-          "points": 20,
-          "ceiling": 55
+          "points": 6,
+          "ceiling": 24
         },
         {
           "id": "something-more",
           "name": "Something more",
-          "points": 45,
-          "ceiling": 80
+          "points": 20,
+          "ceiling": 36
         },
         {
           "id": "hers",
           "name": "Hers",
-          "points": 70,
-          "ceiling": 100
+          "points": 32,
+          "ceiling": 50
         }
       ],
       "gifts": {
@@ -1527,7 +1631,7 @@
           "match": {
             "activity": "movie-night"
           },
-          "points": 3,
+          "points": 2,
           "cooldownTicks": 12
         },
         {
@@ -1536,15 +1640,10 @@
           "match": {
             "activity": "beach-volleyball"
           },
-          "points": 3,
+          "points": 2,
           "cooldownTicks": 12
         }
       ],
-      "neglect": {
-        "afterTicks": 36,
-        "fuseTicks": 12,
-        "minPoints": 20
-      },
       "jealousy": {
         "preset": "secure"
       }
@@ -1557,25 +1656,25 @@
           "id": "classmate",
           "name": "Classmate",
           "points": 0,
-          "ceiling": 30
+          "ceiling": 10
         },
         {
           "id": "ally",
           "name": "Ally",
-          "points": 20,
-          "ceiling": 55
+          "points": 6,
+          "ceiling": 24
         },
         {
           "id": "confidant",
           "name": "Confidant",
-          "points": 45,
-          "ceiling": 80
+          "points": 20,
+          "ceiling": 36
         },
         {
           "id": "partner",
           "name": "Partner",
-          "points": 70,
-          "ceiling": 100
+          "points": 32,
+          "ceiling": 50
         }
       ],
       "gifts": {
@@ -1586,13 +1685,13 @@
           {
             "item": "fountain-pen",
             "reaction": "loved",
-            "points": 7,
+            "points": 6,
             "chemistry": 2
           },
           {
             "item": "latte",
             "reaction": "liked",
-            "points": 3,
+            "points": 4,
             "chemistry": 1
           },
           {
@@ -1604,16 +1703,11 @@
           {
             "item": "energy-bar",
             "reaction": "disliked",
-            "points": -2
+            "points": -3
           }
         ]
       },
       "signals": [],
-      "neglect": {
-        "afterTicks": 36,
-        "fuseTicks": 12,
-        "minPoints": 20
-      },
       "jealousy": {
         "preset": "secure"
       }
@@ -1626,25 +1720,25 @@
           "id": "stranger",
           "name": "Stranger",
           "points": 0,
-          "ceiling": 30
+          "ceiling": 10
         },
         {
           "id": "partner-in-crime",
           "name": "Partner in crime",
-          "points": 20,
-          "ceiling": 55
+          "points": 6,
+          "ceiling": 24
         },
         {
           "id": "co-star",
           "name": "Co-star",
-          "points": 45,
-          "ceiling": 80
+          "points": 20,
+          "ceiling": 36
         },
         {
           "id": "leading-role",
           "name": "Leading role",
-          "points": 70,
-          "ceiling": 100
+          "points": 32,
+          "ceiling": 50
         }
       ],
       "gifts": {
@@ -1655,19 +1749,19 @@
           {
             "item": "vinyl-record",
             "reaction": "loved",
-            "points": 7,
+            "points": 6,
             "chemistry": 2
           },
           {
             "item": "cider",
             "reaction": "liked",
-            "points": 3,
+            "points": 4,
             "chemistry": 1
           },
           {
             "item": "sunflowers",
             "reaction": "disliked",
-            "points": -2
+            "points": -3
           }
         ]
       },
@@ -1678,15 +1772,10 @@
           "match": {
             "activity": "film-society"
           },
-          "points": 3,
+          "points": 2,
           "cooldownTicks": 12
         }
       ],
-      "neglect": {
-        "afterTicks": 36,
-        "fuseTicks": 12,
-        "minPoints": 20
-      },
       "jealousy": {
         "preset": "secure"
       }
@@ -1699,25 +1788,25 @@
           "id": "acquaintance",
           "name": "Acquaintance",
           "points": 0,
-          "ceiling": 30
+          "ceiling": 10
         },
         {
           "id": "climbing-partner",
           "name": "Climbing partner",
-          "points": 20,
-          "ceiling": 55
+          "points": 6,
+          "ceiling": 24
         },
         {
           "id": "teammate",
           "name": "Teammate",
-          "points": 45,
-          "ceiling": 80
+          "points": 20,
+          "ceiling": 36
         },
         {
           "id": "co-pilot",
           "name": "Co-pilot",
-          "points": 70,
-          "ceiling": 100
+          "points": 32,
+          "ceiling": 50
         }
       ],
       "gifts": {
@@ -1734,13 +1823,13 @@
           {
             "item": "energy-bar",
             "reaction": "liked",
-            "points": 3,
+            "points": 4,
             "chemistry": 1
           },
           {
             "item": "red-roses",
             "reaction": "disliked",
-            "points": -2
+            "points": -3
           }
         ]
       },
@@ -1751,15 +1840,10 @@
           "match": {
             "activity": "climbing-wall"
           },
-          "points": 3,
+          "points": 2,
           "cooldownTicks": 12
         }
       ],
-      "neglect": {
-        "afterTicks": 36,
-        "fuseTicks": 12,
-        "minPoints": 20
-      },
       "jealousy": {
         "preset": "secure"
       }
@@ -1773,7 +1857,7 @@
           "id": "jana-island",
           "kind": "listen",
           "target": "*",
-          "points": 8,
+          "points": 3,
           "reason": "you asked about the island and actually listened",
           "memory": "The player asked about Borkum and listened to the answer."
         },
@@ -1781,7 +1865,7 @@
           "id": "jana-dominik",
           "kind": "listen",
           "target": "dominik",
-          "points": 10,
+          "points": 3,
           "reason": "you let her talk about Dominik without taking sides",
           "memory": "The player let her talk about Dominik without judging."
         },
@@ -1789,56 +1873,56 @@
           "id": "jana-dominik-push",
           "kind": "pushy",
           "target": "dominik",
-          "points": -12,
+          "points": -3,
           "reason": "you told her what to do about Dominik"
         },
         {
           "id": "jana-tease",
           "kind": "tease",
           "target": "*",
-          "points": 6,
+          "points": 2,
           "reason": "you teased her like one of her friends back home"
         },
         {
           "id": "jana-volley",
           "kind": "invite",
           "target": "saturday-afternoon@hewett",
-          "points": 10,
+          "points": 3,
           "reason": "you asked her to play volleyball, not to a date"
         },
         {
           "id": "jana-looks",
           "kind": "compliment",
           "target": "looks",
-          "points": -3,
+          "points": -2,
           "reason": "you led with her looks, the way Dominik always did"
         },
         {
           "id": "jana-pushy",
           "kind": "pushy",
           "target": "*",
-          "points": -10,
+          "points": -3,
           "reason": "you pushed when she said she needed to think"
         },
         {
           "id": "jana-roll",
           "kind": "gift",
           "target": "cinnamon-roll",
-          "points": 8,
+          "points": 6,
           "reason": "you found the closest thing to a Franzbrötchen in town"
         },
         {
           "id": "jana-pint",
           "kind": "buy",
           "target": "pint",
-          "points": 3,
+          "points": 2,
           "reason": "you bought the round"
         },
         {
           "id": "jana-touch",
           "kind": "touch",
           "target": "*",
-          "points": -4,
+          "points": -2,
           "reason": "you touched her in front of everyone",
           "when": {
             "private": false
@@ -1848,21 +1932,21 @@
           "id": "jana-harp-wants",
           "kind": "pushy",
           "target": "being-told-what-she-wants",
-          "points": -3,
+          "points": -2,
           "reason": "you kept asking about people deciding things for her"
         },
         {
           "id": "jana-harp-pushiness",
           "kind": "pushy",
           "target": "pushiness",
-          "points": -3,
+          "points": -2,
           "reason": "you kept circling back to pushy people"
         },
         {
           "id": "jana-harp-dominik",
           "kind": "pushy",
           "target": "people-who-pick-sides-about-dominik",
-          "points": -3,
+          "points": -2,
           "reason": "you kept pulling her back to who sides with Dominik"
         }
       ]
@@ -1874,35 +1958,35 @@
           "id": "monique-work",
           "kind": "compliment",
           "target": "work",
-          "points": 8,
+          "points": 3,
           "reason": "you praised the work, not the woman"
         },
         {
           "id": "monique-looks",
           "kind": "compliment",
           "target": "looks",
-          "points": -2,
+          "points": -1,
           "reason": "you went for looks; she has heard it"
         },
         {
           "id": "monique-boast",
           "kind": "boast",
           "target": "*",
-          "points": -6,
+          "points": -3,
           "reason": "you bragged, and she keeps score"
         },
         {
           "id": "monique-listen",
           "kind": "listen",
           "target": "*",
-          "points": 5,
+          "points": 2,
           "reason": "you let her finish her sentence"
         },
         {
           "id": "monique-tease-private",
           "kind": "tease",
           "target": "*",
-          "points": 4,
+          "points": 1,
           "reason": "you teased her when nobody was watching",
           "when": {
             "private": true
@@ -1912,7 +1996,7 @@
           "id": "monique-tease-public",
           "kind": "tease",
           "target": "*",
-          "points": -5,
+          "points": -3,
           "reason": "you teased her in front of people",
           "when": {
             "private": false
@@ -1922,49 +2006,49 @@
           "id": "monique-pushy",
           "kind": "pushy",
           "target": "*",
-          "points": -8,
+          "points": -3,
           "reason": "you tried to handle her"
         },
         {
           "id": "monique-invite",
           "kind": "invite",
           "target": "*",
-          "points": 3,
+          "points": 1,
           "reason": "you made a plan and named a time"
         },
         {
           "id": "monique-pen",
           "kind": "gift",
           "target": "fountain-pen",
-          "points": 8,
+          "points": 6,
           "reason": "you noticed she writes everything by hand"
         },
         {
           "id": "monique-latte",
           "kind": "buy",
           "target": "latte",
-          "points": 3,
+          "points": 2,
           "reason": "you remembered her order"
         },
         {
           "id": "monique-harp-bragging",
           "kind": "pushy",
           "target": "bragging",
-          "points": -3,
+          "points": -2,
           "reason": "you kept steering back to braggarts"
         },
         {
           "id": "monique-harp-sloppiness",
           "kind": "pushy",
           "target": "sloppiness",
-          "points": -3,
+          "points": -2,
           "reason": "you kept harping on sloppy people"
         },
         {
           "id": "monique-harp-handled",
           "kind": "pushy",
           "target": "being-handled",
-          "points": -3,
+          "points": -2,
           "reason": "you kept poking at being managed"
         }
       ]
@@ -1976,14 +2060,14 @@
           "id": "nova-tease",
           "kind": "tease",
           "target": "*",
-          "points": 7,
+          "points": 2,
           "reason": "you gave as good as you got"
         },
         {
           "id": "nova-film",
           "kind": "compliment",
           "target": "film",
-          "points": 9,
+          "points": 3,
           "reason": "you took her films seriously",
           "memory": "The player took her films seriously."
         },
@@ -1991,7 +2075,7 @@
           "id": "nova-listen",
           "kind": "listen",
           "target": "*",
-          "points": 6,
+          "points": 2,
           "reason": "you let her rant about her family and did not flinch",
           "memory": "The player heard her out about her family."
         },
@@ -1999,14 +2083,14 @@
           "id": "nova-pushy",
           "kind": "pushy",
           "target": "*",
-          "points": -8,
+          "points": -3,
           "reason": "you tried to tell her what to do"
         },
         {
           "id": "nova-insult-private",
           "kind": "insult",
           "target": "*",
-          "points": 2,
+          "points": 1,
           "reason": "you roasted her, and she loved it",
           "when": {
             "private": true
@@ -2016,56 +2100,56 @@
           "id": "nova-insult-film",
           "kind": "insult",
           "target": "film",
-          "points": -10,
+          "points": -3,
           "reason": "you mocked her film, the one thing that is not a bit"
         },
         {
           "id": "nova-cider",
           "kind": "buy",
           "target": "cider",
-          "points": 3,
+          "points": 2,
           "reason": "you bought the cider without asking"
         },
         {
           "id": "nova-invite",
           "kind": "invite",
           "target": "friday-evening@murphys",
-          "points": 7,
+          "points": 2,
           "reason": "you asked her out to Murphy's on a Friday"
         },
         {
           "id": "nova-vinyl",
           "kind": "gift",
           "target": "vinyl-record",
-          "points": 9,
+          "points": 6,
           "reason": "you found the soundtrack she was humming"
         },
         {
           "id": "nova-cute",
           "kind": "compliment",
           "target": "cute",
-          "points": -4,
+          "points": -2,
           "reason": "you called her cute"
         },
         {
           "id": "nova-harp-authority",
           "kind": "pushy",
           "target": "authority",
-          "points": -3,
+          "points": -2,
           "reason": "you kept dragging authority back into it"
         },
         {
           "id": "nova-harp-cute",
           "kind": "pushy",
           "target": "being-called-cute",
-          "points": -3,
+          "points": -2,
           "reason": "you kept bringing up the cute thing"
         },
         {
           "id": "nova-harp-films",
           "kind": "pushy",
           "target": "anyone-who-mocks-her-films",
-          "points": -3,
+          "points": -2,
           "reason": "you kept reminding her of people who mock her films"
         }
       ]
@@ -2077,7 +2161,7 @@
           "id": "abigail-project",
           "kind": "listen",
           "target": "project",
-          "points": 9,
+          "points": 3,
           "reason": "you asked about the solar kayak and followed the maths",
           "memory": "The player asked about her solar-kayak project and followed it."
         },
@@ -2085,49 +2169,49 @@
           "id": "abigail-listen",
           "kind": "listen",
           "target": "*",
-          "points": 4,
+          "points": 1,
           "reason": "you asked a real question"
         },
         {
           "id": "abigail-hike",
           "kind": "invite",
           "target": "saturday-morning@hewett",
-          "points": 8,
+          "points": 3,
           "reason": "you suggested something outdoors"
         },
         {
           "id": "abigail-glasses",
           "kind": "compliment",
           "target": "glasses",
-          "points": 8,
+          "points": 3,
           "reason": "you noticed the new glasses"
         },
         {
           "id": "abigail-boast",
           "kind": "boast",
           "target": "*",
-          "points": -5,
+          "points": -3,
           "reason": "you showed off"
         },
         {
           "id": "abigail-tease",
           "kind": "tease",
           "target": "*",
-          "points": 3,
+          "points": 1,
           "reason": "you teased her gently"
         },
         {
           "id": "abigail-pushy",
           "kind": "pushy",
           "target": "*",
-          "points": -7,
+          "points": -3,
           "reason": "you pushed past a plain no"
         },
         {
           "id": "abigail-cube",
           "kind": "gift",
           "target": "puzzle-cube",
-          "points": 7,
+          "points": 6,
           "reason": "you gave her something to take apart"
         },
         {
@@ -2148,21 +2232,21 @@
           "id": "abigail-harp-drama",
           "kind": "pushy",
           "target": "pointless-drama",
-          "points": -3,
+          "points": -2,
           "reason": "you kept feeding the drama topic"
         },
         {
           "id": "abigail-harp-off",
           "kind": "pushy",
           "target": "showing-off",
-          "points": -3,
+          "points": -2,
           "reason": "you kept going on about show-offs"
         },
         {
           "id": "abigail-harp-answers",
           "kind": "pushy",
           "target": "vague-answers",
-          "points": -3,
+          "points": -2,
           "reason": "you kept pressing on vague answers"
         }
       ]
@@ -2178,7 +2262,7 @@
         },
         {
           "id": "trust",
-          "initial": 25
+          "initial": 30
         }
       ],
       "drift": [
@@ -2191,7 +2275,7 @@
         {
           "act": "listen",
           "trait": "trust",
-          "delta": 4
+          "delta": 1
         },
         {
           "act": "invite",
@@ -2201,18 +2285,18 @@
         {
           "act": "tease",
           "trait": "trust",
-          "delta": 3
+          "delta": 1
         },
         {
           "act": "pushy",
           "trait": "trust",
-          "delta": -8
+          "delta": -3
         },
         {
           "act": "pushy",
           "target": "dominik",
           "trait": "resolve",
-          "delta": -6
+          "delta": -3
         },
         {
           "act": "compliment",
@@ -2232,7 +2316,7 @@
           "name": "Restless",
           "when": {
             "resolve": 45,
-            "trust": 40
+            "trust": 36
           },
           "voice": "Starting to say out loud that the plan was never hers."
         },
@@ -2241,7 +2325,7 @@
           "name": "Resolved",
           "when": {
             "resolve": 75,
-            "trust": 60
+            "trust": 45
           },
           "flag": "jana-own-call",
           "voice": "Has made her own call about Dominik and is lighter for it."
@@ -2265,12 +2349,12 @@
           "act": "compliment",
           "target": "work",
           "trait": "trust",
-          "delta": 6
+          "delta": 2
         },
         {
           "act": "listen",
           "trait": "trust",
-          "delta": 4
+          "delta": 1
         },
         {
           "act": "tease",
@@ -2285,12 +2369,12 @@
         {
           "act": "boast",
           "trait": "trust",
-          "delta": -5
+          "delta": -3
         },
         {
           "act": "pushy",
           "trait": "trust",
-          "delta": -8
+          "delta": -3
         }
       ],
       "stages": [
@@ -2303,7 +2387,7 @@
           "id": "curious",
           "name": "Curious",
           "when": {
-            "trust": 35,
+            "trust": 16,
             "ease": 30
           },
           "voice": "Asks you questions back, and remembers the answers."
@@ -2312,7 +2396,7 @@
           "id": "candid",
           "name": "Candid",
           "when": {
-            "trust": 65,
+            "trust": 25,
             "ease": 55
           },
           "flag": "monique-candid",
@@ -2336,7 +2420,7 @@
         {
           "act": "tease",
           "trait": "trust",
-          "delta": 4
+          "delta": 1
         },
         {
           "act": "compliment",
@@ -2353,23 +2437,23 @@
           "act": "insult",
           "target": "film",
           "trait": "trust",
-          "delta": -10
+          "delta": -3
         },
         {
           "act": "pushy",
           "trait": "trust",
-          "delta": -8
+          "delta": -3
         },
         {
           "act": "insult",
           "target": "*",
           "trait": "trust",
-          "delta": 3
+          "delta": 1
         },
         {
           "act": "listen",
           "trait": "trust",
-          "delta": 2
+          "delta": 1
         }
       ],
       "stages": [
@@ -2382,7 +2466,7 @@
           "id": "amused",
           "name": "Amused",
           "when": {
-            "trust": 35,
+            "trust": 21,
             "softness": 30
           },
           "voice": "Still loud, but drops the act for a line or two."
@@ -2391,7 +2475,7 @@
           "id": "devoted",
           "name": "Devoted",
           "when": {
-            "trust": 60,
+            "trust": 30,
             "softness": 60
           },
           "flag": "nova-devoted",
@@ -2416,12 +2500,12 @@
           "act": "listen",
           "target": "project",
           "trait": "trust",
-          "delta": 8
+          "delta": 3
         },
         {
           "act": "listen",
           "trait": "trust",
-          "delta": 3
+          "delta": 1
         },
         {
           "act": "invite",
@@ -2442,12 +2526,12 @@
         {
           "act": "boast",
           "trait": "trust",
-          "delta": -5
+          "delta": -3
         },
         {
           "act": "pushy",
           "trait": "trust",
-          "delta": -7
+          "delta": -3
         }
       ],
       "stages": [
@@ -2460,7 +2544,7 @@
           "id": "curious",
           "name": "Curious",
           "when": {
-            "trust": 35,
+            "trust": 21,
             "playfulness": 30
           },
           "voice": "Starts suggesting plans herself."
@@ -2469,7 +2553,7 @@
           "id": "smitten",
           "name": "Smitten",
           "when": {
-            "trust": 60,
+            "trust": 30,
             "playfulness": 55
           },
           "flag": "abigail-smitten",
@@ -3512,5 +3596,8 @@
     "stat": "reputation",
     "perPublicReveal": 2,
     "perCaught": -10
+  },
+  "romanceStats": {
+    "dailyGain": 6
   }
 }

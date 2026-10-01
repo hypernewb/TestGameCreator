@@ -19,6 +19,7 @@
     "prompt-ab": "node scripts/prompt-ab.mjs",
     "playtest:ai": "node scripts/ai-game-tester.mjs",
     "fun": "node scripts/fun-report.mjs",
+    "dialogue": "node scripts/dialogue-replay.mjs",
     "audit:playtest": "node scripts/audit-playtest.mjs",
     "campaigns:reset": "node scripts/reset-campaigns.mjs",
     "assets:manifest": "node scripts/assets-manifest.mjs",

@@ -3,11 +3,8 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ## Todo
 
-### T-026 UI check (screenshots of play + creator, owner picks fixes)
-  - planned: after phase 1 · tags: [playtester]
-
 ### C1 tickets: voices, she acts first, visible progress, gift repeats
-  - planned: after T-026
+  - planned: after T-026 milestone list
 
 ### T-008 Per-heroine ladder + unwelcome-flirt reactions by personality
   - tags: [writer, opencode-longcat-free]
@@ -15,6 +12,12 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 
 ## Doing
+
+### T-026 UI milestone list from owner UI research
+  - planned: gpt-6.1-sol (Codex) · tags: [analyzer, codex]
+
+### T-027 Trio body maps from archetypes (owner delegated)
+  - planned: gpt-6.1-sol (Codex) · tags: [writer, codex]
 
 
 ### T-024 Body-region limits drive intimate acts

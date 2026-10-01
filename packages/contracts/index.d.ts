@@ -67,6 +67,10 @@ export interface TouchRefusedEvent { character:string;region?:BodyRegion;step?:s
 export interface RelationshipStageSettings { stages?:['acquaintance','dating','exclusive']; strainTrustFloor?:number; strainDays?:number; scar?:{trust?:number;chemistry?:number}; repairDelayDays?:number; repairTrustBar?:number }
 export interface RelationshipStagesPack { relationshipStageSettings?:RelationshipStageSettings }
 export interface BreakupHistoryEntry { tick:number; from:string; reason:string; scar:{trust:number;chemistry:number} }
+export interface AnniversarySettings { interval:number; maxMoments:number; acknowledgeReward?:{like:number}; neglectPenalty?:{like:number} }
+export interface AnniversaryPack { anniversarySettings?:AnniversarySettings }
+export interface SharedMoment { kind:'firstMeeting'|'firstDate'|'firstKiss'|'firstNight'|'stageChange'|'breakup'|'reunion'; day:number; place:string; from?:string; to?:string }
+export interface AnniversaryCharacter { history:SharedMoment[]; firstMeetingDay:number|null; datingStartDay:number|null; lastContactDay:number|null; anniversaryAcknowledged:number|null; mark:number; months:number }
 
 export interface Refusal { code:string; reason:string; alternatives:{label:string;input:string}[]; retry:number; redirect?:boolean }
 export interface Turn { refusal?:Refusal|null }

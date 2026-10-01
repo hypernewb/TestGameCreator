@@ -3,15 +3,27 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ## Todo
 
-### C1 tickets: voices, she acts first, visible progress, gift repeats
-  - planned: after T-026 milestone list
+### Wave 1 (after T-024/T-025 merge, shares the acts path)
+  - T-008 Unwelcome flirt by personality + ladder pace · planned: codex
+  - T-035 Mixed actions in one turn · planned: codex
 
-### T-008 Per-heroine ladder + unwelcome-flirt reactions by personality
-  - tags: [writer, opencode-longcat-free]
-  - waits on: T-003 merge
+### Wave 2 (C1 character depth)
+  - T-028 Distinct voices · T-036 Player identity + topic lore · planned: codex
+
+### Wave 3 (C1 she acts first / visible progress)
+  - T-030 She texts first · T-031 Lust baseline · T-032 Anniversaries · T-034 Jealousy · planned: codex
+
+### Parked
+  - T-009b Suggest auto-fill · O1 · O3 · creator leftovers · Director-as-DM (other session; owner to place)
 
 
 ## Doing
+
+### T-029 Hidden daily need
+  - planned: gpt-6.1-sol (Codex) · tags: [implementer, codex] · C1
+
+### T-033 Gift repeats + keepsakes
+  - planned: gpt-6.1-sol (Codex) · tags: [implementer, codex] · C1
 
 ### T-026 UI milestone list from owner UI research
   - planned: gpt-6.1-sol (Codex) · tags: [analyzer, codex]
@@ -22,11 +34,11 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ### T-024 Body-region limits drive intimate acts
   - planned: gpt-6.1-sol (Codex)
-  - tags: [implementer, codex] · O2 phase 1
+  - tags: [implementer, codex] · O2 phase 1 · round 2: stale studio label test
 
 ### T-025 Refusal object: reason + alternatives, no error strings
   - planned: gpt-6.1-sol (Codex)
-  - tags: [implementer, codex] · O2 phase 1
+  - tags: [implementer, codex] · O2 phase 1 · round 2: hint style, no buttons (owner)
 
 ## Review
 

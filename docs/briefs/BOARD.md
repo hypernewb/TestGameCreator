@@ -9,8 +9,8 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ### Wave 3 (C1 she acts first / visible progress)
 
-### Wave 4 (after int-2 lands; plan PLAN-2026-10-02.md)
-  - T-038 Every typed input lands · T-039 Stall interrupt · planned: codex
+### Wave 4 (ready; plan PLAN-2026-10-02.md)
+  - T-038 Every typed input lands · planned: codex (T-039 dropped: stall interrupt already on main, 428a5cd)
   - T-040 Her own wants · T-041 Prompt pass · T-042 UI7 texts panel · planned: space-bunny (OpenCode, OpenRouter free)
 
 ### Parked
@@ -21,21 +21,11 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ## Review
 
-### int-2 (all Review tickets merged together) · 1036/1040 pass (4 known art fails) · awaiting owner OK
-
-### T-032 Anniversaries · T-034 Jealousy
-  - model: space-bunny (OpenCode free) · resumed from partial work · C1 · branches t-032 b686cd9, t-034 78fba3b · 953/962 pass (4 known art fails)
-
-### T-035 Mixed actions · T-028 Distinct voices · T-030 She texts first · T-031 Lust baseline
-  - model: space-bunny (OpenCode free; T-035/T-028 first pass nemotron) · branches t-035 34405d5, t-028 daf1f57, t-030 d5f4ca2, t-031 e3e05c9 · 945/949/950/946 pass (4 known art fails) · awaiting int-2 + owner OK
-
-### T-008 Unwelcome flirt by personality + ladder pace
-  - model: gpt-6.1-sol (Codex) · branch t-008 2dc7071 · 945 pass · awaiting owner OK
-
-### T-036 Player identity + topic lore
-  - model: nemotron-3-ultra (OpenCode free) · branch t-036 7f1dd20 · 945 pass · awaiting owner OK
-
 ## Done
+
+### int-2: T-008 T-036 T-035 T-028 T-030 T-031 T-032 T-034 (unwelcome flirt + ladder pace, player identity + lore, mixed actions, distinct voices, she texts first, lust baseline, anniversaries, jealousy)
+  - model: gpt-6.1-sol (Codex: T-008) · nemotron-3-ultra / space-bunny (OpenCode free: rest) · merged together 2026-10-02, npm test 1042/1042
+  - owner design questions (mixed-action time, mood voice, pre-dating texts, lust visibility, anniversary neglect, jealousy visibility) open; defaults kept
 
 ### T-037 Hard limit (no absolute never on trio)
   - model: gpt-6.1-sol (Codex) · tags: [implementer, codex] · O2 · merged 2026-10-01, npm test 941/941

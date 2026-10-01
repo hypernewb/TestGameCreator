@@ -3,6 +3,10 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ## Todo
 
+### T-023 Save digest includes socialPacing / timeMode / sceneFeedback
+  - planned: gpt-6.1-sol (Codex)
+  - tags: [implementer, codex] · found in T-010 review
+
 ### T-008 Per-heroine ladder + unwelcome-flirt reactions by personality
   - tags: [writer, opencode-longcat-free]
   - waits on: T-003 merge
@@ -13,21 +17,27 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ## Doing
 
+### T-022 Planner "wait until morning" ends the day
+  - model: gpt-6.1-sol (Codex)
+  - tags: [implementer, codex] · owner pick 2026-10-01
+
+## Review
+
 ### T-009a Full character sheet: schema + creator tabs (Suggest = T-009b later)
   - model: gpt-6.1-sol (Codex)
-  - tags: [implementer, codex]
+  - tags: [implementer, codex] · rounds 2–3: reskin carries sheets, review fixes · awaits owner merge OK
 
-### T-010 Daily flirt cap + "she has to go" cue
-  - model: gpt-6.1-sol (Codex)
-  - tags: [implementer, codex] · round 2: allowlist + acts.mjs
+## Done
 
 ### T-011 Day-planner mode (creator option: clock | planner)
   - model: gpt-6.1-sol (Codex)
   - tags: [implementer, codex] · round 2: pin clock tests
+  - merged 2026-10-01
 
-## Review
-
-## Done
+### T-010 Daily flirt cap + "she has to go" cue
+  - model: gpt-6.1-sol (Codex)
+  - tags: [implementer, codex] · round 2: allowlist + acts.mjs · round 3: grace countdown, schedule-boundary departures
+  - merged 2026-10-01, npm test 844/844
 
 ### T-007 Stat chips + mood line on heroine panel
   - model: gpt-6.1-sol (Codex) · review: gemini-2.5-pro (OpenCode/Vertex)

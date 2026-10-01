@@ -20,13 +20,10 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ## Doing
 
-### T-038 Every typed input lands
-  - model: gpt-6.1-sol (Codex) · fun gate (input-lost) · plan PLAN-2026-10-02
-
-### T-040 Her own wants · T-041 Prompt pass · T-042 UI7 texts panel
-  - model: space-bunny (OpenCode free) · C1 / fun gate / UI7 · T-039 dropped (stall interrupt already on main, 428a5cd)
-
 ## Review
+
+### int-3: T-038 T-040 T-041 T-042 (every input lands, her own wants, prompt slips, messages panel)
+  - model: gpt-6.1-sol (Codex: T-038) · space-bunny (OpenCode free: rest) · int-3 tests 1076 pass + 4 known worktree art failures; validate PASS · awaiting owner merge OK
 
 ## Done
 

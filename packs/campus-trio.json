@@ -74,6 +74,7 @@
     "social.romance-tempo": "0.2.0",
     "social.intimacy": "0.1.0",
     "social.acts": "0.1.0",
+    "social.daily-need": "0.1.0",
     "character.arc": "0.1.0",
     "character.sobriety": "0.1.0",
     "social.phone": "0.1.0",
@@ -1379,6 +1380,17 @@
       ]
     }
   ],
+  "giftRepeatScale": [
+    1,
+    0.5,
+    0
+  ],
+  "giftSettings": {
+    "likedMultiplier": 1.5,
+    "dislikedPoints": -2,
+    "keepsakeMinGain": 3,
+    "keepsakeLimit": 5
+  },
   "romanceTempoProfiles": [
     {
       "character": "yuna",
@@ -1594,6 +1606,151 @@
       }
     }
   ],
+  "dailyNeeds": {
+    "reward": {
+      "like": 2,
+      "trust": 1
+    },
+    "againstLike": -1,
+    "needs": [
+      {
+        "id": "vent",
+        "hint": "she seems drained",
+        "weight": 1,
+        "traitWeights": {
+          "homesick": 2,
+          "warm": 1
+        },
+        "matches": [
+          {
+            "kind": "listen"
+          }
+        ]
+      },
+      {
+        "id": "fun",
+        "hint": "she seems restless",
+        "weight": 1,
+        "traitWeights": {
+          "mischievous": 2,
+          "extroverted": 2,
+          "sporty": 1
+        },
+        "matches": [
+          {
+            "kind": "tease"
+          },
+          {
+            "kind": "invite",
+            "target": "fun"
+          }
+        ]
+      },
+      {
+        "id": "space",
+        "hint": "she seems distant",
+        "weight": 1,
+        "traitWeights": {
+          "guarded": 2,
+          "reserved": 2,
+          "composed": 1
+        },
+        "matches": [
+          {
+            "kind": "ask",
+            "target": "space"
+          }
+        ],
+        "against": [
+          {
+            "kind": "pushy"
+          }
+        ]
+      },
+      {
+        "id": "praise",
+        "hint": "she seems unsure of herself",
+        "weight": 1,
+        "traitWeights": {
+          "insecure": 2,
+          "ambitious": 1,
+          "competitive": 1
+        },
+        "matches": [
+          {
+            "kind": "compliment"
+          }
+        ]
+      },
+      {
+        "id": "food",
+        "hint": "she seems low on energy",
+        "weight": 1,
+        "traitWeights": {
+          "practical": 1,
+          "sporty": 1
+        },
+        "matches": [
+          {
+            "kind": "gift",
+            "target": "food"
+          },
+          {
+            "kind": "buy",
+            "target": "latte"
+          },
+          {
+            "kind": "buy",
+            "target": "cinnamon-roll"
+          },
+          {
+            "kind": "buy",
+            "target": "energy-bar"
+          },
+          {
+            "kind": "gift",
+            "target": "latte"
+          },
+          {
+            "kind": "gift",
+            "target": "cinnamon-roll"
+          },
+          {
+            "kind": "gift",
+            "target": "energy-bar"
+          },
+          {
+            "kind": "invite",
+            "target": "campbells"
+          }
+        ]
+      },
+      {
+        "id": "adventure",
+        "hint": "she seems eager for a change of scenery",
+        "weight": 1,
+        "traitWeights": {
+          "adventurous": 2,
+          "curious": 2,
+          "spontaneous": 2
+        },
+        "matches": [
+          {
+            "kind": "invite",
+            "target": "adventure"
+          },
+          {
+            "kind": "invite",
+            "target": "walk"
+          },
+          {
+            "kind": "invite",
+            "target": "explore"
+          }
+        ]
+      }
+    ]
+  },
   "socialPacing": {
     "flirt": {
       "mode": "cap",
@@ -3055,48 +3212,48 @@
         "experience": null,
         "body": {
           "face": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 1,
+            "limit": "ask_first"
           },
           "lips": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 2,
+            "limit": "ask_first"
           },
           "neck": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 3,
+            "limit": "ask_first"
           },
           "arms_hands": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 1,
+            "limit": "ok"
           },
           "chest": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 2,
+            "limit": "ask_first"
           },
           "back": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 1,
+            "limit": "ok"
           },
           "belly_waist": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 2,
+            "limit": "ask_first"
           },
           "hips_butt": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 2,
+            "limit": "never"
           },
           "thighs_legs": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 1,
+            "limit": "ask_first"
           },
           "intimate": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 3,
+            "limit": "ask_first"
           }
         },
         "preferences": "",
-        "limitsNotes": "",
+        "limitsNotes": "My hand or a gentle touch on my back is a comfortable start when we both want it; please ask about the other places and let me take my time, because I notice even small touches. Hips and bottom are off limits, and a strong reaction is not me saying yes.",
         "policyOverrides": {}
       },
       "routine": {
@@ -4091,48 +4248,48 @@
         "experience": null,
         "body": {
           "face": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 2,
+            "limit": "never"
           },
           "lips": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 2,
+            "limit": "ask_first"
           },
           "neck": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 3,
+            "limit": "ask_first"
           },
           "arms_hands": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 1,
+            "limit": "ok"
           },
           "chest": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 2,
+            "limit": "ask_first"
           },
           "back": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 0,
+            "limit": "ok"
           },
           "belly_waist": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 3,
+            "limit": "ask_first"
           },
           "hips_butt": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 1,
+            "limit": "ask_first"
           },
           "thighs_legs": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 1,
+            "limit": "ok"
           },
           "intimate": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 2,
+            "limit": "ask_first"
           }
         },
         "preferences": "",
-        "limitsNotes": "",
+        "limitsNotes": "Hands, back, legs: comfortable territory when we both want it; everywhere else needs a real question, even if I am making a joke, and my face is off limits. My waist is ticklish and my neck reacts strongly, so ask before making either part of the bit.",
         "policyOverrides": {}
       },
       "routine": {
@@ -5062,48 +5219,48 @@
         "experience": null,
         "body": {
           "face": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 0,
+            "limit": "ok"
           },
           "lips": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 1,
+            "limit": "ask_first"
           },
           "neck": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 3,
+            "limit": "never"
           },
           "arms_hands": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 1,
+            "limit": "ok"
           },
           "chest": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 2,
+            "limit": "ask_first"
           },
           "back": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 1,
+            "limit": "ok"
           },
           "belly_waist": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 1,
+            "limit": "ok"
           },
           "hips_butt": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 2,
+            "limit": "ask_first"
           },
           "thighs_legs": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 0,
+            "limit": "ok"
           },
           "intimate": {
-            "sensitivity": null,
-            "limit": null
+            "sensitivity": 3,
+            "limit": "ask_first"
           }
         },
         "preferences": "",
-        "limitsNotes": "",
+        "limitsNotes": "Simple version: face, hands, back, waist and legs are comfortable when we both want it; ask clearly before kissing or touching my chest, hips or intimate areas. No neck touching, ever: that strong response is discomfort, and I would rather tell you directly than have you guess.",
         "policyOverrides": {}
       },
       "routine": {

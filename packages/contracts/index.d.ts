@@ -12,7 +12,7 @@ export interface Module { id:string; version:string; coreApi:string; requires:st
 export interface Action { label:string; type:string; args:Record<string,unknown> }
 export interface Provider { interpret(input:string,context:unknown,actions:Action[],signal?:AbortSignal):Promise<{type:string;args:Record<string,unknown>}>; narrate(context:unknown,signal?:AbortSignal):Promise<string> }
 export type ActKind='flirt'|'compliment'|'gift'|'touch'|'insult'|'buy'|'invite'|'tease'|'listen'|'boast'|'pushy';
-export interface SceneAct { kind:ActKind; target:string; size?:'small'|'medium'|'large'; landed?:boolean }
+export interface SceneAct { kind:ActKind; target:string; size?:'small'|'medium'|'large'; landed?:boolean; region?:BodyRegion }
 export interface ActEntry { id:string; kind:ActKind; target:string; points:number; reason:string; memory?:string; when?:{private:boolean} }
 export interface ActProfile { character:string; entries:ActEntry[]; fallback?:{landed:number;missed:number}; sizeMultiplier?:{small:number;medium:number;large:number}; sceneCap?:number; repeatDecayPercent?:number }
 export interface ActPricedEvent { character:string; sceneId:string; source:string; act:SceneAct; entry:string|null; points:number; verdict:'liked'|'disliked'|'neutral'|'unpaid'; reason:string; memory?:string; text:string }
@@ -61,6 +61,28 @@ export interface CharacterSheet {
  [key:string]:unknown;
 }
 export interface CharacterSheetPack { characterSheets?:CharacterSheet[] }
+export interface BodyIntimacySettings { sensitivityScale?:[number,number,number,number] }
+export interface RegionAgreementRuntime { regionAgreements?:Partial<Record<BodyRegion,string>> }
+export interface TouchRefusedEvent { character:string;region?:BodyRegion;step?:string;verdict:'refuse'|'hesitate';reason:string;trustDelta:number;lustDelta:number;text:string }
 export interface RelationshipStageSettings { stages?:['acquaintance','dating','exclusive']; strainTrustFloor?:number; strainDays?:number; scar?:{trust?:number;chemistry?:number}; repairDelayDays?:number; repairTrustBar?:number }
 export interface RelationshipStagesPack { relationshipStageSettings?:RelationshipStageSettings }
 export interface BreakupHistoryEntry { tick:number; from:string; reason:string; scar:{trust:number;chemistry:number} }
+
+export interface Refusal { code:string; reason:string; alternatives:{label:string;input:string}[]; retry:number; redirect?:boolean }
+export interface Turn { refusal?:Refusal|null }
+export interface Action { refusal?:Refusal }
+export interface World { refusalHistory?:{scene:string;counts:Record<string,number>} }
+export interface ActionReply { state:World; turn?:Turn; refusal?:Refusal }
+
+export type RefusalStyle='hint'|'buttons';
+export interface RefusalPack { refusalStyle?:RefusalStyle }
+export interface Turn { refusalNarrated?:boolean }
+export interface DailyNeedMatch { kind:ActKind|'ask'; target?:string }
+export interface DailyNeedDefinition { id:string; hint:string; weight?:number; traitWeights?:Record<string,number>; matches:DailyNeedMatch[]; against?:DailyNeedMatch[] }
+export interface DailyNeedsPack { reward:{like:number;trust:number}; againstLike:number; needs:DailyNeedDefinition[] }
+export interface DailyNeedState { day:number; need:string|null; rewarded:boolean; sources:string[] }
+export interface GiftSettings { likedMultiplier:number; dislikedPoints:number; keepsakeMinGain:number; keepsakeLimit:number }
+export interface GiftPack { giftRepeatScale?:number[]; giftSettings?:GiftSettings }
+export interface GiftItem { categories?:GiftCategory[] }
+export interface GiftKeepsake { item:string; tick:number; gain:number }
+export interface GiftRuntime { giftCounts?:Record<string,number>; keepsakes?:GiftKeepsake[] }

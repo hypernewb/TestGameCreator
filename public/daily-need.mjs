@@ -1,0 +1,4 @@
+import {calendarFor} from './calendar.mjs';
+export function pickDailyNeed(p,seed,day,id){const actor=p.actors.find(a=>a.id===id),traits=p.characterSheets?.find(a=>a.actorId===id)?.personality?.traits||actor?.traits||[],pool=(p.dailyNeeds?.needs||[]).map(n=>[n,(n.weight??1)+traits.reduce((v,t)=>v+(n.traitWeights?.[t]||0),0)]),total=pool.reduce((v,[,w])=>v+w,0);if(!total)return null;let h=2166136261;for(const c of `${seed}:${day}:${id}`)h=Math.imul(h^c.charCodeAt(0),16777619);let roll=(h>>>0)/4294967296*total;for(const [n,w] of pool){roll-=w;if(roll<0)return n;}return pool.at(-1)?.[0]||null;}
+export function dailyNeedOf(s,p,id){if(!p.modules?.['social.daily-need']||!p.dailyNeeds||id===p.playerId)return null;const day=calendarFor(s.tick,p).day,r=s.modules['social.daily-need']?.characters?.[id];return r?.day===day?p.dailyNeeds.needs.find(n=>n.id===r.need)||null:pickDailyNeed(p,s.initialSeed,day,id);}
+export const dailyNeedHint=(s,p,id)=>dailyNeedOf(s,p,id)?.hint||'';

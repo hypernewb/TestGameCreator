@@ -19,6 +19,7 @@ import {actsEnabled,sceneActs,typedListen,typedDislike,ACTS_RULE,sceneClaims,CLA
 import {sobrietyLevel} from '../modules/intimacy.mjs';
 import {firstBrief,typedStop} from '../modules/firsts.mjs';
 import {jealousyHint} from '../modules/jealousy.mjs';
+import {wantHint} from '../modules/wants.mjs';
 import {parseInvite} from '../modules/social.mjs';
 // A scene's start/continue events carry the player's own words; echoing them back reads as if the story repeated
 // the player. Keep only real outcomes (travel, items, time) and say plainly that the reply failed.
@@ -246,6 +247,8 @@ const budgetDone=Boolean(world.scene?.budget&&cast.length&&world.scene.inputs>=w
     if(pack.modules['social.secrecy']&&cast.length){const sec=await import('../modules/secrecy.mjs').catch(()=>null);if(sec?.suspicionLinesFor){const suspicionLines=sec.suspicionLinesFor(world,pack,cast);if(suspicionLines.length)context.suspicions=suspicionLines;const confrontation=sec.confrontationFor(world,pack,cast);if(confrontation){context.confrontation=confrontation;context.claimsTags=CLAIMS_RULE;}}}
     // Jealousy (C1): behaviour only, one private line per jealous cast member; the meter itself never reaches the prompt.
     if(pack.modules['social.jealousy']&&cast.length){const jealous=cast.map(id=>{const hint=jealousyHint(world,pack,id);return hint?`${world.actors[id].name}: ${hint}`:'';}).filter(Boolean);if(jealous.length)context.jealousyHints=jealous;}
+    // Wants (C1): one heroine, one line, only while she is in the scene. What she wants reaches the model; the price never does.
+    if(pack.modules['social.wants']&&cast.length){const who=cast.find(id=>id===world.scene?.focus)||cast.find(id=>wantHint(world,pack,id)),hint=who&&wantHint(world,pack,who);if(hint)context.wantHint=`${world.actors[who].name}: ${hint}`;}
     const first=firstBrief(world,pack),firstStarted=turn.events.some(e=>e.type==='social.firstStarted');
     if(first&&cast.includes(first.character)){
       context.first=first;context.scenePhase=context.sceneHistory.length?'continuation':'opening';

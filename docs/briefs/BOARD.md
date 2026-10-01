@@ -26,21 +26,10 @@
 
 ## Review
 
-### T-001 Venus University skill digest
-  - tags: [researcher, openrouter-gemini-pro]
-
-### T-003 Intimate action ladder (O2 part 1)
-  - tags: [implementer, claude]
-  - 8/8 tests
-
-### T-004 rp-master analysis
-  - tags: [researcher, opencode-vertex-pro]
-
-### T-005 Research synthesis
-  - tags: [analyzer, opencode-vertex-flash]
-  - resent once (213→87 lines)
-
 ## Done
+
+### T-001 Venus skill digest · T-003 Action ladder · T-004 rp-master analysis · T-005 Synthesis
+  - merged 2026-10-01, npm test 798/798
 
 ### T-002 Codebase map
   - tags: [doc-keeper, openrouter-gemini-flash]

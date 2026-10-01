@@ -12,7 +12,7 @@ export const clone = x => structuredClone(x);
 export const plannerMode = pack => pack.gameProject?.timeMode==='planner';
 export function assert(ok, message) { if (!ok) throw new Error(message); }
 const untilTicks=(tick,part,n)=>{const slot=Math.floor(tick/n),d=((PERIODS.indexOf(part)-slot%3+3)%3)||3;return (slot+d)*n-tick;};
-export const refusalCode=e=>e?.code||e?.refusal?.code||(/consent|intima|boundary/i.test(e?.message||'')?'boundary':/route|location|destination/i.test(e?.message||'')?'place':/revision/i.test(e?.message||'')?'changed':'unavailable');
+export const refusalCode=e=>e?.code||e?.refusal?.code||(/consent|intima|boundary/i.test(e?.message||'')?'boundary':/route|location|destination/i.test(e?.message||'')?'place':/revision/i.test(e?.message||'')?'changed':/insufficient|debt limit/i.test(e?.message||'')?'item':'unavailable');
 const refusalWords={unavailable:'That cannot happen just now. There is still something else to try.',boundary:'That goes beyond what has been agreed. Give the moment some space.',place:'That way is out of reach just now. Take in your surroundings before choosing another way.',changed:'The moment has moved on. Take a fresh look before deciding.',choice:'This moment needs a choice before it can continue.',item:'That purchase cannot happen here just now.',activity:'That will have to wait. Try something else for now.',target:'Take a moment to see who is here before choosing whom to approach.',repeat:'There is nothing more to add on that subject. Let another topic have its turn.',model_reply:'The moment falls quiet. Take a breath and choose what to do next.'};
 export function refusalFor(world,pack,registry,code='unavailable',retry=1){const pool=[{label:'Look around',type:'core.inspect',args:{}},{label:'Wait',type:'core.wait',args:{}}],alternatives=pool.filter((a,i)=>{try{execute(world,{...a,id:'refusal-preview-'+world.revision+'-'+i,actorId:pack.playerId,expectedRevision:world.revision},pack,registry);return true;}catch{return false;}}).map(a=>({label:a.label,input:a.label}));return {code,reason:retry>=3?'The moment turns toward something else. Take in your surroundings and choose a new direction.':refusalWords[code]||'That does not feel possible right now. Give the moment some space and try another direction.',alternatives,retry,redirect:retry>=3};}
 function recordRefusal(tx,registry,code,target=''){const s=tx.state,scene=s.scene?.id||s.modules['story.scenes']?.pending||s.actors[tx.pack.playerId].location+':outside',prior=s.refusalHistory?.scene===scene?s.refusalHistory.counts:{},key=JSON.stringify([code,target]),retry=(prior[key]||0)+1;tx.set(['refusalHistory'],{scene,counts:{...prior,[key]:retry}});return refusalFor(s,tx.pack,registry,code,retry);}
@@ -76,8 +76,9 @@ export function digest(x) { return hash(JSON.stringify(x)); }
 const pick=(o,keys)=>Object.fromEntries(keys.filter(k=>o[k]!==undefined).map(k=>[k,o[k]]));
 export function mechanicsShape(pack) {
  return {
-  schemaVersion:pack.schemaVersion,id:pack.id,version:pack.version,modules:pack.modules,playerId:pack.playerId,...pick(pack.gameProject||{},['timeMode']),...pick(pack,['socialPacing','sceneFeedback']),
+  schemaVersion:pack.schemaVersion,id:pack.id,version:pack.version,modules:pack.modules,playerId:pack.playerId,...pick(pack.gameProject||{},['timeMode']),...pick(pack,['socialPacing','sceneFeedback','lustBaseline']),
   ...(pack.dailyNeeds?{dailyNeeds:pack.dailyNeeds,dailyNeedTraits:pack.actors.filter(a=>a.id!==pack.playerId).map(a=>({id:a.id,traits:pack.characterSheets?.find(x=>x.actorId===a.id)?.personality?.traits||a.traits||[]}))}:{}),
+  ...(pack.jealousyProfiles?{jealousySettings:pack.jealousySettings||null,jealousyProfiles:pack.jealousyProfiles,jealousyTraits:pack.actors.filter(a=>a.id!==pack.playerId).map(a=>({id:a.id,traits:pack.characterSheets?.find(x=>x.actorId===a.id)?.personality?.traits||a.traits||[]}))}:{}),
   locations:pack.locations.map(l=>({id:l.id,exits:(l.exits||[]).map(e=>pick(e,['to','flag']))})),
   actors:pack.actors.map(a=>({id:a.id,location:a.location})),
   items:(pack.items||[]).map(i=>pick(i,['id','shop','hidden','stack','stock','restock','use'])),
@@ -89,7 +90,7 @@ export function mechanicsShape(pack) {
   ...(pack.moments?{moments:pack.moments.map(m=>pick(m,['id','kind','location','on','character','when','effects','maxUses','cooldown','stay','weight']))}:{}),...(pack.momentsProfile?{momentsProfile:pack.momentsProfile}:{}),
   initialRelationships:pack.initialRelationships||[],
   ...(pack.recipes?{recipes:pack.recipes}:{}),...(pack.calendar?{calendar:pack.calendar}:{}),
-  ...pick(pack,['relationshipStageSettings']),
+  ...pick(pack,['relationshipStageSettings','anniversarySettings']),
   startOptions:(pack.startOptions||[]).map(s=>pick(s,['id','playerLocation','tick'])),
  };
 }
@@ -207,7 +208,7 @@ export function execute(world,command,pack,registry,packChecked=false) {
   assert(packChecked||world.packDigest===mechanicsDigest(pack),'Pack changed: migration required');
   assert(safeKey(command.id),'Invalid turn ID');assert(command.expectedRevision===world.revision,'Stale revision; refresh and try again');
   assert(command.actorId===pack.playerId,'Only the player can submit commands');
-  assert(command.args&&typeof command.args==='object'&&!Array.isArray(command.args),'args must be an object');
+  assert(command.args&&typeof command.args==='object'&&!Array.isArray(command.args),'args must be an object');assert(command.components===undefined||Array.isArray(command.components)&&command.components.length<=3&&command.components.every(c=>c&&safeKey(c.type)&&c.args&&typeof c.args==='object'&&!Array.isArray(c.args)),'Invalid turn components');
   assert(!world.modules['story.endings']?.selected||['core.refuse','core.inspect'].includes(command.type),'The story has ended. Start a new campaign to play again.');
   // A director incident is a model-played moment, so its conversation can end like any other (the scenes module then dismisses it).
   if(world.modules['story.scenes']?.pending)assert(['story.choose','story.respond','story.leave','social.withdrawConsent'].includes(command.type)||FREE_ACTIONS.has(command.type)||command.type==='core.endScene'&&pack.scriptedScenes?.find(x=>x.id===world.modules['story.scenes'].pending)?.template?.delivery==='incident','Choose an option, reply in your own words, withdraw consent, or leave the active scene first');
@@ -317,6 +318,25 @@ export function execute(world,command,pack,registry,packChecked=false) {
     }
   };
   const handler=base[command.type]||mods.map(m=>m.commands?.[command.type]).find(Boolean);assert(handler,`Unsupported command: ${command.type}`); handler(tx,command.args);
+  // One turn can carry world operations beside its main act ("I tease her about her coffee and buy us two coffees").
+  // Each settles through the same handler in order on this same transaction, so the turn stays atomic and replayable:
+  // a part that throws rolls its own state and events back and leaves a refusal entry (the T-025 shape) instead.
+  // Three operations is the cap, the spoken act included; the service narrates whatever it had to drop.
+  for(const part of (command.components||[]).slice(0,2)){
+    const mark=emitted.length,before=clone(state),was=steps;
+    try{
+      const run=base[part.type]||mods.map(m=>m.commands?.[part.type]).find(Boolean);assert(run,`Unsupported command: ${part.type}`);
+      // A director incident owns the turn while it is open; a stray part waits instead of cutting into it.
+      if(world.modules['story.scenes']?.pending)assert(['story.choose','story.respond','story.leave','social.withdrawConsent'].includes(part.type)||FREE_ACTIONS.has(part.type)||part.type==='core.endScene'&&pack.scriptedScenes?.find(x=>x.id===world.modules['story.scenes'].pending)?.template?.delivery==='incident','Finish the active scene first');
+      run(tx,part.args);
+    }catch(e){
+      // Roll the part back whole: keys it invented go, keys it touched return to the snapshot, its events go.
+      for(const key of Object.keys(state))if(!(key in before))delete state[key];
+      Object.assign(state,before);emitted.length=mark;steps=was;
+      const refusal=recordRefusal(tx,registry,refusalCode(e),part.args?.target||part.args?.to||part.args?.item||part.args?.service||'');
+      tx.emit('core.refused',{refusal,text:refusal.reason},[pack.playerId]);
+    }
+  }
   const authored=command.type==='core.scene'&&command.args.activityId?(pack.activities||[]).find(a=>a.id===command.args.activityId):null;
   const invitation=command.type==='world.acceptHangout'?pack.daypart.hangouts.find(h=>h.char===command.args.char):null;
   const phoneOffer=command.type==='social.acceptPhoneOffer'?(pack.phoneMessages||[]).find(m=>m.id===command.args.message)?.offer:null;

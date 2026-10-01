@@ -29,6 +29,9 @@ export interface SceneFeedbackPack { chips?:boolean; mood?:boolean }
 export interface SceneFeedbackChip { character:string; stat:string; value:number; delta:number }
 export interface SceneFeedbackMood { character:string; name:string; score:number; tier:number; label:string }
 export interface SceneFeedback { chips:SceneFeedbackChip[]; moods:SceneFeedbackMood[] }
+export type UnwelcomeStyle='deflect'|'tease_back'|'shut_down';
+export interface UnwelcomeTuning { deflect:{like:number;trust:number;lust:number};tease_back:{like:number;trust:number;lust:number;minTrust:number};shut_down:{like:number;trust:number;lust:number} }
+export interface UnwelcomeFlirtPack { unwelcomeFlirt?:UnwelcomeTuning }
 export interface SocialPacing { flirt?:{mode:'off'|'cap';dailyLimit?:number}; departure?:{enabled:boolean;graceTurns:number} }
 export interface FlirtAllowance { day:number;count:number;cued:boolean }
 export interface FlirtDeparture { sceneId:string;destination:string|null;remaining:number;origin:string;lastTurn:string }
@@ -51,9 +54,9 @@ export interface CharacterSheet {
  personality:{traits:SheetTrait[];notes:string;voice:string;examples:string[];fingerprint:string};
  appearance:{description:string;style:string;portrait:string;poses:{id:string;image:string;[key:string]:unknown}[];notes:string};
  tastes:{likes:string[];dislikes:string[];likedCategories:GiftCategory[];dislikedCategories:GiftCategory[];itemOverrides:{item:string;reaction:'loved'|'liked'|'neutral'|'disliked'|'hated';points?:number;[key:string]:unknown}[];notes:string};
- dating:{history:string;experience:SheetExperience|null;body:Record<BodyRegion,{sensitivity:0|1|2|3|null;limit:BodyLimit|null}>;preferences:string;limitsNotes:string;policyOverrides:Record<string,unknown>;repairTrustBar?:number|null};
+ dating:{ladderPace?:'slow'|'normal'|'fast';history:string;experience:SheetExperience|null;body:Record<BodyRegion,{sensitivity:0|1|2|3|null;limit:BodyLimit|null}>;preferences:string;limitsNotes:string;policyOverrides:Record<string,unknown>;repairTrustBar?:number|null};
  routine:{weekly:SheetWeeklyStop[];exceptions:SheetException[];notes:string};
- behavior:{rules:SheetRule[];notes:string;stages:Record<string,string>};
+ behavior:{unwelcomeStyle?:UnwelcomeStyle;rules:SheetRule[];notes:string;stages:Record<string,string>};
  social:{links:SheetSocialLink[];notes:string};
  arc:{goal:string;tracks:ArcTrack[];payoffs:Record<string,unknown>[];notes:string};
  lore:{backstory:string;entries:Record<string,unknown>[];authorNotes:string};
@@ -67,6 +70,10 @@ export interface TouchRefusedEvent { character:string;region?:BodyRegion;step?:s
 export interface RelationshipStageSettings { stages?:['acquaintance','dating','exclusive']; strainTrustFloor?:number; strainDays?:number; scar?:{trust?:number;chemistry?:number}; repairDelayDays?:number; repairTrustBar?:number }
 export interface RelationshipStagesPack { relationshipStageSettings?:RelationshipStageSettings }
 export interface BreakupHistoryEntry { tick:number; from:string; reason:string; scar:{trust:number;chemistry:number} }
+export interface AnniversarySettings { interval:number; maxMoments:number; acknowledgeReward?:{like:number}; neglectPenalty?:{like:number} }
+export interface AnniversaryPack { anniversarySettings?:AnniversarySettings }
+export interface SharedMoment { kind:'firstMeeting'|'firstDate'|'firstKiss'|'firstNight'|'stageChange'|'breakup'|'reunion'; day:number; place:string; from?:string; to?:string }
+export interface AnniversaryCharacter { history:SharedMoment[]; firstMeetingDay:number|null; datingStartDay:number|null; lastContactDay:number|null; anniversaryAcknowledged:number|null; mark:number; months:number }
 
 export interface Refusal { code:string; reason:string; alternatives:{label:string;input:string}[]; retry:number; redirect?:boolean }
 export interface Turn { refusal?:Refusal|null }
@@ -81,8 +88,22 @@ export interface DailyNeedMatch { kind:ActKind|'ask'; target?:string }
 export interface DailyNeedDefinition { id:string; hint:string; weight?:number; traitWeights?:Record<string,number>; matches:DailyNeedMatch[]; against?:DailyNeedMatch[] }
 export interface DailyNeedsPack { reward:{like:number;trust:number}; againstLike:number; needs:DailyNeedDefinition[] }
 export interface DailyNeedState { day:number; need:string|null; rewarded:boolean; sources:string[] }
+export interface LustBaselineTuning { perDaypart?:number; milestones?:{intimateFirst?:number;dating?:number;exclusive?:number;preference?:number}; hint?:string }
+export interface LustBaselinePack { lustBaseline?:LustBaselineTuning }
+export interface LustBaselineRaisedEvent { character:string; milestone:string; preference?:string; from:number; to:number; delta:number; text:string }
 export interface GiftSettings { likedMultiplier:number; dislikedPoints:number; keepsakeMinGain:number; keepsakeLimit:number }
 export interface GiftPack { giftRepeatScale?:number[]; giftSettings?:GiftSettings }
 export interface GiftItem { categories?:GiftCategory[] }
 export interface GiftKeepsake { item:string; tick:number; gain:number }
 export interface GiftRuntime { giftCounts?:Record<string,number>; keepsakes?:GiftKeepsake[] }
+export interface JealousySettings { max?:number; decayPerDay?:number; coolAt?:number; confrontAt?:number; trustDelta?:number; acquaintanceScale?:number; likeFloor?:number; flirtAmount?:number; intimacyAmount?:number; rumorAmount?:number }
+export interface JealousyProfile { character:string; insecureMultiplier?:number; guardedMultiplier?:number; competitiveMultiplier?:number }
+export interface JealousyPack { jealousySettings?:JealousySettings; jealousyProfiles?:JealousyProfile[] }
+export interface JealousyRuntime { characters?:Record<string,{meter:number;stage:'acquaintance'|'dating'|'exclusive';lastTrustHit:number|null}> }
+export type OutreachKind='check-in'|'plan'|'tease'|'neglected'|'strain';
+export interface OutreachReply { id:string; text:string }
+export interface OutreachText { id:string; character:string; kind:OutreachKind; text:string; replies:OutreachReply[]; offer?:{location:string;expiresIn:number} }
+export interface OutreachSettings { stageChance:Record<'acquaintance'|'dating'|'exclusive',number>; likeScale?:number; maxPerDay?:number; neglectDays?:number; teaseLust?:number; replyLike?:number; replyTrust?:number; replyLikeCap?:number; ignoredLike?:number }
+export interface OutreachPack { outreachSettings?:OutreachSettings; outreachMessages?:OutreachText[] }
+export interface OutreachState { sent:{day:number;count:number}; contactDay:number|null; ignoredDay:number|null; gained:{day:number;amount:number}|null; lastKind:OutreachKind|null }
+export interface OutreachRuntime { characters:Record<string,OutreachState> }

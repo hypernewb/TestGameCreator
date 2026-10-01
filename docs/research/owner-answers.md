@@ -38,3 +38,9 @@ Big picture: every mechanic choice should become a per-world option in the game 
 - 2026-10-01 Lore chaining: only creator-declared links (explicit IDs), no automatic recursion.
 - 2026-10-01 Memory split: 50% recent / 50% important.
 - 2026-10-01 Player persona: set at creation only, locked after.
+
+## Batch 9 (2026-10-01, T-021 character-sheet lists)
+- 2026-10-01 Traits (28), gift categories (12) and campus trait picks: approved as drafted; owner will tweak later in the creator.
+- 2026-10-01 Gift scope: category tastes apply; explicit item tastes override.
+- 2026-10-01 Experience: 5 levels (none/first_encounter/occasional/recurring/extensive), null = unassigned; act firsts tracked separately.
+- 2026-10-01 Body map: 10 regions instead of 29 — face, lips, neck, arms_hands, chest, back, belly_waist, hips_butt, thighs_legs, intimate; sensitivity 0–3; limit ok/ask_first/never (never wins).

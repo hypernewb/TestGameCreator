@@ -1,0 +1,17 @@
+import {assert,safeKey} from '../core/engine.mjs';
+import {calendarFor} from '../../public/calendar.mjs';
+import {pickDailyNeed,dailyNeedOf} from '../../public/daily-need.mjs';
+import {addPoints} from './romance-tempo.mjs';
+import {changeTrust} from './romance-stats.mjs';
+import {ACT_KINDS} from '../ai/scene-acts.mjs';
+const path=['modules','social.daily-need','characters'];
+const characters=p=>p.actors.filter(a=>a.id!==p.playerId);
+const record=(p,seed,day,id)=>({day,need:pickDailyNeed(p,seed,day,id)?.id||null,rewarded:false,sources:[]});
+function refresh(tx){if(!tx.pack.dailyNeeds)return;const day=calendarFor(tx.state.tick,tx.pack).day;for(const a of characters(tx.pack))if(tx.state.modules['social.daily-need'].characters[a.id]?.day!==day)tx.set([...path,a.id],record(tx.pack,tx.state.initialSeed,day,a.id));}
+const matches=(rules,act)=>(rules||[]).some(r=>r.kind===act.kind&&(r.target===undefined||r.target===act.target||act.kind==='invite'&&act.target.split('@').at(-1)===r.target));
+export const dailyNeed={id:'social.daily-need',version:'0.1.0',coreApi:'0.1.0',requires:['social.acts','social.relationships'],
+ validate(p){const d=p.dailyNeeds;if(d===undefined)return;assert(d&&Array.isArray(d.needs)&&d.needs.length,'daily needs required');assert(d.reward&&Number.isInteger(d.reward.like)&&d.reward.like>=0&&d.reward.like<=100&&Number.isInteger(d.reward.trust)&&d.reward.trust>=0&&d.reward.trust<=100,'daily need reward invalid');assert(Number.isInteger(d.againstLike)&&d.againstLike<=0&&d.againstLike>=-100,'daily need penalty invalid');const ids=new Set();for(const n of d.needs){assert(safeKey(n.id)&&!ids.has(n.id),'daily need ID invalid or duplicate');ids.add(n.id);assert(typeof n.hint==='string'&&n.hint.trim()&&n.hint.length<=100,'daily need hint invalid');assert(Number.isFinite(n.weight??1)&&(n.weight??1)>=0,'daily need weight invalid');for(const [trait,w] of Object.entries(n.traitWeights||{}))assert(safeKey(trait)&&Number.isFinite(w)&&w>=0,'daily need trait weight invalid');assert(Array.isArray(n.matches)&&n.matches.length,'daily need matches required');for(const r of [...n.matches,...n.against||[]])assert(ACT_KINDS.includes(r.kind)&&(r.target===undefined||typeof r.target==='string'&&r.target.length<=40),'daily need match invalid');}assert(d.needs.some(n=>(n.weight??1)>0||Object.values(n.traitWeights||{}).some(w=>w>0)),'daily need weights empty');},
+ init:(p,{seed,tick=0})=>({characters:p.dailyNeeds?Object.fromEntries(characters(p).map(a=>[a.id,record(p,seed,calendarFor(tick,p).day,a.id)])): {}}),
+ react(tx,e){if(!tx.pack.dailyNeeds)return;if(e.type==='core.timeAdvanced'){refresh(tx);return;}if(e.type!=='social.actPriced'||e.payload.verdict==='unpaid')return;refresh(tx);const {character,act,source}=e.payload,n=dailyNeedOf(tx.state,tx.pack,character),r=tx.state.modules['social.daily-need'].characters[character];if(!n||!r||!act)return;const key=source||tx.commandId,against=matches(n.against,act)&&!r.sources.includes(key),hit=!r.rewarded&&matches(n.matches,act);if(!against&&!hit)return;if(against){tx.set([...path,character,'sources'],[...r.sources,key]);}if(against){addPoints(tx,character,tx.pack.dailyNeeds.againstLike,'daily reaction');return;}tx.set([...path,character,'rewarded'],true);addPoints(tx,character,tx.pack.dailyNeeds.reward.like,'daily reaction');changeTrust(tx,character,tx.pack.dailyNeeds.reward.trust,{quiet:true});},
+ afterTurn:refresh,actions(){return [];}
+};

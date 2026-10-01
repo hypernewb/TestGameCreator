@@ -31,8 +31,10 @@ import {secrecy} from './secrecy.mjs';
 import {minigames} from './minigames.mjs';
 import {firsts} from './firsts.mjs';
 import {touchLadder} from './touch-ladder.mjs';
-export const registry=Object.fromEntries([conversation,relationships,schedule,quests,inventory,abilities,objects,daypart,worldEvents,scenes,facts,equipment,bonds,npcSocial,economy,stats,progression,dating,romanceNetwork,intimacy,gossip,romanceTempo,phone,feed,endings,timedEvents,director,moments,calendarWorld,acts,arc,sobriety,secrecy,minigames,firsts,touchLadder].map(m=>[m.id,m]));
+import {dailyNeed} from './daily-need.mjs';
+export const registry=Object.fromEntries([conversation,relationships,schedule,quests,inventory,abilities,objects,daypart,worldEvents,scenes,facts,equipment,bonds,npcSocial,economy,stats,progression,dating,romanceNetwork,intimacy,gossip,romanceTempo,phone,feed,endings,timedEvents,director,moments,calendarWorld,acts,arc,sobriety,secrecy,minigames,firsts,touchLadder,dailyNeed].map(m=>[m.id,m]));
 const descriptions={
+ 'social.daily-need':['Hidden daily need','Picks a quiet daily want per character and rewards reading it from interpreted acts.'],
  'social.conversation':['Character conversation','Enables conversations with characters who share the player’s location.'],
  'social.relationships':['Relationships','Tracks trust changes from recorded conversations.'],
  'world.schedule':['Character schedules','Moves characters between locations as time advances.'],

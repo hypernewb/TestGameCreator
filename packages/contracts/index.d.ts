@@ -29,3 +29,7 @@ export interface SceneFeedbackPack { chips?:boolean; mood?:boolean }
 export interface SceneFeedbackChip { character:string; stat:string; value:number; delta:number }
 export interface SceneFeedbackMood { character:string; name:string; score:number; tier:number; label:string }
 export interface SceneFeedback { chips:SceneFeedbackChip[]; moods:SceneFeedbackMood[] }
+export interface SocialPacing { flirt?:{mode:'off'|'cap';dailyLimit?:number}; departure?:{enabled:boolean;graceTurns:number} }
+export interface FlirtAllowance { day:number;count:number;cued:boolean }
+export interface FlirtDeparture { sceneId:string;destination:string|null;remaining:number;origin:string;lastTurn:string }
+export interface ActPricedEvent { capped?:boolean }

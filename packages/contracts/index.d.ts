@@ -89,3 +89,10 @@ export interface GiftPack { giftRepeatScale?:number[]; giftSettings?:GiftSetting
 export interface GiftItem { categories?:GiftCategory[] }
 export interface GiftKeepsake { item:string; tick:number; gain:number }
 export interface GiftRuntime { giftCounts?:Record<string,number>; keepsakes?:GiftKeepsake[] }
+export type OutreachKind='check-in'|'plan'|'tease'|'neglected'|'strain';
+export interface OutreachReply { id:string; text:string }
+export interface OutreachText { id:string; character:string; kind:OutreachKind; text:string; replies:OutreachReply[]; offer?:{location:string;expiresIn:number} }
+export interface OutreachSettings { stageChance:Record<'acquaintance'|'dating'|'exclusive',number>; likeScale?:number; maxPerDay?:number; neglectDays?:number; teaseLust?:number; replyLike?:number; replyTrust?:number; replyLikeCap?:number; ignoredLike?:number }
+export interface OutreachPack { outreachSettings?:OutreachSettings; outreachMessages?:OutreachText[] }
+export interface OutreachState { sent:{day:number;count:number}; contactDay:number|null; ignoredDay:number|null; gained:{day:number;amount:number}|null; lastKind:OutreachKind|null }
+export interface OutreachRuntime { characters:Record<string,OutreachState> }

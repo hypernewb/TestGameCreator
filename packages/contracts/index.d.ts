@@ -51,7 +51,7 @@ export interface CharacterSheet {
  personality:{traits:SheetTrait[];notes:string;voice:string;examples:string[];fingerprint:string};
  appearance:{description:string;style:string;portrait:string;poses:{id:string;image:string;[key:string]:unknown}[];notes:string};
  tastes:{likes:string[];dislikes:string[];likedCategories:GiftCategory[];dislikedCategories:GiftCategory[];itemOverrides:{item:string;reaction:'loved'|'liked'|'neutral'|'disliked'|'hated';points?:number;[key:string]:unknown}[];notes:string};
- dating:{history:string;experience:SheetExperience|null;body:Record<BodyRegion,{sensitivity:0|1|2|3|null;limit:BodyLimit|null}>;preferences:string;limitsNotes:string;policyOverrides:Record<string,unknown>};
+ dating:{history:string;experience:SheetExperience|null;body:Record<BodyRegion,{sensitivity:0|1|2|3|null;limit:BodyLimit|null}>;preferences:string;limitsNotes:string;policyOverrides:Record<string,unknown>;repairTrustBar?:number|null};
  routine:{weekly:SheetWeeklyStop[];exceptions:SheetException[];notes:string};
  behavior:{rules:SheetRule[];notes:string;stages:Record<string,string>};
  social:{links:SheetSocialLink[];notes:string};
@@ -61,3 +61,6 @@ export interface CharacterSheet {
  [key:string]:unknown;
 }
 export interface CharacterSheetPack { characterSheets?:CharacterSheet[] }
+export interface RelationshipStageSettings { stages?:['acquaintance','dating','exclusive']; strainTrustFloor?:number; strainDays?:number; scar?:{trust?:number;chemistry?:number}; repairDelayDays?:number; repairTrustBar?:number }
+export interface RelationshipStagesPack { relationshipStageSettings?:RelationshipStageSettings }
+export interface BreakupHistoryEntry { tick:number; from:string; reason:string; scar:{trust:number;chemistry:number} }

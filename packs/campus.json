@@ -1285,6 +1285,14 @@
   "economySettings": {
     "debtLimit": 10
   },
+  "relationshipStageSettings": {
+    "stages": ["acquaintance", "dating", "exclusive"],
+    "strainTrustFloor": 20,
+    "strainDays": 2,
+    "scar": {"trust": -10, "chemistry": -10},
+    "repairDelayDays": 2,
+    "repairTrustBar": 35
+  },
   "datingProfiles": [
     {
       "character": "jana",

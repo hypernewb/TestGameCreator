@@ -100,10 +100,22 @@ The research doc proposed none of this. Seed 3× 15-day campus runs and record t
 `fun[measured]: 65 turns 14.1m | dead 16 (25%, streak 8) | typed 41 (73% landed) | quiet max 0 | storylets 7/112 | repeat prose 0% | lost inputs 11 | spotlight jana:8 nova:8 abigail:3 (×2.7)` — gate: dead-turns **NO** · input-lost **NO** · the rest ok.
 
 - **The real typed-play symptom is not drought — it is the scene stall.** Turns 56–67 sat in one free scene for 12 consecutive turns with the clock frozen (`TIME 56→56`), producing the entire dead-turn streak (25% dead vs the ≤10% gate) and the tester's top engine finding ("scene fatigue: after N free turns, force a transition or interruption").
-- **That stall is the director's job.** The critic's prescribed fix is precisely `dealNow()` — a mid-scene interruption when a scene runs N free turns with no state change. The director currently only fires on mishaps, witnessed touches and quiet dayparts; a **stall interrupt** (free-turn counter with no committed change → in-scene incident or daypart close) is the evidence-backed next build, ahead of threads.
+- **That stall is the director's job.** The critic's prescribed fix is precisely `dealNow()` — a mid-scene interruption when a scene runs N free turns with no state change. **Shipped 2026-10-01 (`428a5cd`):** consecutive `core.sceneContinued` turns with no committed change (tension, setbacks, attention) between them arm an interruption at `stallTurns` (new setting, default **6**, range 2–50 — owner may retune from the critic's 5–8 recommendation); a live tease outranks it, adaptive packs only. The count resets on any committed change or scene end.
 - **Lost inputs 11/41** is the second gate failure and is an engine/refusal-path issue (e.g. "Finish the current planner activity first" swallowed a turn), not a director issue — but it must be on the same fix list.
 - World-quiet held at 0 in typed play too, confirming the quiet instruments are saturated. Spotlight spread ×2.7 with rotation dormant (all-romance deck), as designed.
 - Model-layer findings for the prompt pass (not director scope): calendar hallucination ("Tuesday" on Day 5 Friday), player-input echo at Turn 65, NPC-location invention, RESULTS dedup, prop fixation.
+
+**Verification re-run (2026-10-01, same 5-day typed falsifier with the stall interrupt live, `428a5cd`):**
+
+| instrument | baseline run | with stall interrupt |
+|---|---|---|
+| dead turns | 16 (25%), streak 8 | 11 (16%), streak **2** |
+| typed landed | 73% | 85% |
+| lost inputs | 11/41 | 7/46 |
+| reachedTarget | false | **true** |
+| quiet max / repeat prose | 0 / 0% | 0 / 0% |
+
+The stall streak collapsed (8 → 2) and the run reached its target for the first time, but dead turns are still above the ≤10% gate: the remainder traces to the refusal path and raw engine glue (a `goalMissed` trust-drop printed without narrative), which is O2/lost-inputs scope, not director scope. The director-side contribution to the dead-turns gate is done; the gate now waits on the refusal rework.
 
 Pre-run claims (kept for provenance; the results above supersede them as falsifiers):
 

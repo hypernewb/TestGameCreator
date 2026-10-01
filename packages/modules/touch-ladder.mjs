@@ -53,15 +53,15 @@ const refusalText=(name,hintKey)=>`${name} pulls back gently. "${HINTS[hintKey]|
 
 export function attemptTouch(tx,character,stepId){
  const {state:s,pack:p}=tx,step=stepOf(stepId);if(!step||!s.actors[character])return;
- const name=s.actors[character].name,e=touchEligibility(s,p,character,stepId);
+ const name=s.actors[character].name,e=touchEligibility(s,p,character,stepId),oldLust=runtimeOf(s,character)?.lust||0;
  if(e.eligible){
   const trustDelta=changeTrust(tx,character,step.trustGain,{quiet:true}),lust=Math.max(0,Math.min(100,(runtimeOf(s,character)?.lust||0)+step.lust));
   tx.set([...path,'characters',character,'lust'],lust);
-  tx.emit('social.touchAccepted',{character,step:step.id,verdict:'accept',trustDelta,lust,lustDelta:step.lust,text:`${name} leans into it as you ${step.name}.`},[p.playerId,character]);
+  tx.emit('social.touchAccepted',{character,step:step.id,verdict:'accept',trustDelta,lust,lustDelta:lust-oldLust,text:`${name} leans into it as you ${step.name}.`},[p.playerId,character]);
  } else {
   const hintKey=e.reasons[0],lust=Math.max(0,(runtimeOf(s,character)?.lust||0)-1),trustDelta=changeTrust(tx,character,-1,{quiet:true}),verdict=e.reasons.length===1&&hintKey==='trust'&&e.trust>=step.minTrust-10?'hesitate':'refuse';
   tx.set([...path,'characters',character,'lust'],lust);
-  tx.emit('social.touchRefused',{character,step:step.id,verdict,reason:hintKey,trustDelta,lustDelta:-1,text:refusalText(name,hintKey)},[p.playerId,character]);
+  tx.emit('social.touchRefused',{character,step:step.id,verdict,reason:hintKey,trustDelta,lustDelta:lust-oldLust,text:refusalText(name,hintKey)},[p.playerId,character]);
  }
 }
 

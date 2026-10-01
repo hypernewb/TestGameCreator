@@ -77,6 +77,7 @@ const pick=(o,keys)=>Object.fromEntries(keys.filter(k=>o[k]!==undefined).map(k=>
 export function mechanicsShape(pack) {
  return {
   schemaVersion:pack.schemaVersion,id:pack.id,version:pack.version,modules:pack.modules,playerId:pack.playerId,...pick(pack.gameProject||{},['timeMode']),...pick(pack,['socialPacing','sceneFeedback']),
+  ...(pack.dailyNeeds?{dailyNeeds:pack.dailyNeeds,dailyNeedTraits:pack.actors.filter(a=>a.id!==pack.playerId).map(a=>({id:a.id,traits:pack.characterSheets?.find(x=>x.actorId===a.id)?.personality?.traits||a.traits||[]}))}:{}),
   locations:pack.locations.map(l=>({id:l.id,exits:(l.exits||[]).map(e=>pick(e,['to','flag']))})),
   actors:pack.actors.map(a=>({id:a.id,location:a.location})),
   items:(pack.items||[]).map(i=>pick(i,['id','shop','hidden','stack','stock','restock','use'])),
@@ -184,7 +185,7 @@ export function createWorld(pack,registry,id='campaign',seed=42,startId,options=
   const start=(pack.startOptions||[]).find(x=>x.id===(startId||pack.startOptions?.[0]?.id));assert(!startId||start,'Unknown start option');
   const s={schemaVersion:1,campaignId:id,packId:pack.id,packVersion:pack.version,packDigest:mechanicsDigest(pack),moduleVersions:clone(pack.modules),startId:start?.id||null,sceneWriter,revision:0,tick:start?.tick??0,initialSeed:seed>>>0,rng:seed>>>0,actors:Object.fromEntries(pack.actors.map(a=>[a.id,{name:a.name,location:a.id===pack.playerId&&start?start.playerLocation:a.location}])),flags:Object.fromEntries((pack.storyVariables||[]).map(variable=>[variable.id,variable.initial])),modules:{},scene:null,activityUses:{},events:[],turns:{}};
   if(pack.run){const interval=pack.daypart?.interval||4;s.run={startTick:s.tick,endTick:s.tick+pack.run.days*interval*3,days:pack.run.days};}
-  for(const m of mods)s.modules[m.id]=m.init?.(pack,{seed:s.initialSeed})||{};
+  for(const m of mods)s.modules[m.id]=m.init?.(pack,{seed:s.initialSeed,tick:s.tick})||{};
   if(s.modules['social.relationships'])for(const r of pack.initialRelationships||[])s.modules['social.relationships'].edges[`${r.character}--${pack.playerId}`]=r.trust;
   return s;
 }

@@ -77,3 +77,7 @@ export interface ActionReply { state:World; turn?:Turn; refusal?:Refusal }
 export type RefusalStyle='hint'|'buttons';
 export interface RefusalPack { refusalStyle?:RefusalStyle }
 export interface Turn { refusalNarrated?:boolean }
+export interface DailyNeedMatch { kind:ActKind|'ask'; target?:string }
+export interface DailyNeedDefinition { id:string; hint:string; weight?:number; traitWeights?:Record<string,number>; matches:DailyNeedMatch[]; against?:DailyNeedMatch[] }
+export interface DailyNeedsPack { reward:{like:number;trust:number}; againstLike:number; needs:DailyNeedDefinition[] }
+export interface DailyNeedState { day:number; need:string|null; rewarded:boolean; sources:string[] }

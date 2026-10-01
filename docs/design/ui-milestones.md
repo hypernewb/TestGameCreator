@@ -219,4 +219,4 @@ Recommendations below are proposals; existing scene-feedback decisions remain se
 6. **Q: Which delivery target follows F1's simplest working install?** A) **Recommended:** local web release and complete project export first. B) Windows desktop package first. C) PWA/offline package first with model-dependent limits shown. (UI23; framework migration and other desktop platforms remain later.)
 
 ## Owner decisions
-- 2026-10-01: Q1–Q5 delegated to the director, who took the recommended option (A) for each. Q6 (delivery target) stays with the owner and is still owner 2026-10-01: desktop app and browser both.
+- 2026-10-01: Q1–Q5 delegated to the director, who took the recommended option (A) for each. Q6 (delivery target) was answered by the owner the same day: desktop app and browser, both.

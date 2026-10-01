@@ -1,6 +1,11 @@
 import {assert} from '../core/engine.mjs';
 import {changeTrust} from './romance-stats.mjs';
 import {sobrietyLevel} from './intimacy.mjs';
+import {regionLimitReason,sensitivityScaleOf,validateSensitivityScale,clearRegionAgreements} from './intimacy.mjs';
+import {REGIONS,bodyRegionOf} from '../core/character-sheet.mjs';
+export const TOUCH_REGIONS={handhold:'arms_hands',cheekkiss:'face',kiss:'lips',makeout:'lips',oral:'intimate',sex:'intimate'};
+export const touchRegion=(step,region)=>REGIONS.includes(region)?region:TOUCH_REGIONS[step]||null;
+export const touchTextRegion=text=>REGIONS.find(r=>new RegExp(`\\b${r}\\b`,'i').test(text||''))||(/\bcheek\b/i.test(text||'')?'face':null);
 
 // O2 part 1: the engine decides the outcome of a typed intimate action from state; the model only narrates it.
 // Ladder tuned to fit the romance stat model (Like/Trust visible, Lust visible, hidden Chemistry/Inhibition not modeled here yet).
@@ -38,9 +43,10 @@ const runtimeOf=(state,character)=>state.modules['social.touch-ladder']?.charact
 // Private = a listed private location with nobody else present (same witness idea as intimacy.mjs's privacy check, kept local so this module has no hard dependency on social.intimacy).
 const privacyOk=(state,pack,character)=>{const loc=state.actors[pack.playerId].location,priv=pack.touchLadder?.privateLocations||pack.intimacySettings?.privateLocations||[];if(!priv.includes(loc))return false;const others=pack.actors.filter(a=>![pack.playerId,character].includes(a.id)&&state.actors[a.id].location===loc);return others.length===0;};
 
-export function touchEligibility(state,pack,character,stepId){
+export function touchEligibility(state,pack,character,stepId,region){
  const step=stepOf(stepId);if(!step)return {eligible:false,reasons:['unknown step']};
  const trust=trustOf(state,pack,character),sobriety=sobrietyLevel(state,pack,character),reasons=[];
+ const limitReason=regionLimitReason(state,pack,character,touchRegion(stepId,region));if(limitReason)reasons.push(limitReason);
  if(step.sober&&sobriety!=='sober')reasons.push('sobriety');
  if(!step.public&&!privacyOk(state,pack,character))reasons.push('privacy');
  if(trust<step.minTrust)reasons.push('trust');
@@ -50,18 +56,20 @@ export function touchEligibility(state,pack,character,stepId){
 // Refusal is always in character, with a vague hint at what would help — never a system error string.
 const HINTS={sobriety:"maybe when we've both had less to drink",privacy:'not out here where anyone could see',trust:"I don't know if I'm ready for that with you yet"};
 const refusalText=(name,hintKey)=>`${name} pulls back gently. "${HINTS[hintKey]||'not right now'}," ${name} says, ${hintKey==='trust'?'searching your face':'glancing around'}.`;
+export function refuseRegionTouch(tx,character,region,reason){const name=tx.state.actors[character].name;tx.emit('social.touchRefused',{character,region,verdict:'refuse',reason,trustDelta:0,lustDelta:0,text:refusalText(name,reason)},[tx.pack.playerId,character]);}
+export function applyRegionAct(tx,character,act){const step=stepOf(act.target)||stepOf(mapTouchText(act.target.replaceAll('-',' '))),region=act.region||touchTextRegion(act.target)||touchRegion(step?.id),reason=regionLimitReason(tx.state,tx.pack,character,region);if(reason){refuseRegionTouch(tx,character,region,reason);return false;}const body=bodyRegionOf(tx.pack,character,region);if(step&&runtimeOf(tx.state,character)&&(body.limit!==null||body.sensitivity!==null)){const eligible=touchEligibility(tx.state,tx.pack,character,step.id,region).eligible;attemptTouch(tx,character,step.id,region);return eligible;}return true;}
 
-export function attemptTouch(tx,character,stepId){
+export function attemptTouch(tx,character,stepId,region){
  const {state:s,pack:p}=tx,step=stepOf(stepId);if(!step||!s.actors[character])return;
- const name=s.actors[character].name,e=touchEligibility(s,p,character,stepId),oldLust=runtimeOf(s,character)?.lust||0;
+ region=touchRegion(stepId,region);const name=s.actors[character].name,e=touchEligibility(s,p,character,stepId,region),oldLust=runtimeOf(s,character)?.lust||0;
  if(e.eligible){
-  const trustDelta=changeTrust(tx,character,step.trustGain,{quiet:true}),lust=Math.max(0,Math.min(100,(runtimeOf(s,character)?.lust||0)+step.lust));
+  const sensitivity=bodyRegionOf(p,character,region).sensitivity,scale=sensitivity==null?1:sensitivityScaleOf(p)[sensitivity],trustDelta=changeTrust(tx,character,step.trustGain,{quiet:true}),lust=Math.max(0,Math.min(100,(runtimeOf(s,character)?.lust||0)+step.lust*scale));
   tx.set([...path,'characters',character,'lust'],lust);
-  tx.emit('social.touchAccepted',{character,step:step.id,verdict:'accept',trustDelta,lust,lustDelta:lust-oldLust,text:`${name} leans into it as you ${step.name}.`},[p.playerId,character]);
+  tx.emit('social.touchAccepted',{character,step:step.id,...(region?{region}:{}),verdict:'accept',trustDelta,lust,lustDelta:lust-oldLust,text:`${name} leans into it as you ${step.name}.`},[p.playerId,character]);
  } else {
   const hintKey=e.reasons[0],lust=Math.max(0,(runtimeOf(s,character)?.lust||0)-1),trustDelta=changeTrust(tx,character,-1,{quiet:true}),verdict=e.reasons.length===1&&hintKey==='trust'&&e.trust>=step.minTrust-10?'hesitate':'refuse';
   tx.set([...path,'characters',character,'lust'],lust);
-  tx.emit('social.touchRefused',{character,step:step.id,verdict,reason:hintKey,trustDelta,lustDelta:lust-oldLust,text:refusalText(name,hintKey)},[p.playerId,character]);
+  tx.emit('social.touchRefused',{character,step:step.id,...(region?{region}:{}),verdict,reason:hintKey,trustDelta,lustDelta:lust-oldLust,text:refusalText(name,hintKey)},[p.playerId,character]);
  }
 }
 
@@ -69,9 +77,10 @@ export function attemptTouch(tx,character,stepId){
 export const touchLadderContext=(state,pack,viewer)=>Object.keys(state.modules['social.touch-ladder']?.characters||{}).filter(c=>viewer===pack.playerId||viewer===c).map(c=>({character:c,lust:runtimeOf(state,c).lust,trust:trustOf(state,pack,c)}));
 
 export const touchLadder={id:'social.touch-ladder',version:'0.1.0',coreApi:'0.1.0',requires:['social.relationships'],
- validate(p){const locations=new Set(p.locations.map(x=>x.id));assert(p.touchLadder===undefined||p.touchLadder&&Array.isArray(p.touchLadder.privateLocations||[])&&(p.touchLadder.privateLocations||[]).every(x=>locations.has(x)),'touchLadder private locations invalid');},
+ validate(p){validateSensitivityScale(p);const locations=new Set(p.locations.map(x=>x.id));assert(p.touchLadder===undefined||p.touchLadder&&Array.isArray(p.touchLadder.privateLocations||[])&&(p.touchLadder.privateLocations||[]).every(x=>locations.has(x)),'touchLadder private locations invalid');},
  init:p=>({characters:Object.fromEntries(p.actors.filter(x=>x.id!==p.playerId).map(x=>[x.id,{lust:0}]))}),
- commands:{'social.attemptTouch'(tx,args){if(!args?.character||!tx.state.actors[args.character])return;const stepId=args.step&&stepOf(args.step)?args.step:mapTouchText(args.text);if(!stepId)return;attemptTouch(tx,args.character,stepId);}},
+ commands:{'social.attemptTouch'(tx,args){if(!args?.character||!tx.state.actors[args.character])return;assert(args.region===undefined||REGIONS.includes(args.region),'Touch region invalid');const stepId=args.step&&stepOf(args.step)?args.step:mapTouchText(args.text);if(!stepId)return;attemptTouch(tx,args.character,stepId,args.region||touchTextRegion(args.text));}},
+ afterTurn(tx){clearRegionAgreements(tx);},
  actions(){return [];},
  panel(s){return {title:'Touch',lines:Object.entries(s.modules['social.touch-ladder'].characters).map(([c,x])=>`${s.actors[c].name}: Lust ${x.lust}`)};}
 };

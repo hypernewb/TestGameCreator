@@ -1,0 +1,6 @@
+import {calendarFor,PERIODS} from './calendar.mjs';
+export const plannerReady=(s,p)=>p?.gameProject?.timeMode==='planner'&&!s.scene&&!s.modules['story.scenes']?.pending&&!s.modules['social.firsts']?.active;
+export function renderPlanner(box,data,go,busy=false){
+ const {state:s,pack:p}=data,c=calendarFor(s.tick,p),make=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e;},button=a=>{const b=make('button',a.label);b.type='button';b.disabled=busy||a.enabled===false;b.title=a.reason||a.storylet?.hint||'';if(a.storylet?.where)b.append(make('small',a.storylet.where));b.onclick=()=>go({type:a.type,args:a.args});return b;};
+ const head=make('div'),list=make('div'),more=make('details');head.append(make('h2',`${c.weekday} · Day ${c.day} · ${c.daypart}`),make('p',`${3-c.slot%3} slots remaining · one activity includes travel and conversation`),make('p',PERIODS.map((part,i)=>i<c.slot%3?`${part}: complete`:i===c.slot%3?`${part}: choose now`:part).join(' · ')));list.className='hub__places';list.append(...(data.actions||[]).filter(a=>a.planner&&a.enabled!==false).map(button));more.append(make('summary','Explore and other options'),...(data.actions||[]).filter(a=>!a.planner).map(button));box.replaceChildren(head,list,more);box.hidden=false;
+}

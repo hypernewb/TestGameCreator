@@ -49,7 +49,7 @@ test('no passive drift: getting fit alone does not move Jana until she spends ti
 });
 
 test('a drop-in encounter during a solo explore joins the scene cast instead of being told it cannot arrive',async()=>{
- const p=load('campus');p.schedules=[];p.momentsProfile={...p.momentsProfile,chancePercent:100,perDay:9,generate:false};p.moments=p.actors.filter(a=>a.id!==p.playerId).map(a=>({id:`drop-${a.id}`,kind:'encounter',character:a.id,text:'{name} spots you at {place} and comes over.'}));
+ const p=load('campus');p.gameProject.timeMode='clock';p.schedules=[];p.momentsProfile={...p.momentsProfile,chancePercent:100,perDay:9,generate:false};p.moments=p.actors.filter(a=>a.id!==p.playerId).map(a=>({id:`drop-${a.id}`,kind:'encounter',character:a.id,text:'{name} spots you at {place} and comes over.'}));
  const provider=probe(),{store,service}=serve(p,'drop',provider);
  try{const r=await service.act('drop',{id:'t',expectedRevision:0,input:'I look around.'}),turn=Object.values(r.state.turns).at(-1),met=turn.events.find(e=>e.type==='world.moment')?.payload.character;
   assert.ok(met,'an encounter fired');const c=provider.contexts[0];assert.ok(c.stagedCast.includes(met));assert.ok(!c.absentCharacters.some(a=>a.id===met));assert.equal(c.scenePhase,'opening');}finally{store.close();}
@@ -69,7 +69,7 @@ test('the late-night text comes from the rival, and only lands in the Evening',a
 });
 
 test('"Skip to Evening" waits to the start of the next evening and still counts as a wait',()=>{
- const p=load('campus'),w=createWorld(p,registry,'skip'),n=p.daypart?.interval||4;
+ const p=load('campus');p.gameProject.timeMode='clock';const w=createWorld(p,registry,'skip'),n=p.daypart?.interval||4;
  const r=execute(w,{id:'s',actorId:p.playerId,type:'core.wait',args:{until:'Evening'},expectedRevision:w.revision},p,registry);
  assert.equal(r.state.tick,2*n);assert.equal(r.state.actors[p.playerId].location,w.actors[p.playerId].location,'no teleport');
  assert.match(r.turn.events.find(e=>e.type==='core.waited').payload.text,/until evening/);
@@ -78,7 +78,7 @@ test('"Skip to Evening" waits to the start of the next evening and still counts 
 });
 
 test('the hub\'s Skip button reaches the engine through the service with its daypart intact',async()=>{
- const p=load('campus'),provider=probe(),{store,service}=serve(p,'skipsvc',provider);
+ const p=load('campus');p.gameProject.timeMode='clock';const provider=probe(),{store,service}=serve(p,'skipsvc',provider);
  try{const r=await service.act('skipsvc',{id:'k',expectedRevision:0,command:{type:'core.wait',args:{until:'Evening'}}});assert.equal(r.state.tick,2*(p.daypart?.interval||4));assert.equal(provider.contexts.length,0,'a button wait needs no model call');}finally{store.close();}
 });
 
@@ -123,7 +123,7 @@ test('a first talk opens with a greeting and one thread, not her life goal or a 
  assert.match(beatDirection({stagedCast:['jana'],scenePhase:'opening',playerAction:'Hey Jana.',sceneHistory:[],actor:{id:'jana',relationshipToPlayer:60},memories:[]},p,'a'),/start on what they want/,'a friend may open on what is on her mind');
 });
 test('when she says goodbye the day is over; when you walk away only the period is',()=>{
- const p=load('campus');assert.equal(p.gameProject.goodbyeEndsDay,true);
+ const p=load('campus');p.gameProject.timeMode='clock';assert.equal(p.gameProject.goodbyeEndsDay,true);
  for(const [reason,tick] of [['natural',12],['player',4]]){let w=createWorld(p,registry,reason);w.actors[p.playerId].location=w.actors.jana.location;
   const run=(type,args)=>{w=execute(w,{id:`g${w.revision}`,actorId:p.playerId,type,args,expectedRevision:w.revision},p,registry).state;};
   run('core.scene',{text:'Hey Jana.',location:w.actors.jana.location,characters:['jana'],activity:'talk'});assert.ok(w.scene,reason);run('core.endScene',{reason});assert.equal(w.tick,tick,reason);}

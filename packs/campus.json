@@ -82,6 +82,7 @@
     "social.firsts": "0.1.0"
   },
   "gameProject": {
+    "timeMode": "planner",
     "premise": "The first term of the year at Ashford U. Four women, one warm friend, and twenty-eight days to find out who you are to each of them.",
     "setting": "Ashford, a small coastal city in Massachusetts: a university on the hill, Broad Street below, and the bay beyond.",
     "writingStyle": "Grounded present-tense visual novel dialogue. Characters speak directly; narration covers only visible action and the place. Flirting stays suggestive.",

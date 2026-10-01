@@ -30,7 +30,7 @@ test('the library bakes into a valid campus pack: every director scene carries t
 });
 
 test('a library goal: keeping it pays off on the next act with her, missing it costs trust',()=>{
- const p=baked(),goal=p.directorProfile.opportunities.find(x=>x.template==='promise'&&x.roles.lead==='jana'),scene=p.scriptedScenes.find(x=>x.id===goal.scene),kept=p.scriptedScenes.find(x=>x.id===`${goal.scene}.kept`);
+ const p=baked();p.gameProject.timeMode='clock';const goal=p.directorProfile.opportunities.find(x=>x.template==='promise'&&x.roles.lead==='jana'),scene=p.scriptedScenes.find(x=>x.id===goal.scene),kept=p.scriptedScenes.find(x=>x.id===`${goal.scene}.kept`);
  assert.equal(kept.template.part,'kept');assert.deepEqual(kept.trigger,{event:'social.actPriced',match:{character:'jana'}});assert.ok(kept.choices[0].effects.some(e=>e.type==='planStatus'&&e.status==='kept'));
  assert.ok(scene.choices[0].effects.some(e=>e.type==='plan'&&e.deadlineTicks===12));assert.equal(goal.goal.missed.cost,3);
  // The offer is put in hand directly here; dealing it is covered by the seeded runs below.
@@ -50,12 +50,12 @@ test('a library goal: keeping it pays off on the next act with her, missing it c
 // like spark stay locked until the player has actually spent time with someone).
 const slots=(g,n,each=()=>{})=>{const quiet=[];let streak=0,worst=0,seen=beats(g.s).length,lastBeatTick=g.s.tick;for(let slot=0;slot<n;slot++){const from=g.s.tick;each(g);while(g.s.tick<from+4){g.act('core.wait');settle(g);}const hit=beats(g.s).length>seen;seen=beats(g.s).length;if(hit)lastBeatTick=g.s.tick;const starved=g.s.events.some(e=>e.type==='story.starved'&&e.tick>lastBeatTick);const violation=!hit&&!starved&&g.s.modules['story.director'].quiet>0&&from>=g.p.directorProfile.firstTick;streak=violation?streak+1:0;worst=Math.max(worst,streak);quiet.push(!violation);}return worst;};
 test('seeded campus runs never leave more than one quiet daypart without a director beat',()=>{
- for(const seed of [3,11,29]){const p=baked(),g=run(p,seed);g.p=p;const worst=slots(g,18);assert.ok(worst<=1,`seed ${seed}: ${worst} quiet dayparts in a row`);
+ for(const seed of [3,11,29]){const p=baked();p.gameProject.timeMode='clock';const g=run(p,seed);g.p=p;const worst=slots(g,18);assert.ok(worst<=1,`seed ${seed}: ${worst} quiet dayparts in a row`);
   const got=beats(g.s);assert.ok(got.length>=8,`seed ${seed}: only ${got.length} beats`);assert.ok(got.every(e=>e.payload.template),'every beat is a template instance');}
 });
 
 test('play style changes what the director deals: courting one heroine draws rivals and temptations around her',()=>{
- const deal=court=>{const c=campus();c.initialRelationships=c.initialRelationships.map(r=>({...r,trust:Math.max(r.trust,30)}));const p=baked('soap',c),g=run(p,5);g.p=p;slots(g,12,court?x=>{for(let i=0;i<2;i++){x.act('test.court',{character:'jana'});settle(x);}}:()=>{});return beats(g.s);};
+ const deal=court=>{const c=campus();c.gameProject.timeMode='clock';c.initialRelationships=c.initialRelationships.map(r=>({...r,trust:Math.max(r.trust,30)}));const p=baked('soap',c),g=run(p,5);g.p=p;slots(g,12,court?x=>{for(let i=0;i<2;i++){x.act('test.court',{character:'jana'});settle(x);}}:()=>{});return beats(g.s);};
  const plain=deal(false),courted=deal(true),focused=b=>b.filter(e=>e.payload.mode==='focus');
  assert.equal(focused(plain).length,0);assert.ok(focused(courted).length>=3,`only ${focused(courted).length} focus beats`);
  const around=b=>b.filter(e=>['obstacle','temptation'].includes(e.payload.kind)&&e.payload.roles.lead==='jana'&&e.payload.roles.rival).length;

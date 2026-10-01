@@ -9,15 +9,17 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ### Wave 3 (C1 she acts first / visible progress)
 
-### Wave 4 (ready; plan PLAN-2026-10-02.md)
-  - T-038 Every typed input lands · planned: codex (T-039 dropped: stall interrupt already on main, 428a5cd)
-  - T-040 Her own wants · T-041 Prompt pass · T-042 UI7 texts panel · planned: space-bunny (OpenCode, OpenRouter free)
-
 ### Parked
   - T-009b Suggest auto-fill · O1 · O3 · creator leftovers · Director-as-DM (owner: after C1 character depth)
 
 
 ## Doing
+
+### T-038 Every typed input lands
+  - model: gpt-6.1-sol (Codex) · fun gate (input-lost) · plan PLAN-2026-10-02
+
+### T-040 Her own wants · T-041 Prompt pass · T-042 UI7 texts panel
+  - model: space-bunny (OpenCode free) · C1 / fun gate / UI7 · T-039 dropped (stall interrupt already on main, 428a5cd)
 
 ## Review
 

@@ -3,6 +3,12 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ## Todo
 
+### T-026 UI check (screenshots of play + creator, owner picks fixes)
+  - planned: after phase 1 · tags: [playtester]
+
+### C1 tickets: voices, she acts first, visible progress, gift repeats
+  - planned: after T-026
+
 ### T-008 Per-heroine ladder + unwelcome-flirt reactions by personality
   - tags: [writer, opencode-longcat-free]
   - waits on: T-003 merge
@@ -10,13 +16,23 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ## Doing
 
-### T-012 Relationship stages + repairable breakups
+
+### T-024 Body-region limits drive intimate acts
   - planned: gpt-6.1-sol (Codex)
-  - tags: [implementer, codex] · owner: repair = Trust back to dating bar; strain = Trust < 20
+  - tags: [implementer, codex] · O2 phase 1
+
+### T-025 Refusal object: reason + alternatives, no error strings
+  - planned: gpt-6.1-sol (Codex)
+  - tags: [implementer, codex] · O2 phase 1
 
 ## Review
 
 ## Done
+
+### T-012 Relationship stages + repairable breakups
+  - model: gpt-6.1-sol (Codex)
+  - tags: [implementer, codex] · round 2: stage settings in save digest
+  - merged 2026-10-01
 
 ### T-023 Save digest includes socialPacing / timeMode / sceneFeedback
   - model: gpt-6.1-sol (Codex)

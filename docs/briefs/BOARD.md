@@ -3,17 +3,16 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ## Todo
 
-### Wave 1 (after T-024/T-025 merge, shares the acts path)
-
-### Wave 2 (C1 character depth)
-
-### Wave 3 (C1 she acts first / visible progress)
-
 ### Wave 5 (draft; owner paused new work; plan PLAN-WAVE-5.md)
   - T-043 Fun-gate measurement · planned: director (local)
   - T-044 First-run setup · T-045 Free-tier guard · planned: codex
   - T-046 Install check · planned: space-bunny
   - T-047 Owner picks on Wave 3 (voice mood, jealousy word, lust hints, anniversaries off) · planned: codex
+
+### Wave 6 (draft; plan PLAN-WAVE-6.md)
+  - T-048 Decline invite · T-050 Likes clues · T-053 Routes never close · T-054 Endings · T-057 Time cost · T-058 Retire after-hours · planned: codex
+  - T-049 Prompt slips 2 · T-051 Day recap · T-052 Director audit · T-055 M4 Studio forms · T-059 Messages polish · T-060 Docs catch-up · planned: space-bunny
+  - T-056 M4 bot validation · planned: director (local)
 
 ### Parked
   - T-009b Suggest auto-fill · O1 · O3 · creator leftovers · Director-as-DM (owner: after C1 character depth)

@@ -12,6 +12,10 @@ export const clone = x => structuredClone(x);
 export const plannerMode = pack => pack.gameProject?.timeMode==='planner';
 export function assert(ok, message) { if (!ok) throw new Error(message); }
 const untilTicks=(tick,part,n)=>{const slot=Math.floor(tick/n),d=((PERIODS.indexOf(part)-slot%3+3)%3)||3;return (slot+d)*n-tick;};
+export const refusalCode=e=>e?.code||e?.refusal?.code||(/consent|intima|boundary/i.test(e?.message||'')?'boundary':/route|location|destination/i.test(e?.message||'')?'place':/revision/i.test(e?.message||'')?'changed':'unavailable');
+const refusalWords={unavailable:'That cannot happen just now. There is still something else to try.',boundary:'That goes beyond what has been agreed. Give the moment some space.',place:'That way is out of reach just now. Take in your surroundings before choosing another way.',changed:'The moment has moved on. Take a fresh look before deciding.',choice:'This moment needs a choice before it can continue.',item:'That purchase cannot happen here just now.',activity:'That will have to wait. Try something else for now.',target:'Take a moment to see who is here before choosing whom to approach.',repeat:'There is nothing more to add on that subject. Let another topic have its turn.',model_reply:'The moment falls quiet. Take a breath and choose what to do next.'};
+export function refusalFor(world,pack,registry,code='unavailable',retry=1){const pool=[{label:'Look around',type:'core.inspect',args:{}},{label:'Wait',type:'core.wait',args:{}}],alternatives=pool.filter((a,i)=>{try{execute(world,{...a,id:'refusal-preview-'+world.revision+'-'+i,actorId:pack.playerId,expectedRevision:world.revision},pack,registry);return true;}catch{return false;}}).map(a=>({label:a.label,input:a.label}));return {code,reason:retry>=3?'The moment turns toward something else. Take in your surroundings and choose a new direction.':refusalWords[code]||'That does not feel possible right now. Give the moment some space and try another direction.',alternatives,retry,redirect:retry>=3};}
+function recordRefusal(tx,registry,code,target=''){const s=tx.state,scene=s.scene?.id||s.modules['story.scenes']?.pending||s.actors[tx.pack.playerId].location+':outside',prior=s.refusalHistory?.scene===scene?s.refusalHistory.counts:{},key=JSON.stringify([code,target]),retry=(prior[key]||0)+1;tx.set(['refusalHistory'],{scene,counts:{...prior,[key]:retry}});return refusalFor(s,tx.pack,registry,code,retry);}
 export function safeKey(s) { return typeof s === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,99}$/.test(s) && !['__proto__','constructor','prototype'].includes(s); }
 export function routeBetween(pack,from,to,flags={}) { const queue=[[from]],seen=new Set([from]);while(queue.length){const path=queue.shift(),at=path.at(-1);if(at===to)return path;for(const e of pack.locations.find(l=>l.id===at)?.exits||[])if(!seen.has(e.to)&&(!e.flag||flags[e.flag])){seen.add(e.to);queue.push([...path,e.to]);}}return null; }
 export function scheduleDestination(pack,schedule,tick) {const exception=(pack.scheduleExceptions||[]).find(x=>x.actor===schedule.actor&&tick>=x.startTick&&tick<=x.endTick);if(exception)return exception.location;for(const stop of schedule.stops||[])if(tick%schedule.period===stop.at)return stop.location;const interval=pack.daypart?.interval||4;if(tick%interval===0){const clock=calendarFor(tick,pack);for(const stop of schedule.weekly||[])if(stop.weekday===clock.weekday&&stop.daypart===clock.daypart&&!(stop.skipHolidays&&holidayOf(pack,clock)))return stop.location;}return null;}
@@ -170,7 +174,7 @@ export function validatePack(pack, registry) {
   if(pack.initialRelationships){assert(Array.isArray(pack.initialRelationships),'initialRelationships: expected array');for(const r of pack.initialRelationships){assert(actors.has(r.character)&&r.character!==pack.playerId,'initialRelationships.character: unknown NPC');assert(Number.isInteger(r.trust)&&r.trust>=0&&r.trust<=100,'initialRelationships.trust: expected 0–100');}}
   if((pack.initialRelationships||[]).length)assert(pack.modules['social.relationships'],'initialRelationships requires social.relationships');
   if(pack.run){assert(Number.isInteger(pack.run.days)&&pack.run.days>=1&&pack.run.days<=365,'run.days: expected 1–365');assert(pack.modules['story.endings'],'run requires story.endings');assert(typeof pack.run.defaultEnding==='string'&&(pack.endings||[]).some(ending=>ending.id===pack.run.defaultEnding),'run.defaultEnding: choose an existing ending');}
-  const mods=resolveModules(pack,registry), commands=new Set(['core.move','core.inspect','core.wait','core.scene','core.endScene']);
+  const mods=resolveModules(pack,registry), commands=new Set(['core.refuse','core.move','core.inspect','core.wait','core.scene','core.endScene']);
   for(const m of mods){m.validate?.(pack);for(const name of Object.keys(m.commands||{})){assert(!commands.has(name),`Command conflict: ${name}`);commands.add(name);}}
   return mods;
 }
@@ -203,7 +207,7 @@ export function execute(world,command,pack,registry,packChecked=false) {
   assert(safeKey(command.id),'Invalid turn ID');assert(command.expectedRevision===world.revision,'Stale revision; refresh and try again');
   assert(command.actorId===pack.playerId,'Only the player can submit commands');
   assert(command.args&&typeof command.args==='object'&&!Array.isArray(command.args),'args must be an object');
-  assert(!world.modules['story.endings']?.selected,'The story has ended. Start a new campaign to play again.');
+  assert(!world.modules['story.endings']?.selected||['core.refuse','core.inspect'].includes(command.type),'The story has ended. Start a new campaign to play again.');
   // A director incident is a model-played moment, so its conversation can end like any other (the scenes module then dismisses it).
   if(world.modules['story.scenes']?.pending)assert(['story.choose','story.respond','story.leave','social.withdrawConsent'].includes(command.type)||FREE_ACTIONS.has(command.type)||command.type==='core.endScene'&&pack.scriptedScenes?.find(x=>x.id===world.modules['story.scenes'].pending)?.template?.delivery==='incident','Choose an option, reply in your own words, withdraw consent, or leave the active scene first');
   const mods=resolveModules(pack,registry), state=clone(world), emitted=[];let steps=0,waitTicks=0,meetingBlocked=false;
@@ -215,7 +219,9 @@ export function execute(world,command,pack,registry,packChecked=false) {
     set(path,value){put(state,path,value);this.emit('core.patch',{path,value},[]);},
     random(){const n=(Math.imul(state.rng,1664525)+1013904223)>>>0;this.set(['rng'],n);return n/4294967296;}
   };
+  if(command.type==='core.refuse'){const refusal=recordRefusal(tx,registry,typeof command.args.code==='string'?command.args.code:'unavailable',command.args.target);tx.emit('core.refused',{refusal,text:refusal.reason},[pack.playerId]);tx.set(['revision'],world.revision+1);const turn={id:command.id,command:clone(command),events:emitted,narrative:null,status:'pending',refusal};state.events.push(...emitted);state.turns[command.id]=turn;return {state,turn,duplicate:false};}
   const base={
+    'core.refuse'(tx,args){const refusal=recordRefusal(tx,registry,typeof args.code==='string'?args.code:'unavailable',args.target);tx.emit('core.refused',{refusal,text:refusal.reason},[pack.playerId]);},
     'core.move'(tx,args){const from=tx.state.actors[pack.playerId].location;const exit=pack.locations.find(l=>l.id===from).exits.find(e=>e.to===args.to);assert(exit,'No route to that location');assert(!exit.flag||tx.state.flags[exit.flag],exit.reason||'This route is locked');releaseScene(tx);tx.set(['actors',pack.playerId,'location'],args.to);tx.emit('core.moved',{actor:pack.playerId,from,to:args.to,text:`Travelled to ${pack.locations.find(l=>l.id===args.to).name}.`});},
     'core.inspect'(tx){const l=pack.locations.find(l=>l.id===state.actors[pack.playerId].location);tx.emit('core.inspected',{text:l.description||l.name,location:l.id},[pack.playerId]);},
     // until: skip ahead to the start of the next Morning, Afternoon or Evening (the hub's "Skip to Evening").
@@ -335,7 +341,9 @@ export function execute(world,command,pack,registry,packChecked=false) {
   if(planner&&state.planner&&!state.scene&&!state.modules['story.scenes']?.pending&&!state.modules['social.firsts']?.active){advance(state.planner.endTick-state.tick);tx.set(['planner'],null);react();}
   else if(!planner&&continuous&&world.scene&&!state.scene&&!['world.nextDaypart','core.waitUntil'].includes(command.type)&&!(command.type==='core.scene'&&command.args.activity==='rest')){advance(until()-state.tick);react();}
   tx.set(['revision'],world.revision+1);
-  const turn={id:command.id,command:clone(command),events:emitted,narrative:null,status:'pending'};
+  if(!command.id.startsWith('refusal-preview-'))for(const e of emitted.slice()){if(e.type==='core.patch'||e.type==='core.refused')continue;const code=e.payload.refusal?.code||(/Blocked|Unavailable|Redirect|Declined|Refused|Denied$/.test(e.type)?e.payload.code||e.type:null);if(code){const refusal=recordRefusal(tx,registry,code,e.payload.character||e.payload.target||e.payload.to||e.payload.location||'');e.payload={...e.payload,refusal};}}
+  const refusal=emitted.find(e=>e.payload.refusal)?.payload.refusal;
+  const turn={...(refusal?{refusal}:{}),id:command.id,command:clone(command),events:emitted,narrative:null,status:'pending'};
   state.events.push(...emitted);state.turns[command.id]=turn;return {state,turn,duplicate:false};
 }
 // Each place lists what can be done there and what it pays, so raising a stat is a visible choice, not a guessed phrase.
@@ -360,7 +368,7 @@ export function actions(world,pack,registry){
   return list.map((a,i)=>{try{execute(world,{...a,id:`preview-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry,ok);return {...a,enabled:true};}catch(e){return {...a,enabled:false,reason:e.message};}});
 }
 // Bookkeeping that takes no story time: looking, dressing, reading the phone.
-export const FREE_ACTIONS=new Set(['core.inspect','items.equip','items.unequip','social.readFeed','social.readThread','social.reactToPost','social.setRumorStance','social.resolveConfrontation','social.scoreFirst','social.stopFirst','world.pushLuck']);
+export const FREE_ACTIONS=new Set(['core.refuse','core.inspect','items.equip','items.unequip','social.readFeed','social.readThread','social.reactToPost','social.setRumorStance','social.resolveConfrontation','social.scoreFirst','social.stopFirst','world.pushLuck']);
 // The typed turns a model scene answers inside an open continuous scene: the only ones that count toward the
 // sceneTurns safety cap. Score sub-turns (priceActs, scoreFirst, resolveConfrontation), waits and rules-only
 // commands are not conversation, and failed generations are refunded by the service, so none of them spend the scene.

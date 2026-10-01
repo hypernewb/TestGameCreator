@@ -64,3 +64,9 @@ export interface CharacterSheetPack { characterSheets?:CharacterSheet[] }
 export interface RelationshipStageSettings { stages?:['acquaintance','dating','exclusive']; strainTrustFloor?:number; strainDays?:number; scar?:{trust?:number;chemistry?:number}; repairDelayDays?:number; repairTrustBar?:number }
 export interface RelationshipStagesPack { relationshipStageSettings?:RelationshipStageSettings }
 export interface BreakupHistoryEntry { tick:number; from:string; reason:string; scar:{trust:number;chemistry:number} }
+
+export interface Refusal { code:string; reason:string; alternatives:{label:string;input:string}[]; retry:number; redirect?:boolean }
+export interface Turn { refusal?:Refusal|null }
+export interface Action { refusal?:Refusal }
+export interface World { refusalHistory?:{scene:string;counts:Record<string,number>} }
+export interface ActionReply { state:World; turn?:Turn; refusal?:Refusal }

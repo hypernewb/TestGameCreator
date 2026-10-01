@@ -21,6 +21,7 @@ Existing prose and activity yield/end-card cues are integration points, not proo
 - 2026-10-01 Mood line: 5 tiers with rp-master wording, one line per heroine present, updated in place.
 - 2026-10-01 Mood math: by size of change, score bands ≥8 / 3..7 / −2..2 / −7..−3 / ≤−8, privacy/sobriety refusals push down, hysteresis so it doesn't flicker.
 - 2026-10-01 Judging (aftercare, rapport): no extra AI calls; the engine judges from state plus the turn's interpreted action. One call per turn stays.
+- 2026-10-01 Mood score: Trust change + 3×Lust change (applied deltas); privacy/sobriety refusal −3; hysteresis 2; every heroine starts at the middle tier.
 Every mechanic choice is a per-world creator option; ship the simplest mode first ([owner answers](../research/owner-answers.md)).
 
 ## Creator option (field, modes, campus default; creator UI screen)

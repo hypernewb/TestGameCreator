@@ -28,6 +28,7 @@ The permitted map lacks field-level contracts; existing consumers, including dia
 - 2026-10-01 Unwelcome flirting: the reaction depends on her personality (deflect / tease back / shut down), with matching stat changes.
 - 2026-10-01 Rude exit: per-heroine rules on her sheet (what she finds rude + her reaction); no universal penalty.
 - 2026-10-01 Judging (aftercare, rapport): no extra AI calls; the engine judges from state plus the turn's interpreted action. One call per turn stays.
+- 2026-10-01 Fixed lists (traits, gift categories, experience levels, body regions/sensitivity): worker drafts from rp-master + Venus, owner approves before build.
 Every mechanic choice is a per-world creator option; ship the simplest mode first ([owner answers](../research/owner-answers.md)).
 
 ## Creator option (field, modes, campus default; creator UI screen)

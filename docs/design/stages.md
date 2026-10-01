@@ -23,6 +23,7 @@ Gaps: durable breakup history/scar, coordinated stage changes and explicit repai
 - 2026-10-01 Strain: 2 in-game days of visible strain before an engine breakup; authored breakups separate.
 - 2026-10-01 Repair: after 2 in-game days, rapport back to a set level, plus a reconciliation scene she accepts; restarts at dating.
 - 2026-10-01 Judging (aftercare, rapport): no extra AI calls; the engine judges from state plus the turn's interpreted action. One call per turn stays.
+- 2026-10-01 Repair gate: per heroine — each sheet sets her own rapport bar for reconciliation.
 Every mechanic choice is a per-world creator option; ship the simplest mode first ([owner answers](../research/owner-answers.md)).
 
 ## Creator option (field, modes, campus default; creator UI screen)

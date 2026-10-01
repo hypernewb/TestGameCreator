@@ -19,6 +19,7 @@ Avoid overlapping charges from activity duration, travel, scene budgets, goodbye
 - 2026-10-01 Day loop: clock-only is the ideal; a day-planner screen is fine for this iteration if it's simpler to playtest. Make it a creator option (clock | planner).
 - 2026-10-01 Planner: campus default = planner; 3 slots/day (morning/afternoon/evening), one activity each; ending a chat doesn't end the day in planner (still does in clock).
 - 2026-10-01 Judging (aftercare, rapport): no extra AI calls; the engine judges from state plus the turn's interpreted action. One call per turn stays.
+- 2026-10-01 Slots: 1 activity = 1 slot, including travel and the conversation.
 Every mechanic choice is a per-world creator option; ship the simplest mode first ([owner answers](../research/owner-answers.md)).
 
 ## Creator option (field, modes, campus default; creator UI screen)

@@ -24,3 +24,7 @@ Big picture: every mechanic choice should become a per-world option in the game 
 - 2026-10-01 Planner: campus default = planner; 3 slots/day (morning/afternoon/evening), one activity each; ending a chat doesn't end the day in planner (still does in clock).
 - 2026-10-01 Mood math: by size of change, score bands ≥8 / 3..7 / −2..2 / −7..−3 / ≤−8, privacy/sobriety refusals push down, hysteresis so it doesn't flicker.
 - 2026-10-01 Sheet extras: adult history = free text + structured experience field (usable for firsts); behaviour rules = engine event→condition→effect rows + prose notes; Suggest = full draft from 3 seed words, per-field review, owner always picks consent/limits/intimate choices.
+- 2026-10-01 Mood score: Trust change + 3×Lust change; privacy/sobriety refusal −3; hysteresis 2 (must pass a band edge by 2); every heroine starts at the middle tier.
+- 2026-10-01 Repair gate: per heroine (each sheet sets her own rapport bar for reconciliation).
+- 2026-10-01 Planner slots: 1 activity = 1 slot, including travel and the conversation.
+- 2026-10-01 Sheet lists (traits, gift categories, experience levels, body regions/sensitivity): a worker drafts from rp-master + Venus, owner approves before the T-009 build.

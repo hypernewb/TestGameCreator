@@ -36,4 +36,4 @@
 
 ### T-006 Weekly model scout
   - tags: [researcher, claude-haiku]
-  - output: docs/research/models-weekly.md · repeats Mondays
+  - output: docs/research/models-weekly.md · owner reruns manually

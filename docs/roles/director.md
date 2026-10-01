@@ -10,7 +10,7 @@ Plan, delegate, review. Never implement or read code unless the owner asks. Toke
 6. Merge: only with the owner's go-ahead (batch several per ask). Then run `npm test` on main, mark BOARD done, remove the worktree, and spawn a doc-keeper ticket if `docs/map` went stale.
 
 ## Standing jobs
-- Weekly (Monday) model scout: T-006 re-run, which overwrites `docs/research/models-weekly.md` (arena leaderboard, free OpenRouter models, credit balances). The routing table there decides platforms for the week.
+- Model scout (T-006): the OWNER runs it manually when they want; never schedule or remind. Use the routing table in `docs/research/models-weekly.md`.
 - Triage `docs/bugs.md` into bug-fixer tickets. One live playtest at a time.
 - Character content is always delegated to the writer. Design calls (actions, consent, characters) are the owner's: interview, don't guess.
 
@@ -28,3 +28,12 @@ Plan, delegate, review. Never implement or read code unless the owner asks. Toke
 - Failures: a worker that fails a ticket twice gets escalated to a Claude sonnet worker, noted in the digest.
 - Parallel: up to 3 code workers at once, plus any number of non-code workers (research, writing, docs).
 - Budget: free models first; use Google/OpenRouter credit for big reads or when free fails; report spend weekly.
+
+## Design workflow (interview 2026-10-01): per system, in order
+1. Self-audit: an analyzer reads `docs/map` plus the affected modules and writes "what we have / gaps / overlaps" into the design card. This happens before any design, so options fit our code.
+2. Research: a researcher checks 2–3 reference games for that system. References: Venus, rp-master, classic dating sims (Persona, Tokimeki, Stardew), adult sandbox (Degrees of Lewdity, Summertime Saga, Free Cities), corruption VNs (storylines and progression arcs), and AI RP tools (SillyTavern, AI Dungeon).
+3. Options: the worker drafts 2–3 options per open call, with real-game examples and suggested numbers. The director dedupes, checks them against the audit, adds a recommendation and reasoning, and asks the owner ≤4 at a time.
+4. Design card: `docs/design/<system>.md` (from `docs/design/TEMPLATE.md`, ≤1 page). It holds the owner's picks and every number. It's the single source for that system.
+5. Build: a thin slice first (the simplest mode), then deepen. Every feature ships with its creator UI. Numbers and modes live in the world pack, with the campus value as default.
+6. Fun gate: the AI playtester runs scripted sessions and scores the rubric (agency, surprise, payoff, repetition). The owner can veto after playing.
+7. After each milestone: a self-audit health check (overlaps, dead code, stale map) becomes doc-keeper/refactorer tickets.

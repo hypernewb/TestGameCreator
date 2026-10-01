@@ -24,6 +24,12 @@
 
 ## Doing
 
+### T-013 Design card: character sheet (for T-009)
+  - tags: [analyzer, vertex-gemini-pro] · refs: rp-master + Venus only
+
+### T-014 Design card: scene feedback chips + mood (for T-007)
+  - tags: [analyzer, space-bunny-free]
+
 ## Review
 
 ## Done

@@ -1,3 +1,4 @@
+import {giftSceneCue} from '../modules/romance-tempo.mjs';
 import {assert,actions,execute,fallback,FREE_ACTIONS,EXCHANGE_COMMANDS,rankLock,routeBetween} from '../core/engine.mjs';
 import {calendarFor} from '../../public/calendar.mjs';
 import {closedReason} from '../modules/calendar.mjs';
@@ -216,6 +217,7 @@ const budgetDone=Boolean(world.scene?.budget&&cast.length&&world.scene.inputs>=w
     if(topicDry){context.scenePhase='closing';context.direction='Answer the player on the current topic, then let the character gently bring this conversation to a close. The same request has repeated without a new subject; do not invent a fresh crisis, appointment, or question to keep it going.';}
     const repeatAsk=turn.events.find(e=>e.type==='social.spoke'&&e.payload.repeat);context.repeatAsk=repeatAsk?pack.actors.find(a=>a.id===repeatAsk.payload.target)?.name||null:null;
     if(pack.modules['social.acts']){const cue=(await import('../modules/acts.mjs')).flirtDepartureCue(world,pack),left=turn.events.filter(e=>e.type==='social.departed').map(e=>e.payload.text).join(' ');if(cue||left)context.direction=[context.direction,cue,left].filter(Boolean).join(' ');}
+    context.giftCue=giftSceneCue(world,pack,cast,context.playerAction||'',turn);
     const budgeted=budgetSceneContext(context,pack,world,turnId,{window:this.provider.contextWindow||8192,reply:replyReserve(this.provider.usage,this.provider.maxTokens||1800,512,5,this.provider.contextWindow||8192),ratio:this.provider.calibration?.ratio||1,verbatim:this.provider.contextSize?contextPreset(this.provider.contextSize,this.provider.remote).verbatim:Infinity,render:c=>scenePromptMessages(c,pack),wideContext:this.provider.wideContext});Object.assign(context,budgeted.context);const contextReport=budgeted.report;
     let priced=[],claimStance=null,text,visualLines,failed=false,sceneEnded=false,sceneSummary='',lintTrace=[],bundledMemories=[],bundledFacts=[];
     let failureReason='';try{if(typeof this.provider.generateScene==='function'){

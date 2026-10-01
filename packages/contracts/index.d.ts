@@ -64,3 +64,9 @@ export interface CharacterSheetPack { characterSheets?:CharacterSheet[] }
 export interface RelationshipStageSettings { stages?:['acquaintance','dating','exclusive']; strainTrustFloor?:number; strainDays?:number; scar?:{trust?:number;chemistry?:number}; repairDelayDays?:number; repairTrustBar?:number }
 export interface RelationshipStagesPack { relationshipStageSettings?:RelationshipStageSettings }
 export interface BreakupHistoryEntry { tick:number; from:string; reason:string; scar:{trust:number;chemistry:number} }
+
+export interface GiftSettings { likedMultiplier:number; dislikedPoints:number; keepsakeMinGain:number; keepsakeLimit:number }
+export interface GiftPack { giftRepeatScale?:number[]; giftSettings?:GiftSettings }
+export interface GiftItem { categories?:GiftCategory[] }
+export interface GiftKeepsake { item:string; tick:number; gain:number }
+export interface GiftRuntime { giftCounts?:Record<string,number>; keepsakes?:GiftKeepsake[] }

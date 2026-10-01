@@ -13,7 +13,7 @@ import {LEAVING} from '../../vendor/venus/scenePrompt.mjs';
 // activity can deal one tied to it. Dealing never costs a model call and never forces a scene on the player.
 const path=['modules','story.director'];
 // Storyteller presets (RimWorld): cassandra paces steadily, randy rolls early whims, phoebe needs deeper quiet.
-const BASE={quietDayparts:2,earlyChancePercent:0,jitter:10,escalationDays:3,decayPerTick:3,activeThreshold:25,maxPerDay:1,firstTick:8};
+const BASE={quietDayparts:2,earlyChancePercent:0,jitter:10,escalationDays:3,decayPerTick:3,activeThreshold:25,maxPerDay:1,firstTick:8,stallTurns:6};
 export const PRESETS={
  cassandra:BASE,
  randy:{...BASE,quietDayparts:1,earlyChancePercent:20,jitter:35,escalationDays:2},
@@ -169,6 +169,19 @@ function react(tx,event){
   const saw=pool.filter(({c})=>c.template==='saw-you'),pick=bestOf(saw.length?saw:pool,tx,settings,deck);if(!pick)return;
   return dealNow(tx,current,pick,deck,cal,'witnessed',{location:event.payload.location});
  }
+ // Typed-play stall interrupt (falsification 2026-10-01: one free scene ran 12 turns with the clock frozen at 25% dead):
+ // consecutive sceneContinued turns with nothing committed between them are a stalling scene, and the director
+ // interrupts it like a mishap — the cast arrives mid-conversation. Any committed change (tension, setbacks,
+ // attention) resets the count, and a live tease outranks the interruption.
+ if(event.type==='core.sceneEnded'&&current.stall){current={...current,stall:0};tx.set(path,current);}
+ if(event.type==='core.sceneContinued'&&settings.adaptive&&!current.armed){
+  const stall=(current.stall||0)+1;
+  if(stall>=settings.stallTurns){
+   const cal=calendarFor(tx.state.tick,tx.pack),deck=deckOf(current,''),pool=[false,true].map(r=>eligible(tx,profile.complications||[],settings,cal,tierOf(settings,cal),deck,r).filter(({c})=>c.template)).find(x=>x.length)||[],pick=bestOf(pool,tx,settings,deck);
+   if(pick){dealNow(tx,{...current,stall:0},pick,deck,cal,'stall',{});return;}
+   tx.set(path,{...current,stall:0});
+  }else tx.set(path,{...current,stall});
+ }
  // Authored scenes can weight their own beats: scene.tension replaces the flat default when that scene resolves.
  // Warmth is not drama: a scene runs many turns on one tick, so gains would pile up tension the clock never decays and keep a good date from ever counting as quiet.
  const sceneTension=(tx.pack.scriptedScenes||[]).find(x=>x.id===event.payload?.scene)?.tension,warm=WARMTH.has(event.type)&&event.payload?.delta>0;
@@ -178,7 +191,7 @@ function react(tx,event){
  if(event.type!=='core.timeAdvanced'){
   let setbacks=current.setbacks||0,attention=current.attention||{},attentionChanged=false;
   if(settings.adaptive){if(event.type==='social.romancePointsChanged')setbacks=Math.max(0,Math.min(10,setbacks+(event.payload.delta<0?1:-1)));if(['story.planBroken','social.planMissed','social.intimacyDeferred'].includes(event.type))setbacks=Math.min(10,setbacks+1);const character=event.type==='social.actPriced'?event.payload.character:event.type==='social.spoke'?event.payload.target:event.type==='core.sceneStarted'&&event.payload.characters?.length===1?event.payload.characters[0]:null;if(character&&tx.state.actors[character]&&character!==tx.pack.playerId){attention={...attention,[character]:Math.min(10,(attention[character]||0)+1)};attentionChanged=true;}}
-  if(bump||setbacks!==(current.setbacks||0)||attentionChanged)tx.set(path,{...current,tension:clampTension(current.tension+bump),setbacks,attention});return;
+  if(bump||setbacks!==(current.setbacks||0)||attentionChanged)tx.set(path,{...current,tension:clampTension(current.tension+bump),setbacks,attention,stall:0});return;
  }
  // The clock settles the daypart: tension decays over the elapsed ticks, then each crossed boundary counts as
  // quiet when what is left of tension sits below the threshold. Waiting IS quiet, so long rests invite drama.
@@ -255,7 +268,7 @@ export const director={id:'story.director',version:'0.1.0',coreApi:'0.1.0',requi
   assert(profile.toneCeiling===undefined||profile.toneCeiling===''||Object.hasOwn(TONE_LEVELS,profile.toneCeiling),'directorProfile.toneCeiling: expected no ceiling, grounded, soap or melodrama');
   assert(profile.textMode===undefined||['authored','draft'].includes(profile.textMode),'directorProfile.textMode: expected authored or draft');
   const settings=settingsOf(profile);
-  for(const [k,lo,hi] of [['quietDayparts',1,20],['earlyChancePercent',0,100],['jitter',0,50],['escalationDays',1,100],['decayPerTick',0,20],['activeThreshold',0,100],['maxPerDay',1,5],['firstTick',0,100000],['opportunityChancePercent',0,100],['interruptionChancePercent',0,100],['opportunitiesPerDay',1,10]])assert(Number.isInteger(settings[k])&&settings[k]>=lo&&settings[k]<=hi,`directorProfile.${k}: expected an integer from ${lo} to ${hi}`);
+  for(const [k,lo,hi] of [['quietDayparts',1,20],['earlyChancePercent',0,100],['jitter',0,50],['escalationDays',1,100],['decayPerTick',0,20],['activeThreshold',0,100],['maxPerDay',1,5],['firstTick',0,100000],['opportunityChancePercent',0,100],['interruptionChancePercent',0,100],['opportunitiesPerDay',1,10],['stallTurns',2,50]])assert(Number.isInteger(settings[k])&&settings[k]>=lo&&settings[k]<=hi,`directorProfile.${k}: expected an integer from ${lo} to ${hi}`);
   assert(Array.isArray(profile.tensionEvents||[])&&(profile.tensionEvents||[]).length<=20,'directorProfile.tensionEvents: expected up to 20 entries');
   for(const t of profile.tensionEvents||[]){
    assert(typeof t.event==='string'&&t.event&&t.event!=='core.patch'&&!['core.timeAdvanced','story.incident'].includes(t.event),'directorProfile.tensionEvents.event: invalid');
@@ -301,7 +314,7 @@ export const director={id:'story.director',version:'0.1.0',coreApi:'0.1.0',requi
    assert(c.text===undefined||typeof c.text==='string'&&c.text.length<=200,`director opportunity ${c.id}.text: up to 200 characters`);
   }
  },
- init:()=>({tension:0,quiet:0,uses:{},lastUse:{},recent:[],fired:0,lastDay:null,firedToday:0,armed:null,lastTick:null,lastKind:null,offers:[],offersDay:null,oToday:0,oLastDay:null,oUses:{},oLastUse:{},oRecent:[],setbacks:0,attention:{},lastFocus:null,breatherNext:false,owed:null,escalated:{},notes:[]}),
+ init:()=>({tension:0,quiet:0,uses:{},lastUse:{},recent:[],fired:0,lastDay:null,firedToday:0,armed:null,lastTick:null,lastKind:null,offers:[],offersDay:null,oToday:0,oLastDay:null,oUses:{},oLastUse:{},oRecent:[],setbacks:0,attention:{},lastFocus:null,breatherNext:false,owed:null,escalated:{},notes:[],stall:0}),
  react,
  panel(s,p){const profile=profileOf(p),st=s.modules['story.director'];if(!profile)return {title:'Drama director',lines:['No director profile; the module idles.']};
   const settings=settingsOf(profile),cal=calendarFor(s.tick,p),tier=tierOf(settings,cal);

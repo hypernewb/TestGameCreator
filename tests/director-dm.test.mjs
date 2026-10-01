@@ -7,7 +7,9 @@ import {director,directorContext} from '../packages/modules/director.mjs';
 import {funMetrics,funLine} from '../packages/testing/fun-metrics.mjs';
 import {beatDirection} from '../packages/ai/beats.mjs';
 
-const probe={id:'test.probe',version:'0.1.0',coreApi:'0.1.0',requires:[],commands:{}};
+const probe={id:'test.probe',version:'0.1.0',coreApi:'0.1.0',requires:[],commands:{
+ 'test.say'(tx,a){tx.emit('core.sceneContinued',{activity:'continue',location:'hub',characters:['ada'],text:a.text||'hello'},[tx.pack.playerId,'ada']);},
+ 'test.change'(tx){tx.emit('story.choiceResolved',{scene:'elsewhere',beat:'opening',choice:'x',text:'A beat happened.'});}}};
 const custom={...registry,[probe.id]:probe};
 const pack=(profile={},complications,opportunities)=>{
  const p=JSON.parse(readFileSync(new URL('../packs/neutral.json',import.meta.url)));delete p.modules['world.schedule'];
@@ -53,6 +55,34 @@ test('walking out of a director beat is owed once: tone+1 at the next quiet boun
  assert.equal(c.director.owed,null);
  waits(c,4);
  assert.equal(c.incidents.length,2,'never a second escalation');
+});
+
+test('a stalled scene is interrupted: N free turns with nothing committed bring the cast in',()=>{
+ const c=run(pack({quietDayparts:9,firstTick:0,decayPerTick:0,adaptive:true,stallTurns:3},[{id:'jealous',scene:'sc-jealous',template:'jealous'}]));
+ c.act('core.scene',{text:'Hang out',location:'hub',characters:['ada'],activity:'talk'});
+ c.act('test.say',{text:'hello'});
+ assert.equal(c.director.stall,1);
+ c.act('test.say',{text:'hello'});
+ c.act('test.change');
+ assert.equal(c.director.stall,0,'a committed change resets the stall');
+ c.act('test.say',{text:'hello'});
+ c.act('test.say',{text:'hello'});
+ assert.equal(c.director.armed,null,'no interruption before the threshold');
+ assert.equal(c.incidents.length,0);
+ c.act('test.say',{text:'hello'});
+ assert.equal(c.incidents.length,1,'the stalled scene is interrupted mid-conversation');
+ assert.equal(c.pending,'sc-jealous','the cast arrives: the incident scene takes over');
+ assert.equal(c.director.stall,0);
+ c.act('story.choose',{scene:'sc-jealous',choice:'talk'});
+ assert.equal(c.director.stall,0,'the count resets when the scene ends');
+});
+
+test('a non-adaptive pack never counts stalls, so the legacy fixture stays frozen',()=>{
+ const c=run(pack({quietDayparts:9,firstTick:0,decayPerTick:0},[{id:'jealous',scene:'sc-jealous'}]));
+ c.act('core.scene',{text:'Hang out',location:'hub',characters:['ada'],activity:'talk'});
+ for(let i=0;i<8;i++)c.act('test.say',{text:'hello'});
+ assert.equal(c.director.stall,0);
+ assert.equal(c.incidents.length,0);
 });
 
 test('a non-adaptive pack never escalates, so the legacy fixture stays frozen',()=>{

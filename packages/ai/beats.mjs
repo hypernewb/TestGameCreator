@@ -50,7 +50,7 @@ export function beatDirection(context,pack,seed=''){
  const stageOf=a=>{const d=(context.dating||[]).find(x=>x.character===a.id);if(d?.strained&&!['rejected','broken'].includes(d.phase))return 'strained';if(d&&d.phase!=='available')return d.phase;
   const trust=context.actor?.id===a.id?context.actor.relationshipToPlayer:null;if(trust==null)return '';
   return trust>=75?'close':trust>=40?'friend':trust<5&&!(context.memories||[]).length&&!(context.pastScenes||[]).length?'stranger':'familiar';};
- const movesOf=a=>{const temper=[a.personality,a.style,...[].concat(a.traits||[]),a.voice].filter(Boolean).join(' '),st=stageOf(a);
+ const movesOf=a=>{const temper=[a.personality,a.voice,a.fingerprint,...[].concat(a.traits||[])].filter(Boolean).join(' '),st=stageOf(a);
   return [...new Set([...TEMPERAMENT.filter(([r])=>r.test(temper)).flatMap(([,m])=>m),'opinion','ask',...(STAGE[st]?.add||[])])].filter(m=>!((question||phase==='opening')&&['deflect','challenge'].includes(m))&&!(STAGE[st]?.drop||[]).includes(m));};
  // The one memory the question is about, picked here rather than left to a 9B model scanning a dozen of them.
  // The player's own words (m.kind) beat a model-written impression that shares the same word, and of "name is Mara, favorite
@@ -86,7 +86,9 @@ export function beatDirection(context,pack,seed=''){
  // Like Tokimeki Memorial's daily condition, some days a character is in a mood (authored `moods`, or a mild default), the
  // same all day, so today's Mina is not a copy of yesterday's. Never over an authored scene's mood; two days in three they are just themselves, at no token cost.
  const moods=[].concat(actor.moods||MOODS),dh=hash(`${actor.id}:day${context.day??''}`),mood=context.day!=null&&!context.scriptedScene&&dh%3===0?moods[(dh>>>2)%moods.length]:'';
- const tone=[actor.style,STAGE[stageOf(actor)]?.tone,mood].filter(Boolean).join('; '),boundary=BOUNDARY[stageOf(actor)];
+ // Speech tag: authored fingerprint first, then the voice note. A pack with neither is legacy: it keeps the old tag
+ // text, the personality line older sheets keep in `style` (never clothing, which new packs put in `voice`/`fingerprint`).
+ const tone=[actor.fingerprint||actor.voice||actor.personality||actor.style,STAGE[stageOf(actor)]?.tone,mood].filter(Boolean).join('; '),boundary=BOUNDARY[stageOf(actor)];
  const under=briefOf(context.director);
  // The engine flags a re-asked question; the character voices the reaction (Venus: prompt the live moment, don't mute it).
  const repeat=context.repeatAsk?` The player just repeated something ${context.repeatAsk} already answered: react to the repetition itself — call it out, tease, or deflect. Do not answer it again.`:'';

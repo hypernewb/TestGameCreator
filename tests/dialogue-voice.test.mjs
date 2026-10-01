@@ -42,15 +42,15 @@ test('role-play splitting leaves signs, plain narration and unattributable speec
  assert.deepEqual(guard('*Mina waves from the street.* "Come down here!"'),[{speaker:'',text:'Mina waves from the street. "Come down here!"'}]);
 });
 
-test('the scene prompt carries a character rule, style and example lines, and a speaker-ID example',()=>{
- const p=pack(),ada=p.actors.find(a=>a.id==='ada');Object.assign(ada,{style:'Blunt when tired',examples:['Hand me the spanner. No, the other one.']});
+test('the scene prompt carries a character rule, voiceBlock and example lines, and a speaker-ID example',()=>{
+ const p=pack(),ada=p.actors.find(a=>a.id==='ada');Object.assign(ada,{fingerprint:'Sharp and concise.',examples:['Hand me the spanner. No, the other one.']});
  const [system,user]=scenePromptMessages({stagedCast:['ada'],sceneHistory:[],playerAction:'Hi',location:p.locations[0]},p);
  assert.match(system.content,/CHARACTERS: Each NPC speaks from their own cast profile/);
  assert.match(system.content,/never invent news, letters, secrets/);
  assert.match(system.content,/\{"speaker":"ada","text":"<Ada's exact words>"\}/);
- assert.match(user.content,/Blunt when tired/);assert.match(user.content,/No, the other one/);
+ assert.match(user.content,/Sharp and concise/);assert.match(user.content,/No, the other one/);
  const {context}=budgetSceneContext({stagedCast:['ada'],sceneHistory:[],memories:[],playerAction:'Hi'},p,{turns:{}},'now',{window:32768,reply:500,render:c=>scenePromptMessages(c,p)});
- assert.equal(context.castProfiles[0].style,'Blunt when tired');assert.deepEqual(context.castProfiles[0].examples,ada.examples);
+ assert.match(context.castProfiles[0].voiceBlock.fingerprint,/Sharp and concise/);assert.deepEqual(context.castProfiles[0].examples,ada.examples);
  const solo=scenePromptMessages({stagedCast:[],sceneHistory:[],playerAction:'Look around',location:p.locations[0]},p)[0].content;
  assert.doesNotMatch(solo,/CHARACTERS:/);assert.doesNotMatch(solo,/for example/);
 });
@@ -105,9 +105,9 @@ test('an NPC does not repeat a sentence they already said this scene',()=>{
 test('the engine directs each NPC beat from the authored profile, deterministically',()=>{
  const p=JSON.parse(readFileSync(new URL('../packs/crossed-plans.json',import.meta.url))),mina=p.actors.find(a=>a.id==='mina');
  const at=(input,history=[],phase='continuation',cast=['mina'])=>beatDirection({stagedCast:cast,scenePhase:phase,playerAction:input,sceneHistory:history},p,'s1');
- assert.doesNotMatch(at('Go see Rowan',[],'opening',['rowan']),/disagree|dodge/);assert.match(at('Go see Rowan',[],'opening',['rowan']),/^Rowan \(Direct, restless, and sincere beneath casual jokes\): start on what they want \(Tell the player face to face about the two-year fellowship abroad that starts next month\), then .+\. Keep it to one brief narration entry, then four or five entries mostly in the character’s own spoken voice\./);
+ assert.doesNotMatch(at('Go see Rowan',[],'opening',['rowan']),/disagree|dodge/);assert.match(at('Go see Rowan',[],'opening',['rowan']),/^Rowan \(Plain speech, quick jokes, then sudden honesty\.\): start on what they want \(Tell the player face to face about the two-year fellowship abroad that starts next month\), then .+\. Keep it to one brief narration entry, then four or five entries mostly in the character’s own spoken voice\./);
  const asked=at('What made you start drawing, anyway?');
- assert.match(asked,/^Mina \(Careful, perceptive, and wry when nervous\): answer the question directly from what is true \(Started drawing on the backs of bus transfers during a two-hour commute\), then /);assert.doesNotMatch(asked,/dodge/);
+ assert.match(asked,/^Mina \(Short modern sentences with dry warmth\.\): answer the question directly from what is true \(Started drawing on the backs of bus transfers during a two-hour commute\), then /);assert.doesNotMatch(asked,/dodge/);
  assert.match(at('Honestly that sucks. I will miss you.'),/respond to how the player feels/);assert.match(at('Tell me something dumb you will miss.'),/answer the question directly/);assert.match(at('Nice frames.'),/four or five entries mostly in the character’s own spoken voice\. Plain talk, no speeches; don't echo the player\..*Sound like "[^"]+" \(the voice, not those words\)\.$/);assert.match(at('Nice frames.'),/Stay on what the player brought up.*need not end on a question/);assert.doesNotMatch(at('Nice frames.'),/Find fresh physical business|ask the player something back/);assert.match(at('Nice frames.'),/never reuse a gesture or mannerism/);
  // The voice sample is one of the authored lines and rotates with the scene; no examples, no sample.
  const voices=new Set(Array.from({length:4},(_,i)=>/Sound like "([^"]+)"/.exec(at('Nice frames.',Array(i).fill({input:'',text:''})))[1]));assert.deepEqual([...voices].sort(),[...mina.examples].sort());
@@ -234,12 +234,12 @@ test('how close an NPC is to the player sets their tone and which beats they wil
  const p=JSON.parse(readFileSync(new URL('../packs/crossed-plans.json',import.meta.url)));
  const at=(extra,i=0)=>beatDirection({stagedCast:['mina'],scenePhase:'continuation',playerAction:'Nice frames.',sceneHistory:Array(i).fill({input:'',text:''}),...extra},p,'s1');
  const all=extra=>Array.from({length:12},(_,i)=>at(extra,i)).join('\n'),actor=t=>({actor:{id:'mina',relationshipToPlayer:t}});
- assert.match(at(actor(0)),/^Mina \(Careful, perceptive, and wry when nervous; just met the player: polite, a little guarded\): /);assert.doesNotMatch(all(actor(0)),/admit one small|tease the player/);
+ assert.match(at(actor(0)),/^Mina \(Short modern sentences with dry warmth\.; just met the player: polite, a little guarded\): /);assert.doesNotMatch(all(actor(0)),/admit one small|tease the player/);
  // Met before (memories) is not a stranger; middling trust is an explicit "familiar" stage with a hard
  // physical/flirtation boundary, since a 9B role-play model otherwise defaults to provocative behavior.
- assert.match(at({...actor(0),memories:[{text:'x'}]}),/^Mina \(Careful, perceptive, and wry when nervous; knows the player a little: cordial, warming, but not close\): /);assert.match(at(actor(20)),/knows the player a little: cordial, warming, but not close\): /);assert.match(at(actor(20)),/keep it hands-off, no touching, no leaning in\./);assert.doesNotMatch(all(actor(20)),/admit one small/);
+ assert.match(at({...actor(0),memories:[{text:'x'}]}),/^Mina \(Short modern sentences with dry warmth\.; knows the player a little: cordial, warming, but not close\): /);assert.match(at(actor(20)),/knows the player a little: cordial, warming, but not close\): /);assert.match(at(actor(20)),/keep it hands-off, no touching, no leaning in\./);assert.doesNotMatch(all(actor(20)),/admit one small/);
  assert.match(at(actor(45)),/; knows the player well: relaxed\)/);assert.match(all(actor(45)),/admit one small, true thing/);assert.match(at(actor(80)),/; close to the player: warm, at ease\)/);
- assert.match(at({}),/^Mina \(Careful, perceptive, and wry when nervous\): /);assert.match(at({actor:{id:'rowan',relationshipToPlayer:90}}),/^Mina \(Careful[^;)]*\): /);
+ assert.match(at({}),/^Mina \(Short modern sentences with dry warmth\.\): /);assert.match(at({actor:{id:'rowan',relationshipToPlayer:90}}),/^Mina \(Short modern sentences with dry warmth\.[^;)]*\): /);
  // A dating phase outranks trust: a crush flirts, a rejection never does.
  const dating=(phase,x={})=>({...actor(80),dating:[{character:'mina',phase,...x}]});
  assert.match(at(dating('crush')),/; has a crush on the player: a little flustered, tries to hide it\)/);assert.match(all(dating('crush')),/flirt a little/);

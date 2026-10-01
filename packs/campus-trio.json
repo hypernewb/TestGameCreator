@@ -5,6 +5,10 @@
   "title": "Ashford: Yuna, Haruka and Min-ji",
   "subtitle": "One autumn term at a small coastal university",
   "playerId": "player",
+  "sceneFeedback": {
+    "chips": true,
+    "mood": true
+  },
   "calendar": {
     "weather": [
       {
@@ -268,10 +272,9 @@
       "goal": "Work out whether the life her parents planned for her is the one she wants.",
       "traits": [
         "warm",
-        "sporty",
-        "curious",
         "homesick",
-        "quietly stubborn"
+        "reserved",
+        "insecure"
       ],
       "voice": "Easy and warm, slightly formal English with the odd Korean word. Deflects with a joke when something is close to the bone.",
       "likes": [
@@ -343,11 +346,10 @@
       "style": "Black leather jacket over a white camisole, skinny jeans, boots; chains on a bad day.",
       "goal": "Finish her thesis film and prove she is more than the rebellion.",
       "traits": [
+        "guarded",
         "mischievous",
-        "loud",
         "creative",
-        "flirtatious",
-        "anti-authority"
+        "rebellious"
       ],
       "voice": "Fast, loud, teasing. Swears cheerfully. Turns everything into a bit, except film.",
       "likes": [
@@ -419,10 +421,9 @@
       "goal": "Get her solar-kayak senior project in the water before the term ends.",
       "traits": [
         "analytical",
-        "warm",
         "adventurous",
         "practical",
-        "low-drama"
+        "competitive"
       ],
       "voice": "Plain, friendly, precise. Asks practical questions and notices contradictions. Laughs easily once she is comfortable.",
       "likes": [
@@ -2922,5 +2923,2986 @@
   },
   "romanceStats": {
     "dailyGain": 6
-  }
+  },
+  "characterSheets": [
+    {
+      "actorId": "yuna",
+      "identity": {
+        "name": "Yuna",
+        "age": 20,
+        "pronouns": "she/her",
+        "occupation": "",
+        "year": "",
+        "birthday": "",
+        "workplace": null,
+        "home": null,
+        "haunts": [],
+        "lifeNotes": ""
+      },
+      "personality": {
+        "traits": [
+          "warm",
+          "homesick",
+          "reserved",
+          "insecure"
+        ],
+        "notes": "warm\nhomesick",
+        "voice": "Easy and warm, slightly formal English with the odd Korean word. Deflects with a joke when something is close to the bone.",
+        "examples": [],
+        "fingerprint": ""
+      },
+      "appearance": {
+        "description": "Yuna Han, 20, a Korean exchange student in English and Literature, here for one semester from Seoul. Petite, long black hair worn half-up with a ribbon, doe eyes, rosy cheeks. Your roommate.",
+        "style": "Off-shoulder blouses, pastel midi skirts, ribbons; soft pinks and whites.",
+        "portrait": "assets/characters/yuna/expressions/neutral.png",
+        "poses": [
+          {
+            "id": "neutral",
+            "image": "assets/characters/yuna/expressions/neutral.png"
+          },
+          {
+            "id": "smile",
+            "image": "assets/characters/yuna/expressions/smile.png"
+          },
+          {
+            "id": "concerned",
+            "image": "assets/characters/yuna/expressions/concerned.png"
+          },
+          {
+            "id": "frustrated",
+            "image": "assets/characters/yuna/expressions/frustrated.png"
+          },
+          {
+            "id": "embarrassed",
+            "image": "assets/characters/yuna/expressions/embarrassed.png"
+          },
+          {
+            "id": "smug",
+            "image": "assets/characters/yuna/expressions/smug.png"
+          },
+          {
+            "id": "surprised",
+            "image": "assets/characters/yuna/expressions/surprised.png"
+          }
+        ],
+        "notes": ""
+      },
+      "tastes": {
+        "likes": [
+          "the sea",
+          "beach volleyball",
+          "hotteok",
+          "being asked about Jeju"
+        ],
+        "dislikes": [
+          "being told what she wants",
+          "pushiness",
+          "people who pick sides about home"
+        ],
+        "likedCategories": [
+          "treats"
+        ],
+        "dislikedCategories": [],
+        "itemOverrides": [
+          {
+            "item": "cinnamon-roll",
+            "reaction": "loved",
+            "points": 6,
+            "chemistry": 2
+          },
+          {
+            "item": "sea-glass",
+            "reaction": "liked",
+            "points": 4,
+            "chemistry": 1
+          },
+          {
+            "item": "red-roses",
+            "reaction": "disliked",
+            "points": -3
+          }
+        ],
+        "notes": ""
+      },
+      "dating": {
+        "history": "",
+        "experience": null,
+        "body": {
+          "face": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "lips": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "neck": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "arms_hands": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "chest": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "back": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "belly_waist": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "hips_butt": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "thighs_legs": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "intimate": {
+            "sensitivity": null,
+            "limit": null
+          }
+        },
+        "preferences": "",
+        "limitsNotes": "",
+        "policyOverrides": {}
+      },
+      "routine": {
+        "weekly": [],
+        "exceptions": [],
+        "notes": ""
+      },
+      "behavior": {
+        "rules": [],
+        "notes": "",
+        "stages": {}
+      },
+      "social": {
+        "links": [],
+        "notes": ""
+      },
+      "arc": {
+        "goal": "Work out whether the life her parents planned for her is the one she wants.",
+        "tracks": [
+          {
+            "character": "yuna",
+            "traits": [
+              {
+                "id": "resolve",
+                "initial": 20
+              },
+              {
+                "id": "trust",
+                "initial": 30
+              }
+            ],
+            "drift": [
+              {
+                "act": "listen",
+                "target": "home",
+                "trait": "resolve",
+                "delta": 12
+              },
+              {
+                "act": "listen",
+                "trait": "trust",
+                "delta": 1
+              },
+              {
+                "act": "invite",
+                "trait": "resolve",
+                "delta": 5
+              },
+              {
+                "act": "tease",
+                "trait": "trust",
+                "delta": 1
+              },
+              {
+                "act": "pushy",
+                "trait": "trust",
+                "delta": -3
+              },
+              {
+                "act": "pushy",
+                "target": "home",
+                "trait": "resolve",
+                "delta": -3
+              },
+              {
+                "act": "compliment",
+                "target": "looks",
+                "trait": "resolve",
+                "delta": -3
+              }
+            ],
+            "stages": [
+              {
+                "id": "homesick",
+                "name": "Homesick",
+                "voice": "Misses the sea and Jisoo; answers questions about home with a joke."
+              },
+              {
+                "id": "restless",
+                "name": "Restless",
+                "when": {
+                  "resolve": 45,
+                  "trust": 36
+                },
+                "voice": "Starting to say out loud that the plan was never hers."
+              },
+              {
+                "id": "resolved",
+                "name": "Resolved",
+                "when": {
+                  "resolve": 75,
+                  "trust": 45
+                },
+                "flag": "yuna-own-call",
+                "voice": "Has made her own call about home and is lighter for it."
+              }
+            ]
+          }
+        ],
+        "payoffs": [
+          {
+            "id": "yuna-stays",
+            "name": "Her own call",
+            "character": "yuna",
+            "priority": 20,
+            "requires": {
+              "flags": {
+                "yuna-own-call": true
+              },
+              "romanceRanks": {
+                "yuna": "hers"
+              }
+            },
+            "text": "The last week of term. Yuna has one bag packed and one conversation finished: she called her parents, and it was hers to make. \"Next summer,\" she says, \"you are coming to Jeju. You will hate the ferry.\""
+          },
+          {
+            "id": "yuna-together",
+            "name": "Ferry schedule",
+            "character": "yuna",
+            "priority": 10,
+            "requires": {
+              "datingPhases": {
+                "yuna": "exclusive"
+              }
+            },
+            "text": "Last day of term. Yuna is still figuring out what she wants from home, but she has stopped figuring it out alone. She texts you a photo of the Jeju ferry timetable with one crossing circled. \"No pressure,\" she writes. There is a lot of pressure."
+          }
+        ],
+        "notes": ""
+      },
+      "lore": {
+        "backstory": "Grew up on Jeju, the island off Korea's southern tip, then moved to Seoul with her best friend Jisoo. Her parents have the next ten years planned for her: a job at her father's firm, a nice boy from church, a flat near them. They fought when she chose a semester abroad, and that fight is not over.",
+        "entries": [],
+        "authorNotes": ""
+      },
+      "source": {
+        "actor": {
+          "id": "yuna",
+          "name": "Yuna",
+          "age": 20,
+          "pronouns": "she/her",
+          "reactions": {
+            "skip": "\"You skipped it. I went anyway.\" She shrugs, tucking her hair back.",
+            "ok": "\"That was okay.\" She nudges your shoulder, half-smiling.",
+            "good": "\"See? That was good.\" She grins, eyes crinkling into crescents, and bumps your arm.",
+            "great": "\"That was great!\" She laughs, breathless, and squeezes your hand once."
+          },
+          "location": "apartment",
+          "identityTags": [
+            "adult"
+          ],
+          "portrait": "assets/characters/yuna/expressions/neutral.png",
+          "poses": [
+            {
+              "id": "neutral",
+              "image": "assets/characters/yuna/expressions/neutral.png"
+            },
+            {
+              "id": "smile",
+              "image": "assets/characters/yuna/expressions/smile.png"
+            },
+            {
+              "id": "concerned",
+              "image": "assets/characters/yuna/expressions/concerned.png"
+            },
+            {
+              "id": "frustrated",
+              "image": "assets/characters/yuna/expressions/frustrated.png"
+            },
+            {
+              "id": "embarrassed",
+              "image": "assets/characters/yuna/expressions/embarrassed.png"
+            },
+            {
+              "id": "smug",
+              "image": "assets/characters/yuna/expressions/smug.png"
+            },
+            {
+              "id": "surprised",
+              "image": "assets/characters/yuna/expressions/surprised.png"
+            }
+          ],
+          "description": "Yuna Han, 20, a Korean exchange student in English and Literature, here for one semester from Seoul. Petite, long black hair worn half-up with a ribbon, doe eyes, rosy cheeks. Your roommate.",
+          "style": "Off-shoulder blouses, pastel midi skirts, ribbons; soft pinks and whites.",
+          "goal": "Work out whether the life her parents planned for her is the one she wants.",
+          "traits": [
+            "warm",
+            "homesick",
+            "reserved",
+            "insecure"
+          ],
+          "voice": "Easy and warm, slightly formal English with the odd Korean word. Deflects with a joke when something is close to the bone.",
+          "likes": [
+            "the sea",
+            "beach volleyball",
+            "hotteok",
+            "being asked about Jeju"
+          ],
+          "dislikes": [
+            "being told what she wants",
+            "pushiness",
+            "people who pick sides about home"
+          ],
+          "backstory": "Grew up on Jeju, the island off Korea's southern tip, then moved to Seoul with her best friend Jisoo. Her parents have the next ten years planned for her: a job at her father's firm, a nice boy from church, a flat near them. They fought when she chose a semester abroad, and that fight is not over.",
+          "conversationStarters": [
+            "Ask about Jeju",
+            "Ask how things are at home",
+            "Suggest volleyball on Saturday",
+            "Offer to cook tonight"
+          ]
+        },
+        "profiles": {
+          "initialRelationships": [
+            {
+              "character": "yuna",
+              "trust": 30
+            }
+          ],
+          "activities": [
+            {
+              "id": "movie-night",
+              "name": "Movie night with Yuna",
+              "description": "Her laptop, your couch, a Korean film she swears is a comedy.",
+              "location": "apartment",
+              "duration": 4,
+              "character": "yuna",
+              "perDay": 1,
+              "phrases": [
+                "movie night",
+                "watch a film with yuna"
+              ],
+              "effects": [
+                {
+                  "type": "trust",
+                  "character": "yuna",
+                  "delta": 2
+                },
+                {
+                  "type": "stat",
+                  "stat": "charm",
+                  "delta": 1
+                }
+              ]
+            },
+            {
+              "id": "beach-volleyball",
+              "name": "Beach volleyball with Yuna",
+              "description": "The sand court behind the fields. Yuna plays like she grew up on a beach, because she did.",
+              "location": "hewett",
+              "duration": 4,
+              "character": "yuna",
+              "perDay": 1,
+              "phrases": [
+                "beach volleyball",
+                "play volleyball"
+              ],
+              "effects": [
+                {
+                  "type": "stat",
+                  "stat": "fitness",
+                  "delta": 1
+                },
+                {
+                  "type": "trust",
+                  "character": "yuna",
+                  "delta": 2
+                }
+              ]
+            },
+            {
+              "id": "darts-with-yuna",
+              "name": "Darts at Murphy's with Yuna",
+              "description": "Yuna keeps score in Korean and insists the board is crooked when she loses. It is not.",
+              "location": "murphys",
+              "duration": 4,
+              "character": "yuna",
+              "minRank": "friend",
+              "perDay": 1,
+              "phrases": [
+                "play darts",
+                "darts with yuna"
+              ],
+              "effects": [
+                {
+                  "type": "stat",
+                  "stat": "charm",
+                  "delta": 1
+                },
+                {
+                  "type": "trust",
+                  "character": "yuna",
+                  "delta": 2
+                }
+              ]
+            }
+          ],
+          "schedules": [
+            {
+              "actor": "yuna",
+              "period": 12,
+              "stops": [
+                {
+                  "at": 0,
+                  "location": "apartment"
+                },
+                {
+                  "at": 4,
+                  "location": "hewett"
+                },
+                {
+                  "at": 8,
+                  "location": "murphys"
+                }
+              ]
+            }
+          ],
+          "datingProfiles": [
+            {
+              "character": "yuna",
+              "initialChemistry": 10,
+              "initialPhase": "available",
+              "agreements": [
+                "monogamous"
+              ],
+              "thresholds": {
+                "crush": 15,
+                "date": 35,
+                "exclusive": 65
+              },
+              "preferences": [
+                {
+                  "id": "yuna-active",
+                  "type": "stat",
+                  "stat": "fitness",
+                  "min": 6,
+                  "weight": 10,
+                  "visibility": "discoverable"
+                },
+                {
+                  "id": "yuna-funny",
+                  "type": "stat",
+                  "stat": "wit",
+                  "min": 5,
+                  "weight": 8,
+                  "visibility": "public"
+                },
+                {
+                  "id": "yuna-own-call",
+                  "type": "flag",
+                  "flag": "yuna-own-call",
+                  "value": true,
+                  "weight": 15,
+                  "visibility": "private"
+                }
+              ],
+              "signals": [
+                {
+                  "id": "liked-yuna",
+                  "event": "social.actPriced",
+                  "match": {
+                    "character": "yuna",
+                    "verdict": "liked"
+                  },
+                  "delta": 2,
+                  "label": "something you did that she liked",
+                  "repeatable": true
+                },
+                {
+                  "id": "disliked-yuna",
+                  "event": "social.actPriced",
+                  "match": {
+                    "character": "yuna",
+                    "verdict": "disliked"
+                  },
+                  "delta": -1,
+                  "label": "something you did that she did not like",
+                  "repeatable": true
+                },
+                {
+                  "id": "closer-yuna",
+                  "event": "social.romanceRankChanged",
+                  "match": {
+                    "character": "yuna"
+                  },
+                  "delta": 5,
+                  "label": "the two of you got closer",
+                  "repeatable": true
+                }
+              ]
+            }
+          ],
+          "romanceTempoProfiles": [
+            {
+              "character": "yuna",
+              "advancement": "automatic",
+              "ranks": [
+                {
+                  "id": "roommate",
+                  "name": "Roommate",
+                  "points": 0,
+                  "ceiling": 10
+                },
+                {
+                  "id": "friend",
+                  "name": "Friend",
+                  "points": 6,
+                  "ceiling": 24
+                },
+                {
+                  "id": "something-more",
+                  "name": "Something more",
+                  "points": 20,
+                  "ceiling": 36
+                },
+                {
+                  "id": "hers",
+                  "name": "Hers",
+                  "points": 32,
+                  "ceiling": 50
+                }
+              ],
+              "gifts": {
+                "periodTicks": 12,
+                "limitPerPeriod": 1,
+                "repeatDecayPercent": 50,
+                "preferences": [
+                  {
+                    "item": "cinnamon-roll",
+                    "reaction": "loved",
+                    "points": 6,
+                    "chemistry": 2
+                  },
+                  {
+                    "item": "sea-glass",
+                    "reaction": "liked",
+                    "points": 4,
+                    "chemistry": 1
+                  },
+                  {
+                    "item": "red-roses",
+                    "reaction": "disliked",
+                    "points": -3
+                  }
+                ]
+              },
+              "signals": [
+                {
+                  "id": "yuna-movie",
+                  "event": "world.activityCompleted",
+                  "match": {
+                    "activity": "movie-night"
+                  },
+                  "points": 2,
+                  "cooldownTicks": 12
+                },
+                {
+                  "id": "yuna-volley",
+                  "event": "world.activityCompleted",
+                  "match": {
+                    "activity": "beach-volleyball"
+                  },
+                  "points": 2,
+                  "cooldownTicks": 12
+                }
+              ],
+              "jealousy": {
+                "preset": "secure"
+              }
+            }
+          ],
+          "actProfiles": [
+            {
+              "character": "yuna",
+              "entries": [
+                {
+                  "id": "yuna-island",
+                  "kind": "listen",
+                  "target": "*",
+                  "points": 3,
+                  "reason": "you asked about the island and actually listened",
+                  "memory": "The player asked about Jeju and listened to the answer."
+                },
+                {
+                  "id": "yuna-home",
+                  "kind": "listen",
+                  "target": "home",
+                  "points": 3,
+                  "reason": "you let her talk about home without taking sides",
+                  "memory": "The player let her talk about home without judging."
+                },
+                {
+                  "id": "yuna-home-push",
+                  "kind": "pushy",
+                  "target": "home",
+                  "points": -3,
+                  "reason": "you told her what to do about home"
+                },
+                {
+                  "id": "yuna-tease",
+                  "kind": "tease",
+                  "target": "*",
+                  "points": 2,
+                  "reason": "you teased her like one of her friends back home"
+                },
+                {
+                  "id": "yuna-volley",
+                  "kind": "invite",
+                  "target": "saturday-afternoon@hewett",
+                  "points": 3,
+                  "reason": "you asked her to play volleyball, not to a date"
+                },
+                {
+                  "id": "yuna-looks",
+                  "kind": "compliment",
+                  "target": "looks",
+                  "points": -2,
+                  "reason": "you led with her looks, the way the boys back home always did"
+                },
+                {
+                  "id": "yuna-pushy",
+                  "kind": "pushy",
+                  "target": "*",
+                  "points": -3,
+                  "reason": "you pushed when she said she needed to think"
+                },
+                {
+                  "id": "yuna-roll",
+                  "kind": "gift",
+                  "target": "cinnamon-roll",
+                  "points": 6,
+                  "reason": "you found the closest thing to a hotteok in town"
+                },
+                {
+                  "id": "yuna-pint",
+                  "kind": "buy",
+                  "target": "pint",
+                  "points": 2,
+                  "reason": "you bought the round"
+                },
+                {
+                  "id": "yuna-touch",
+                  "kind": "touch",
+                  "target": "*",
+                  "points": -2,
+                  "reason": "you touched her in front of everyone",
+                  "when": {
+                    "private": false
+                  }
+                },
+                {
+                  "id": "yuna-harp-wants",
+                  "kind": "pushy",
+                  "target": "being-told-what-she-wants",
+                  "points": -2,
+                  "reason": "you kept asking about people deciding things for her"
+                },
+                {
+                  "id": "yuna-harp-pushiness",
+                  "kind": "pushy",
+                  "target": "pushiness",
+                  "points": -2,
+                  "reason": "you kept circling back to pushy people"
+                },
+                {
+                  "id": "yuna-harp-home",
+                  "kind": "pushy",
+                  "target": "people-who-pick-sides-about-home",
+                  "points": -2,
+                  "reason": "you kept pulling her back to who sides with her parents"
+                }
+              ]
+            }
+          ],
+          "arcTracks": [
+            {
+              "character": "yuna",
+              "traits": [
+                {
+                  "id": "resolve",
+                  "initial": 20
+                },
+                {
+                  "id": "trust",
+                  "initial": 30
+                }
+              ],
+              "drift": [
+                {
+                  "act": "listen",
+                  "target": "home",
+                  "trait": "resolve",
+                  "delta": 12
+                },
+                {
+                  "act": "listen",
+                  "trait": "trust",
+                  "delta": 1
+                },
+                {
+                  "act": "invite",
+                  "trait": "resolve",
+                  "delta": 5
+                },
+                {
+                  "act": "tease",
+                  "trait": "trust",
+                  "delta": 1
+                },
+                {
+                  "act": "pushy",
+                  "trait": "trust",
+                  "delta": -3
+                },
+                {
+                  "act": "pushy",
+                  "target": "home",
+                  "trait": "resolve",
+                  "delta": -3
+                },
+                {
+                  "act": "compliment",
+                  "target": "looks",
+                  "trait": "resolve",
+                  "delta": -3
+                }
+              ],
+              "stages": [
+                {
+                  "id": "homesick",
+                  "name": "Homesick",
+                  "voice": "Misses the sea and Jisoo; answers questions about home with a joke."
+                },
+                {
+                  "id": "restless",
+                  "name": "Restless",
+                  "when": {
+                    "resolve": 45,
+                    "trust": 36
+                  },
+                  "voice": "Starting to say out loud that the plan was never hers."
+                },
+                {
+                  "id": "resolved",
+                  "name": "Resolved",
+                  "when": {
+                    "resolve": 75,
+                    "trust": 45
+                  },
+                  "flag": "yuna-own-call",
+                  "voice": "Has made her own call about home and is lighter for it."
+                }
+              ]
+            }
+          ],
+          "intimacyProfiles": [
+            {
+              "character": "yuna",
+              "openness": 55,
+              "casual": false,
+              "consentPolicy": "threshold",
+              "consentDuration": 2,
+              "allowedCategories": [
+                "first-night"
+              ],
+              "cooldown": 12,
+              "requiresAgreement": [
+                "monogamous"
+              ],
+              "requirements": {
+                "attraction": 40,
+                "phases": [
+                  "dating",
+                  "exclusive"
+                ]
+              },
+              "interests": [
+                {
+                  "id": "yuna-slow",
+                  "category": "first-night",
+                  "label": "Wants to be sure it is her choice, not a plan someone made for her",
+                  "visibility": "discoverable"
+                }
+              ],
+              "aftercarePreferences": [
+                {
+                  "id": "yuna-talk",
+                  "option": "talk",
+                  "reaction": "liked",
+                  "satisfactionDelta": 8,
+                  "visibility": "discoverable"
+                }
+              ]
+            }
+          ],
+          "phoneMessages": [
+            {
+              "id": "yuna-milk",
+              "character": "yuna",
+              "text": "We are out of milk. Also out of everything. Campbell's later?",
+              "trigger": {
+                "event": "world.activityCompleted",
+                "match": {
+                  "activity": "kitchen-study"
+                }
+              },
+              "replies": [
+                {
+                  "id": "yes",
+                  "text": "I'll meet you there."
+                }
+              ],
+              "offer": {
+                "location": "campbells",
+                "expiresIn": 4
+              }
+            },
+            {
+              "id": "yuna-wants-answers",
+              "character": "yuna",
+              "text": "We need to talk. Campbells, today. Don't make me ask twice.",
+              "trigger": {
+                "event": "social.suspicionSurfaced",
+                "match": {
+                  "observer": "yuna"
+                }
+              },
+              "replies": [
+                {
+                  "id": "coming",
+                  "text": "All right. I'll be there."
+                }
+              ],
+              "offer": {
+                "location": "campbells",
+                "expiresIn": 12
+              }
+            }
+          ],
+          "endings": [
+            {
+              "id": "yuna-stays",
+              "name": "Her own call",
+              "character": "yuna",
+              "priority": 20,
+              "requires": {
+                "flags": {
+                  "yuna-own-call": true
+                },
+                "romanceRanks": {
+                  "yuna": "hers"
+                }
+              },
+              "text": "The last week of term. Yuna has one bag packed and one conversation finished: she called her parents, and it was hers to make. \"Next summer,\" she says, \"you are coming to Jeju. You will hate the ferry.\""
+            },
+            {
+              "id": "yuna-together",
+              "name": "Ferry schedule",
+              "character": "yuna",
+              "priority": 10,
+              "requires": {
+                "datingPhases": {
+                  "yuna": "exclusive"
+                }
+              },
+              "text": "Last day of term. Yuna is still figuring out what she wants from home, but she has stopped figuring it out alone. She texts you a photo of the Jeju ferry timetable with one crossing circled. \"No pressure,\" she writes. There is a lot of pressure."
+            }
+          ],
+          "firsts": [
+            {
+              "id": "yuna-talk",
+              "character": "yuna",
+              "rung": "talk",
+              "title": "Yuna stops joking",
+              "opening": "Somewhere between one thing and the next, Yuna stops making jokes. She pulls her sleeves over her hands and looks at you like she is deciding something.",
+              "trigger": {
+                "event": "social.romanceRankChanged",
+                "match": {
+                  "character": "yuna",
+                  "to": "friend"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "opening-up",
+                  "cue": "\"Can I tell you something stupid? I have not talked about home in a week without turning it into a joke.\" She tugs her sleeves further over her hands. \"At home they have the whole thing planned. Jisoo sends me wedding dresses. As a joke. Mostly. I am twenty.\""
+                },
+                {
+                  "id": "your-turn",
+                  "cue": "She laughs, a little too loud, and bumps your knee with hers. \"Okay. That is enough of my tragic opera. Your turn. Say something, anything, so I am not the only idiot sitting here.\""
+                }
+              ]
+            },
+            {
+              "id": "yuna-date",
+              "character": "yuna",
+              "rung": "date",
+              "title": "The harbour wall",
+              "opening": "Saturday. Yuna takes you down to the harbour wall with two cinnamon rolls in a paper bag and her hair already coming loose in the wind.",
+              "trigger": {
+                "event": "social.dateAccepted",
+                "match": {
+                  "character": "yuna"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "arrival",
+                  "cue": "She holds up a paper bag like a trophy. \"Two cinnamon rolls. This is a date, I decided. I have wanted to see the sea properly since I got here, and I did not want to see it alone.\" The wind has already pulled half her hair loose."
+                },
+                {
+                  "id": "noticing",
+                  "cue": "At the end of the wall she leans on the rail and squints at the grey water. \"It is the wrong sea, but it is a sea.\" She says it lightly, but she keeps looking, like she is somewhere else for a moment."
+                },
+                {
+                  "id": "moment",
+                  "cue": "She pushes off the rail and looks down the long pier, then at you, with a grin that means trouble. \"So. Are we going to stand here being poetic, or are we going to do something?\"",
+                  "discover": "yuna-active"
+                }
+              ]
+            },
+            {
+              "id": "yuna-kiss",
+              "character": "yuna",
+              "rung": "kiss",
+              "title": "What this is",
+              "opening": "You ask her what this is. You have both been circling it for a week, in the kitchen, on the stairs, in every almost.",
+              "trigger": {
+                "event": "social.datingPhaseChanged",
+                "match": {
+                  "character": "yuna",
+                  "to": "exclusive"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "reading",
+                  "cue": "\"I still have to sort out a lot of things at home. That is true.\" She is not joking now. She is watching your face to see what you do with that."
+                },
+                {
+                  "id": "leaning-in",
+                  "cue": "\"But I know what I want here.\" She steps in close enough that you feel her breath, both hands finding your collar. \"So ask me again. Properly.\""
+                },
+                {
+                  "id": "after",
+                  "cue": "She pulls back an inch, forehead against yours, pink to the ears and laughing at herself. \"Okay. Okay. I hate how nervous I was. Say something so I stop being embarrassing.\""
+                }
+              ]
+            },
+            {
+              "id": "yuna-night",
+              "character": "yuna",
+              "rung": "night",
+              "title": "Fairy lights",
+              "opening": "Yuna's room. The fairy lights she brought from Seoul are the only light. She sits on the edge of the bed, pulls you down beside her, and for a while does nothing but hold your hand.",
+              "trigger": {
+                "event": "social.intimacyStarted",
+                "match": {
+                  "character": "yuna",
+                  "category": "first-night"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "lead",
+                  "cue": "\"I want this. I really want this. I just want it slow, and I want every step to be my choice. Is that okay?\" She takes your hand and rests it at the hem of her shirt, and waits to see what you do with it."
+                },
+                {
+                  "id": "check-in",
+                  "cue": "Clothes on the floor, her skin warm and goosebumped at once. She pulls you over her, then stops you with a hand flat on your chest. \"Wait. Look at me. Still good? Tell me. I want to hear you say it.\""
+                },
+                {
+                  "id": "peak",
+                  "cue": "You go slowly, the way she asked for everything, and she stops being careful: fingers in your hair, heels in the mattress, your name, then something in Korean, then nothing at all. She comes with a shocked little laugh, then rolls on top of you and is not slow about anything. \"Stay here,\" she whispers."
+                }
+              ],
+              "interest": "yuna-slow",
+              "cg": "assets/characters/yuna/scenes/missionary.png"
+            }
+          ],
+          "suspicionProfiles": [
+            {
+              "character": "yuna",
+              "confrontAt": 60
+            }
+          ]
+        }
+      }
+    },
+    {
+      "actorId": "haruka",
+      "identity": {
+        "name": "Haruka",
+        "age": 20,
+        "pronouns": "she/her",
+        "occupation": "",
+        "year": "",
+        "birthday": "",
+        "workplace": null,
+        "home": null,
+        "haunts": [],
+        "lifeNotes": ""
+      },
+      "personality": {
+        "traits": [
+          "guarded",
+          "mischievous",
+          "creative",
+          "rebellious"
+        ],
+        "notes": "mischievous\ncreative",
+        "voice": "Fast, loud, teasing. Swears cheerfully. Turns everything into a bit, except film.",
+        "examples": [],
+        "fingerprint": ""
+      },
+      "appearance": {
+        "description": "Haruka \"Ruka\" Mori, 20, a Japanese-American film major who plays guitar in a garage band. Short black bob with blunt bangs, dark brown eyes, gold hoops, a grin that means trouble.",
+        "style": "Black leather jacket over a white camisole, skinny jeans, boots; chains on a bad day.",
+        "portrait": "assets/characters/haruka/expressions/neutral.png",
+        "poses": [
+          {
+            "id": "neutral",
+            "image": "assets/characters/haruka/expressions/neutral.png"
+          },
+          {
+            "id": "smile",
+            "image": "assets/characters/haruka/expressions/smile.png"
+          },
+          {
+            "id": "concerned",
+            "image": "assets/characters/haruka/expressions/concerned.png"
+          },
+          {
+            "id": "frustrated",
+            "image": "assets/characters/haruka/expressions/frustrated.png"
+          },
+          {
+            "id": "embarrassed",
+            "image": "assets/characters/haruka/expressions/embarrassed.png"
+          },
+          {
+            "id": "smug",
+            "image": "assets/characters/haruka/expressions/smug.png"
+          },
+          {
+            "id": "surprised",
+            "image": "assets/characters/haruka/expressions/surprised.png"
+          }
+        ],
+        "notes": ""
+      },
+      "tastes": {
+        "likes": [
+          "old horror films",
+          "vinyl",
+          "cider",
+          "being teased back"
+        ],
+        "dislikes": [
+          "authority",
+          "being called cute",
+          "anyone who mocks her films"
+        ],
+        "likedCategories": [
+          "artsy",
+          "nerdy",
+          "edgy"
+        ],
+        "dislikedCategories": [],
+        "itemOverrides": [
+          {
+            "item": "vinyl-record",
+            "reaction": "loved",
+            "points": 6,
+            "chemistry": 2
+          },
+          {
+            "item": "cider",
+            "reaction": "liked",
+            "points": 4,
+            "chemistry": 1
+          },
+          {
+            "item": "sunflowers",
+            "reaction": "disliked",
+            "points": -3
+          }
+        ],
+        "notes": ""
+      },
+      "dating": {
+        "history": "",
+        "experience": null,
+        "body": {
+          "face": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "lips": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "neck": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "arms_hands": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "chest": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "back": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "belly_waist": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "hips_butt": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "thighs_legs": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "intimate": {
+            "sensitivity": null,
+            "limit": null
+          }
+        },
+        "preferences": "",
+        "limitsNotes": "",
+        "policyOverrides": {}
+      },
+      "routine": {
+        "weekly": [],
+        "exceptions": [],
+        "notes": ""
+      },
+      "behavior": {
+        "rules": [],
+        "notes": "",
+        "stages": {}
+      },
+      "social": {
+        "links": [],
+        "notes": ""
+      },
+      "arc": {
+        "goal": "Finish her thesis film and prove she is more than the rebellion.",
+        "tracks": [
+          {
+            "character": "haruka",
+            "traits": [
+              {
+                "id": "trust",
+                "initial": 15
+              },
+              {
+                "id": "softness",
+                "initial": 10
+              }
+            ],
+            "drift": [
+              {
+                "act": "tease",
+                "trait": "trust",
+                "delta": 1
+              },
+              {
+                "act": "compliment",
+                "target": "film",
+                "trait": "softness",
+                "delta": 8
+              },
+              {
+                "act": "listen",
+                "trait": "softness",
+                "delta": 6
+              },
+              {
+                "act": "insult",
+                "target": "film",
+                "trait": "trust",
+                "delta": -3
+              },
+              {
+                "act": "pushy",
+                "trait": "trust",
+                "delta": -3
+              },
+              {
+                "act": "insult",
+                "target": "*",
+                "trait": "trust",
+                "delta": 1
+              },
+              {
+                "act": "listen",
+                "trait": "trust",
+                "delta": 1
+              }
+            ],
+            "stages": [
+              {
+                "id": "prickly",
+                "name": "Prickly",
+                "voice": "Everything is a bit; nothing gets through."
+              },
+              {
+                "id": "amused",
+                "name": "Amused",
+                "when": {
+                  "trust": 21,
+                  "softness": 30
+                },
+                "voice": "Still loud, but drops the act for a line or two."
+              },
+              {
+                "id": "devoted",
+                "name": "Devoted",
+                "when": {
+                  "trust": 30,
+                  "softness": 60
+                },
+                "flag": "haruka-devoted",
+                "voice": "Would fight anyone for you, and says so."
+              }
+            ]
+          }
+        ],
+        "payoffs": [
+          {
+            "id": "haruka-premiere",
+            "name": "Premiere night",
+            "character": "haruka",
+            "priority": 20,
+            "requires": {
+              "flags": {
+                "haruka-devoted": true
+              },
+              "romanceRanks": {
+                "haruka": "leading-role"
+              }
+            },
+            "text": "The film society screens Haruka's thesis film to forty people and a broken projector. Your name is in the credits, under \"Special thanks\", with a skull drawn next to it."
+          },
+          {
+            "id": "haruka-together",
+            "name": "Second reel",
+            "character": "haruka",
+            "priority": 10,
+            "requires": {
+              "datingPhases": {
+                "haruka": "exclusive"
+              }
+            },
+            "text": "Haruka still acts like none of this matters, and she still does it with her head on your shoulder. \"Next term you are carrying the tripod,\" she says. \"That is a promotion.\""
+          }
+        ],
+        "notes": ""
+      },
+      "lore": {
+        "backstory": "Raised in a strict conservative family and built her punk self as a deliberate answer to it. Runs the film society with more enthusiasm than budget.",
+        "entries": [],
+        "authorNotes": ""
+      },
+      "source": {
+        "actor": {
+          "id": "haruka",
+          "name": "Haruka",
+          "age": 20,
+          "pronouns": "she/her",
+          "reactions": {
+            "skip": "\"Bailed? Wow. I'll add that to your file.\" She smirks.",
+            "ok": "\"That was... acceptable. Barely.\" She grins anyway.",
+            "good": "\"Nice work. You've got potential.\" She winks.",
+            "great": "\"Okay, that was amazing. Don't let it go to your head.\" She high-fives you."
+          },
+          "location": "prescott",
+          "identityTags": [
+            "adult"
+          ],
+          "portrait": "assets/characters/haruka/expressions/neutral.png",
+          "poses": [
+            {
+              "id": "neutral",
+              "image": "assets/characters/haruka/expressions/neutral.png"
+            },
+            {
+              "id": "smile",
+              "image": "assets/characters/haruka/expressions/smile.png"
+            },
+            {
+              "id": "concerned",
+              "image": "assets/characters/haruka/expressions/concerned.png"
+            },
+            {
+              "id": "frustrated",
+              "image": "assets/characters/haruka/expressions/frustrated.png"
+            },
+            {
+              "id": "embarrassed",
+              "image": "assets/characters/haruka/expressions/embarrassed.png"
+            },
+            {
+              "id": "smug",
+              "image": "assets/characters/haruka/expressions/smug.png"
+            },
+            {
+              "id": "surprised",
+              "image": "assets/characters/haruka/expressions/surprised.png"
+            }
+          ],
+          "description": "Haruka \"Ruka\" Mori, 20, a Japanese-American film major who plays guitar in a garage band. Short black bob with blunt bangs, dark brown eyes, gold hoops, a grin that means trouble.",
+          "style": "Black leather jacket over a white camisole, skinny jeans, boots; chains on a bad day.",
+          "goal": "Finish her thesis film and prove she is more than the rebellion.",
+          "traits": [
+            "guarded",
+            "mischievous",
+            "creative",
+            "rebellious"
+          ],
+          "voice": "Fast, loud, teasing. Swears cheerfully. Turns everything into a bit, except film.",
+          "likes": [
+            "old horror films",
+            "vinyl",
+            "cider",
+            "being teased back"
+          ],
+          "dislikes": [
+            "authority",
+            "being called cute",
+            "anyone who mocks her films"
+          ],
+          "backstory": "Raised in a strict conservative family and built her punk self as a deliberate answer to it. Runs the film society with more enthusiasm than budget.",
+          "conversationStarters": [
+            "Ask about her thesis film",
+            "Challenge her to the pub quiz",
+            "Ask what is on at film society"
+          ]
+        },
+        "profiles": {
+          "initialRelationships": [
+            {
+              "character": "haruka",
+              "trust": 15
+            }
+          ],
+          "activities": [
+            {
+              "id": "film-society",
+              "name": "Film society screening",
+              "description": "Haruka introduces a 1970s horror film with more passion than the projector deserves.",
+              "location": "prescott",
+              "duration": 4,
+              "character": "haruka",
+              "perDay": 1,
+              "phrases": [
+                "film society",
+                "watch the screening"
+              ],
+              "effects": [
+                {
+                  "type": "stat",
+                  "stat": "wit",
+                  "delta": 1
+                },
+                {
+                  "type": "trust",
+                  "character": "haruka",
+                  "delta": 2
+                }
+              ]
+            },
+            {
+              "id": "script-session",
+              "name": "Script session with Haruka",
+              "description": "Haruka reads you scenes from her short film and casts you as the villain, then rewrites your lines on a napkin.",
+              "location": "campbells",
+              "duration": 4,
+              "character": "haruka",
+              "minRank": "partner-in-crime",
+              "perDay": 1,
+              "phrases": [
+                "script session",
+                "read lines with haruka"
+              ],
+              "effects": [
+                {
+                  "type": "stat",
+                  "stat": "charm",
+                  "delta": 1
+                },
+                {
+                  "type": "trust",
+                  "character": "haruka",
+                  "delta": 2
+                }
+              ]
+            }
+          ],
+          "schedules": [
+            {
+              "actor": "haruka",
+              "period": 12,
+              "stops": [
+                {
+                  "at": 0,
+                  "location": "prescott"
+                },
+                {
+                  "at": 4,
+                  "location": "campbells"
+                },
+                {
+                  "at": 8,
+                  "location": "murphys"
+                }
+              ]
+            }
+          ],
+          "datingProfiles": [
+            {
+              "character": "haruka",
+              "initialChemistry": 8,
+              "initialPhase": "available",
+              "agreements": [
+                "casual",
+                "monogamous"
+              ],
+              "thresholds": {
+                "crush": 15,
+                "date": 35,
+                "exclusive": 65
+              },
+              "preferences": [
+                {
+                  "id": "haruka-quick",
+                  "type": "stat",
+                  "stat": "wit",
+                  "min": 6,
+                  "weight": 12,
+                  "visibility": "discoverable"
+                },
+                {
+                  "id": "haruka-smooth",
+                  "type": "stat",
+                  "stat": "charm",
+                  "min": 12,
+                  "weight": -5,
+                  "visibility": "private"
+                }
+              ],
+              "signals": [
+                {
+                  "id": "liked-haruka",
+                  "event": "social.actPriced",
+                  "match": {
+                    "character": "haruka",
+                    "verdict": "liked"
+                  },
+                  "delta": 2,
+                  "label": "something you did that she liked",
+                  "repeatable": true
+                },
+                {
+                  "id": "disliked-haruka",
+                  "event": "social.actPriced",
+                  "match": {
+                    "character": "haruka",
+                    "verdict": "disliked"
+                  },
+                  "delta": -1,
+                  "label": "something you did that she did not like",
+                  "repeatable": true
+                },
+                {
+                  "id": "closer-haruka",
+                  "event": "social.romanceRankChanged",
+                  "match": {
+                    "character": "haruka"
+                  },
+                  "delta": 5,
+                  "label": "the two of you got closer",
+                  "repeatable": true
+                }
+              ]
+            }
+          ],
+          "romanceTempoProfiles": [
+            {
+              "character": "haruka",
+              "advancement": "automatic",
+              "ranks": [
+                {
+                  "id": "stranger",
+                  "name": "Stranger",
+                  "points": 0,
+                  "ceiling": 10
+                },
+                {
+                  "id": "partner-in-crime",
+                  "name": "Partner in crime",
+                  "points": 6,
+                  "ceiling": 24
+                },
+                {
+                  "id": "co-star",
+                  "name": "Co-star",
+                  "points": 20,
+                  "ceiling": 36
+                },
+                {
+                  "id": "leading-role",
+                  "name": "Leading role",
+                  "points": 32,
+                  "ceiling": 50
+                }
+              ],
+              "gifts": {
+                "periodTicks": 12,
+                "limitPerPeriod": 1,
+                "repeatDecayPercent": 50,
+                "preferences": [
+                  {
+                    "item": "vinyl-record",
+                    "reaction": "loved",
+                    "points": 6,
+                    "chemistry": 2
+                  },
+                  {
+                    "item": "cider",
+                    "reaction": "liked",
+                    "points": 4,
+                    "chemistry": 1
+                  },
+                  {
+                    "item": "sunflowers",
+                    "reaction": "disliked",
+                    "points": -3
+                  }
+                ]
+              },
+              "signals": [
+                {
+                  "id": "haruka-film",
+                  "event": "world.activityCompleted",
+                  "match": {
+                    "activity": "film-society"
+                  },
+                  "points": 2,
+                  "cooldownTicks": 12
+                }
+              ],
+              "jealousy": {
+                "preset": "secure"
+              }
+            }
+          ],
+          "actProfiles": [
+            {
+              "character": "haruka",
+              "entries": [
+                {
+                  "id": "haruka-tease",
+                  "kind": "tease",
+                  "target": "*",
+                  "points": 2,
+                  "reason": "you gave as good as you got"
+                },
+                {
+                  "id": "haruka-film",
+                  "kind": "compliment",
+                  "target": "film",
+                  "points": 3,
+                  "reason": "you took her films seriously",
+                  "memory": "The player took her films seriously."
+                },
+                {
+                  "id": "haruka-listen",
+                  "kind": "listen",
+                  "target": "*",
+                  "points": 2,
+                  "reason": "you let her rant about her family and did not flinch",
+                  "memory": "The player heard her out about her family."
+                },
+                {
+                  "id": "haruka-pushy",
+                  "kind": "pushy",
+                  "target": "*",
+                  "points": -3,
+                  "reason": "you tried to tell her what to do"
+                },
+                {
+                  "id": "haruka-insult-private",
+                  "kind": "insult",
+                  "target": "*",
+                  "points": 1,
+                  "reason": "you roasted her, and she loved it",
+                  "when": {
+                    "private": true
+                  }
+                },
+                {
+                  "id": "haruka-insult-film",
+                  "kind": "insult",
+                  "target": "film",
+                  "points": -3,
+                  "reason": "you mocked her film, the one thing that is not a bit"
+                },
+                {
+                  "id": "haruka-cider",
+                  "kind": "buy",
+                  "target": "cider",
+                  "points": 2,
+                  "reason": "you bought the cider without asking"
+                },
+                {
+                  "id": "haruka-invite",
+                  "kind": "invite",
+                  "target": "friday-evening@murphys",
+                  "points": 2,
+                  "reason": "you asked her out to Murphy's on a Friday"
+                },
+                {
+                  "id": "haruka-vinyl",
+                  "kind": "gift",
+                  "target": "vinyl-record",
+                  "points": 6,
+                  "reason": "you found the soundtrack she was humming"
+                },
+                {
+                  "id": "haruka-cute",
+                  "kind": "compliment",
+                  "target": "cute",
+                  "points": -2,
+                  "reason": "you called her cute"
+                },
+                {
+                  "id": "haruka-harp-authority",
+                  "kind": "pushy",
+                  "target": "authority",
+                  "points": -2,
+                  "reason": "you kept dragging authority back into it"
+                },
+                {
+                  "id": "haruka-harp-cute",
+                  "kind": "pushy",
+                  "target": "being-called-cute",
+                  "points": -2,
+                  "reason": "you kept bringing up the cute thing"
+                },
+                {
+                  "id": "haruka-harp-films",
+                  "kind": "pushy",
+                  "target": "anyone-who-mocks-her-films",
+                  "points": -2,
+                  "reason": "you kept reminding her of people who mock her films"
+                }
+              ]
+            }
+          ],
+          "arcTracks": [
+            {
+              "character": "haruka",
+              "traits": [
+                {
+                  "id": "trust",
+                  "initial": 15
+                },
+                {
+                  "id": "softness",
+                  "initial": 10
+                }
+              ],
+              "drift": [
+                {
+                  "act": "tease",
+                  "trait": "trust",
+                  "delta": 1
+                },
+                {
+                  "act": "compliment",
+                  "target": "film",
+                  "trait": "softness",
+                  "delta": 8
+                },
+                {
+                  "act": "listen",
+                  "trait": "softness",
+                  "delta": 6
+                },
+                {
+                  "act": "insult",
+                  "target": "film",
+                  "trait": "trust",
+                  "delta": -3
+                },
+                {
+                  "act": "pushy",
+                  "trait": "trust",
+                  "delta": -3
+                },
+                {
+                  "act": "insult",
+                  "target": "*",
+                  "trait": "trust",
+                  "delta": 1
+                },
+                {
+                  "act": "listen",
+                  "trait": "trust",
+                  "delta": 1
+                }
+              ],
+              "stages": [
+                {
+                  "id": "prickly",
+                  "name": "Prickly",
+                  "voice": "Everything is a bit; nothing gets through."
+                },
+                {
+                  "id": "amused",
+                  "name": "Amused",
+                  "when": {
+                    "trust": 21,
+                    "softness": 30
+                  },
+                  "voice": "Still loud, but drops the act for a line or two."
+                },
+                {
+                  "id": "devoted",
+                  "name": "Devoted",
+                  "when": {
+                    "trust": 30,
+                    "softness": 60
+                  },
+                  "flag": "haruka-devoted",
+                  "voice": "Would fight anyone for you, and says so."
+                }
+              ]
+            }
+          ],
+          "intimacyProfiles": [
+            {
+              "character": "haruka",
+              "openness": 75,
+              "casual": true,
+              "consentPolicy": "threshold",
+              "consentDuration": 2,
+              "allowedCategories": [
+                "first-night",
+                "fling"
+              ],
+              "cooldown": 12,
+              "requirements": {
+                "attraction": 30,
+                "phases": [
+                  "dating",
+                  "exclusive"
+                ]
+              },
+              "interests": [
+                {
+                  "id": "haruka-play",
+                  "category": "fling",
+                  "label": "Wants it playful and a little loud",
+                  "visibility": "discoverable"
+                }
+              ],
+              "aftercarePreferences": [
+                {
+                  "id": "haruka-talk",
+                  "option": "talk",
+                  "reaction": "liked",
+                  "satisfactionDelta": 6,
+                  "visibility": "discoverable"
+                }
+              ]
+            }
+          ],
+          "phoneMessages": [
+            {
+              "id": "haruka-wants-answers",
+              "character": "haruka",
+              "text": "hey. campbells. today. you know what this is about.",
+              "trigger": {
+                "event": "social.suspicionSurfaced",
+                "match": {
+                  "observer": "haruka"
+                }
+              },
+              "replies": [
+                {
+                  "id": "coming",
+                  "text": "All right. I'll be there."
+                }
+              ],
+              "offer": {
+                "location": "campbells",
+                "expiresIn": 12
+              }
+            }
+          ],
+          "endings": [
+            {
+              "id": "haruka-premiere",
+              "name": "Premiere night",
+              "character": "haruka",
+              "priority": 20,
+              "requires": {
+                "flags": {
+                  "haruka-devoted": true
+                },
+                "romanceRanks": {
+                  "haruka": "leading-role"
+                }
+              },
+              "text": "The film society screens Haruka's thesis film to forty people and a broken projector. Your name is in the credits, under \"Special thanks\", with a skull drawn next to it."
+            },
+            {
+              "id": "haruka-together",
+              "name": "Second reel",
+              "character": "haruka",
+              "priority": 10,
+              "requires": {
+                "datingPhases": {
+                  "haruka": "exclusive"
+                }
+              },
+              "text": "Haruka still acts like none of this matters, and she still does it with her head on your shoulder. \"Next term you are carrying the tripod,\" she says. \"That is a promotion.\""
+            }
+          ],
+          "firsts": [
+            {
+              "id": "haruka-talk",
+              "character": "haruka",
+              "rung": "talk",
+              "title": "The bit drops",
+              "opening": "Haruka has been doing voices all evening. Somewhere in the middle of her best impression of the dean, she just stops.",
+              "trigger": {
+                "event": "social.romanceRankChanged",
+                "match": {
+                  "character": "haruka",
+                  "to": "partner-in-crime"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "opening-up",
+                  "cue": "Mid-impression of the dean, she just stops. \"My thesis film is due in spring and I have eleven seconds of usable footage. Eleven. One is my thumb.\" She does not do a voice for it."
+                },
+                {
+                  "id": "your-turn",
+                  "cue": "\"Everyone thinks I am the confident one. I am the loud one. That is a different department.\" She points at you. \"Okay, your line. And if you say anything nice I will scream.\"",
+                  "discover": "haruka-quick"
+                }
+              ]
+            },
+            {
+              "id": "haruka-date",
+              "character": "haruka",
+              "rung": "date",
+              "title": "Double feature",
+              "opening": "Haruka picks the date: a midnight double feature at the old cinema in town, two horror films she has seen eleven times each. She brings contraband snacks in her jacket.",
+              "trigger": {
+                "event": "social.dateAccepted",
+                "match": {
+                  "character": "haruka"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "arrival",
+                  "cue": "She meets you outside the old cinema, jacket suspiciously lumpy with contraband snacks. \"Double feature. I have seen both eleven times. Rules: you can hold my hand during the jump scares. Only the jump scares.\""
+                },
+                {
+                  "id": "noticing",
+                  "cue": "\"I will tell you when they are coming.\" A beat. \"That is a lie. I will not tell you.\" The lights go down, and she is mouthing the first line along with the screen, completely unaware."
+                },
+                {
+                  "id": "moment",
+                  "cue": "The house lights come up on the two of you and a lot of spilled popcorn, and she has not let go of your hand. \"So,\" she says, too casually. \"The night bus is in forty minutes. Or.\""
+                }
+              ]
+            },
+            {
+              "id": "haruka-kiss",
+              "character": "haruka",
+              "rung": "kiss",
+              "title": "Say it first",
+              "opening": "You ask what this is. Haruka groans like you have asked her to explain a plot twist.",
+              "trigger": {
+                "event": "social.datingPhaseChanged",
+                "match": {
+                  "character": "haruka",
+                  "to": "exclusive"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "reading",
+                  "cue": "Haruka groans like you have asked her to explain a plot twist. \"Ugh. Fine. Fine! I like you. Stupidly. Like, write-a-bad-screenplay-about-it stupidly.\" She is red to the ears. \"There. You say something now.\""
+                },
+                {
+                  "id": "leaning-in",
+                  "cue": "\"I cannot be the only one standing here.\" She grabs a fistful of your jacket and just holds on, waiting, like nobody has called cut yet.",
+                  "discover": "haruka-smooth"
+                },
+                {
+                  "id": "after",
+                  "cue": "She pulls back, grinning, a little dazed. \"Okay. That was fine. That was the best scene I have ever been in and I will deny saying that.\""
+                }
+              ]
+            },
+            {
+              "id": "haruka-night",
+              "character": "haruka",
+              "rung": "night",
+              "title": "Loud",
+              "opening": "Your room. Haruka kicks her boots off in two different directions and lands on your bed like she is diving into a pool.",
+              "trigger": {
+                "event": "social.intimacyStarted",
+                "match": {
+                  "character": "haruka",
+                  "category": "first-night"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "lead",
+                  "cue": "She kicks her boots off in two directions and dives onto your bed. \"Okay, full disclosure, I am loud. Like, neighbours-complain loud. I also laugh during sex. If that is a dealbreaker, now is the time.\""
+                },
+                {
+                  "id": "check-in",
+                  "cue": "Everything is off and on the floor, her black bob a mess against your pillow. She gasps when you move against her, laughs at the sound she made, then catches your face. \"Hey. You good? Honest answer. I can do honest for one line.\""
+                },
+                {
+                  "id": "peak",
+                  "cue": "She was not lying. She is loud, and she laughs, and she swears, and she says your name like it is the punchline. She rolls you over, wants to hear what you sound like too, and when she comes someone downstairs bangs on the ceiling, which sets her off laughing all over again."
+                }
+              ],
+              "interest": "haruka-play",
+              "cg": "assets/characters/haruka/scenes/missionary.png"
+            }
+          ],
+          "suspicionProfiles": [
+            {
+              "character": "haruka",
+              "confrontAt": 85
+            }
+          ]
+        }
+      }
+    },
+    {
+      "actorId": "minji",
+      "identity": {
+        "name": "Min-ji",
+        "age": 20,
+        "pronouns": "she/her",
+        "occupation": "",
+        "year": "",
+        "birthday": "",
+        "workplace": null,
+        "home": null,
+        "haunts": [],
+        "lifeNotes": ""
+      },
+      "personality": {
+        "traits": [
+          "analytical",
+          "adventurous",
+          "practical",
+          "competitive"
+        ],
+        "notes": "analytical\nadventurous\npractical",
+        "voice": "Plain, friendly, precise. Asks practical questions and notices contradictions. Laughs easily once she is comfortable.",
+        "examples": [],
+        "fingerprint": ""
+      },
+      "appearance": {
+        "description": "Min-ji Park, 20, a Korean-American systems-engineering major and campus skater. Platinum-blonde bob with dark roots, silver cross earrings, athletic build.",
+        "style": "Cropped denim jacket, crop tops, cargo pants; a sneaker for every mood.",
+        "portrait": "assets/characters/minji/expressions/neutral.png",
+        "poses": [
+          {
+            "id": "neutral",
+            "image": "assets/characters/minji/expressions/neutral.png"
+          },
+          {
+            "id": "smile",
+            "image": "assets/characters/minji/expressions/smile.png"
+          },
+          {
+            "id": "concerned",
+            "image": "assets/characters/minji/expressions/concerned.png"
+          },
+          {
+            "id": "frustrated",
+            "image": "assets/characters/minji/expressions/frustrated.png"
+          },
+          {
+            "id": "embarrassed",
+            "image": "assets/characters/minji/expressions/embarrassed.png"
+          },
+          {
+            "id": "smug",
+            "image": "assets/characters/minji/expressions/smug.png"
+          },
+          {
+            "id": "surprised",
+            "image": "assets/characters/minji/expressions/surprised.png"
+          }
+        ],
+        "notes": ""
+      },
+      "tastes": {
+        "likes": [
+          "puzzles",
+          "climbing",
+          "hiking",
+          "technical projects",
+          "spontaneous outings"
+        ],
+        "dislikes": [
+          "pointless drama",
+          "showing off",
+          "vague answers"
+        ],
+        "likedCategories": [
+          "nerdy"
+        ],
+        "dislikedCategories": [],
+        "itemOverrides": [
+          {
+            "item": "puzzle-cube",
+            "reaction": "loved",
+            "points": 6,
+            "chemistry": 2
+          },
+          {
+            "item": "energy-bar",
+            "reaction": "liked",
+            "points": 4,
+            "chemistry": 1
+          },
+          {
+            "item": "red-roses",
+            "reaction": "disliked",
+            "points": -3
+          }
+        ],
+        "notes": ""
+      },
+      "dating": {
+        "history": "",
+        "experience": null,
+        "body": {
+          "face": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "lips": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "neck": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "arms_hands": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "chest": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "back": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "belly_waist": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "hips_butt": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "thighs_legs": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "intimate": {
+            "sensitivity": null,
+            "limit": null
+          }
+        },
+        "preferences": "",
+        "limitsNotes": "",
+        "policyOverrides": {}
+      },
+      "routine": {
+        "weekly": [],
+        "exceptions": [],
+        "notes": ""
+      },
+      "behavior": {
+        "rules": [],
+        "notes": "",
+        "stages": {}
+      },
+      "social": {
+        "links": [],
+        "notes": ""
+      },
+      "arc": {
+        "goal": "Get her solar-kayak senior project in the water before the term ends.",
+        "tracks": [
+          {
+            "character": "minji",
+            "traits": [
+              {
+                "id": "trust",
+                "initial": 15
+              },
+              {
+                "id": "playfulness",
+                "initial": 10
+              }
+            ],
+            "drift": [
+              {
+                "act": "listen",
+                "target": "project",
+                "trait": "trust",
+                "delta": 3
+              },
+              {
+                "act": "listen",
+                "trait": "trust",
+                "delta": 1
+              },
+              {
+                "act": "invite",
+                "trait": "playfulness",
+                "delta": 6
+              },
+              {
+                "act": "tease",
+                "trait": "playfulness",
+                "delta": 4
+              },
+              {
+                "act": "compliment",
+                "target": "earrings",
+                "trait": "playfulness",
+                "delta": 4
+              },
+              {
+                "act": "boast",
+                "trait": "trust",
+                "delta": -3
+              },
+              {
+                "act": "pushy",
+                "trait": "trust",
+                "delta": -3
+              }
+            ],
+            "stages": [
+              {
+                "id": "practical",
+                "name": "Practical",
+                "voice": "Friendly and efficient; treats you like a lab partner."
+              },
+              {
+                "id": "curious",
+                "name": "Curious",
+                "when": {
+                  "trust": 21,
+                  "playfulness": 30
+                },
+                "voice": "Starts suggesting plans herself."
+              },
+              {
+                "id": "smitten",
+                "name": "Smitten",
+                "when": {
+                  "trust": 30,
+                  "playfulness": 55
+                },
+                "flag": "minji-smitten",
+                "voice": "Lets the analysis go and just enjoys you."
+              }
+            ]
+          }
+        ],
+        "payoffs": [
+          {
+            "id": "minji-launch",
+            "name": "Launch day",
+            "character": "minji",
+            "priority": 20,
+            "requires": {
+              "flags": {
+                "minji-smitten": true
+              },
+              "romanceRanks": {
+                "minji": "co-pilot"
+              }
+            },
+            "text": "The solar kayak floats. Min-ji whoops, nearly capsizes it, and hands you the second paddle without a word. There is room for two. She designed it that way."
+          },
+          {
+            "id": "minji-together",
+            "name": "Beta version",
+            "character": "minji",
+            "priority": 10,
+            "requires": {
+              "datingPhases": {
+                "minji": "exclusive"
+              }
+            },
+            "text": "The kayak still leaks and Min-ji does not care. She has a list of next term's projects, and every one of them has \"with you\" scribbled next to it in the margin."
+          }
+        ],
+        "notes": ""
+      },
+      "lore": {
+        "backstory": "The practical nerd of her year and the steady one in any group. Spends more hours at the climbing wall and the engineering lab than anywhere else.",
+        "entries": [],
+        "authorNotes": ""
+      },
+      "source": {
+        "actor": {
+          "id": "minji",
+          "name": "Min-ji",
+          "age": 20,
+          "pronouns": "she/her",
+          "reactions": {
+            "skip": "\"No big deal.\" She clicks her pen once and doesn't look up.",
+            "ok": "\"That worked fine.\" She tucks a platinum strand behind one ear.",
+            "good": "\"Okay, that was actually fun.\" She grins and bumps your shoulder.",
+            "great": "\"Yes! That's the thing I wanted!\" She laughs, earrings swinging."
+          },
+          "location": "hewett",
+          "identityTags": [
+            "adult"
+          ],
+          "portrait": "assets/characters/minji/expressions/neutral.png",
+          "poses": [
+            {
+              "id": "neutral",
+              "image": "assets/characters/minji/expressions/neutral.png"
+            },
+            {
+              "id": "smile",
+              "image": "assets/characters/minji/expressions/smile.png"
+            },
+            {
+              "id": "concerned",
+              "image": "assets/characters/minji/expressions/concerned.png"
+            },
+            {
+              "id": "frustrated",
+              "image": "assets/characters/minji/expressions/frustrated.png"
+            },
+            {
+              "id": "embarrassed",
+              "image": "assets/characters/minji/expressions/embarrassed.png"
+            },
+            {
+              "id": "smug",
+              "image": "assets/characters/minji/expressions/smug.png"
+            },
+            {
+              "id": "surprised",
+              "image": "assets/characters/minji/expressions/surprised.png"
+            }
+          ],
+          "description": "Min-ji Park, 20, a Korean-American systems-engineering major and campus skater. Platinum-blonde bob with dark roots, silver cross earrings, athletic build.",
+          "style": "Cropped denim jacket, crop tops, cargo pants; a sneaker for every mood.",
+          "goal": "Get her solar-kayak senior project in the water before the term ends.",
+          "traits": [
+            "analytical",
+            "adventurous",
+            "practical",
+            "competitive"
+          ],
+          "voice": "Plain, friendly, precise. Asks practical questions and notices contradictions. Laughs easily once she is comfortable.",
+          "likes": [
+            "puzzles",
+            "climbing",
+            "hiking",
+            "technical projects",
+            "spontaneous outings"
+          ],
+          "dislikes": [
+            "pointless drama",
+            "showing off",
+            "vague answers"
+          ],
+          "backstory": "The practical nerd of her year and the steady one in any group. Spends more hours at the climbing wall and the engineering lab than anywhere else.",
+          "conversationStarters": [
+            "Ask about her senior project",
+            "Ask her to belay you",
+            "Suggest a hike on Saturday"
+          ]
+        },
+        "profiles": {
+          "initialRelationships": [
+            {
+              "character": "minji",
+              "trust": 15
+            }
+          ],
+          "activities": [
+            {
+              "id": "climbing-wall",
+              "name": "Climbing wall with Min-ji",
+              "description": "Min-ji belays and critiques your footwork, kindly and accurately.",
+              "location": "hewett",
+              "duration": 4,
+              "character": "minji",
+              "perDay": 1,
+              "phrases": [
+                "climbing wall",
+                "go climbing",
+                "boulder"
+              ],
+              "effects": [
+                {
+                  "type": "stat",
+                  "stat": "fitness",
+                  "delta": 1
+                },
+                {
+                  "type": "trust",
+                  "character": "minji",
+                  "delta": 2
+                }
+              ]
+            },
+            {
+              "id": "build-night",
+              "name": "Build night with Min-ji",
+              "description": "A soldering iron, a half-finished drone, and Min-ji explaining control loops like gossip.",
+              "location": "langley",
+              "duration": 4,
+              "character": "minji",
+              "minRank": "climbing-partner",
+              "perDay": 1,
+              "phrases": [
+                "build night",
+                "help minji with the drone"
+              ],
+              "effects": [
+                {
+                  "type": "stat",
+                  "stat": "focus",
+                  "delta": 1
+                },
+                {
+                  "type": "trust",
+                  "character": "minji",
+                  "delta": 2
+                }
+              ]
+            }
+          ],
+          "schedules": [
+            {
+              "actor": "minji",
+              "period": 12,
+              "stops": [
+                {
+                  "at": 0,
+                  "location": "hewett"
+                },
+                {
+                  "at": 4,
+                  "location": "prescott"
+                },
+                {
+                  "at": 8,
+                  "location": "langley"
+                }
+              ]
+            }
+          ],
+          "datingProfiles": [
+            {
+              "character": "minji",
+              "initialChemistry": 6,
+              "initialPhase": "available",
+              "agreements": [
+                "monogamous"
+              ],
+              "thresholds": {
+                "crush": 15,
+                "date": 35,
+                "exclusive": 65
+              },
+              "preferences": [
+                {
+                  "id": "minji-active",
+                  "type": "stat",
+                  "stat": "fitness",
+                  "min": 6,
+                  "weight": 10,
+                  "visibility": "public"
+                },
+                {
+                  "id": "minji-steady",
+                  "type": "stat",
+                  "stat": "focus",
+                  "min": 5,
+                  "weight": 8,
+                  "visibility": "discoverable"
+                },
+                {
+                  "id": "minji-clever",
+                  "type": "stat",
+                  "stat": "wit",
+                  "min": 8,
+                  "weight": 6,
+                  "visibility": "private"
+                }
+              ],
+              "signals": [
+                {
+                  "id": "liked-minji",
+                  "event": "social.actPriced",
+                  "match": {
+                    "character": "minji",
+                    "verdict": "liked"
+                  },
+                  "delta": 2,
+                  "label": "something you did that she liked",
+                  "repeatable": true
+                },
+                {
+                  "id": "disliked-minji",
+                  "event": "social.actPriced",
+                  "match": {
+                    "character": "minji",
+                    "verdict": "disliked"
+                  },
+                  "delta": -1,
+                  "label": "something you did that she did not like",
+                  "repeatable": true
+                },
+                {
+                  "id": "closer-minji",
+                  "event": "social.romanceRankChanged",
+                  "match": {
+                    "character": "minji"
+                  },
+                  "delta": 5,
+                  "label": "the two of you got closer",
+                  "repeatable": true
+                }
+              ]
+            }
+          ],
+          "romanceTempoProfiles": [
+            {
+              "character": "minji",
+              "advancement": "automatic",
+              "ranks": [
+                {
+                  "id": "acquaintance",
+                  "name": "Acquaintance",
+                  "points": 0,
+                  "ceiling": 10
+                },
+                {
+                  "id": "climbing-partner",
+                  "name": "Climbing partner",
+                  "points": 6,
+                  "ceiling": 24
+                },
+                {
+                  "id": "teammate",
+                  "name": "Teammate",
+                  "points": 20,
+                  "ceiling": 36
+                },
+                {
+                  "id": "co-pilot",
+                  "name": "Co-pilot",
+                  "points": 32,
+                  "ceiling": 50
+                }
+              ],
+              "gifts": {
+                "periodTicks": 12,
+                "limitPerPeriod": 1,
+                "repeatDecayPercent": 50,
+                "preferences": [
+                  {
+                    "item": "puzzle-cube",
+                    "reaction": "loved",
+                    "points": 6,
+                    "chemistry": 2
+                  },
+                  {
+                    "item": "energy-bar",
+                    "reaction": "liked",
+                    "points": 4,
+                    "chemistry": 1
+                  },
+                  {
+                    "item": "red-roses",
+                    "reaction": "disliked",
+                    "points": -3
+                  }
+                ]
+              },
+              "signals": [
+                {
+                  "id": "minji-climb",
+                  "event": "world.activityCompleted",
+                  "match": {
+                    "activity": "climbing-wall"
+                  },
+                  "points": 2,
+                  "cooldownTicks": 12
+                }
+              ],
+              "jealousy": {
+                "preset": "secure"
+              }
+            }
+          ],
+          "actProfiles": [
+            {
+              "character": "minji",
+              "entries": [
+                {
+                  "id": "minji-project",
+                  "kind": "listen",
+                  "target": "project",
+                  "points": 3,
+                  "reason": "you asked about the solar kayak and followed the maths",
+                  "memory": "The player asked about her solar-kayak project and followed it."
+                },
+                {
+                  "id": "minji-listen",
+                  "kind": "listen",
+                  "target": "*",
+                  "points": 1,
+                  "reason": "you asked a real question"
+                },
+                {
+                  "id": "minji-hike",
+                  "kind": "invite",
+                  "target": "saturday-morning@hewett",
+                  "points": 3,
+                  "reason": "you suggested something outdoors"
+                },
+                {
+                  "id": "minji-earrings",
+                  "kind": "compliment",
+                  "target": "earrings",
+                  "points": 3,
+                  "reason": "you noticed the new earrings"
+                },
+                {
+                  "id": "minji-boast",
+                  "kind": "boast",
+                  "target": "*",
+                  "points": -3,
+                  "reason": "you showed off"
+                },
+                {
+                  "id": "minji-tease",
+                  "kind": "tease",
+                  "target": "*",
+                  "points": 1,
+                  "reason": "you teased her gently"
+                },
+                {
+                  "id": "minji-pushy",
+                  "kind": "pushy",
+                  "target": "*",
+                  "points": -3,
+                  "reason": "you pushed past a plain no"
+                },
+                {
+                  "id": "minji-cube",
+                  "kind": "gift",
+                  "target": "puzzle-cube",
+                  "points": 6,
+                  "reason": "you gave her something to take apart"
+                },
+                {
+                  "id": "minji-bar",
+                  "kind": "buy",
+                  "target": "energy-bar",
+                  "points": 2,
+                  "reason": "you brought fuel for the wall"
+                },
+                {
+                  "id": "minji-roses",
+                  "kind": "gift",
+                  "target": "red-roses",
+                  "points": -3,
+                  "reason": "you went for the obvious gesture"
+                },
+                {
+                  "id": "minji-harp-drama",
+                  "kind": "pushy",
+                  "target": "pointless-drama",
+                  "points": -2,
+                  "reason": "you kept feeding the drama topic"
+                },
+                {
+                  "id": "minji-harp-off",
+                  "kind": "pushy",
+                  "target": "showing-off",
+                  "points": -2,
+                  "reason": "you kept going on about show-offs"
+                },
+                {
+                  "id": "minji-harp-answers",
+                  "kind": "pushy",
+                  "target": "vague-answers",
+                  "points": -2,
+                  "reason": "you kept pressing on vague answers"
+                }
+              ]
+            }
+          ],
+          "arcTracks": [
+            {
+              "character": "minji",
+              "traits": [
+                {
+                  "id": "trust",
+                  "initial": 15
+                },
+                {
+                  "id": "playfulness",
+                  "initial": 10
+                }
+              ],
+              "drift": [
+                {
+                  "act": "listen",
+                  "target": "project",
+                  "trait": "trust",
+                  "delta": 3
+                },
+                {
+                  "act": "listen",
+                  "trait": "trust",
+                  "delta": 1
+                },
+                {
+                  "act": "invite",
+                  "trait": "playfulness",
+                  "delta": 6
+                },
+                {
+                  "act": "tease",
+                  "trait": "playfulness",
+                  "delta": 4
+                },
+                {
+                  "act": "compliment",
+                  "target": "earrings",
+                  "trait": "playfulness",
+                  "delta": 4
+                },
+                {
+                  "act": "boast",
+                  "trait": "trust",
+                  "delta": -3
+                },
+                {
+                  "act": "pushy",
+                  "trait": "trust",
+                  "delta": -3
+                }
+              ],
+              "stages": [
+                {
+                  "id": "practical",
+                  "name": "Practical",
+                  "voice": "Friendly and efficient; treats you like a lab partner."
+                },
+                {
+                  "id": "curious",
+                  "name": "Curious",
+                  "when": {
+                    "trust": 21,
+                    "playfulness": 30
+                  },
+                  "voice": "Starts suggesting plans herself."
+                },
+                {
+                  "id": "smitten",
+                  "name": "Smitten",
+                  "when": {
+                    "trust": 30,
+                    "playfulness": 55
+                  },
+                  "flag": "minji-smitten",
+                  "voice": "Lets the analysis go and just enjoys you."
+                }
+              ]
+            }
+          ],
+          "intimacyProfiles": [
+            {
+              "character": "minji",
+              "openness": 60,
+              "casual": false,
+              "consentPolicy": "threshold",
+              "consentDuration": 2,
+              "allowedCategories": [
+                "first-night"
+              ],
+              "cooldown": 12,
+              "requirements": {
+                "attraction": 35,
+                "phases": [
+                  "dating",
+                  "exclusive"
+                ]
+              },
+              "interests": [
+                {
+                  "id": "minji-talk",
+                  "category": "first-night",
+                  "label": "Likes to talk it through first",
+                  "visibility": "discoverable"
+                }
+              ],
+              "aftercarePreferences": [
+                {
+                  "id": "minji-stay",
+                  "option": "stay",
+                  "reaction": "liked",
+                  "satisfactionDelta": 8,
+                  "visibility": "discoverable"
+                }
+              ]
+            }
+          ],
+          "phoneMessages": [
+            {
+              "id": "minji-wants-answers",
+              "character": "minji",
+              "text": "I would like an explanation. Campbells, when you are free — before today ends.",
+              "trigger": {
+                "event": "social.suspicionSurfaced",
+                "match": {
+                  "observer": "minji"
+                }
+              },
+              "replies": [
+                {
+                  "id": "coming",
+                  "text": "All right. I'll be there."
+                }
+              ],
+              "offer": {
+                "location": "campbells",
+                "expiresIn": 12
+              }
+            }
+          ],
+          "endings": [
+            {
+              "id": "minji-launch",
+              "name": "Launch day",
+              "character": "minji",
+              "priority": 20,
+              "requires": {
+                "flags": {
+                  "minji-smitten": true
+                },
+                "romanceRanks": {
+                  "minji": "co-pilot"
+                }
+              },
+              "text": "The solar kayak floats. Min-ji whoops, nearly capsizes it, and hands you the second paddle without a word. There is room for two. She designed it that way."
+            },
+            {
+              "id": "minji-together",
+              "name": "Beta version",
+              "character": "minji",
+              "priority": 10,
+              "requires": {
+                "datingPhases": {
+                  "minji": "exclusive"
+                }
+              },
+              "text": "The kayak still leaks and Min-ji does not care. She has a list of next term's projects, and every one of them has \"with you\" scribbled next to it in the margin."
+            }
+          ],
+          "firsts": [
+            {
+              "id": "minji-talk",
+              "character": "minji",
+              "rung": "talk",
+              "title": "Off belay",
+              "opening": "At the end of a long session, Min-ji sits down on the crash mats, chalk to the elbows, and does not get up to leave with everyone else.",
+              "trigger": {
+                "event": "social.romanceRankChanged",
+                "match": {
+                  "character": "minji",
+                  "to": "climbing-partner"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "opening-up",
+                  "cue": "\"Can I run something past you? Not a climbing thing.\" She picks at the chalk on her fingers. \"Our rocket team lost its funding. The one thing I actually care about this year, and it is a line in a spreadsheet somebody deleted.\"",
+                  "discover": "minji-steady"
+                },
+                {
+                  "id": "your-turn",
+                  "cue": "\"Sorry, I am doing the thing where I talk about motors until people's eyes glaze.\" She shoves her bleached fringe back with a chalky finger and leaves a white smudge on her forehead. \"Be honest. Are your eyes glazing?\""
+                }
+              ]
+            },
+            {
+              "id": "minji-date",
+              "character": "minji",
+              "rung": "date",
+              "title": "Low tide",
+              "opening": "Min-ji plans the date like a mission: low tide at 7:40, sandwiches, a thermos, and a sea cave along the coast that you can only reach for about two hours.",
+              "trigger": {
+                "event": "social.dateAccepted",
+                "match": {
+                  "character": "minji"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "arrival",
+                  "cue": "She meets you at the path down to the shore with a thermos, sandwiches and a tide table. \"Low tide at 7:40. I have a timetable. I know. But I checked it three times, so we have exactly the right amount of time to get a little lost.\" She tugs one silver earring, a tell."
+                },
+                {
+                  "id": "noticing",
+                  "cue": "Halfway along the coast she stops at every rock pool and names things under her breath, then catches herself. \"That was a joke earlier. Mostly. I did also bring a map.\" She taps her pocket, half proud, half embarrassed."
+                },
+                {
+                  "id": "moment",
+                  "cue": "The cave is exactly where she said it would be, and you are early. She checks her watch, then the sea, then you. \"We have forty minutes spare,\" she says. \"I did not plan anything for them. That is a first.\"",
+                  "discover": "minji-active"
+                }
+              ]
+            },
+            {
+              "id": "minji-kiss",
+              "character": "minji",
+              "rung": "kiss",
+              "title": "Talking it through",
+              "opening": "You bring it up. What this is. Min-ji tugs one silver earring and takes a breath like she is about to present.",
+              "trigger": {
+                "event": "social.datingPhaseChanged",
+                "match": {
+                  "character": "minji",
+                  "to": "exclusive"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "reading",
+                  "cue": "She tugs one silver earring and takes a breath like she is about to present. \"Right. So. I made a list. Pros, cons. I am not going to show you the list. The cons column is empty. That is the whole finding.\""
+                },
+                {
+                  "id": "leaning-in",
+                  "cue": "\"I would like to be your girlfriend, please.\" She goes very still, the folded list held against her chest, and does not seem to know what to do with her hands."
+                },
+                {
+                  "id": "after",
+                  "cue": "Her bob has gone wild and she does not fix it. \"Good,\" she says, slightly breathless. \"Good. Excellent.\" She looks at you like she is waiting for the results to come back."
+                }
+              ]
+            },
+            {
+              "id": "minji-night",
+              "character": "minji",
+              "rung": "night",
+              "title": "Talked through",
+              "opening": "Your room. Min-ji sits cross-legged on your bed with her sneakers still on and her hands in her lap.",
+              "trigger": {
+                "event": "social.intimacyStarted",
+                "match": {
+                  "character": "minji",
+                  "category": "first-night"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "lead",
+                  "cue": "She sits cross-legged on your bed, sneakers still on, hands in her lap. \"I want to. Obviously. Can we talk it through first? What you like, what I like. It is not unsexy, I promise. It is just how I work.\""
+                },
+                {
+                  "id": "check-in",
+                  "cue": "Her sneakers are somewhere across the room and she is laughing about it, warm everywhere, legs wrapped around you. Her breath goes ragged. \"Okay, that is. Yes. Is this still good for you? Tell me.\""
+                },
+                {
+                  "id": "peak",
+                  "cue": "It is athletic and a little competitive and laughing, the way everything with her is, until it is not laughing any more. She comes with her face in your neck, then flips you, bleached hair in her eyes and determined, and starts on exactly the things you told her you liked, in order."
+                }
+              ],
+              "interest": "minji-talk",
+              "cg": "assets/characters/minji/scenes/cowgirl.png"
+            }
+          ],
+          "suspicionProfiles": [
+            {
+              "character": "minji",
+              "confrontAt": 70
+            }
+          ]
+        }
+      }
+    }
+  ]
 }

@@ -3,7 +3,7 @@
 ## Todo
 
 ### T-007 Stat chips + mood line on heroine panel
-  - tags: [implementer, claude]
+  - tags: [implementer, codex]
   - waits on: T-003 merge
 
 ### T-008 Per-heroine ladder + unwelcome-flirt reactions by personality
@@ -11,28 +11,31 @@
   - waits on: T-003 merge
 
 ### T-009 Full-depth character sheet schema (rp-master level)
-  - tags: [implementer, claude]
+  - tags: [implementer, codex]
 
 ### T-010 Daily flirt cap + "she has to go" cue
-  - tags: [implementer, claude]
+  - tags: [implementer, codex]
 
 ### T-011 Day-planner mode (creator option: clock | planner)
-  - tags: [implementer, claude]
+  - tags: [implementer, codex]
 
 ### T-012 Relationship stages + repairable breakups
-  - tags: [implementer, claude]
+  - tags: [implementer, codex]
 
 ## Doing
 
-### T-013 Design card: character sheet (for T-009)
-  - tags: [analyzer, vertex-gemini-pro] · refs: rp-master + Venus only
+### T-019 Heartmorrow analysis (steal list)
+  - tags: [researcher, codex] · redo after Gemini pass failed review
 
-### T-014 Design card: scene feedback chips + mood (for T-007)
-  - tags: [analyzer, space-bunny-free]
+### T-020 RisuAI analysis (steal list)
+  - tags: [researcher, codex] · redo after Gemini pass failed review
 
 ## Review
 
 ## Done
+
+### T-013..T-018 Design cards: character-sheet, scene-feedback, flirt-cap, day-planner, stages
+  - merged 2026-10-01 · docs/design/
 
 ### T-001 Venus skill digest · T-003 Action ladder · T-004 rp-master analysis · T-005 Synthesis
   - merged 2026-10-01, npm test 798/798

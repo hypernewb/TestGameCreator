@@ -84,6 +84,9 @@ export interface DailyNeedMatch { kind:ActKind|'ask'; target?:string }
 export interface DailyNeedDefinition { id:string; hint:string; weight?:number; traitWeights?:Record<string,number>; matches:DailyNeedMatch[]; against?:DailyNeedMatch[] }
 export interface DailyNeedsPack { reward:{like:number;trust:number}; againstLike:number; needs:DailyNeedDefinition[] }
 export interface DailyNeedState { day:number; need:string|null; rewarded:boolean; sources:string[] }
+export interface LustBaselineTuning { perDaypart?:number; milestones?:{intimateFirst?:number;dating?:number;exclusive?:number;preference?:number}; hint?:string }
+export interface LustBaselinePack { lustBaseline?:LustBaselineTuning }
+export interface LustBaselineRaisedEvent { character:string; milestone:string; preference?:string; from:number; to:number; delta:number; text:string }
 export interface GiftSettings { likedMultiplier:number; dislikedPoints:number; keepsakeMinGain:number; keepsakeLimit:number }
 export interface GiftPack { giftRepeatScale?:number[]; giftSettings?:GiftSettings }
 export interface GiftItem { categories?:GiftCategory[] }

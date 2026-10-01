@@ -1,5 +1,5 @@
 import {assert} from '../core/engine.mjs';
-import {changeTrust} from './romance-stats.mjs';
+import {changeTrust,lustBaselineOf,easeLust,validateLustBaseline} from './romance-stats.mjs';
 import {sobrietyLevel} from './intimacy.mjs';
 import {regionLimitReason,sensitivityScaleOf,validateSensitivityScale,clearRegionAgreements} from './intimacy.mjs';
 import {REGIONS,bodyRegionOf,ladderPaceOf} from '../core/character-sheet.mjs';
@@ -44,6 +44,25 @@ const runtimeOf=(state,character)=>state.modules['social.touch-ladder']?.charact
 // Private = a listed private location with nobody else present (same witness idea as intimacy.mjs's privacy check, kept local so this module has no hard dependency on social.intimacy).
 const privacyOk=(state,pack,character)=>{const loc=state.actors[pack.playerId].location,priv=pack.touchLadder?.privateLocations||pack.intimacySettings?.privateLocations||[];if(!priv.includes(loc))return false;const others=pack.actors.filter(a=>![pack.playerId,character].includes(a.id)&&state.actors[a.id].location===loc);return others.length===0;};
 
+// The one Lust writer for the baseline system: no ceiling of its own. The ladder step keeps its existing 100 clamp.
+export const setLust=(tx,character,value)=>{if(runtimeOf(tx.state,character))tx.set([...path,'characters',character,'lust'],Math.max(0,value));};
+export const baselineOf=(state,character)=>runtimeOf(state,character)?.lustBaseline||0;
+// Earned floor, paid once per milestone (`credit` separates per-preference repeats from the single stage milestones). Breakups and losses never lower it.
+export function raiseBaseline(tx,character,key,detail={}){
+ const gain=lustBaselineOf(tx.pack)?.milestones[key],runtime=runtimeOf(tx.state,character),credit=detail.credit||key;
+ if(!gain||!runtime||runtime.lustMilestones.includes(credit))return 0;
+ const from=runtime.lustBaseline||0,to=from+gain;
+ tx.set([...path,'characters',character,'lustMilestones'],[...runtime.lustMilestones,credit]);
+ tx.set([...path,'characters',character,'lustBaseline'],to);
+ tx.emit('social.lustBaselineRaised',{...detail,character,milestone:key,from,to,delta:gain,text:`${tx.state.actors[character].name} is easier to want around you than she was.`},[tx.pack.playerId,character]);
+ return gain;
+}
+// Each daypart, Lust moves toward the earned floor (campus default: 25% of the remaining gap) and never falls below it.
+function easeLustToBaseline(tx,character,steps){
+ const runtime=runtimeOf(tx.state,character);if(!runtime||steps<1)return;
+ setLust(tx,character,easeLust(runtime.lust||0,runtime.lustBaseline||0,steps,lustBaselineOf(tx.pack)?.perDaypart));
+}
+
 export function touchEligibility(state,pack,character,stepId,region){
  const original=stepOf(stepId),step=original?{...original,minTrust:original.minTrust*ladderPaceOf(pack,character)}:null;if(!step)return {eligible:false,reasons:['unknown step']};
  const trust=trustOf(state,pack,character),sobriety=sobrietyLevel(state,pack,character),reasons=[];
@@ -66,23 +85,25 @@ export function attemptTouch(tx,character,stepId,region){
  region=touchRegion(stepId,region);const name=s.actors[character].name,e=touchEligibility(s,p,character,stepId,region),oldLust=runtimeOf(s,character)?.lust||0;
  if(e.eligible){
   const sensitivity=bodyRegionOf(p,character,region).sensitivity,scale=sensitivity==null?1:sensitivityScaleOf(p)[sensitivity],trustDelta=changeTrust(tx,character,step.trustGain,{quiet:true}),lust=Math.max(0,Math.min(100,(runtimeOf(s,character)?.lust||0)+step.lust*scale));
-  tx.set([...path,'characters',character,'lust'],lust);
+  setLust(tx,character,lust);
   tx.emit('social.touchAccepted',{character,step:step.id,...(region?{region}:{}),verdict:'accept',trustDelta,lust,lustDelta:lust-oldLust,text:`${name} leans into it as you ${step.name}.`},[p.playerId,character]);
  } else {
   const hintKey=e.reasons[0],reaction=reactUnwelcome(tx,character,hintKey);if(reaction){tx.emit('social.touchRefused',{...reaction,step:step.id,...(region?{region}:{}),verdict:'refuse',...hardRefusal(name,hintKey)},[p.playerId,character]);return;}const lust=Math.max(0,(runtimeOf(s,character)?.lust||0)-1),trustDelta=changeTrust(tx,character,-1,{quiet:true}),verdict=e.reasons.length===1&&hintKey==='trust'&&e.trust>=e.step.minTrust-10?'hesitate':'refuse';
-  tx.set([...path,'characters',character,'lust'],lust);
+  setLust(tx,character,lust);
   tx.emit('social.touchRefused',{character,step:step.id,...(region?{region}:{}),verdict,reason:hintKey,...hardRefusal(name,hintKey),trustDelta,lustDelta:lust-oldLust,text:refusalText(name,hintKey)},[p.playerId,character]);
  }
 }
 
 // Prompt-facing digest (packages/ai/context.mjs pattern): inject current Lust/Trust so the model narrates from state, never invents it.
-export const touchLadderContext=(state,pack,viewer)=>Object.keys(state.modules['social.touch-ladder']?.characters||{}).filter(c=>viewer===pack.playerId||viewer===c).map(c=>({character:c,lust:runtimeOf(state,c).lust,trust:trustOf(state,pack,c)}));
+export const touchLadderContext=(state,pack,viewer)=>Object.keys(state.modules['social.touch-ladder']?.characters||{}).filter(c=>viewer===pack.playerId||viewer===c).map(c=>{const baseline=baselineOf(state,c);return {character:c,lust:runtimeOf(state,c).lust,trust:trustOf(state,pack,c),...(baseline?{baseline}:{})};});
 
 export const touchLadder={id:'social.touch-ladder',version:'0.1.0',coreApi:'0.1.0',requires:['social.relationships'],
- validate(p){validateUnwelcome(p);validateSensitivityScale(p);const locations=new Set(p.locations.map(x=>x.id));assert(p.touchLadder===undefined||p.touchLadder&&Array.isArray(p.touchLadder.privateLocations||[])&&(p.touchLadder.privateLocations||[]).every(x=>locations.has(x)),'touchLadder private locations invalid');},
- init:p=>({characters:Object.fromEntries(p.actors.filter(x=>x.id!==p.playerId).map(x=>[x.id,{lust:0}]))}),
+ validate(p){validateUnwelcome(p);validateSensitivityScale(p);const locations=new Set(p.locations.map(x=>x.id));assert(p.touchLadder===undefined||p.touchLadder&&Array.isArray(p.touchLadder.privateLocations||[])&&(p.touchLadder.privateLocations||[]).every(x=>locations.has(x)),'touchLadder private locations invalid');validateLustBaseline(p);},
+ init:p=>({characters:Object.fromEntries(p.actors.filter(x=>x.id!==p.playerId).map(x=>[x.id,{lust:0,lustBaseline:0,lustMilestones:[]}]))}),
+ // One ease per elapsed daypart, for every heroine with a romance profile; guests and friends are untouched.
+ react(tx,event){if(event.type!=='core.timeAdvanced'||!lustBaselineOf(tx.pack))return;const interval=tx.pack.daypart?.interval||4,steps=Math.floor(event.payload.to/interval)-Math.floor(event.payload.from/interval);for(const profile of tx.pack.romanceTempoProfiles||[])easeLustToBaseline(tx,profile.character,steps);},
  commands:{'social.attemptTouch'(tx,args){if(!args?.character||!tx.state.actors[args.character])return;assert(args.region===undefined||REGIONS.includes(args.region),'Touch region invalid');const stepId=args.step&&stepOf(args.step)?args.step:mapTouchText(args.text);if(!stepId)return;attemptTouch(tx,args.character,stepId,args.region||touchTextRegion(args.text));}},
  afterTurn(tx){clearRegionAgreements(tx);},
  actions(){return [];},
- panel(s){return {title:'Touch',lines:Object.entries(s.modules['social.touch-ladder'].characters).map(([c,x])=>`${s.actors[c].name}: Lust ${x.lust}`)};}
+ panel(s){return {title:'Touch',lines:Object.entries(s.modules['social.touch-ladder'].characters).map(([c,x])=>`${s.actors[c].name}: Lust ${x.lust}${x.lustBaseline?` · warm floor ${x.lustBaseline}`:''}`)};}
 };

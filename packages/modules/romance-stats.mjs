@@ -5,6 +5,16 @@ import {calendarFor} from '../../public/calendar.mjs';
 export const dailyGainOf=pack=>pack.romanceStats?.dailyGain;
 export const validateRomanceStats=p=>{const r=p.romanceStats;if(r===undefined)return;if(!(r&&typeof r==='object'&&(r.dailyGain===undefined||Number.isInteger(r.dailyGain)&&r.dailyGain>0&&r.dailyGain<=100)))throw new Error('romanceStats.dailyGain must be a positive integer');};
 export const dayOf=(state,pack)=>calendarFor(state.tick,pack).day;
+// C1 Lust baseline (docs/ROMANCE-STATS.md): a rush fades back toward an earned per-heroine floor as game time passes.
+// Off unless the pack sets lustBaseline; the numbers live in the pack so a creator can retune or omit them.
+export const LUST_BASELINE={perDaypart:0.25,milestones:{intimateFirst:5,dating:5,exclusive:5,preference:2},hint:'some earlier warmth lingers'};
+export const LUST_MILESTONES=Object.keys(LUST_BASELINE.milestones);
+export const lustBaselineOf=pack=>pack.lustBaseline&&{...LUST_BASELINE,...pack.lustBaseline,milestones:{...LUST_BASELINE.milestones,...(pack.lustBaseline.milestones||{})}};
+export const validateLustBaseline=p=>{const c=p.lustBaseline,bad=key=>{throw new Error(`lustBaseline${key?`.${key}`:''} is invalid`);};if(c===undefined)return;if(!c||typeof c!=='object'||Array.isArray(c))return bad('field');if(c.perDaypart!==undefined&&!(Number.isFinite(c.perDaypart)&&c.perDaypart>0&&c.perDaypart<=1))bad('perDaypart');for(const k of LUST_MILESTONES)if(c.milestones?.[k]!==undefined&&!(Number.isInteger(c.milestones[k])&&c.milestones[k]>=0&&c.milestones[k]<=100))bad(`milestones.${k}`);if(c.hint!==undefined&&(typeof c.hint!=='string'||!c.hint.trim()||c.hint.length>100))bad('hint');};
+// steps dayparts close perDaypart of the remaining gap each: heat above the floor fades, a shortfall eases back up to it.
+// The move never crosses the floor. Two places keep saved values stable, and a gap under a percent of the floor settles on it
+// rather than leaving her a rounding step short of what she earned for good.
+export const easeLust=(lust,floor,steps,perDaypart)=>{let value=Number(lust)||0;for(let i=0;i<steps;i++)value+=(floor-value)*perDaypart;const closed=Math.round(value*100)/100;return Math.abs(closed-floor)<Math.max(1,floor)/100?floor:closed;};
 // used = gain already banked today; returns how much of amount may land.
 export const cappedGain=(pack,character,amount,used)=>{const cap=dailyGainOf(pack);return amount<=0||!Number.isInteger(cap)||!(pack.romanceTempoProfiles||[]).some(x=>x.character===character)?amount:Math.max(0,Math.min(amount,cap-used));};
 // The one Trust writer: clamps 0..100, applies the daily cap and emits social.relationshipChanged. Returns the applied delta.

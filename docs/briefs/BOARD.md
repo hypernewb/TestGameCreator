@@ -2,15 +2,19 @@
 
 ## Todo
 
-### T-007 Stat chips + mood line on heroine panel
-  - tags: [implementer, codex]
-  - waits on: T-003 merge
-
 ### T-008 Per-heroine ladder + unwelcome-flirt reactions by personality
   - tags: [writer, opencode-longcat-free]
   - waits on: T-003 merge
 
 ### T-009 Full-depth character sheet schema (rp-master level)
+  - tags: [implementer, codex]
+
+### T-012 Relationship stages + repairable breakups
+  - tags: [implementer, codex]
+
+## Doing
+
+### T-007 Stat chips + mood line on heroine panel
   - tags: [implementer, codex]
 
 ### T-010 Daily flirt cap + "she has to go" cue
@@ -19,10 +23,8 @@
 ### T-011 Day-planner mode (creator option: clock | planner)
   - tags: [implementer, codex]
 
-### T-012 Relationship stages + repairable breakups
-  - tags: [implementer, codex]
-
-## Doing
+### T-021 Character-sheet fixed lists (owner approves)
+  - tags: [analyzer, codex]
 
 ### T-019 Heartmorrow analysis (steal list)
   - tags: [researcher, codex] · redo after Gemini pass failed review

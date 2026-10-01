@@ -9,6 +9,9 @@
     "chips": true,
     "mood": true
   },
+  "slipGuard": {
+    "echoWords": 8
+  },
   "calendar": {
     "weather": [
       {
@@ -87,7 +90,8 @@
     "social.npc": "0.2.0",
     "social.gossip": "0.1.0",
     "social.firsts": "0.1.0",
-    "social.anniversary": "0.1.0"
+    "social.anniversary": "0.1.0",
+    "social.wants": "0.1.0"
   },
   "gameProject": {
     "timeMode": "planner",
@@ -1688,6 +1692,10 @@
       "character": "minji"
     }
   ],
+  "wantSettings": {
+    "reward": 3,
+    "active": 2
+  },
   "dailyNeeds": {
     "reward": {
       "like": 2,
@@ -4749,7 +4757,46 @@
             }
           ]
         }
-      }
+      },
+      "wants": [
+        {
+          "id": "yuna-quiet-night",
+          "text": "a quiet night in, barley tea, and nothing at all asked of her",
+          "keys": [
+            "listen",
+            "barley-tea",
+            "quiet"
+          ]
+        },
+        {
+          "id": "yuna-parents-call",
+          "text": "help her say what she actually wants to say to her parents",
+          "keys": [
+            "ask",
+            "parents",
+            "home"
+          ]
+        },
+        {
+          "id": "yuna-sand-court",
+          "text": "the sand court behind the fields, volleyball, no excuses left",
+          "keys": [
+            "invite",
+            "volleyball",
+            "hewett"
+          ]
+        },
+        {
+          "id": "yuna-hotteok",
+          "text": "hotteok, the real kind, or the closest this campus gets",
+          "keys": [
+            "buy",
+            "gift",
+            "hotteok",
+            "cinnamon-roll"
+          ]
+        }
+      ]
     },
     {
       "actorId": "haruka",
@@ -5915,7 +5962,48 @@
             }
           ]
         }
-      }
+      },
+      "wants": [
+        {
+          "id": "haruka-film-screening",
+          "text": "a horror film start to finish, without her talking over the whole thing",
+          "keys": [
+            "watch",
+            "movie",
+            "horror",
+            "vinyl-record"
+          ]
+        },
+        {
+          "id": "haruka-new-song",
+          "text": "to hear the new song before anyone else does",
+          "keys": [
+            "listen",
+            "guitar",
+            "band"
+          ]
+        },
+        {
+          "id": "haruka-thesis-cut",
+          "text": "her thesis film watched once, straight through, with no bit running",
+          "keys": [
+            "watch",
+            "film",
+            "thesis",
+            "film-society"
+          ]
+        },
+        {
+          "id": "haruka-cider",
+          "text": "cider at a bar that is not her family idea of a night out",
+          "keys": [
+            "buy",
+            "cider",
+            "invite",
+            "murphys"
+          ]
+        }
+      ]
     },
     {
       "actorId": "minji",
@@ -7088,7 +7176,46 @@
             }
           ]
         }
-      }
+      },
+      "wants": [
+        {
+          "id": "minji-control-loop",
+          "text": "someone patient enough to talk the control loop through with her",
+          "keys": [
+            "listen",
+            "kayak",
+            "lab"
+          ]
+        },
+        {
+          "id": "minji-belay",
+          "text": "a belay at the wall, ten routes, talking optional",
+          "keys": [
+            "climb",
+            "belay",
+            "hewett"
+          ]
+        },
+        {
+          "id": "minji-torque-math",
+          "text": "a second pair of eyes on the torque math before she trusts it",
+          "keys": [
+            "ask",
+            "math",
+            "puzzle",
+            "puzzle-cube"
+          ]
+        },
+        {
+          "id": "minji-tide-walk",
+          "text": "the low-tide walk with a thermos, before the term ends",
+          "keys": [
+            "walk",
+            "tide",
+            "hike"
+          ]
+        }
+      ]
     }
   ],
   "lorebook": [

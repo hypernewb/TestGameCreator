@@ -80,6 +80,23 @@ Gaps, verified against the code:
 
 The research doc proposed none of this. Seed 3× 15-day campus runs and record the instruments `fun-metrics.mjs` already computes: `trailingDrought`, `zeroBeatWindows`, `maxQuietDayparts`, `firstDrama`, `deadRatio`, `repeatedProse`.
 
+**Results (2026-10-01, `scripts/falsify-director.mjs`, no model, 3 seeds × 15 days × 2 profiles, HEAD vs HEAD~1):**
+
+| profile | instrument | baseline (pre-thin-slice) | HEAD (thin slice) |
+|---|---|---|---|
+| both | `maxQuietDayparts` | 0 on all runs | 0 on all runs |
+| both | `zeroBeatWindows` | 0 on all runs | 0 on all runs |
+| both | `trailingDrought` | 0.2–0.9m | 0.2–0.9m |
+| player | storylets seen | 17–18/112 | 17–18/112 |
+| ignorer | storylets seen | 4/112 | 4/112 |
+| ignorer | spotlight spread | ×2.8–6.3 | ×2.8–6.3 (one extra escalation beat, seed 3) |
+
+- **The quiet instruments are saturated — they cannot falsify threads.** The world never goes quiet on seeded runs, before or after the thin slice; the card's warning was correct ("it already passes on seeded runs"). The flat-purgatory symptom lives in *typed play patterns* (attention-driven), not in the deterministic driver. `deadRatio` and `repeatedProse` are not-exercised without a model and need a real playtest run.
+- **The sensitive instruments are content breadth and spotlight equity.** The ignorer profile collapses storylets to 4/112 — beats keep firing (escalations recycle) but the player sees almost nothing new — and spotlight spread reaches ×6.3 when the player never chooses. If claim 3 (mixed deck fixes starvation) is right, `storylets.seen` is the number that moves, not the drought metrics.
+- **Revised falsifiers for step 6+:** threads must be judged on (a) storylets breadth for low-effort play (ignorer storylets rising from 4), (b) spotlight spread falling under the mixed deck once rotation arms, (c) typed-play instruments from a model-backed run. TrailingDrought/zeroBeatWindows stay as tripwires, not targets.
+
+Pre-run claims (kept for provenance; the results above supersede them as falsifiers):
+
 - `trailingDrought` and `zeroBeatWindows` are the "flat purgatory" and "starves at the end" symptoms directly. If steps 1–5 move neither, the diagnosis in the research doc is wrong and threads will not fix it either.
 - Claim: threads fix it. Falsifier: runs with a thread visible in the recap show no improvement in those two metrics.
 - Claim: ignored-beat escalation helps. Falsifier: `maxQuietDayparts` and `deadRatio` unchanged.

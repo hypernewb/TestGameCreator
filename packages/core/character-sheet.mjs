@@ -1,3 +1,5 @@
 // Shared with the browser editor, like the core calendar contract.
 export {TRAITS,GIFT_CATEGORIES,EXPERIENCE,REGIONS,SHEET_TABS,createSheet,importCharacterSheet,validateCharacterSheets,saveSheets,loadSheets,resolveLimit,giftTaste} from '../../public/sheet-editor.mjs';
 export const bodyRegionOf=(pack,character,region)=>(pack.characterSheets||[]).find(s=>s.actorId===character)?.dating?.body?.[region]||{limit:null,sensitivity:null};
+export const ladderPaceOf=(pack,character)=>({slow:1.25,normal:1,fast:0.8}[(pack.characterSheets||[]).find(s=>s.actorId===character)?.dating?.ladderPace]||1);
+export function unwelcomeStyleOf(pack,character){const s=(pack.characterSheets||[]).find(s=>s.actorId===character);if(s?.behavior?.unwelcomeStyle)return s.behavior.unwelcomeStyle;const traits=s?.personality?.traits||[];return traits.some(t=>['reserved','insecure'].includes(t))?'deflect':traits.some(t=>['mischievous','rebellious','flirtatious'].includes(t))?'tease_back':traits.some(t=>['guarded','analytical','competitive'].includes(t))?'guarded':null;}

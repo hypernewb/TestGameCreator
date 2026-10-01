@@ -74,6 +74,7 @@
     "social.romance-tempo": "0.2.0",
     "social.intimacy": "0.1.0",
     "social.acts": "0.1.0",
+    "social.touch-ladder": "0.1.0",
     "social.daily-need": "0.1.0",
     "character.arc": "0.1.0",
     "character.sobriety": "0.1.0",
@@ -1751,6 +1752,24 @@
       }
     ]
   },
+  "unwelcomeFlirt": {
+    "deflect": {
+      "like": -1,
+      "trust": 0,
+      "lust": 0
+    },
+    "tease_back": {
+      "like": 0,
+      "trust": 0,
+      "lust": 1,
+      "minTrust": 30
+    },
+    "shut_down": {
+      "like": -2,
+      "trust": -2,
+      "lust": 0
+    }
+  },
   "socialPacing": {
     "flirt": {
       "mode": "cap",
@@ -3258,7 +3277,8 @@
         },
         "preferences": "",
         "limitsNotes": "My hand or a gentle touch on my back is a comfortable start when we both want it; please ask about the other places and let me take my time, because I notice even small touches. Hips and bottom are not ready yet; you would have to earn that closeness, and a strong reaction is not me saying yes.",
-        "policyOverrides": {}
+        "policyOverrides": {},
+        "ladderPace": "slow"
       },
       "routine": {
         "weekly": [],
@@ -4294,7 +4314,8 @@
         },
         "preferences": "",
         "limitsNotes": "Hands, back, legs: comfortable territory when we both want it; everywhere else needs a real question, even if I am making a joke, and touching my face is not something I am ready for yet; you would have to earn it. My waist is ticklish and my neck reacts strongly, so ask before making either part of the bit.",
-        "policyOverrides": {}
+        "policyOverrides": {},
+        "ladderPace": "normal"
       },
       "routine": {
         "weekly": [],
@@ -5265,7 +5286,8 @@
         },
         "preferences": "",
         "limitsNotes": "Simple version: face, hands, back, waist and legs are comfortable when we both want it; ask clearly before kissing or touching my chest, hips or intimate areas. Neck touching is not something I am ready for yet: you would have to earn that trust, and I would rather tell you directly than have you guess.",
-        "policyOverrides": {}
+        "policyOverrides": {},
+        "ladderPace": "fast"
       },
       "routine": {
         "weekly": [],

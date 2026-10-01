@@ -45,12 +45,14 @@ const deep=o=>typeof o==='string'?text(o):Array.isArray(o)?o.map(deep):o&&typeof
 
 export function reskin(campus){
  let p=prune(structuredClone(campus));
+ if(p.characterSheets)p.characterSheets=p.characterSheets.filter(s=>!DROP.includes(s.actorId)).map(s=>{const bio=BIO[s.actorId];if(bio){Object.assign(s.source.actor,bio);for(const [field,section,key] of [['age','identity','age'],['description','appearance','description'],['style','appearance','style'],['voice','personality','voice'],['goal','arc','goal'],['backstory','lore','backstory']])if(bio[field]!==undefined)s[section][key]=bio[field];}return s;});
  p.actors=p.actors.map(a=>BIO[a.id]?{...a,...BIO[a.id]}:a);
  p=deep(p);
  Object.assign(p,{id:`${campus.id}-trio`,title:`${campus.title}: Yuna, Haruka and Min-ji`});
  for(const a of p.actors)if(Object.values(RENAME).some(([id])=>id===a.id)){const dir=`assets/characters/${a.id}`;a.portrait=`${dir}/expressions/neutral.png`;a.poses=EXPRESSIONS.map(e=>({id:e,image:`${dir}/expressions/${e}.png`}));}
  // New art has no talk/date/kiss CGs yet; the night uses the generated scene.
  for(const f of p.firsts){if(f.rung==='night')f.cg=`assets/characters/${f.character}/scenes/${NIGHT_CG[f.character]}.png`;else delete f.cg;}
+ for(const s of p.characterSheets||[]){const a=p.actors.find(a=>a.id===s.actorId);if(Object.values(RENAME).some(([id])=>id===s.actorId)){for(const target of [s.appearance,s.source.actor]){target.portrait=a.portrait;target.poses=structuredClone(a.poses);}}for(const f of s.source.profiles.firsts||[]){if(f.rung==='night')f.cg=`assets/characters/${f.character}/scenes/${NIGHT_CG[f.character]}.png`;else delete f.cg;}}
  const bad=[];(function walk(o,path){if(typeof o==='string'){if(LEFTOVER.test(o))bad.push(`${path}: ${o.slice(0,120)}`);}else if(o&&typeof o==='object')for(const [k,v] of Object.entries(o)){if(LEFTOVER.test(k))bad.push(`${path}.${k} (key)`);walk(v,`${path}.${k}`);}})(p,'');
  if(bad.length)throw new Error(`old cast survives the reskin:\n${bad.join('\n')}`);
  return p;

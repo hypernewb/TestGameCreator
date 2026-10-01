@@ -17,17 +17,19 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ## Doing
 
-### T-022 Planner "wait until morning" ends the day
-  - model: gpt-6.1-sol (Codex)
-  - tags: [implementer, codex] · owner pick 2026-10-01
-
 ## Review
+
+## Done
 
 ### T-009a Full character sheet: schema + creator tabs (Suggest = T-009b later)
   - model: gpt-6.1-sol (Codex)
-  - tags: [implementer, codex] · rounds 2–3: reskin carries sheets, review fixes · awaits owner merge OK
+  - tags: [implementer, codex] · rounds 2–3: reskin carries sheets, review fixes · round 4: trio trait picks
+  - merged 2026-10-01
 
-## Done
+### T-022 Planner "wait until morning" ends the day
+  - model: gpt-6.1-sol (Codex)
+  - tags: [implementer, codex] · owner pick 2026-10-01
+  - merged 2026-10-01, npm test 863/863
 
 ### T-011 Day-planner mode (creator option: clock | planner)
   - model: gpt-6.1-sol (Codex)

@@ -1849,6 +1849,10 @@
       }
     }
   ],
+  "socialPacing": {
+    "flirt": { "mode": "cap", "dailyLimit": 3 },
+    "departure": { "enabled": true, "graceTurns": 2 }
+  },
   "actProfiles": [
     {
       "character": "jana",

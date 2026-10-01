@@ -19,3 +19,8 @@ export interface ArcTrack { character:string; traits:ArcTrait[]; drift:ArcDrift[
 export interface TraitChangedEvent { character:string; trait:string; delta:number; value:number }
 export interface StageReachedEvent { character:string; stage:string; name:string; text:string }
 export interface SobrietyPack { drinkItems:string[]; tipsyAt?:number; drunkAt?:number; soberPerDaypart?:number }
+
+export interface SocialPacing { flirt?:{mode:'off'|'cap';dailyLimit?:number}; departure?:{enabled:boolean;graceTurns:number} }
+export interface FlirtAllowance { day:number;count:number;cued:boolean }
+export interface FlirtDeparture { sceneId:string;destination:string|null;remaining:number;origin:string;lastTurn:string }
+export interface ActPricedEvent { capped?:boolean }

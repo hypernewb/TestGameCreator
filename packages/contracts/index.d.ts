@@ -33,3 +33,31 @@ export interface SocialPacing { flirt?:{mode:'off'|'cap';dailyLimit?:number}; de
 export interface FlirtAllowance { day:number;count:number;cued:boolean }
 export interface FlirtDeparture { sceneId:string;destination:string|null;remaining:number;origin:string;lastTurn:string }
 export interface ActPricedEvent { capped?:boolean }
+
+export type SheetTrait='warm'|'sporty'|'curious'|'homesick'|'stubborn'|'ambitious'|'composed'|'dry'|'exacting'|'guarded'|'mischievous'|'expressive'|'creative'|'flirtatious'|'rebellious'|'analytical'|'adventurous'|'practical'|'low_drama'|'extroverted'|'loyal'|'insecure'|'reserved'|'patient'|'spontaneous'|'romantic'|'competitive'|'generous';
+export type GiftCategory='romantic'|'cute'|'luxury'|'glamour'|'cozy'|'practical'|'nerdy'|'artsy'|'treats'|'edgy'|'vintage'|'novelty';
+export type SheetExperience='none'|'first_encounter'|'occasional'|'recurring'|'extensive';
+export type BodyRegion='face'|'lips'|'neck'|'arms_hands'|'chest'|'back'|'belly_waist'|'hips_butt'|'thighs_legs'|'intimate';
+export type BodyLimit='ok'|'ask_first'|'never';
+export type SheetCondition=({type:'always'}|{type:'flag';flag:string;value:boolean}|{type:'stat';stat:string;op:'eq'|'lt'|'lte'|'gt'|'gte';value:number}|{type:'stage';stage:string})&{actorId?:string};
+export type SheetEffect=({type:'note';text:string}|{type:'stat';stat:string;delta:number}|{type:'flag';flag:string;value:boolean}|{type:'limit';region:BodyRegion;limit:BodyLimit})&{actorId?:string};
+export interface SheetRule { id:string;event:string;enabled:boolean;condition:SheetCondition;effect:SheetEffect;notes?:string }
+export type SheetSocialLink={id:string;relation:string;notes:string}&({actorId:string;externalName:null}|{actorId:null;externalName:string});
+export interface SheetWeeklyStop { weekday:'Monday'|'Tuesday'|'Wednesday'|'Thursday'|'Friday'|'Saturday'|'Sunday';daypart:'Morning'|'Afternoon'|'Evening';location:string;skipHolidays?:boolean }
+export interface SheetException { id:string;startTick:number;endTick:number;location:string;notes?:string }
+export interface CharacterSheet {
+ actorId:string;
+ identity:{name:string;age:number|null;pronouns:string;occupation:string;year:string;birthday:string;workplace:string|null;home:string|null;haunts:string[];lifeNotes:string};
+ personality:{traits:SheetTrait[];notes:string;voice:string;examples:string[];fingerprint:string};
+ appearance:{description:string;style:string;portrait:string;poses:{id:string;image:string;[key:string]:unknown}[];notes:string};
+ tastes:{likes:string[];dislikes:string[];likedCategories:GiftCategory[];dislikedCategories:GiftCategory[];itemOverrides:{item:string;reaction:'loved'|'liked'|'neutral'|'disliked'|'hated';points?:number;[key:string]:unknown}[];notes:string};
+ dating:{history:string;experience:SheetExperience|null;body:Record<BodyRegion,{sensitivity:0|1|2|3|null;limit:BodyLimit|null}>;preferences:string;limitsNotes:string;policyOverrides:Record<string,unknown>};
+ routine:{weekly:SheetWeeklyStop[];exceptions:SheetException[];notes:string};
+ behavior:{rules:SheetRule[];notes:string;stages:Record<string,string>};
+ social:{links:SheetSocialLink[];notes:string};
+ arc:{goal:string;tracks:ArcTrack[];payoffs:Record<string,unknown>[];notes:string};
+ lore:{backstory:string;entries:Record<string,unknown>[];authorNotes:string};
+ source:{actor:Record<string,unknown>;profiles:Record<string,Record<string,unknown>[]>};
+ [key:string]:unknown;
+}
+export interface CharacterSheetPack { characterSheets?:CharacterSheet[] }

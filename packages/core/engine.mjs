@@ -1,4 +1,5 @@
 import {calendarFor,PERIODS} from '../../public/calendar.mjs';
+import {validateCharacterSheets} from './character-sheet.mjs';
 import {spokenLine} from '../../vendor/venus/sceneText.mjs';
 import {changeMoney} from '../modules/economy.mjs';
 import {changeStat} from '../modules/stats.mjs';
@@ -137,6 +138,7 @@ export function validatePack(pack, registry) {
     assert(Array.isArray(entries),`${kind}: expected array`); entries.forEach((e,i)=>{assert(safeKey(e.id),`${kind}[${i}].id: invalid`);assert(!seen.has(e.id),`${kind}[${i}].id: duplicate ${e.id}`); seen.add(e.id);assert(typeof e.name==='string',`${kind}[${i}].name: required`);});
   }
   const loc=new Set(pack.locations.map(x=>x.id)), actors=new Set(pack.actors.map(x=>x.id));
+  validateCharacterSheets(pack);
   const locationNames=new Map();for(const location of pack.locations){if(location.aliases!==undefined)assert(Array.isArray(location.aliases)&&location.aliases.length<=20&&location.aliases.every(alias=>typeof alias==='string'&&alias.trim()&&alias.length<=80),'location.aliases: expected up to 20 short names');for(const name of [location.id,location.name,...location.aliases||[]]){const key=name.trim().toLocaleLowerCase();assert(!locationNames.has(key)||locationNames.get(key)===location.id,`location name or alias is ambiguous: ${name}`);locationNames.set(key,location.id);}}
   assert(actors.has(pack.playerId),'playerId: missing actor');
   const safeAsset=x=>/^assets\/[a-zA-Z0-9/_-]+\.(svg|png|jpg|webp)$/.test(x)||/^scenario-media\/[a-f0-9-]{36}\.(png|jpg|webp)$/.test(x);

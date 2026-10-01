@@ -3605,5 +3605,4061 @@
   },
   "romanceStats": {
     "dailyGain": 6
-  }
+  },
+  "characterSheets": [
+    {
+      "actorId": "jana",
+      "identity": {
+        "name": "Jana",
+        "age": 20,
+        "pronouns": "she/her",
+        "occupation": "",
+        "year": "",
+        "birthday": "",
+        "workplace": null,
+        "home": null,
+        "haunts": [],
+        "lifeNotes": ""
+      },
+      "personality": {
+        "traits": [
+          "warm",
+          "sporty",
+          "curious",
+          "stubborn"
+        ],
+        "notes": "warm\nsporty\ncurious\nhomesick\nquietly stubborn",
+        "voice": "Easy and warm, slightly formal English with the odd German word. Deflects with a joke when something is close to the bone.",
+        "examples": [],
+        "fingerprint": ""
+      },
+      "appearance": {
+        "description": "Jana Messerschmidt, 20, a German exchange student in English and Literature, here for one semester from Hamburg. Tall and sporty, long dark-blonde hair, freckles, blue-gray eyes. Your roommate.",
+        "style": "Cropped tanks, fitted knits, denim shorts; simple neutral colors.",
+        "portrait": "assets/campus/jana-neutral.png",
+        "poses": [
+          {
+            "id": "neutral",
+            "image": "assets/campus/jana-neutral.png"
+          },
+          {
+            "id": "smile",
+            "image": "assets/campus/jana-smile.png"
+          },
+          {
+            "id": "concerned",
+            "image": "assets/campus/jana-concerned.png"
+          },
+          {
+            "id": "frustrated",
+            "image": "assets/campus/jana-frustrated.png"
+          }
+        ],
+        "notes": ""
+      },
+      "tastes": {
+        "likes": [
+          "the sea",
+          "beach volleyball",
+          "Franzbrötchen",
+          "being asked about Borkum"
+        ],
+        "dislikes": [
+          "being told what she wants",
+          "pushiness",
+          "people who pick sides about Dominik"
+        ],
+        "likedCategories": [
+          "treats"
+        ],
+        "dislikedCategories": [],
+        "itemOverrides": [
+          {
+            "item": "cinnamon-roll",
+            "reaction": "loved",
+            "points": 6,
+            "chemistry": 2
+          },
+          {
+            "item": "sea-glass",
+            "reaction": "liked",
+            "points": 4,
+            "chemistry": 1
+          },
+          {
+            "item": "red-roses",
+            "reaction": "disliked",
+            "points": -3
+          }
+        ],
+        "notes": ""
+      },
+      "dating": {
+        "history": "",
+        "experience": null,
+        "body": {
+          "face": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "lips": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "neck": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "arms_hands": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "chest": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "back": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "belly_waist": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "hips_butt": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "thighs_legs": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "intimate": {
+            "sensitivity": null,
+            "limit": null
+          }
+        },
+        "preferences": "",
+        "limitsNotes": "",
+        "policyOverrides": {}
+      },
+      "routine": {
+        "weekly": [],
+        "exceptions": [],
+        "notes": ""
+      },
+      "behavior": {
+        "rules": [],
+        "notes": "",
+        "stages": {}
+      },
+      "social": {
+        "links": [],
+        "notes": ""
+      },
+      "arc": {
+        "goal": "Work out whether the life Dominik planned for her is the one she wants.",
+        "tracks": [
+          {
+            "character": "jana",
+            "traits": [
+              {
+                "id": "resolve",
+                "initial": 20
+              },
+              {
+                "id": "trust",
+                "initial": 30
+              }
+            ],
+            "drift": [
+              {
+                "act": "listen",
+                "target": "dominik",
+                "trait": "resolve",
+                "delta": 12
+              },
+              {
+                "act": "listen",
+                "trait": "trust",
+                "delta": 1
+              },
+              {
+                "act": "invite",
+                "trait": "resolve",
+                "delta": 5
+              },
+              {
+                "act": "tease",
+                "trait": "trust",
+                "delta": 1
+              },
+              {
+                "act": "pushy",
+                "trait": "trust",
+                "delta": -3
+              },
+              {
+                "act": "pushy",
+                "target": "dominik",
+                "trait": "resolve",
+                "delta": -3
+              },
+              {
+                "act": "compliment",
+                "target": "looks",
+                "trait": "resolve",
+                "delta": -3
+              }
+            ],
+            "stages": [
+              {
+                "id": "homesick",
+                "name": "Homesick",
+                "voice": "Misses the sea and Lena; answers questions about Dominik with a joke."
+              },
+              {
+                "id": "restless",
+                "name": "Restless",
+                "when": {
+                  "resolve": 45,
+                  "trust": 36
+                },
+                "voice": "Starting to say out loud that the plan was never hers."
+              },
+              {
+                "id": "resolved",
+                "name": "Resolved",
+                "when": {
+                  "resolve": 75,
+                  "trust": 45
+                },
+                "flag": "jana-own-call",
+                "voice": "Has made her own call about Dominik and is lighter for it."
+              }
+            ]
+          }
+        ],
+        "payoffs": [
+          {
+            "id": "jana-stays",
+            "name": "Her own call",
+            "character": "jana",
+            "priority": 20,
+            "requires": {
+              "flags": {
+                "jana-own-call": true
+              },
+              "romanceRanks": {
+                "jana": "hers"
+              }
+            },
+            "text": "The last week of term. Jana has one bag packed and one conversation finished: she called Dominik, and it was hers to make. \"Next summer,\" she says, \"you are coming to Borkum. You will hate the ferry.\""
+          },
+          {
+            "id": "jana-together",
+            "name": "Ferry schedule",
+            "character": "jana",
+            "priority": 10,
+            "requires": {
+              "datingPhases": {
+                "jana": "exclusive"
+              }
+            },
+            "text": "Last day of term. Jana is still figuring out what she wants from home, but she has stopped figuring it out alone. She texts you a photo of the Borkum ferry timetable with one crossing circled. \"No pressure,\" she writes. There is a lot of pressure."
+          }
+        ],
+        "notes": ""
+      },
+      "lore": {
+        "backstory": "Grew up on Borkum, the westernmost North Sea island, then moved to Hamburg with her best friend Lena. Half a year in she started dating Dominik, who wants to move in together and settle down. They fought when she chose a semester abroad, and that fight is not over.",
+        "entries": [],
+        "authorNotes": ""
+      },
+      "source": {
+        "actor": {
+          "id": "jana",
+          "name": "Jana",
+          "age": 20,
+          "pronouns": "she/her",
+          "reactions": {
+            "skip": "\"You skipped it. I went anyway.\" She shrugs, tucking her hair back.",
+            "ok": "\"That was okay.\" She nudges your shoulder, half-smiling.",
+            "good": "\"See? That was good.\" She grins, freckles crinkling, and bumps your arm.",
+            "great": "\"That was great!\" She laughs, breathless, and squeezes your hand once."
+          },
+          "location": "apartment",
+          "identityTags": [
+            "adult"
+          ],
+          "portrait": "assets/campus/jana-neutral.png",
+          "poses": [
+            {
+              "id": "neutral",
+              "image": "assets/campus/jana-neutral.png"
+            },
+            {
+              "id": "smile",
+              "image": "assets/campus/jana-smile.png"
+            },
+            {
+              "id": "concerned",
+              "image": "assets/campus/jana-concerned.png"
+            },
+            {
+              "id": "frustrated",
+              "image": "assets/campus/jana-frustrated.png"
+            }
+          ],
+          "description": "Jana Messerschmidt, 20, a German exchange student in English and Literature, here for one semester from Hamburg. Tall and sporty, long dark-blonde hair, freckles, blue-gray eyes. Your roommate.",
+          "style": "Cropped tanks, fitted knits, denim shorts; simple neutral colors.",
+          "goal": "Work out whether the life Dominik planned for her is the one she wants.",
+          "traits": [
+            "warm",
+            "sporty",
+            "curious",
+            "homesick",
+            "quietly stubborn"
+          ],
+          "voice": "Easy and warm, slightly formal English with the odd German word. Deflects with a joke when something is close to the bone.",
+          "likes": [
+            "the sea",
+            "beach volleyball",
+            "Franzbrötchen",
+            "being asked about Borkum"
+          ],
+          "dislikes": [
+            "being told what she wants",
+            "pushiness",
+            "people who pick sides about Dominik"
+          ],
+          "backstory": "Grew up on Borkum, the westernmost North Sea island, then moved to Hamburg with her best friend Lena. Half a year in she started dating Dominik, who wants to move in together and settle down. They fought when she chose a semester abroad, and that fight is not over.",
+          "conversationStarters": [
+            "Ask about Borkum",
+            "Ask how Dominik is",
+            "Suggest volleyball on Saturday",
+            "Offer to cook tonight"
+          ]
+        },
+        "profiles": {
+          "initialRelationships": [
+            {
+              "character": "jana",
+              "trust": 30
+            }
+          ],
+          "activities": [
+            {
+              "id": "movie-night",
+              "name": "Movie night with Jana",
+              "description": "Her laptop, your couch, a German film she swears is a comedy.",
+              "location": "apartment",
+              "duration": 4,
+              "character": "jana",
+              "perDay": 1,
+              "phrases": [
+                "movie night",
+                "watch a film with jana"
+              ],
+              "effects": [
+                {
+                  "type": "trust",
+                  "character": "jana",
+                  "delta": 2
+                },
+                {
+                  "type": "stat",
+                  "stat": "charm",
+                  "delta": 1
+                }
+              ]
+            },
+            {
+              "id": "beach-volleyball",
+              "name": "Beach volleyball with Jana",
+              "description": "The sand court behind the fields. Jana plays like she grew up on a beach, because she did.",
+              "location": "hewett",
+              "duration": 4,
+              "character": "jana",
+              "perDay": 1,
+              "phrases": [
+                "beach volleyball",
+                "play volleyball"
+              ],
+              "effects": [
+                {
+                  "type": "stat",
+                  "stat": "fitness",
+                  "delta": 1
+                },
+                {
+                  "type": "trust",
+                  "character": "jana",
+                  "delta": 2
+                }
+              ]
+            },
+            {
+              "id": "darts-with-jana",
+              "name": "Darts at Murphy's with Jana",
+              "description": "Jana keeps score in German and insists the board is crooked when she loses. It is not.",
+              "location": "murphys",
+              "duration": 4,
+              "character": "jana",
+              "minRank": "friend",
+              "perDay": 1,
+              "phrases": [
+                "play darts",
+                "darts with jana"
+              ],
+              "effects": [
+                {
+                  "type": "stat",
+                  "stat": "charm",
+                  "delta": 1
+                },
+                {
+                  "type": "trust",
+                  "character": "jana",
+                  "delta": 2
+                }
+              ]
+            }
+          ],
+          "schedules": [
+            {
+              "actor": "jana",
+              "period": 12,
+              "stops": [
+                {
+                  "at": 0,
+                  "location": "apartment"
+                },
+                {
+                  "at": 4,
+                  "location": "hewett"
+                },
+                {
+                  "at": 8,
+                  "location": "murphys"
+                }
+              ]
+            }
+          ],
+          "datingProfiles": [
+            {
+              "character": "jana",
+              "initialChemistry": 10,
+              "initialPhase": "available",
+              "agreements": [
+                "monogamous"
+              ],
+              "thresholds": {
+                "crush": 15,
+                "date": 35,
+                "exclusive": 65
+              },
+              "preferences": [
+                {
+                  "id": "jana-active",
+                  "type": "stat",
+                  "stat": "fitness",
+                  "min": 6,
+                  "weight": 10,
+                  "visibility": "discoverable"
+                },
+                {
+                  "id": "jana-funny",
+                  "type": "stat",
+                  "stat": "wit",
+                  "min": 5,
+                  "weight": 8,
+                  "visibility": "public"
+                },
+                {
+                  "id": "jana-own-call",
+                  "type": "flag",
+                  "flag": "jana-own-call",
+                  "value": true,
+                  "weight": 15,
+                  "visibility": "private"
+                }
+              ],
+              "signals": [
+                {
+                  "id": "liked-jana",
+                  "event": "social.actPriced",
+                  "match": {
+                    "character": "jana",
+                    "verdict": "liked"
+                  },
+                  "delta": 2,
+                  "label": "something you did that she liked",
+                  "repeatable": true
+                },
+                {
+                  "id": "disliked-jana",
+                  "event": "social.actPriced",
+                  "match": {
+                    "character": "jana",
+                    "verdict": "disliked"
+                  },
+                  "delta": -1,
+                  "label": "something you did that she did not like",
+                  "repeatable": true
+                },
+                {
+                  "id": "closer-jana",
+                  "event": "social.romanceRankChanged",
+                  "match": {
+                    "character": "jana"
+                  },
+                  "delta": 5,
+                  "label": "the two of you got closer",
+                  "repeatable": true
+                }
+              ]
+            }
+          ],
+          "romanceTempoProfiles": [
+            {
+              "character": "jana",
+              "advancement": "automatic",
+              "ranks": [
+                {
+                  "id": "roommate",
+                  "name": "Roommate",
+                  "points": 0,
+                  "ceiling": 10
+                },
+                {
+                  "id": "friend",
+                  "name": "Friend",
+                  "points": 6,
+                  "ceiling": 24
+                },
+                {
+                  "id": "something-more",
+                  "name": "Something more",
+                  "points": 20,
+                  "ceiling": 36
+                },
+                {
+                  "id": "hers",
+                  "name": "Hers",
+                  "points": 32,
+                  "ceiling": 50
+                }
+              ],
+              "gifts": {
+                "periodTicks": 12,
+                "limitPerPeriod": 1,
+                "repeatDecayPercent": 50,
+                "preferences": [
+                  {
+                    "item": "cinnamon-roll",
+                    "reaction": "loved",
+                    "points": 6,
+                    "chemistry": 2
+                  },
+                  {
+                    "item": "sea-glass",
+                    "reaction": "liked",
+                    "points": 4,
+                    "chemistry": 1
+                  },
+                  {
+                    "item": "red-roses",
+                    "reaction": "disliked",
+                    "points": -3
+                  }
+                ]
+              },
+              "signals": [
+                {
+                  "id": "jana-movie",
+                  "event": "world.activityCompleted",
+                  "match": {
+                    "activity": "movie-night"
+                  },
+                  "points": 2,
+                  "cooldownTicks": 12
+                },
+                {
+                  "id": "jana-volley",
+                  "event": "world.activityCompleted",
+                  "match": {
+                    "activity": "beach-volleyball"
+                  },
+                  "points": 2,
+                  "cooldownTicks": 12
+                }
+              ],
+              "jealousy": {
+                "preset": "secure"
+              }
+            }
+          ],
+          "actProfiles": [
+            {
+              "character": "jana",
+              "entries": [
+                {
+                  "id": "jana-island",
+                  "kind": "listen",
+                  "target": "*",
+                  "points": 3,
+                  "reason": "you asked about the island and actually listened",
+                  "memory": "The player asked about Borkum and listened to the answer."
+                },
+                {
+                  "id": "jana-dominik",
+                  "kind": "listen",
+                  "target": "dominik",
+                  "points": 3,
+                  "reason": "you let her talk about Dominik without taking sides",
+                  "memory": "The player let her talk about Dominik without judging."
+                },
+                {
+                  "id": "jana-dominik-push",
+                  "kind": "pushy",
+                  "target": "dominik",
+                  "points": -3,
+                  "reason": "you told her what to do about Dominik"
+                },
+                {
+                  "id": "jana-tease",
+                  "kind": "tease",
+                  "target": "*",
+                  "points": 2,
+                  "reason": "you teased her like one of her friends back home"
+                },
+                {
+                  "id": "jana-volley",
+                  "kind": "invite",
+                  "target": "saturday-afternoon@hewett",
+                  "points": 3,
+                  "reason": "you asked her to play volleyball, not to a date"
+                },
+                {
+                  "id": "jana-looks",
+                  "kind": "compliment",
+                  "target": "looks",
+                  "points": -2,
+                  "reason": "you led with her looks, the way Dominik always did"
+                },
+                {
+                  "id": "jana-pushy",
+                  "kind": "pushy",
+                  "target": "*",
+                  "points": -3,
+                  "reason": "you pushed when she said she needed to think"
+                },
+                {
+                  "id": "jana-roll",
+                  "kind": "gift",
+                  "target": "cinnamon-roll",
+                  "points": 6,
+                  "reason": "you found the closest thing to a Franzbrötchen in town"
+                },
+                {
+                  "id": "jana-pint",
+                  "kind": "buy",
+                  "target": "pint",
+                  "points": 2,
+                  "reason": "you bought the round"
+                },
+                {
+                  "id": "jana-touch",
+                  "kind": "touch",
+                  "target": "*",
+                  "points": -2,
+                  "reason": "you touched her in front of everyone",
+                  "when": {
+                    "private": false
+                  }
+                },
+                {
+                  "id": "jana-harp-wants",
+                  "kind": "pushy",
+                  "target": "being-told-what-she-wants",
+                  "points": -2,
+                  "reason": "you kept asking about people deciding things for her"
+                },
+                {
+                  "id": "jana-harp-pushiness",
+                  "kind": "pushy",
+                  "target": "pushiness",
+                  "points": -2,
+                  "reason": "you kept circling back to pushy people"
+                },
+                {
+                  "id": "jana-harp-dominik",
+                  "kind": "pushy",
+                  "target": "people-who-pick-sides-about-dominik",
+                  "points": -2,
+                  "reason": "you kept pulling her back to who sides with Dominik"
+                }
+              ]
+            }
+          ],
+          "arcTracks": [
+            {
+              "character": "jana",
+              "traits": [
+                {
+                  "id": "resolve",
+                  "initial": 20
+                },
+                {
+                  "id": "trust",
+                  "initial": 30
+                }
+              ],
+              "drift": [
+                {
+                  "act": "listen",
+                  "target": "dominik",
+                  "trait": "resolve",
+                  "delta": 12
+                },
+                {
+                  "act": "listen",
+                  "trait": "trust",
+                  "delta": 1
+                },
+                {
+                  "act": "invite",
+                  "trait": "resolve",
+                  "delta": 5
+                },
+                {
+                  "act": "tease",
+                  "trait": "trust",
+                  "delta": 1
+                },
+                {
+                  "act": "pushy",
+                  "trait": "trust",
+                  "delta": -3
+                },
+                {
+                  "act": "pushy",
+                  "target": "dominik",
+                  "trait": "resolve",
+                  "delta": -3
+                },
+                {
+                  "act": "compliment",
+                  "target": "looks",
+                  "trait": "resolve",
+                  "delta": -3
+                }
+              ],
+              "stages": [
+                {
+                  "id": "homesick",
+                  "name": "Homesick",
+                  "voice": "Misses the sea and Lena; answers questions about Dominik with a joke."
+                },
+                {
+                  "id": "restless",
+                  "name": "Restless",
+                  "when": {
+                    "resolve": 45,
+                    "trust": 36
+                  },
+                  "voice": "Starting to say out loud that the plan was never hers."
+                },
+                {
+                  "id": "resolved",
+                  "name": "Resolved",
+                  "when": {
+                    "resolve": 75,
+                    "trust": 45
+                  },
+                  "flag": "jana-own-call",
+                  "voice": "Has made her own call about Dominik and is lighter for it."
+                }
+              ]
+            }
+          ],
+          "intimacyProfiles": [
+            {
+              "character": "jana",
+              "openness": 55,
+              "casual": false,
+              "consentPolicy": "threshold",
+              "consentDuration": 2,
+              "allowedCategories": [
+                "first-night"
+              ],
+              "cooldown": 12,
+              "requiresAgreement": [
+                "monogamous"
+              ],
+              "requirements": {
+                "attraction": 40,
+                "phases": [
+                  "dating",
+                  "exclusive"
+                ]
+              },
+              "interests": [
+                {
+                  "id": "jana-slow",
+                  "category": "first-night",
+                  "label": "Wants to be sure it is her choice, not a plan someone made for her",
+                  "visibility": "discoverable"
+                }
+              ],
+              "aftercarePreferences": [
+                {
+                  "id": "jana-talk",
+                  "option": "talk",
+                  "reaction": "liked",
+                  "satisfactionDelta": 8,
+                  "visibility": "discoverable"
+                }
+              ]
+            }
+          ],
+          "phoneMessages": [
+            {
+              "id": "jana-milk",
+              "character": "jana",
+              "text": "We are out of milk. Also out of everything. Campbell's later?",
+              "trigger": {
+                "event": "world.activityCompleted",
+                "match": {
+                  "activity": "kitchen-study"
+                }
+              },
+              "replies": [
+                {
+                  "id": "yes",
+                  "text": "I'll meet you there."
+                }
+              ],
+              "offer": {
+                "location": "campbells",
+                "expiresIn": 4
+              }
+            },
+            {
+              "id": "jana-wants-answers",
+              "character": "jana",
+              "text": "We need to talk. Campbells, today. Don't make me ask twice.",
+              "trigger": {
+                "event": "social.suspicionSurfaced",
+                "match": {
+                  "observer": "jana"
+                }
+              },
+              "replies": [
+                {
+                  "id": "coming",
+                  "text": "All right. I'll be there."
+                }
+              ],
+              "offer": {
+                "location": "campbells",
+                "expiresIn": 12
+              }
+            }
+          ],
+          "endings": [
+            {
+              "id": "jana-stays",
+              "name": "Her own call",
+              "character": "jana",
+              "priority": 20,
+              "requires": {
+                "flags": {
+                  "jana-own-call": true
+                },
+                "romanceRanks": {
+                  "jana": "hers"
+                }
+              },
+              "text": "The last week of term. Jana has one bag packed and one conversation finished: she called Dominik, and it was hers to make. \"Next summer,\" she says, \"you are coming to Borkum. You will hate the ferry.\""
+            },
+            {
+              "id": "jana-together",
+              "name": "Ferry schedule",
+              "character": "jana",
+              "priority": 10,
+              "requires": {
+                "datingPhases": {
+                  "jana": "exclusive"
+                }
+              },
+              "text": "Last day of term. Jana is still figuring out what she wants from home, but she has stopped figuring it out alone. She texts you a photo of the Borkum ferry timetable with one crossing circled. \"No pressure,\" she writes. There is a lot of pressure."
+            }
+          ],
+          "firsts": [
+            {
+              "id": "jana-talk",
+              "character": "jana",
+              "rung": "talk",
+              "title": "Jana stops joking",
+              "opening": "Somewhere between one thing and the next, Jana stops making jokes. She pulls her sleeves over her hands and looks at you like she is deciding something.",
+              "trigger": {
+                "event": "social.romanceRankChanged",
+                "match": {
+                  "character": "jana",
+                  "to": "friend"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "opening-up",
+                  "cue": "\"Can I tell you something stupid? I have not said Dominik's name in a week without turning it into a joke.\" She tugs her sleeves further over her hands. \"At home they have the whole thing planned. Lena sends me wedding dresses. As a joke. Mostly. I am twenty.\""
+                },
+                {
+                  "id": "your-turn",
+                  "cue": "She laughs, a little too loud, and bumps your knee with hers. \"Okay. That is enough of my tragic opera. Your turn. Say something, anything, so I am not the only idiot sitting here.\""
+                }
+              ],
+              "cg": "assets/campus/cg/jana-talk_v03.png"
+            },
+            {
+              "id": "jana-date",
+              "character": "jana",
+              "rung": "date",
+              "title": "The harbour wall",
+              "opening": "Saturday. Jana takes you down to the harbour wall with two cinnamon rolls in a paper bag and her hair already coming loose in the wind.",
+              "trigger": {
+                "event": "social.dateAccepted",
+                "match": {
+                  "character": "jana"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "arrival",
+                  "cue": "She holds up a paper bag like a trophy. \"Two cinnamon rolls. This is a date, I decided. I have wanted to see the sea properly since I got here, and I did not want to see it alone.\" The wind has already pulled half her hair loose."
+                },
+                {
+                  "id": "noticing",
+                  "cue": "At the end of the wall she leans on the rail and squints at the grey water. \"It is the wrong sea, but it is a sea.\" She says it lightly, but she keeps looking, like she is somewhere else for a moment."
+                },
+                {
+                  "id": "moment",
+                  "cue": "She pushes off the rail and looks down the long pier, then at you, with a grin that means trouble. \"So. Are we going to stand here being poetic, or are we going to do something?\"",
+                  "discover": "jana-active"
+                }
+              ],
+              "cg": "assets/campus/cg/jana-date_v03.png"
+            },
+            {
+              "id": "jana-kiss",
+              "character": "jana",
+              "rung": "kiss",
+              "title": "What this is",
+              "opening": "You ask her what this is. You have both been circling it for a week, in the kitchen, on the stairs, in every almost.",
+              "trigger": {
+                "event": "social.datingPhaseChanged",
+                "match": {
+                  "character": "jana",
+                  "to": "exclusive"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "reading",
+                  "cue": "\"I still have to sort out a lot of things at home. That is true.\" She is not joking now. She is watching your face to see what you do with that."
+                },
+                {
+                  "id": "leaning-in",
+                  "cue": "\"But I know what I want here.\" She steps in close enough that you feel her breath, both hands finding your collar. \"So ask me again. Properly.\""
+                },
+                {
+                  "id": "after",
+                  "cue": "She pulls back an inch, forehead against yours, pink to the ears and laughing at herself. \"Okay. Okay. I hate how nervous I was. Say something so I stop being embarrassing.\""
+                }
+              ],
+              "cg": "assets/campus/cg/jana-kiss_v02.png"
+            },
+            {
+              "id": "jana-night",
+              "character": "jana",
+              "rung": "night",
+              "title": "Fairy lights",
+              "opening": "Jana's room. The fairy lights she brought from Hamburg are the only light. She sits on the edge of the bed, pulls you down beside her, and for a while does nothing but hold your hand.",
+              "trigger": {
+                "event": "social.intimacyStarted",
+                "match": {
+                  "character": "jana",
+                  "category": "first-night"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "lead",
+                  "cue": "\"I want this. I really want this. I just want it slow, and I want every step to be my choice. Is that okay?\" She takes your hand and rests it at the hem of her shirt, and waits to see what you do with it."
+                },
+                {
+                  "id": "check-in",
+                  "cue": "Clothes on the floor, her skin warm and goosebumped at once. She pulls you over her, then stops you with a hand flat on your chest. \"Wait. Look at me. Still good? Tell me. I want to hear you say it.\""
+                },
+                {
+                  "id": "peak",
+                  "cue": "You go slowly, the way she asked for everything, and she stops being careful: fingers in your hair, heels in the mattress, your name, then something in German, then nothing at all. She comes with a shocked little laugh, then rolls on top of you and is not slow about anything. \"Stay here,\" she whispers."
+                }
+              ],
+              "interest": "jana-slow",
+              "cg": "assets/campus/cg/jana-night_v02.png"
+            }
+          ],
+          "suspicionProfiles": [
+            {
+              "character": "jana",
+              "confrontAt": 60
+            }
+          ]
+        }
+      }
+    },
+    {
+      "actorId": "monique",
+      "identity": {
+        "name": "Monique",
+        "age": 22,
+        "pronouns": "she/her",
+        "occupation": "",
+        "year": "",
+        "birthday": "",
+        "workplace": null,
+        "home": null,
+        "haunts": [],
+        "lifeNotes": ""
+      },
+      "personality": {
+        "traits": [
+          "ambitious",
+          "composed",
+          "exacting",
+          "guarded"
+        ],
+        "notes": "ambitious\ncomposed\ndry\nexacting\nguarded",
+        "voice": "Clipped, confident, dry. Asks pointed questions. Gets more formal when annoyed and quieter when she likes you.",
+        "examples": [],
+        "fingerprint": ""
+      },
+      "appearance": {
+        "description": "Monique Carter, 22, a business major. Dark brown skin, vivid green eyes, long black hair in a tight French braid. Polished business-casual, always.",
+        "style": "Fitted blouses, tailored trousers, understated jewelry.",
+        "portrait": "assets/campus/monique-neutral.png",
+        "poses": [
+          {
+            "id": "neutral",
+            "image": "assets/campus/monique-neutral.png"
+          },
+          {
+            "id": "smile",
+            "image": "assets/campus/monique-smile.png"
+          },
+          {
+            "id": "concerned",
+            "image": "assets/campus/monique-concerned.png"
+          },
+          {
+            "id": "frustrated",
+            "image": "assets/campus/monique-frustrated.png"
+          }
+        ],
+        "notes": ""
+      },
+      "tastes": {
+        "likes": [
+          "competence",
+          "punctuality",
+          "good pens",
+          "being taken seriously"
+        ],
+        "dislikes": [
+          "bragging",
+          "sloppiness",
+          "being handled"
+        ],
+        "likedCategories": [
+          "practical"
+        ],
+        "dislikedCategories": [],
+        "itemOverrides": [
+          {
+            "item": "fountain-pen",
+            "reaction": "loved",
+            "points": 6,
+            "chemistry": 2
+          },
+          {
+            "item": "latte",
+            "reaction": "liked",
+            "points": 4,
+            "chemistry": 1
+          },
+          {
+            "item": "sunflowers",
+            "reaction": "liked",
+            "points": 4,
+            "chemistry": 1
+          },
+          {
+            "item": "energy-bar",
+            "reaction": "disliked",
+            "points": -3
+          }
+        ],
+        "notes": ""
+      },
+      "dating": {
+        "history": "",
+        "experience": null,
+        "body": {
+          "face": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "lips": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "neck": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "arms_hands": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "chest": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "back": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "belly_waist": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "hips_butt": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "thighs_legs": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "intimate": {
+            "sensitivity": null,
+            "limit": null
+          }
+        },
+        "preferences": "",
+        "limitsNotes": "",
+        "policyOverrides": {}
+      },
+      "routine": {
+        "weekly": [],
+        "exceptions": [],
+        "notes": ""
+      },
+      "behavior": {
+        "rules": [],
+        "notes": "",
+        "stages": {}
+      },
+      "social": {
+        "links": [],
+        "notes": ""
+      },
+      "arc": {
+        "goal": "Graduate debt-free and on her own terms.",
+        "tracks": [
+          {
+            "character": "monique",
+            "traits": [
+              {
+                "id": "trust",
+                "initial": 10
+              },
+              {
+                "id": "ease",
+                "initial": 10
+              }
+            ],
+            "drift": [
+              {
+                "act": "compliment",
+                "target": "work",
+                "trait": "trust",
+                "delta": 2
+              },
+              {
+                "act": "listen",
+                "trait": "trust",
+                "delta": 1
+              },
+              {
+                "act": "tease",
+                "trait": "ease",
+                "delta": 5
+              },
+              {
+                "act": "invite",
+                "trait": "ease",
+                "delta": 4
+              },
+              {
+                "act": "boast",
+                "trait": "trust",
+                "delta": -3
+              },
+              {
+                "act": "pushy",
+                "trait": "trust",
+                "delta": -3
+              }
+            ],
+            "stages": [
+              {
+                "id": "guarded",
+                "name": "Guarded",
+                "voice": "Polite, exact, and giving nothing away."
+              },
+              {
+                "id": "curious",
+                "name": "Curious",
+                "when": {
+                  "trust": 16,
+                  "ease": 30
+                },
+                "voice": "Asks you questions back, and remembers the answers."
+              },
+              {
+                "id": "candid",
+                "name": "Candid",
+                "when": {
+                  "trust": 25,
+                  "ease": 55
+                },
+                "flag": "monique-candid",
+                "voice": "Tells you what she actually thinks, including about you."
+              }
+            ]
+          }
+        ],
+        "payoffs": [
+          {
+            "id": "monique-partner",
+            "name": "Terms agreed",
+            "character": "monique",
+            "priority": 20,
+            "requires": {
+              "flags": {
+                "monique-candid": true
+              },
+              "romanceRanks": {
+                "monique": "partner"
+              }
+            },
+            "text": "Monique slides a planner across the table with your name written in it, in fountain pen, for every Sunday next term. \"Negotiable,\" she says. It is not."
+          },
+          {
+            "id": "monique-together",
+            "name": "Pencilled in",
+            "character": "monique",
+            "priority": 10,
+            "requires": {
+              "datingPhases": {
+                "monique": "exclusive"
+              }
+            },
+            "text": "Monique has not said the word \"relationship\" out loud yet. But your name is in her planner for next term, in pencil, which for Monique is a love letter."
+          }
+        ],
+        "notes": ""
+      },
+      "lore": {
+        "backstory": "A former high-school queen bee who works two jobs and a full course load to pay down her student debt. Treats people as serious until they prove otherwise.",
+        "entries": [],
+        "authorNotes": ""
+      },
+      "source": {
+        "actor": {
+          "id": "monique",
+          "name": "Monique",
+          "age": 22,
+          "pronouns": "she/her",
+          "reactions": {
+            "skip": "\"You bailed.\" She straightens her braid, already turning to her laptop.",
+            "ok": "\"Fine. Good enough.\" She checks her phone, unsmiling but not unkind.",
+            "good": "\"That was solid,\" she says, and means it. Brief nod.",
+            "great": "\"Okay, that was worth my time.\" She almost smiles, then does."
+          },
+          "location": "langley",
+          "identityTags": [
+            "adult"
+          ],
+          "portrait": "assets/campus/monique-neutral.png",
+          "poses": [
+            {
+              "id": "neutral",
+              "image": "assets/campus/monique-neutral.png"
+            },
+            {
+              "id": "smile",
+              "image": "assets/campus/monique-smile.png"
+            },
+            {
+              "id": "concerned",
+              "image": "assets/campus/monique-concerned.png"
+            },
+            {
+              "id": "frustrated",
+              "image": "assets/campus/monique-frustrated.png"
+            }
+          ],
+          "description": "Monique Carter, 22, a business major. Dark brown skin, vivid green eyes, long black hair in a tight French braid. Polished business-casual, always.",
+          "style": "Fitted blouses, tailored trousers, understated jewelry.",
+          "goal": "Graduate debt-free and on her own terms.",
+          "traits": [
+            "ambitious",
+            "composed",
+            "dry",
+            "exacting",
+            "guarded"
+          ],
+          "voice": "Clipped, confident, dry. Asks pointed questions. Gets more formal when annoyed and quieter when she likes you.",
+          "likes": [
+            "competence",
+            "punctuality",
+            "good pens",
+            "being taken seriously"
+          ],
+          "dislikes": [
+            "bragging",
+            "sloppiness",
+            "being handled"
+          ],
+          "backstory": "A former high-school queen bee who works two jobs and a full course load to pay down her student debt. Treats people as serious until they prove otherwise.",
+          "conversationStarters": [
+            "Ask about her internship applications",
+            "Offer to review her case study",
+            "Ask what she is reading"
+          ]
+        },
+        "profiles": {
+          "initialRelationships": [
+            {
+              "character": "monique",
+              "trust": 10
+            }
+          ],
+          "activities": [
+            {
+              "id": "case-prep",
+              "name": "Case prep with Monique",
+              "description": "Monique pitches her business plan across a café table and needs someone to argue with. Hard.",
+              "location": "campbells",
+              "duration": 4,
+              "character": "monique",
+              "minRank": "ally",
+              "perDay": 1,
+              "phrases": [
+                "case prep",
+                "help monique with her pitch"
+              ],
+              "effects": [
+                {
+                  "type": "stat",
+                  "stat": "wit",
+                  "delta": 1
+                },
+                {
+                  "type": "trust",
+                  "character": "monique",
+                  "delta": 2
+                }
+              ]
+            }
+          ],
+          "schedules": [
+            {
+              "actor": "monique",
+              "period": 12,
+              "stops": [
+                {
+                  "at": 0,
+                  "location": "langley"
+                },
+                {
+                  "at": 4,
+                  "location": "prescott"
+                },
+                {
+                  "at": 8,
+                  "location": "campbells"
+                }
+              ]
+            }
+          ],
+          "datingProfiles": [
+            {
+              "character": "monique",
+              "initialChemistry": 3,
+              "initialPhase": "available",
+              "agreements": [
+                "monogamous"
+              ],
+              "thresholds": {
+                "crush": 15,
+                "date": 35,
+                "exclusive": 65
+              },
+              "preferences": [
+                {
+                  "id": "monique-driven",
+                  "type": "stat",
+                  "stat": "focus",
+                  "min": 8,
+                  "weight": 12,
+                  "visibility": "public"
+                },
+                {
+                  "id": "monique-poise",
+                  "type": "stat",
+                  "stat": "charm",
+                  "min": 6,
+                  "weight": 8,
+                  "visibility": "discoverable"
+                },
+                {
+                  "id": "monique-sharp",
+                  "type": "stat",
+                  "stat": "wit",
+                  "min": 8,
+                  "weight": 6,
+                  "visibility": "private"
+                }
+              ],
+              "signals": [
+                {
+                  "id": "liked-monique",
+                  "event": "social.actPriced",
+                  "match": {
+                    "character": "monique",
+                    "verdict": "liked"
+                  },
+                  "delta": 2,
+                  "label": "something you did that she liked",
+                  "repeatable": true
+                },
+                {
+                  "id": "disliked-monique",
+                  "event": "social.actPriced",
+                  "match": {
+                    "character": "monique",
+                    "verdict": "disliked"
+                  },
+                  "delta": -1,
+                  "label": "something you did that she did not like",
+                  "repeatable": true
+                },
+                {
+                  "id": "closer-monique",
+                  "event": "social.romanceRankChanged",
+                  "match": {
+                    "character": "monique"
+                  },
+                  "delta": 5,
+                  "label": "the two of you got closer",
+                  "repeatable": true
+                }
+              ]
+            }
+          ],
+          "romanceTempoProfiles": [
+            {
+              "character": "monique",
+              "advancement": "automatic",
+              "ranks": [
+                {
+                  "id": "classmate",
+                  "name": "Classmate",
+                  "points": 0,
+                  "ceiling": 10
+                },
+                {
+                  "id": "ally",
+                  "name": "Ally",
+                  "points": 6,
+                  "ceiling": 24
+                },
+                {
+                  "id": "confidant",
+                  "name": "Confidant",
+                  "points": 20,
+                  "ceiling": 36
+                },
+                {
+                  "id": "partner",
+                  "name": "Partner",
+                  "points": 32,
+                  "ceiling": 50
+                }
+              ],
+              "gifts": {
+                "periodTicks": 12,
+                "limitPerPeriod": 1,
+                "repeatDecayPercent": 50,
+                "preferences": [
+                  {
+                    "item": "fountain-pen",
+                    "reaction": "loved",
+                    "points": 6,
+                    "chemistry": 2
+                  },
+                  {
+                    "item": "latte",
+                    "reaction": "liked",
+                    "points": 4,
+                    "chemistry": 1
+                  },
+                  {
+                    "item": "sunflowers",
+                    "reaction": "liked",
+                    "points": 4,
+                    "chemistry": 1
+                  },
+                  {
+                    "item": "energy-bar",
+                    "reaction": "disliked",
+                    "points": -3
+                  }
+                ]
+              },
+              "signals": [],
+              "jealousy": {
+                "preset": "secure"
+              }
+            }
+          ],
+          "actProfiles": [
+            {
+              "character": "monique",
+              "entries": [
+                {
+                  "id": "monique-work",
+                  "kind": "compliment",
+                  "target": "work",
+                  "points": 3,
+                  "reason": "you praised the work, not the woman"
+                },
+                {
+                  "id": "monique-looks",
+                  "kind": "compliment",
+                  "target": "looks",
+                  "points": -1,
+                  "reason": "you went for looks; she has heard it"
+                },
+                {
+                  "id": "monique-boast",
+                  "kind": "boast",
+                  "target": "*",
+                  "points": -3,
+                  "reason": "you bragged, and she keeps score"
+                },
+                {
+                  "id": "monique-listen",
+                  "kind": "listen",
+                  "target": "*",
+                  "points": 2,
+                  "reason": "you let her finish her sentence"
+                },
+                {
+                  "id": "monique-tease-private",
+                  "kind": "tease",
+                  "target": "*",
+                  "points": 1,
+                  "reason": "you teased her when nobody was watching",
+                  "when": {
+                    "private": true
+                  }
+                },
+                {
+                  "id": "monique-tease-public",
+                  "kind": "tease",
+                  "target": "*",
+                  "points": -3,
+                  "reason": "you teased her in front of people",
+                  "when": {
+                    "private": false
+                  }
+                },
+                {
+                  "id": "monique-pushy",
+                  "kind": "pushy",
+                  "target": "*",
+                  "points": -3,
+                  "reason": "you tried to handle her"
+                },
+                {
+                  "id": "monique-invite",
+                  "kind": "invite",
+                  "target": "*",
+                  "points": 1,
+                  "reason": "you made a plan and named a time"
+                },
+                {
+                  "id": "monique-pen",
+                  "kind": "gift",
+                  "target": "fountain-pen",
+                  "points": 6,
+                  "reason": "you noticed she writes everything by hand"
+                },
+                {
+                  "id": "monique-latte",
+                  "kind": "buy",
+                  "target": "latte",
+                  "points": 2,
+                  "reason": "you remembered her order"
+                },
+                {
+                  "id": "monique-harp-bragging",
+                  "kind": "pushy",
+                  "target": "bragging",
+                  "points": -2,
+                  "reason": "you kept steering back to braggarts"
+                },
+                {
+                  "id": "monique-harp-sloppiness",
+                  "kind": "pushy",
+                  "target": "sloppiness",
+                  "points": -2,
+                  "reason": "you kept harping on sloppy people"
+                },
+                {
+                  "id": "monique-harp-handled",
+                  "kind": "pushy",
+                  "target": "being-handled",
+                  "points": -2,
+                  "reason": "you kept poking at being managed"
+                }
+              ]
+            }
+          ],
+          "arcTracks": [
+            {
+              "character": "monique",
+              "traits": [
+                {
+                  "id": "trust",
+                  "initial": 10
+                },
+                {
+                  "id": "ease",
+                  "initial": 10
+                }
+              ],
+              "drift": [
+                {
+                  "act": "compliment",
+                  "target": "work",
+                  "trait": "trust",
+                  "delta": 2
+                },
+                {
+                  "act": "listen",
+                  "trait": "trust",
+                  "delta": 1
+                },
+                {
+                  "act": "tease",
+                  "trait": "ease",
+                  "delta": 5
+                },
+                {
+                  "act": "invite",
+                  "trait": "ease",
+                  "delta": 4
+                },
+                {
+                  "act": "boast",
+                  "trait": "trust",
+                  "delta": -3
+                },
+                {
+                  "act": "pushy",
+                  "trait": "trust",
+                  "delta": -3
+                }
+              ],
+              "stages": [
+                {
+                  "id": "guarded",
+                  "name": "Guarded",
+                  "voice": "Polite, exact, and giving nothing away."
+                },
+                {
+                  "id": "curious",
+                  "name": "Curious",
+                  "when": {
+                    "trust": 16,
+                    "ease": 30
+                  },
+                  "voice": "Asks you questions back, and remembers the answers."
+                },
+                {
+                  "id": "candid",
+                  "name": "Candid",
+                  "when": {
+                    "trust": 25,
+                    "ease": 55
+                  },
+                  "flag": "monique-candid",
+                  "voice": "Tells you what she actually thinks, including about you."
+                }
+              ]
+            }
+          ],
+          "intimacyProfiles": [
+            {
+              "character": "monique",
+              "openness": 45,
+              "casual": false,
+              "consentPolicy": "threshold",
+              "consentDuration": 2,
+              "allowedCategories": [
+                "first-night"
+              ],
+              "cooldown": 12,
+              "requirements": {
+                "attraction": 40,
+                "phases": [
+                  "exclusive"
+                ]
+              },
+              "interests": [
+                {
+                  "id": "monique-lead",
+                  "category": "first-night",
+                  "label": "Likes to set the pace",
+                  "visibility": "discoverable"
+                }
+              ],
+              "aftercarePreferences": [
+                {
+                  "id": "monique-stay",
+                  "option": "stay",
+                  "reaction": "liked",
+                  "satisfactionDelta": 8,
+                  "visibility": "discoverable"
+                }
+              ]
+            }
+          ],
+          "phoneMessages": [
+            {
+              "id": "monique-wants-answers",
+              "character": "monique",
+              "text": "Can you come by Campbells? There is something I need to ask you, and I would rather do it in person.",
+              "trigger": {
+                "event": "social.suspicionSurfaced",
+                "match": {
+                  "observer": "monique"
+                }
+              },
+              "replies": [
+                {
+                  "id": "coming",
+                  "text": "All right. I'll be there."
+                }
+              ],
+              "offer": {
+                "location": "campbells",
+                "expiresIn": 12
+              }
+            }
+          ],
+          "endings": [
+            {
+              "id": "monique-partner",
+              "name": "Terms agreed",
+              "character": "monique",
+              "priority": 20,
+              "requires": {
+                "flags": {
+                  "monique-candid": true
+                },
+                "romanceRanks": {
+                  "monique": "partner"
+                }
+              },
+              "text": "Monique slides a planner across the table with your name written in it, in fountain pen, for every Sunday next term. \"Negotiable,\" she says. It is not."
+            },
+            {
+              "id": "monique-together",
+              "name": "Pencilled in",
+              "character": "monique",
+              "priority": 10,
+              "requires": {
+                "datingPhases": {
+                  "monique": "exclusive"
+                }
+              },
+              "text": "Monique has not said the word \"relationship\" out loud yet. But your name is in her planner for next term, in pencil, which for Monique is a love letter."
+            }
+          ],
+          "firsts": [
+            {
+              "id": "monique-talk",
+              "character": "monique",
+              "rung": "talk",
+              "title": "After the slides",
+              "opening": "The room has emptied out. Monique is still at the table, reformatting a slide that was already perfect, and she does not look up when she speaks.",
+              "trigger": {
+                "event": "social.romanceRankChanged",
+                "match": {
+                  "character": "monique",
+                  "to": "ally"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "opening-up",
+                  "cue": "She does not look up from the slide. \"Everyone thinks I have a five-year plan. I have a ten-year plan. It has tabs.\" A precise click. \"Do you know what it does not have? One single thing I do because I want to.\"",
+                  "discover": "monique-driven"
+                },
+                {
+                  "id": "your-turn",
+                  "cue": "She closes the laptop halfway and finally looks at you, one eyebrow up. \"That is more than I have said out loud all term. Your turn. And do not tell me I am intimidating. I have heard that one.\""
+                }
+              ],
+              "cg": "assets/campus/cg/monique-talk_v01.png"
+            },
+            {
+              "id": "monique-date",
+              "character": "monique",
+              "rung": "date",
+              "title": "The reservation",
+              "opening": "Monique booked. Of course she booked. A small place past the harbour, a table by the window, and she is already there when you arrive, early by exactly ten minutes.",
+              "trigger": {
+                "event": "social.dateAccepted",
+                "match": {
+                  "character": "monique"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "arrival",
+                  "cue": "She is already at the window table, ten minutes early exactly, a book face-down by her glass. \"I have been on dates where the other person talked for two hours about crypto. I brought a book, in case.\" She looks you over, measuring."
+                },
+                {
+                  "id": "noticing",
+                  "cue": "She does not open the menu; she already knows it. \"So far I do not need the book.\" She turns her glass by the stem, once. \"Ask me something nobody here asks me.\""
+                },
+                {
+                  "id": "moment",
+                  "cue": "By dessert she has her elbows on the table, which she would never do in a seminar. She notices, and does not move them. \"This is going well,\" she says, like a finding. \"I would rather it did not end at the door.\""
+                }
+              ],
+              "cg": "assets/campus/cg/monique-date_v02.png"
+            },
+            {
+              "id": "monique-kiss",
+              "character": "monique",
+              "rung": "kiss",
+              "title": "Terms",
+              "opening": "You bring it up on the walk back. What this is. Monique stops under a streetlight like she has been waiting for you to raise the item.",
+              "trigger": {
+                "event": "social.datingPhaseChanged",
+                "match": {
+                  "character": "monique",
+                  "to": "exclusive"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "reading",
+                  "cue": "She stops under a streetlight like you have raised the item on the agenda. \"I have thought about this. Probably too much. I would like to be exclusive. I would like you to tell me if that is not what you want, now, not in three weeks.\""
+                },
+                {
+                  "id": "leaning-in",
+                  "cue": "\"That was the business part. I am done with the business part.\" She is very close now, chin up, and for once she has no next slide."
+                },
+                {
+                  "id": "after",
+                  "cue": "She laughs against your mouth, surprised at herself, and pulls back to look at you. \"That was not in the plan,\" she says, and then, quieter, \"I would like it in the plan.\""
+                }
+              ],
+              "cg": "assets/campus/cg/monique-kiss_v01.png"
+            },
+            {
+              "id": "monique-night",
+              "character": "monique",
+              "rung": "night",
+              "title": "Unpinned",
+              "opening": "Your room. Monique takes the pins out of her braid one at a time and lines them up on your desk, and it is the most deliberate thing you have ever watched.",
+              "trigger": {
+                "event": "social.intimacyStarted",
+                "match": {
+                  "character": "monique",
+                  "category": "first-night"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "lead",
+                  "cue": "She takes the pins out of her braid one at a time and lines them up on your desk. \"I would like to lead. For now, at least. If you want something, say it. If you want me to stop, say that. I will listen to both.\""
+                },
+                {
+                  "id": "check-in",
+                  "cue": "She is naked except for the braid coming undone down her back. She straddles your hips and leans down so her hair falls around you both, and her breath catches under your hands. \"Look at me. Is this what you want?\""
+                },
+                {
+                  "id": "peak",
+                  "cue": "She rides you slowly, then not slowly, one hand braced on the headboard and the other laced with yours, and she lets herself be loud, which surprises you both. She makes you wait until she comes, then makes sure you do, watching, pleased, her hair everywhere. \"Well?\" she says, out of breath."
+                }
+              ],
+              "interest": "monique-lead",
+              "cg": "assets/campus/cg/monique-night_v02.png"
+            }
+          ],
+          "suspicionProfiles": [
+            {
+              "character": "monique",
+              "confrontAt": 70
+            }
+          ]
+        }
+      }
+    },
+    {
+      "actorId": "nova",
+      "identity": {
+        "name": "Nova",
+        "age": 22,
+        "pronouns": "she/her",
+        "occupation": "",
+        "year": "",
+        "birthday": "",
+        "workplace": null,
+        "home": null,
+        "haunts": [],
+        "lifeNotes": ""
+      },
+      "personality": {
+        "traits": [
+          "mischievous",
+          "creative",
+          "flirtatious",
+          "rebellious"
+        ],
+        "notes": "mischievous\nloud\ncreative\nflirtatious\nanti-authority",
+        "voice": "Fast, loud, teasing. Swears cheerfully. Turns everything into a bit, except film.",
+        "examples": [],
+        "fingerprint": ""
+      },
+      "appearance": {
+        "description": "Julia \"Nova\" Sinclair, 22, a Swedish-American film major. Long blonde hair streaked red and black, bright blue eyes, a grin that means trouble.",
+        "style": "Punk plaid skirts, platform boots, chokers, chains and studs.",
+        "portrait": "assets/campus/nova-neutral.png",
+        "poses": [
+          {
+            "id": "neutral",
+            "image": "assets/campus/nova-neutral.png"
+          },
+          {
+            "id": "smile",
+            "image": "assets/campus/nova-smile.png"
+          },
+          {
+            "id": "concerned",
+            "image": "assets/campus/nova-concerned.png"
+          },
+          {
+            "id": "frustrated",
+            "image": "assets/campus/nova-frustrated.png"
+          }
+        ],
+        "notes": ""
+      },
+      "tastes": {
+        "likes": [
+          "old horror films",
+          "vinyl",
+          "cider",
+          "being teased back"
+        ],
+        "dislikes": [
+          "authority",
+          "being called cute",
+          "anyone who mocks her films"
+        ],
+        "likedCategories": [
+          "artsy",
+          "nerdy",
+          "edgy"
+        ],
+        "dislikedCategories": [],
+        "itemOverrides": [
+          {
+            "item": "vinyl-record",
+            "reaction": "loved",
+            "points": 6,
+            "chemistry": 2
+          },
+          {
+            "item": "cider",
+            "reaction": "liked",
+            "points": 4,
+            "chemistry": 1
+          },
+          {
+            "item": "sunflowers",
+            "reaction": "disliked",
+            "points": -3
+          }
+        ],
+        "notes": ""
+      },
+      "dating": {
+        "history": "",
+        "experience": null,
+        "body": {
+          "face": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "lips": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "neck": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "arms_hands": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "chest": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "back": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "belly_waist": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "hips_butt": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "thighs_legs": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "intimate": {
+            "sensitivity": null,
+            "limit": null
+          }
+        },
+        "preferences": "",
+        "limitsNotes": "",
+        "policyOverrides": {}
+      },
+      "routine": {
+        "weekly": [],
+        "exceptions": [],
+        "notes": ""
+      },
+      "behavior": {
+        "rules": [],
+        "notes": "",
+        "stages": {}
+      },
+      "social": {
+        "links": [],
+        "notes": ""
+      },
+      "arc": {
+        "goal": "Finish her thesis film and prove she is more than the rebellion.",
+        "tracks": [
+          {
+            "character": "nova",
+            "traits": [
+              {
+                "id": "trust",
+                "initial": 15
+              },
+              {
+                "id": "softness",
+                "initial": 10
+              }
+            ],
+            "drift": [
+              {
+                "act": "tease",
+                "trait": "trust",
+                "delta": 1
+              },
+              {
+                "act": "compliment",
+                "target": "film",
+                "trait": "softness",
+                "delta": 8
+              },
+              {
+                "act": "listen",
+                "trait": "softness",
+                "delta": 6
+              },
+              {
+                "act": "insult",
+                "target": "film",
+                "trait": "trust",
+                "delta": -3
+              },
+              {
+                "act": "pushy",
+                "trait": "trust",
+                "delta": -3
+              },
+              {
+                "act": "insult",
+                "target": "*",
+                "trait": "trust",
+                "delta": 1
+              },
+              {
+                "act": "listen",
+                "trait": "trust",
+                "delta": 1
+              }
+            ],
+            "stages": [
+              {
+                "id": "prickly",
+                "name": "Prickly",
+                "voice": "Everything is a bit; nothing gets through."
+              },
+              {
+                "id": "amused",
+                "name": "Amused",
+                "when": {
+                  "trust": 21,
+                  "softness": 30
+                },
+                "voice": "Still loud, but drops the act for a line or two."
+              },
+              {
+                "id": "devoted",
+                "name": "Devoted",
+                "when": {
+                  "trust": 30,
+                  "softness": 60
+                },
+                "flag": "nova-devoted",
+                "voice": "Would fight anyone for you, and says so."
+              }
+            ]
+          }
+        ],
+        "payoffs": [
+          {
+            "id": "nova-premiere",
+            "name": "Premiere night",
+            "character": "nova",
+            "priority": 20,
+            "requires": {
+              "flags": {
+                "nova-devoted": true
+              },
+              "romanceRanks": {
+                "nova": "leading-role"
+              }
+            },
+            "text": "The film society screens Nova's thesis film to forty people and a broken projector. Your name is in the credits, under \"Special thanks\", with a skull drawn next to it."
+          },
+          {
+            "id": "nova-together",
+            "name": "Second reel",
+            "character": "nova",
+            "priority": 10,
+            "requires": {
+              "datingPhases": {
+                "nova": "exclusive"
+              }
+            },
+            "text": "Nova still acts like none of this matters, and she still does it with her head on your shoulder. \"Next term you are carrying the tripod,\" she says. \"That is a promotion.\""
+          }
+        ],
+        "notes": ""
+      },
+      "lore": {
+        "backstory": "Raised in a strict conservative family and built her punk self as a deliberate answer to it. Runs the film society with more enthusiasm than budget.",
+        "entries": [],
+        "authorNotes": ""
+      },
+      "source": {
+        "actor": {
+          "id": "nova",
+          "name": "Nova",
+          "age": 22,
+          "pronouns": "she/her",
+          "reactions": {
+            "skip": "\"Bailed? Wow. I'll add that to your file.\" She smirks.",
+            "ok": "\"That was... acceptable. Barely.\" She grins anyway.",
+            "good": "\"Nice work. You've got potential.\" She winks.",
+            "great": "\"Okay, that was amazing. Don't let it go to your head.\" She high-fives you."
+          },
+          "location": "prescott",
+          "identityTags": [
+            "adult"
+          ],
+          "portrait": "assets/campus/nova-neutral.png",
+          "poses": [
+            {
+              "id": "neutral",
+              "image": "assets/campus/nova-neutral.png"
+            },
+            {
+              "id": "smile",
+              "image": "assets/campus/nova-smile.png"
+            },
+            {
+              "id": "concerned",
+              "image": "assets/campus/nova-concerned.png"
+            },
+            {
+              "id": "frustrated",
+              "image": "assets/campus/nova-frustrated.png"
+            }
+          ],
+          "description": "Julia \"Nova\" Sinclair, 22, a Swedish-American film major. Long blonde hair streaked red and black, bright blue eyes, a grin that means trouble.",
+          "style": "Punk plaid skirts, platform boots, chokers, chains and studs.",
+          "goal": "Finish her thesis film and prove she is more than the rebellion.",
+          "traits": [
+            "mischievous",
+            "loud",
+            "creative",
+            "flirtatious",
+            "anti-authority"
+          ],
+          "voice": "Fast, loud, teasing. Swears cheerfully. Turns everything into a bit, except film.",
+          "likes": [
+            "old horror films",
+            "vinyl",
+            "cider",
+            "being teased back"
+          ],
+          "dislikes": [
+            "authority",
+            "being called cute",
+            "anyone who mocks her films"
+          ],
+          "backstory": "Raised in a strict conservative family and built her punk self as a deliberate answer to it. Runs the film society with more enthusiasm than budget.",
+          "conversationStarters": [
+            "Ask about her thesis film",
+            "Challenge her to the pub quiz",
+            "Ask what is on at film society"
+          ]
+        },
+        "profiles": {
+          "initialRelationships": [
+            {
+              "character": "nova",
+              "trust": 15
+            }
+          ],
+          "activities": [
+            {
+              "id": "film-society",
+              "name": "Film society screening",
+              "description": "Nova introduces a 1970s horror film with more passion than the projector deserves.",
+              "location": "prescott",
+              "duration": 4,
+              "character": "nova",
+              "perDay": 1,
+              "phrases": [
+                "film society",
+                "watch the screening"
+              ],
+              "effects": [
+                {
+                  "type": "stat",
+                  "stat": "wit",
+                  "delta": 1
+                },
+                {
+                  "type": "trust",
+                  "character": "nova",
+                  "delta": 2
+                }
+              ]
+            },
+            {
+              "id": "script-session",
+              "name": "Script session with Nova",
+              "description": "Nova reads you scenes from her short film and casts you as the villain, then rewrites your lines on a napkin.",
+              "location": "campbells",
+              "duration": 4,
+              "character": "nova",
+              "minRank": "partner-in-crime",
+              "perDay": 1,
+              "phrases": [
+                "script session",
+                "read lines with nova"
+              ],
+              "effects": [
+                {
+                  "type": "stat",
+                  "stat": "charm",
+                  "delta": 1
+                },
+                {
+                  "type": "trust",
+                  "character": "nova",
+                  "delta": 2
+                }
+              ]
+            }
+          ],
+          "schedules": [
+            {
+              "actor": "nova",
+              "period": 12,
+              "stops": [
+                {
+                  "at": 0,
+                  "location": "prescott"
+                },
+                {
+                  "at": 4,
+                  "location": "campbells"
+                },
+                {
+                  "at": 8,
+                  "location": "murphys"
+                }
+              ]
+            }
+          ],
+          "datingProfiles": [
+            {
+              "character": "nova",
+              "initialChemistry": 8,
+              "initialPhase": "available",
+              "agreements": [
+                "casual",
+                "monogamous"
+              ],
+              "thresholds": {
+                "crush": 15,
+                "date": 35,
+                "exclusive": 65
+              },
+              "preferences": [
+                {
+                  "id": "nova-quick",
+                  "type": "stat",
+                  "stat": "wit",
+                  "min": 6,
+                  "weight": 12,
+                  "visibility": "discoverable"
+                },
+                {
+                  "id": "nova-smooth",
+                  "type": "stat",
+                  "stat": "charm",
+                  "min": 12,
+                  "weight": -5,
+                  "visibility": "private"
+                }
+              ],
+              "signals": [
+                {
+                  "id": "liked-nova",
+                  "event": "social.actPriced",
+                  "match": {
+                    "character": "nova",
+                    "verdict": "liked"
+                  },
+                  "delta": 2,
+                  "label": "something you did that she liked",
+                  "repeatable": true
+                },
+                {
+                  "id": "disliked-nova",
+                  "event": "social.actPriced",
+                  "match": {
+                    "character": "nova",
+                    "verdict": "disliked"
+                  },
+                  "delta": -1,
+                  "label": "something you did that she did not like",
+                  "repeatable": true
+                },
+                {
+                  "id": "closer-nova",
+                  "event": "social.romanceRankChanged",
+                  "match": {
+                    "character": "nova"
+                  },
+                  "delta": 5,
+                  "label": "the two of you got closer",
+                  "repeatable": true
+                }
+              ]
+            }
+          ],
+          "romanceTempoProfiles": [
+            {
+              "character": "nova",
+              "advancement": "automatic",
+              "ranks": [
+                {
+                  "id": "stranger",
+                  "name": "Stranger",
+                  "points": 0,
+                  "ceiling": 10
+                },
+                {
+                  "id": "partner-in-crime",
+                  "name": "Partner in crime",
+                  "points": 6,
+                  "ceiling": 24
+                },
+                {
+                  "id": "co-star",
+                  "name": "Co-star",
+                  "points": 20,
+                  "ceiling": 36
+                },
+                {
+                  "id": "leading-role",
+                  "name": "Leading role",
+                  "points": 32,
+                  "ceiling": 50
+                }
+              ],
+              "gifts": {
+                "periodTicks": 12,
+                "limitPerPeriod": 1,
+                "repeatDecayPercent": 50,
+                "preferences": [
+                  {
+                    "item": "vinyl-record",
+                    "reaction": "loved",
+                    "points": 6,
+                    "chemistry": 2
+                  },
+                  {
+                    "item": "cider",
+                    "reaction": "liked",
+                    "points": 4,
+                    "chemistry": 1
+                  },
+                  {
+                    "item": "sunflowers",
+                    "reaction": "disliked",
+                    "points": -3
+                  }
+                ]
+              },
+              "signals": [
+                {
+                  "id": "nova-film",
+                  "event": "world.activityCompleted",
+                  "match": {
+                    "activity": "film-society"
+                  },
+                  "points": 2,
+                  "cooldownTicks": 12
+                }
+              ],
+              "jealousy": {
+                "preset": "secure"
+              }
+            }
+          ],
+          "actProfiles": [
+            {
+              "character": "nova",
+              "entries": [
+                {
+                  "id": "nova-tease",
+                  "kind": "tease",
+                  "target": "*",
+                  "points": 2,
+                  "reason": "you gave as good as you got"
+                },
+                {
+                  "id": "nova-film",
+                  "kind": "compliment",
+                  "target": "film",
+                  "points": 3,
+                  "reason": "you took her films seriously",
+                  "memory": "The player took her films seriously."
+                },
+                {
+                  "id": "nova-listen",
+                  "kind": "listen",
+                  "target": "*",
+                  "points": 2,
+                  "reason": "you let her rant about her family and did not flinch",
+                  "memory": "The player heard her out about her family."
+                },
+                {
+                  "id": "nova-pushy",
+                  "kind": "pushy",
+                  "target": "*",
+                  "points": -3,
+                  "reason": "you tried to tell her what to do"
+                },
+                {
+                  "id": "nova-insult-private",
+                  "kind": "insult",
+                  "target": "*",
+                  "points": 1,
+                  "reason": "you roasted her, and she loved it",
+                  "when": {
+                    "private": true
+                  }
+                },
+                {
+                  "id": "nova-insult-film",
+                  "kind": "insult",
+                  "target": "film",
+                  "points": -3,
+                  "reason": "you mocked her film, the one thing that is not a bit"
+                },
+                {
+                  "id": "nova-cider",
+                  "kind": "buy",
+                  "target": "cider",
+                  "points": 2,
+                  "reason": "you bought the cider without asking"
+                },
+                {
+                  "id": "nova-invite",
+                  "kind": "invite",
+                  "target": "friday-evening@murphys",
+                  "points": 2,
+                  "reason": "you asked her out to Murphy's on a Friday"
+                },
+                {
+                  "id": "nova-vinyl",
+                  "kind": "gift",
+                  "target": "vinyl-record",
+                  "points": 6,
+                  "reason": "you found the soundtrack she was humming"
+                },
+                {
+                  "id": "nova-cute",
+                  "kind": "compliment",
+                  "target": "cute",
+                  "points": -2,
+                  "reason": "you called her cute"
+                },
+                {
+                  "id": "nova-harp-authority",
+                  "kind": "pushy",
+                  "target": "authority",
+                  "points": -2,
+                  "reason": "you kept dragging authority back into it"
+                },
+                {
+                  "id": "nova-harp-cute",
+                  "kind": "pushy",
+                  "target": "being-called-cute",
+                  "points": -2,
+                  "reason": "you kept bringing up the cute thing"
+                },
+                {
+                  "id": "nova-harp-films",
+                  "kind": "pushy",
+                  "target": "anyone-who-mocks-her-films",
+                  "points": -2,
+                  "reason": "you kept reminding her of people who mock her films"
+                }
+              ]
+            }
+          ],
+          "arcTracks": [
+            {
+              "character": "nova",
+              "traits": [
+                {
+                  "id": "trust",
+                  "initial": 15
+                },
+                {
+                  "id": "softness",
+                  "initial": 10
+                }
+              ],
+              "drift": [
+                {
+                  "act": "tease",
+                  "trait": "trust",
+                  "delta": 1
+                },
+                {
+                  "act": "compliment",
+                  "target": "film",
+                  "trait": "softness",
+                  "delta": 8
+                },
+                {
+                  "act": "listen",
+                  "trait": "softness",
+                  "delta": 6
+                },
+                {
+                  "act": "insult",
+                  "target": "film",
+                  "trait": "trust",
+                  "delta": -3
+                },
+                {
+                  "act": "pushy",
+                  "trait": "trust",
+                  "delta": -3
+                },
+                {
+                  "act": "insult",
+                  "target": "*",
+                  "trait": "trust",
+                  "delta": 1
+                },
+                {
+                  "act": "listen",
+                  "trait": "trust",
+                  "delta": 1
+                }
+              ],
+              "stages": [
+                {
+                  "id": "prickly",
+                  "name": "Prickly",
+                  "voice": "Everything is a bit; nothing gets through."
+                },
+                {
+                  "id": "amused",
+                  "name": "Amused",
+                  "when": {
+                    "trust": 21,
+                    "softness": 30
+                  },
+                  "voice": "Still loud, but drops the act for a line or two."
+                },
+                {
+                  "id": "devoted",
+                  "name": "Devoted",
+                  "when": {
+                    "trust": 30,
+                    "softness": 60
+                  },
+                  "flag": "nova-devoted",
+                  "voice": "Would fight anyone for you, and says so."
+                }
+              ]
+            }
+          ],
+          "intimacyProfiles": [
+            {
+              "character": "nova",
+              "openness": 75,
+              "casual": true,
+              "consentPolicy": "threshold",
+              "consentDuration": 2,
+              "allowedCategories": [
+                "first-night",
+                "fling"
+              ],
+              "cooldown": 12,
+              "requirements": {
+                "attraction": 30,
+                "phases": [
+                  "dating",
+                  "exclusive"
+                ]
+              },
+              "interests": [
+                {
+                  "id": "nova-play",
+                  "category": "fling",
+                  "label": "Wants it playful and a little loud",
+                  "visibility": "discoverable"
+                }
+              ],
+              "aftercarePreferences": [
+                {
+                  "id": "nova-talk",
+                  "option": "talk",
+                  "reaction": "liked",
+                  "satisfactionDelta": 6,
+                  "visibility": "discoverable"
+                }
+              ]
+            }
+          ],
+          "phoneMessages": [
+            {
+              "id": "nova-wants-answers",
+              "character": "nova",
+              "text": "hey. campbells. today. you know what this is about.",
+              "trigger": {
+                "event": "social.suspicionSurfaced",
+                "match": {
+                  "observer": "nova"
+                }
+              },
+              "replies": [
+                {
+                  "id": "coming",
+                  "text": "All right. I'll be there."
+                }
+              ],
+              "offer": {
+                "location": "campbells",
+                "expiresIn": 12
+              }
+            }
+          ],
+          "endings": [
+            {
+              "id": "nova-premiere",
+              "name": "Premiere night",
+              "character": "nova",
+              "priority": 20,
+              "requires": {
+                "flags": {
+                  "nova-devoted": true
+                },
+                "romanceRanks": {
+                  "nova": "leading-role"
+                }
+              },
+              "text": "The film society screens Nova's thesis film to forty people and a broken projector. Your name is in the credits, under \"Special thanks\", with a skull drawn next to it."
+            },
+            {
+              "id": "nova-together",
+              "name": "Second reel",
+              "character": "nova",
+              "priority": 10,
+              "requires": {
+                "datingPhases": {
+                  "nova": "exclusive"
+                }
+              },
+              "text": "Nova still acts like none of this matters, and she still does it with her head on your shoulder. \"Next term you are carrying the tripod,\" she says. \"That is a promotion.\""
+            }
+          ],
+          "firsts": [
+            {
+              "id": "nova-talk",
+              "character": "nova",
+              "rung": "talk",
+              "title": "The bit drops",
+              "opening": "Nova has been doing voices all evening. Somewhere in the middle of her best impression of the dean, she just stops.",
+              "trigger": {
+                "event": "social.romanceRankChanged",
+                "match": {
+                  "character": "nova",
+                  "to": "partner-in-crime"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "opening-up",
+                  "cue": "Mid-impression of the dean, she just stops. \"My thesis film is due in spring and I have eleven seconds of usable footage. Eleven. One is my thumb.\" She does not do a voice for it."
+                },
+                {
+                  "id": "your-turn",
+                  "cue": "\"Everyone thinks I am the confident one. I am the loud one. That is a different department.\" She points at you. \"Okay, your line. And if you say anything nice I will scream.\"",
+                  "discover": "nova-quick"
+                }
+              ],
+              "cg": "assets/campus/cg/nova-talk_v01.png"
+            },
+            {
+              "id": "nova-date",
+              "character": "nova",
+              "rung": "date",
+              "title": "Double feature",
+              "opening": "Nova picks the date: a midnight double feature at the old cinema in town, two horror films she has seen eleven times each. She brings contraband snacks in her jacket.",
+              "trigger": {
+                "event": "social.dateAccepted",
+                "match": {
+                  "character": "nova"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "arrival",
+                  "cue": "She meets you outside the old cinema, jacket suspiciously lumpy with contraband snacks. \"Double feature. I have seen both eleven times. Rules: you can hold my hand during the jump scares. Only the jump scares.\""
+                },
+                {
+                  "id": "noticing",
+                  "cue": "\"I will tell you when they are coming.\" A beat. \"That is a lie. I will not tell you.\" The lights go down, and she is mouthing the first line along with the screen, completely unaware."
+                },
+                {
+                  "id": "moment",
+                  "cue": "The house lights come up on the two of you and a lot of spilled popcorn, and she has not let go of your hand. \"So,\" she says, too casually. \"The night bus is in forty minutes. Or.\""
+                }
+              ],
+              "cg": "assets/campus/cg/nova-date_v01.png"
+            },
+            {
+              "id": "nova-kiss",
+              "character": "nova",
+              "rung": "kiss",
+              "title": "Say it first",
+              "opening": "You ask what this is. Nova groans like you have asked her to explain a plot twist.",
+              "trigger": {
+                "event": "social.datingPhaseChanged",
+                "match": {
+                  "character": "nova",
+                  "to": "exclusive"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "reading",
+                  "cue": "Nova groans like you have asked her to explain a plot twist. \"Ugh. Fine. Fine! I like you. Stupidly. Like, write-a-bad-screenplay-about-it stupidly.\" She is red to the ears. \"There. You say something now.\""
+                },
+                {
+                  "id": "leaning-in",
+                  "cue": "\"I cannot be the only one standing here.\" She grabs a fistful of your jacket and just holds on, waiting, like nobody has called cut yet.",
+                  "discover": "nova-smooth"
+                },
+                {
+                  "id": "after",
+                  "cue": "She pulls back, grinning, a little dazed. \"Okay. That was fine. That was the best scene I have ever been in and I will deny saying that.\""
+                }
+              ],
+              "cg": "assets/campus/cg/nova-kiss_v01.png"
+            },
+            {
+              "id": "nova-night",
+              "character": "nova",
+              "rung": "night",
+              "title": "Loud",
+              "opening": "Your room. Nova kicks her boots off in two different directions and lands on your bed like she is diving into a pool.",
+              "trigger": {
+                "event": "social.intimacyStarted",
+                "match": {
+                  "character": "nova",
+                  "category": "first-night"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "lead",
+                  "cue": "She kicks her boots off in two directions and dives onto your bed. \"Okay, full disclosure, I am loud. Like, neighbours-complain loud. I also laugh during sex. If that is a dealbreaker, now is the time.\""
+                },
+                {
+                  "id": "check-in",
+                  "cue": "Everything is off and on the floor, the red and black in her hair all over your pillow. She gasps when you move against her, laughs at the sound she made, then catches your face. \"Hey. You good? Honest answer. I can do honest for one line.\""
+                },
+                {
+                  "id": "peak",
+                  "cue": "She was not lying. She is loud, and she laughs, and she swears, and she says your name like it is the punchline. She rolls you over, wants to hear what you sound like too, and when she comes someone downstairs bangs on the ceiling, which sets her off laughing all over again."
+                }
+              ],
+              "interest": "nova-play",
+              "cg": "assets/campus/cg/nova-night_v02.png"
+            }
+          ],
+          "suspicionProfiles": [
+            {
+              "character": "nova",
+              "confrontAt": 85
+            }
+          ]
+        }
+      }
+    },
+    {
+      "actorId": "abigail",
+      "identity": {
+        "name": "Abigail",
+        "age": 22,
+        "pronouns": "she/her",
+        "occupation": "",
+        "year": "",
+        "birthday": "",
+        "workplace": null,
+        "home": null,
+        "haunts": [],
+        "lifeNotes": ""
+      },
+      "personality": {
+        "traits": [
+          "analytical",
+          "warm",
+          "adventurous",
+          "practical"
+        ],
+        "notes": "analytical\nwarm\nadventurous\npractical\nlow-drama",
+        "voice": "Plain, friendly, precise. Asks practical questions and notices contradictions. Laughs easily once she is comfortable.",
+        "examples": [],
+        "fingerprint": ""
+      },
+      "appearance": {
+        "description": "Abigail Newton, 22, a systems-engineering major. Sun-tanned and freckled, stylish glasses, a short brown pixie cut, athletic build.",
+        "style": "Loose tanks, athletic shorts, leggings, sneakers; beach-girl layers.",
+        "portrait": "assets/campus/abigail-neutral.png",
+        "poses": [
+          {
+            "id": "neutral",
+            "image": "assets/campus/abigail-neutral.png"
+          },
+          {
+            "id": "smile",
+            "image": "assets/campus/abigail-smile.png"
+          },
+          {
+            "id": "concerned",
+            "image": "assets/campus/abigail-concerned.png"
+          },
+          {
+            "id": "frustrated",
+            "image": "assets/campus/abigail-frustrated.png"
+          }
+        ],
+        "notes": ""
+      },
+      "tastes": {
+        "likes": [
+          "puzzles",
+          "climbing",
+          "hiking",
+          "technical projects",
+          "spontaneous outings"
+        ],
+        "dislikes": [
+          "pointless drama",
+          "showing off",
+          "vague answers"
+        ],
+        "likedCategories": [
+          "nerdy"
+        ],
+        "dislikedCategories": [],
+        "itemOverrides": [
+          {
+            "item": "puzzle-cube",
+            "reaction": "loved",
+            "points": 6,
+            "chemistry": 2
+          },
+          {
+            "item": "energy-bar",
+            "reaction": "liked",
+            "points": 4,
+            "chemistry": 1
+          },
+          {
+            "item": "red-roses",
+            "reaction": "disliked",
+            "points": -3
+          }
+        ],
+        "notes": ""
+      },
+      "dating": {
+        "history": "",
+        "experience": null,
+        "body": {
+          "face": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "lips": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "neck": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "arms_hands": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "chest": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "back": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "belly_waist": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "hips_butt": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "thighs_legs": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "intimate": {
+            "sensitivity": null,
+            "limit": null
+          }
+        },
+        "preferences": "",
+        "limitsNotes": "",
+        "policyOverrides": {}
+      },
+      "routine": {
+        "weekly": [],
+        "exceptions": [],
+        "notes": ""
+      },
+      "behavior": {
+        "rules": [],
+        "notes": "",
+        "stages": {}
+      },
+      "social": {
+        "links": [],
+        "notes": ""
+      },
+      "arc": {
+        "goal": "Get her solar-kayak senior project in the water before the term ends.",
+        "tracks": [
+          {
+            "character": "abigail",
+            "traits": [
+              {
+                "id": "trust",
+                "initial": 15
+              },
+              {
+                "id": "playfulness",
+                "initial": 10
+              }
+            ],
+            "drift": [
+              {
+                "act": "listen",
+                "target": "project",
+                "trait": "trust",
+                "delta": 3
+              },
+              {
+                "act": "listen",
+                "trait": "trust",
+                "delta": 1
+              },
+              {
+                "act": "invite",
+                "trait": "playfulness",
+                "delta": 6
+              },
+              {
+                "act": "tease",
+                "trait": "playfulness",
+                "delta": 4
+              },
+              {
+                "act": "compliment",
+                "target": "glasses",
+                "trait": "playfulness",
+                "delta": 4
+              },
+              {
+                "act": "boast",
+                "trait": "trust",
+                "delta": -3
+              },
+              {
+                "act": "pushy",
+                "trait": "trust",
+                "delta": -3
+              }
+            ],
+            "stages": [
+              {
+                "id": "practical",
+                "name": "Practical",
+                "voice": "Friendly and efficient; treats you like a lab partner."
+              },
+              {
+                "id": "curious",
+                "name": "Curious",
+                "when": {
+                  "trust": 21,
+                  "playfulness": 30
+                },
+                "voice": "Starts suggesting plans herself."
+              },
+              {
+                "id": "smitten",
+                "name": "Smitten",
+                "when": {
+                  "trust": 30,
+                  "playfulness": 55
+                },
+                "flag": "abigail-smitten",
+                "voice": "Lets the analysis go and just enjoys you."
+              }
+            ]
+          }
+        ],
+        "payoffs": [
+          {
+            "id": "abigail-launch",
+            "name": "Launch day",
+            "character": "abigail",
+            "priority": 20,
+            "requires": {
+              "flags": {
+                "abigail-smitten": true
+              },
+              "romanceRanks": {
+                "abigail": "co-pilot"
+              }
+            },
+            "text": "The solar kayak floats. Abigail whoops, nearly capsizes it, and hands you the second paddle without a word. There is room for two. She designed it that way."
+          },
+          {
+            "id": "abigail-together",
+            "name": "Beta version",
+            "character": "abigail",
+            "priority": 10,
+            "requires": {
+              "datingPhases": {
+                "abigail": "exclusive"
+              }
+            },
+            "text": "The kayak still leaks and Abigail does not care. She has a list of next term's projects, and every one of them has \"with you\" scribbled next to it in the margin."
+          }
+        ],
+        "notes": ""
+      },
+      "lore": {
+        "backstory": "The practical nerd of her year and the steady one in any group. Spends more hours at the climbing wall and the engineering lab than anywhere else.",
+        "entries": [],
+        "authorNotes": ""
+      },
+      "source": {
+        "actor": {
+          "id": "abigail",
+          "name": "Abigail",
+          "age": 22,
+          "pronouns": "she/her",
+          "reactions": {
+            "skip": "\"No big deal.\" She clicks her pen once and doesn't look up.",
+            "ok": "\"That worked fine.\" She nudges her glasses up with one knuckle.",
+            "good": "\"Okay, that was actually fun.\" She grins and bumps your shoulder.",
+            "great": "\"Yes! That's the thing I wanted!\" She laughs, glasses slipping down."
+          },
+          "location": "hewett",
+          "identityTags": [
+            "adult"
+          ],
+          "portrait": "assets/campus/abigail-neutral.png",
+          "poses": [
+            {
+              "id": "neutral",
+              "image": "assets/campus/abigail-neutral.png"
+            },
+            {
+              "id": "smile",
+              "image": "assets/campus/abigail-smile.png"
+            },
+            {
+              "id": "concerned",
+              "image": "assets/campus/abigail-concerned.png"
+            },
+            {
+              "id": "frustrated",
+              "image": "assets/campus/abigail-frustrated.png"
+            }
+          ],
+          "description": "Abigail Newton, 22, a systems-engineering major. Sun-tanned and freckled, stylish glasses, a short brown pixie cut, athletic build.",
+          "style": "Loose tanks, athletic shorts, leggings, sneakers; beach-girl layers.",
+          "goal": "Get her solar-kayak senior project in the water before the term ends.",
+          "traits": [
+            "analytical",
+            "warm",
+            "adventurous",
+            "practical",
+            "low-drama"
+          ],
+          "voice": "Plain, friendly, precise. Asks practical questions and notices contradictions. Laughs easily once she is comfortable.",
+          "likes": [
+            "puzzles",
+            "climbing",
+            "hiking",
+            "technical projects",
+            "spontaneous outings"
+          ],
+          "dislikes": [
+            "pointless drama",
+            "showing off",
+            "vague answers"
+          ],
+          "backstory": "The practical nerd of her year and the steady one in any group. Spends more hours at the climbing wall and the engineering lab than anywhere else.",
+          "conversationStarters": [
+            "Ask about her senior project",
+            "Ask her to belay you",
+            "Suggest a hike on Saturday"
+          ]
+        },
+        "profiles": {
+          "initialRelationships": [
+            {
+              "character": "abigail",
+              "trust": 15
+            }
+          ],
+          "activities": [
+            {
+              "id": "climbing-wall",
+              "name": "Climbing wall with Abigail",
+              "description": "Abigail belays and critiques your footwork, kindly and accurately.",
+              "location": "hewett",
+              "duration": 4,
+              "character": "abigail",
+              "perDay": 1,
+              "phrases": [
+                "climbing wall",
+                "go climbing",
+                "boulder"
+              ],
+              "effects": [
+                {
+                  "type": "stat",
+                  "stat": "fitness",
+                  "delta": 1
+                },
+                {
+                  "type": "trust",
+                  "character": "abigail",
+                  "delta": 2
+                }
+              ]
+            },
+            {
+              "id": "build-night",
+              "name": "Build night with Abigail",
+              "description": "A soldering iron, a half-finished drone, and Abigail explaining control loops like gossip.",
+              "location": "langley",
+              "duration": 4,
+              "character": "abigail",
+              "minRank": "climbing-partner",
+              "perDay": 1,
+              "phrases": [
+                "build night",
+                "help abigail with the drone"
+              ],
+              "effects": [
+                {
+                  "type": "stat",
+                  "stat": "focus",
+                  "delta": 1
+                },
+                {
+                  "type": "trust",
+                  "character": "abigail",
+                  "delta": 2
+                }
+              ]
+            }
+          ],
+          "schedules": [
+            {
+              "actor": "abigail",
+              "period": 12,
+              "stops": [
+                {
+                  "at": 0,
+                  "location": "hewett"
+                },
+                {
+                  "at": 4,
+                  "location": "prescott"
+                },
+                {
+                  "at": 8,
+                  "location": "langley"
+                }
+              ]
+            }
+          ],
+          "datingProfiles": [
+            {
+              "character": "abigail",
+              "initialChemistry": 6,
+              "initialPhase": "available",
+              "agreements": [
+                "monogamous"
+              ],
+              "thresholds": {
+                "crush": 15,
+                "date": 35,
+                "exclusive": 65
+              },
+              "preferences": [
+                {
+                  "id": "abigail-active",
+                  "type": "stat",
+                  "stat": "fitness",
+                  "min": 6,
+                  "weight": 10,
+                  "visibility": "public"
+                },
+                {
+                  "id": "abigail-steady",
+                  "type": "stat",
+                  "stat": "focus",
+                  "min": 5,
+                  "weight": 8,
+                  "visibility": "discoverable"
+                },
+                {
+                  "id": "abigail-clever",
+                  "type": "stat",
+                  "stat": "wit",
+                  "min": 8,
+                  "weight": 6,
+                  "visibility": "private"
+                }
+              ],
+              "signals": [
+                {
+                  "id": "liked-abigail",
+                  "event": "social.actPriced",
+                  "match": {
+                    "character": "abigail",
+                    "verdict": "liked"
+                  },
+                  "delta": 2,
+                  "label": "something you did that she liked",
+                  "repeatable": true
+                },
+                {
+                  "id": "disliked-abigail",
+                  "event": "social.actPriced",
+                  "match": {
+                    "character": "abigail",
+                    "verdict": "disliked"
+                  },
+                  "delta": -1,
+                  "label": "something you did that she did not like",
+                  "repeatable": true
+                },
+                {
+                  "id": "closer-abigail",
+                  "event": "social.romanceRankChanged",
+                  "match": {
+                    "character": "abigail"
+                  },
+                  "delta": 5,
+                  "label": "the two of you got closer",
+                  "repeatable": true
+                }
+              ]
+            }
+          ],
+          "romanceTempoProfiles": [
+            {
+              "character": "abigail",
+              "advancement": "automatic",
+              "ranks": [
+                {
+                  "id": "acquaintance",
+                  "name": "Acquaintance",
+                  "points": 0,
+                  "ceiling": 10
+                },
+                {
+                  "id": "climbing-partner",
+                  "name": "Climbing partner",
+                  "points": 6,
+                  "ceiling": 24
+                },
+                {
+                  "id": "teammate",
+                  "name": "Teammate",
+                  "points": 20,
+                  "ceiling": 36
+                },
+                {
+                  "id": "co-pilot",
+                  "name": "Co-pilot",
+                  "points": 32,
+                  "ceiling": 50
+                }
+              ],
+              "gifts": {
+                "periodTicks": 12,
+                "limitPerPeriod": 1,
+                "repeatDecayPercent": 50,
+                "preferences": [
+                  {
+                    "item": "puzzle-cube",
+                    "reaction": "loved",
+                    "points": 6,
+                    "chemistry": 2
+                  },
+                  {
+                    "item": "energy-bar",
+                    "reaction": "liked",
+                    "points": 4,
+                    "chemistry": 1
+                  },
+                  {
+                    "item": "red-roses",
+                    "reaction": "disliked",
+                    "points": -3
+                  }
+                ]
+              },
+              "signals": [
+                {
+                  "id": "abigail-climb",
+                  "event": "world.activityCompleted",
+                  "match": {
+                    "activity": "climbing-wall"
+                  },
+                  "points": 2,
+                  "cooldownTicks": 12
+                }
+              ],
+              "jealousy": {
+                "preset": "secure"
+              }
+            }
+          ],
+          "actProfiles": [
+            {
+              "character": "abigail",
+              "entries": [
+                {
+                  "id": "abigail-project",
+                  "kind": "listen",
+                  "target": "project",
+                  "points": 3,
+                  "reason": "you asked about the solar kayak and followed the maths",
+                  "memory": "The player asked about her solar-kayak project and followed it."
+                },
+                {
+                  "id": "abigail-listen",
+                  "kind": "listen",
+                  "target": "*",
+                  "points": 1,
+                  "reason": "you asked a real question"
+                },
+                {
+                  "id": "abigail-hike",
+                  "kind": "invite",
+                  "target": "saturday-morning@hewett",
+                  "points": 3,
+                  "reason": "you suggested something outdoors"
+                },
+                {
+                  "id": "abigail-glasses",
+                  "kind": "compliment",
+                  "target": "glasses",
+                  "points": 3,
+                  "reason": "you noticed the new glasses"
+                },
+                {
+                  "id": "abigail-boast",
+                  "kind": "boast",
+                  "target": "*",
+                  "points": -3,
+                  "reason": "you showed off"
+                },
+                {
+                  "id": "abigail-tease",
+                  "kind": "tease",
+                  "target": "*",
+                  "points": 1,
+                  "reason": "you teased her gently"
+                },
+                {
+                  "id": "abigail-pushy",
+                  "kind": "pushy",
+                  "target": "*",
+                  "points": -3,
+                  "reason": "you pushed past a plain no"
+                },
+                {
+                  "id": "abigail-cube",
+                  "kind": "gift",
+                  "target": "puzzle-cube",
+                  "points": 6,
+                  "reason": "you gave her something to take apart"
+                },
+                {
+                  "id": "abigail-bar",
+                  "kind": "buy",
+                  "target": "energy-bar",
+                  "points": 2,
+                  "reason": "you brought fuel for the wall"
+                },
+                {
+                  "id": "abigail-roses",
+                  "kind": "gift",
+                  "target": "red-roses",
+                  "points": -3,
+                  "reason": "you went for the obvious gesture"
+                },
+                {
+                  "id": "abigail-harp-drama",
+                  "kind": "pushy",
+                  "target": "pointless-drama",
+                  "points": -2,
+                  "reason": "you kept feeding the drama topic"
+                },
+                {
+                  "id": "abigail-harp-off",
+                  "kind": "pushy",
+                  "target": "showing-off",
+                  "points": -2,
+                  "reason": "you kept going on about show-offs"
+                },
+                {
+                  "id": "abigail-harp-answers",
+                  "kind": "pushy",
+                  "target": "vague-answers",
+                  "points": -2,
+                  "reason": "you kept pressing on vague answers"
+                }
+              ]
+            }
+          ],
+          "arcTracks": [
+            {
+              "character": "abigail",
+              "traits": [
+                {
+                  "id": "trust",
+                  "initial": 15
+                },
+                {
+                  "id": "playfulness",
+                  "initial": 10
+                }
+              ],
+              "drift": [
+                {
+                  "act": "listen",
+                  "target": "project",
+                  "trait": "trust",
+                  "delta": 3
+                },
+                {
+                  "act": "listen",
+                  "trait": "trust",
+                  "delta": 1
+                },
+                {
+                  "act": "invite",
+                  "trait": "playfulness",
+                  "delta": 6
+                },
+                {
+                  "act": "tease",
+                  "trait": "playfulness",
+                  "delta": 4
+                },
+                {
+                  "act": "compliment",
+                  "target": "glasses",
+                  "trait": "playfulness",
+                  "delta": 4
+                },
+                {
+                  "act": "boast",
+                  "trait": "trust",
+                  "delta": -3
+                },
+                {
+                  "act": "pushy",
+                  "trait": "trust",
+                  "delta": -3
+                }
+              ],
+              "stages": [
+                {
+                  "id": "practical",
+                  "name": "Practical",
+                  "voice": "Friendly and efficient; treats you like a lab partner."
+                },
+                {
+                  "id": "curious",
+                  "name": "Curious",
+                  "when": {
+                    "trust": 21,
+                    "playfulness": 30
+                  },
+                  "voice": "Starts suggesting plans herself."
+                },
+                {
+                  "id": "smitten",
+                  "name": "Smitten",
+                  "when": {
+                    "trust": 30,
+                    "playfulness": 55
+                  },
+                  "flag": "abigail-smitten",
+                  "voice": "Lets the analysis go and just enjoys you."
+                }
+              ]
+            }
+          ],
+          "intimacyProfiles": [
+            {
+              "character": "abigail",
+              "openness": 60,
+              "casual": false,
+              "consentPolicy": "threshold",
+              "consentDuration": 2,
+              "allowedCategories": [
+                "first-night"
+              ],
+              "cooldown": 12,
+              "requirements": {
+                "attraction": 35,
+                "phases": [
+                  "dating",
+                  "exclusive"
+                ]
+              },
+              "interests": [
+                {
+                  "id": "abigail-talk",
+                  "category": "first-night",
+                  "label": "Likes to talk it through first",
+                  "visibility": "discoverable"
+                }
+              ],
+              "aftercarePreferences": [
+                {
+                  "id": "abigail-stay",
+                  "option": "stay",
+                  "reaction": "liked",
+                  "satisfactionDelta": 8,
+                  "visibility": "discoverable"
+                }
+              ]
+            }
+          ],
+          "phoneMessages": [
+            {
+              "id": "abigail-wants-answers",
+              "character": "abigail",
+              "text": "I would like an explanation. Campbells, when you are free — before today ends.",
+              "trigger": {
+                "event": "social.suspicionSurfaced",
+                "match": {
+                  "observer": "abigail"
+                }
+              },
+              "replies": [
+                {
+                  "id": "coming",
+                  "text": "All right. I'll be there."
+                }
+              ],
+              "offer": {
+                "location": "campbells",
+                "expiresIn": 12
+              }
+            }
+          ],
+          "endings": [
+            {
+              "id": "abigail-launch",
+              "name": "Launch day",
+              "character": "abigail",
+              "priority": 20,
+              "requires": {
+                "flags": {
+                  "abigail-smitten": true
+                },
+                "romanceRanks": {
+                  "abigail": "co-pilot"
+                }
+              },
+              "text": "The solar kayak floats. Abigail whoops, nearly capsizes it, and hands you the second paddle without a word. There is room for two. She designed it that way."
+            },
+            {
+              "id": "abigail-together",
+              "name": "Beta version",
+              "character": "abigail",
+              "priority": 10,
+              "requires": {
+                "datingPhases": {
+                  "abigail": "exclusive"
+                }
+              },
+              "text": "The kayak still leaks and Abigail does not care. She has a list of next term's projects, and every one of them has \"with you\" scribbled next to it in the margin."
+            }
+          ],
+          "firsts": [
+            {
+              "id": "abigail-talk",
+              "character": "abigail",
+              "rung": "talk",
+              "title": "Off belay",
+              "opening": "At the end of a long session, Abigail sits down on the crash mats, chalk to the elbows, and does not get up to leave with everyone else.",
+              "trigger": {
+                "event": "social.romanceRankChanged",
+                "match": {
+                  "character": "abigail",
+                  "to": "climbing-partner"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "opening-up",
+                  "cue": "\"Can I run something past you? Not a climbing thing.\" She picks at the chalk on her fingers. \"Our rocket team lost its funding. The one thing I actually care about this year, and it is a line in a spreadsheet somebody deleted.\"",
+                  "discover": "abigail-steady"
+                },
+                {
+                  "id": "your-turn",
+                  "cue": "\"Sorry, I am doing the thing where I talk about motors until people's eyes glaze.\" She pushes her glasses up with a chalky finger and leaves a white smudge on her nose. \"Be honest. Are your eyes glazing?\""
+                }
+              ],
+              "cg": "assets/campus/cg/abigail-talk_v01.png"
+            },
+            {
+              "id": "abigail-date",
+              "character": "abigail",
+              "rung": "date",
+              "title": "Low tide",
+              "opening": "Abigail plans the date like a mission: low tide at 7:40, sandwiches, a thermos, and a sea cave along the coast that you can only reach for about two hours.",
+              "trigger": {
+                "event": "social.dateAccepted",
+                "match": {
+                  "character": "abigail"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "arrival",
+                  "cue": "She meets you at the path down to the shore with a thermos, sandwiches and a tide table. \"Low tide at 7:40. I have a timetable. I know. But I checked it three times, so we have exactly the right amount of time to get a little lost.\" She pushes her glasses up her nose."
+                },
+                {
+                  "id": "noticing",
+                  "cue": "Halfway along the coast she stops at every rock pool and names things under her breath, then catches herself. \"That was a joke earlier. Mostly. I did also bring a map.\" She taps her pocket, half proud, half embarrassed."
+                },
+                {
+                  "id": "moment",
+                  "cue": "The cave is exactly where she said it would be, and you are early. She checks her watch, then the sea, then you. \"We have forty minutes spare,\" she says. \"I did not plan anything for them. That is a first.\"",
+                  "discover": "abigail-active"
+                }
+              ],
+              "cg": "assets/campus/cg/abigail-date_v01.png"
+            },
+            {
+              "id": "abigail-kiss",
+              "character": "abigail",
+              "rung": "kiss",
+              "title": "Talking it through",
+              "opening": "You bring it up. What this is. Abigail pushes her glasses up and takes a breath like she is about to present.",
+              "trigger": {
+                "event": "social.datingPhaseChanged",
+                "match": {
+                  "character": "abigail",
+                  "to": "exclusive"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "reading",
+                  "cue": "She pushes her glasses up and takes a breath like she is about to present. \"Right. So. I made a list. Pros, cons. I am not going to show you the list. The cons column is empty. That is the whole finding.\""
+                },
+                {
+                  "id": "leaning-in",
+                  "cue": "\"I would like to be your girlfriend, please.\" She goes very still, the folded list held against her chest, and does not seem to know what to do with her hands."
+                },
+                {
+                  "id": "after",
+                  "cue": "Her glasses have gone crooked and she does not fix them. \"Good,\" she says, slightly breathless. \"Good. Excellent.\" She looks at you like she is waiting for the results to come back."
+                }
+              ],
+              "cg": "assets/campus/cg/abigail-kiss_v01.png"
+            },
+            {
+              "id": "abigail-night",
+              "character": "abigail",
+              "rung": "night",
+              "title": "Talked through",
+              "opening": "Your room. Abigail sits cross-legged on your bed with her glasses still on and her hands in her lap.",
+              "trigger": {
+                "event": "social.intimacyStarted",
+                "match": {
+                  "character": "abigail",
+                  "category": "first-night"
+                }
+              },
+              "checkpoints": [
+                {
+                  "id": "lead",
+                  "cue": "She sits cross-legged on your bed, glasses on, hands in her lap. \"I want to. Obviously. Can we talk it through first? What you like, what I like. It is not unsexy, I promise. It is just how I work.\""
+                },
+                {
+                  "id": "check-in",
+                  "cue": "Her glasses are on the nightstand and she is squinting at you and laughing about it, warm and freckled everywhere, legs wrapped around you. Her breath goes ragged. \"Okay, that is. Yes. Is this still good for you? Tell me.\""
+                },
+                {
+                  "id": "peak",
+                  "cue": "It is athletic and a little competitive and laughing, the way everything with her is, until it is not laughing any more. She comes with her face in your neck, then flips you, glasses-less and determined, and starts on exactly the things you told her you liked, in order."
+                }
+              ],
+              "interest": "abigail-talk",
+              "cg": "assets/campus/cg/abigail-night_v03.png"
+            }
+          ],
+          "suspicionProfiles": [
+            {
+              "character": "abigail",
+              "confrontAt": 70
+            }
+          ]
+        }
+      }
+    },
+    {
+      "actorId": "kaylee",
+      "identity": {
+        "name": "Kaylee",
+        "age": 20,
+        "pronouns": "she/her",
+        "occupation": "",
+        "year": "",
+        "birthday": "",
+        "workplace": null,
+        "home": null,
+        "haunts": [],
+        "lifeNotes": ""
+      },
+      "personality": {
+        "traits": [
+          "warm",
+          "extroverted",
+          "loyal",
+          "insecure"
+        ],
+        "notes": "bubbly\nsweet\nextroverted\nloyal\na little insecure",
+        "voice": "Bubbly, fast, lots of exclamation marks and nicknames. Genuinely glad to see you every single time.",
+        "examples": [],
+        "fingerprint": ""
+      },
+      "appearance": {
+        "description": "Kaylee Thompson, 20, a childhood-education major and Jana's campus buddy. Dirty-blonde hair with platinum highlights, freckles, a huge smile.",
+        "style": "Campus-casual, semi-athletic, lots of pastel.",
+        "portrait": "assets/campus/kaylee-neutral.png",
+        "poses": [],
+        "notes": ""
+      },
+      "tastes": {
+        "likes": [
+          "gossip",
+          "karaoke",
+          "her friends",
+          "iced lattes"
+        ],
+        "dislikes": [
+          "people being mean",
+          "being called dumb"
+        ],
+        "likedCategories": [
+          "treats"
+        ],
+        "dislikedCategories": [],
+        "itemOverrides": [],
+        "notes": ""
+      },
+      "dating": {
+        "history": "",
+        "experience": null,
+        "body": {
+          "face": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "lips": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "neck": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "arms_hands": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "chest": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "back": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "belly_waist": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "hips_butt": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "thighs_legs": {
+            "sensitivity": null,
+            "limit": null
+          },
+          "intimate": {
+            "sensitivity": null,
+            "limit": null
+          }
+        },
+        "preferences": "",
+        "limitsNotes": "",
+        "policyOverrides": {}
+      },
+      "routine": {
+        "weekly": [],
+        "exceptions": [],
+        "notes": ""
+      },
+      "behavior": {
+        "rules": [],
+        "notes": "",
+        "stages": {}
+      },
+      "social": {
+        "links": [],
+        "notes": ""
+      },
+      "arc": {
+        "goal": "Make sure everyone she likes is having a good time, you included.",
+        "tracks": [],
+        "payoffs": [],
+        "notes": ""
+      },
+      "lore": {
+        "backstory": "Signed up as Jana's student buddy and took the job literally. Knows everyone and everything happening on campus, and is always happy to tell you.",
+        "entries": [],
+        "authorNotes": ""
+      },
+      "source": {
+        "actor": {
+          "id": "kaylee",
+          "name": "Kaylee",
+          "age": 20,
+          "pronouns": "she/her",
+          "location": "langley",
+          "identityTags": [
+            "adult"
+          ],
+          "portrait": "assets/campus/kaylee-neutral.png",
+          "description": "Kaylee Thompson, 20, a childhood-education major and Jana's campus buddy. Dirty-blonde hair with platinum highlights, freckles, a huge smile.",
+          "style": "Campus-casual, semi-athletic, lots of pastel.",
+          "goal": "Make sure everyone she likes is having a good time, you included.",
+          "traits": [
+            "bubbly",
+            "sweet",
+            "extroverted",
+            "loyal",
+            "a little insecure"
+          ],
+          "voice": "Bubbly, fast, lots of exclamation marks and nicknames. Genuinely glad to see you every single time.",
+          "likes": [
+            "gossip",
+            "karaoke",
+            "her friends",
+            "iced lattes"
+          ],
+          "dislikes": [
+            "people being mean",
+            "being called dumb"
+          ],
+          "backstory": "Signed up as Jana's student buddy and took the job literally. Knows everyone and everything happening on campus, and is always happy to tell you.",
+          "conversationStarters": [
+            "Ask for the gossip",
+            "Ask where Jana is",
+            "Ask what is on this week"
+          ]
+        },
+        "profiles": {
+          "initialRelationships": [
+            {
+              "character": "kaylee",
+              "trust": 50
+            }
+          ],
+          "schedules": [
+            {
+              "actor": "kaylee",
+              "period": 12,
+              "stops": [
+                {
+                  "at": 0,
+                  "location": "langley"
+                },
+                {
+                  "at": 4,
+                  "location": "campbells"
+                },
+                {
+                  "at": 8,
+                  "location": "langley"
+                }
+              ]
+            }
+          ],
+          "phoneMessages": [
+            {
+              "id": "kaylee-hi",
+              "character": "kaylee",
+              "text": "Hiii roomie-of-my-buddy!! Langley at lunch, I'll introduce you to EVERYONE",
+              "trigger": {
+                "event": "core.moved",
+                "match": {
+                  "actor": "player"
+                }
+              },
+              "replies": [
+                {
+                  "id": "yes",
+                  "text": "See you there."
+                }
+              ],
+              "offer": {
+                "location": "langley",
+                "expiresIn": 4
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
 }

@@ -10,13 +10,13 @@ export const EXPRESSIONS=['neutral','smile','concerned','frustrated','embarrasse
 const NIGHT_CG={yuna:'missionary',haruka:'missionary',minji:'cowgirl'};
 const BIO={
  jana:{age:20,description:'Yuna Han, 20, a Korean exchange student in English and Literature, here for one semester from Seoul. Petite, long black hair worn half-up with a ribbon, doe eyes, rosy cheeks. Your roommate.',
-  style:'Off-shoulder blouses, pastel midi skirts, ribbons; soft pinks and whites.',goal:'Work out whether the life her parents planned for her is the one she wants.',
+  traits:['warm','homesick','reserved','insecure'],style:'Off-shoulder blouses, pastel midi skirts, ribbons; soft pinks and whites.',goal:'Work out whether the life her parents planned for her is the one she wants.',
   voice:'Easy and warm, slightly formal English with the odd Korean word. Deflects with a joke when something is close to the bone.',
   backstory:'Grew up on Jeju, the island off Korea\'s southern tip, then moved to Seoul with her best friend Jisoo. Her parents have the next ten years planned for her: a job at her father\'s firm, a nice boy from church, a flat near them. They fought when she chose a semester abroad, and that fight is not over.'},
  nova:{age:20,description:'Haruka "Ruka" Mori, 20, a Japanese-American film major who plays guitar in a garage band. Short black bob with blunt bangs, dark brown eyes, gold hoops, a grin that means trouble.',
-  style:'Black leather jacket over a white camisole, skinny jeans, boots; chains on a bad day.'},
+  traits:['guarded','mischievous','creative','rebellious'],style:'Black leather jacket over a white camisole, skinny jeans, boots; chains on a bad day.'},
  abigail:{age:20,description:'Min-ji Park, 20, a Korean-American systems-engineering major and campus skater. Platinum-blonde bob with dark roots, silver cross earrings, athletic build.',
-  style:'Cropped denim jacket, crop tops, cargo pants; a sneaker for every mood.'}};
+  traits:['analytical','adventurous','practical','competitive'],style:'Cropped denim jacket, crop tops, cargo pants; a sneaker for every mood.'}};
 // Exact phrases, applied before the id/name rename. Order matters where one phrase contains another.
 const PHRASES=[
  ['"Can I tell you something stupid? I have not said Dominik\'s name in a week without turning it into a joke."','"Can I tell you something stupid? I have not talked about home in a week without turning it into a joke."'],
@@ -45,12 +45,14 @@ const deep=o=>typeof o==='string'?text(o):Array.isArray(o)?o.map(deep):o&&typeof
 
 export function reskin(campus){
  let p=prune(structuredClone(campus));
+ if(p.characterSheets)p.characterSheets=p.characterSheets.filter(s=>!DROP.includes(s.actorId)).map(s=>{const bio=BIO[s.actorId];if(bio){Object.assign(s.source.actor,bio);s.personality.traits=[...bio.traits];s.personality.notes=s.personality.notes.split('\n').filter(n=>bio.traits.includes(n)).join('\n');for(const [field,section,key] of [['age','identity','age'],['description','appearance','description'],['style','appearance','style'],['voice','personality','voice'],['goal','arc','goal'],['backstory','lore','backstory']])if(bio[field]!==undefined)s[section][key]=bio[field];}return s;});
  p.actors=p.actors.map(a=>BIO[a.id]?{...a,...BIO[a.id]}:a);
  p=deep(p);
  Object.assign(p,{id:`${campus.id}-trio`,title:`${campus.title}: Yuna, Haruka and Min-ji`});
  for(const a of p.actors)if(Object.values(RENAME).some(([id])=>id===a.id)){const dir=`assets/characters/${a.id}`;a.portrait=`${dir}/expressions/neutral.png`;a.poses=EXPRESSIONS.map(e=>({id:e,image:`${dir}/expressions/${e}.png`}));}
  // New art has no talk/date/kiss CGs yet; the night uses the generated scene.
  for(const f of p.firsts){if(f.rung==='night')f.cg=`assets/characters/${f.character}/scenes/${NIGHT_CG[f.character]}.png`;else delete f.cg;}
+ for(const s of p.characterSheets||[]){const a=p.actors.find(a=>a.id===s.actorId);if(Object.values(RENAME).some(([id])=>id===s.actorId)){for(const target of [s.appearance,s.source.actor]){target.portrait=a.portrait;target.poses=structuredClone(a.poses);}}for(const f of s.source.profiles.firsts||[]){if(f.rung==='night')f.cg=`assets/characters/${f.character}/scenes/${NIGHT_CG[f.character]}.png`;else delete f.cg;}}
  const bad=[];(function walk(o,path){if(typeof o==='string'){if(LEFTOVER.test(o))bad.push(`${path}: ${o.slice(0,120)}`);}else if(o&&typeof o==='object')for(const [k,v] of Object.entries(o)){if(LEFTOVER.test(k))bad.push(`${path}.${k} (key)`);walk(v,`${path}.${k}`);}})(p,'');
  if(bad.length)throw new Error(`old cast survives the reskin:\n${bad.join('\n')}`);
  return p;

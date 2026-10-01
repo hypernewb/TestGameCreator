@@ -6,6 +6,7 @@
   "subtitle": "One autumn term at a small coastal university",
   "playerId": "player",
   "sceneFeedback": {"chips": true, "mood": true},
+  "slipGuard": {"echoWords": 8},
   "calendar": {
     "weather": [
       {

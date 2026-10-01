@@ -9,6 +9,9 @@
     "chips": true,
     "mood": true
   },
+  "slipGuard": {
+    "echoWords": 8
+  },
   "calendar": {
     "weather": [
       {

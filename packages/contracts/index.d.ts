@@ -26,6 +26,7 @@ export interface StageReachedEvent { character:string; stage:string; name:string
 export interface SobrietyPack { drinkItems:string[]; tipsyAt?:number; drunkAt?:number; soberPerDaypart?:number }
 
 export interface SceneFeedbackPack { chips?:boolean; mood?:boolean }
+export interface SlipGuardPack { slipGuard?:{echoWords?:number} }
 export interface SceneFeedbackChip { character:string; stat:string; value:number; delta:number }
 export interface SceneFeedbackMood { character:string; name:string; score:number; tier:number; label:string }
 export interface SceneFeedback { chips:SceneFeedbackChip[]; moods:SceneFeedbackMood[] }

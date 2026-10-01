@@ -54,9 +54,10 @@ export function touchEligibility(state,pack,character,stepId,region){
 }
 
 // Refusal is always in character, with a vague hint at what would help — never a system error string.
-const HINTS={sobriety:"maybe when we've both had less to drink",privacy:'not out here where anyone could see',trust:"I don't know if I'm ready for that with you yet"};
+const HINTS={limit_hard:"I'm not ready for that with you yet",sobriety:"maybe when we've both had less to drink",privacy:'not out here where anyone could see',trust:"I don't know if I'm ready for that with you yet"};
 const refusalText=(name,hintKey)=>`${name} pulls back gently. "${HINTS[hintKey]||'not right now'}," ${name} says, ${hintKey==='trust'?'searching your face':'glancing around'}.`;
-export function refuseRegionTouch(tx,character,region,reason){const name=tx.state.actors[character].name;tx.emit('social.touchRefused',{character,region,verdict:'refuse',reason,trustDelta:0,lustDelta:0,text:refusalText(name,reason)},[tx.pack.playerId,character]);}
+const hardRefusal=(name,reason)=>reason==='limit_hard'?{refusal:{code:reason,reason:refusalText(name,reason),alternatives:[],retry:0}}:{};
+export function refuseRegionTouch(tx,character,region,reason){const name=tx.state.actors[character].name;tx.emit('social.touchRefused',{character,region,verdict:'refuse',reason,...hardRefusal(name,reason),trustDelta:0,lustDelta:0,text:refusalText(name,reason)},[tx.pack.playerId,character]);}
 export function applyRegionAct(tx,character,act){const step=stepOf(act.target)||stepOf(mapTouchText(act.target.replaceAll('-',' '))),region=act.region||touchTextRegion(act.target)||touchRegion(step?.id),reason=regionLimitReason(tx.state,tx.pack,character,region);if(reason){refuseRegionTouch(tx,character,region,reason);return false;}const body=bodyRegionOf(tx.pack,character,region);if(step&&runtimeOf(tx.state,character)&&(body.limit!==null||body.sensitivity!==null)){const eligible=touchEligibility(tx.state,tx.pack,character,step.id,region).eligible;attemptTouch(tx,character,step.id,region);return eligible;}return true;}
 
 export function attemptTouch(tx,character,stepId,region){
@@ -69,7 +70,7 @@ export function attemptTouch(tx,character,stepId,region){
  } else {
   const hintKey=e.reasons[0],lust=Math.max(0,(runtimeOf(s,character)?.lust||0)-1),trustDelta=changeTrust(tx,character,-1,{quiet:true}),verdict=e.reasons.length===1&&hintKey==='trust'&&e.trust>=step.minTrust-10?'hesitate':'refuse';
   tx.set([...path,'characters',character,'lust'],lust);
-  tx.emit('social.touchRefused',{character,step:step.id,...(region?{region}:{}),verdict,reason:hintKey,trustDelta,lustDelta:lust-oldLust,text:refusalText(name,hintKey)},[p.playerId,character]);
+  tx.emit('social.touchRefused',{character,step:step.id,...(region?{region}:{}),verdict,reason:hintKey,...hardRefusal(name,hintKey),trustDelta,lustDelta:lust-oldLust,text:refusalText(name,hintKey)},[p.playerId,character]);
  }
 }
 

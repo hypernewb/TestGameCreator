@@ -8,7 +8,6 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 ### Wave 2 (C1 character depth)
 
 ### Wave 3 (C1 she acts first / visible progress)
-  - T-030 She texts first · T-031 Lust baseline · T-032 Anniversaries · T-034 Jealousy · planned: opencode (Codex paused by owner)
 
 ### Parked
   - T-009b Suggest auto-fill · O1 · O3 · creator leftovers · Director-as-DM (owner: after C1 character depth)
@@ -17,18 +16,21 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 ## Doing
 
 ### T-035 Mixed actions in one turn
-  - planned: nemotron-3-ultra (OpenCode, OpenRouter free) · tags: [implementer, opencode] · O2
+  - model: nemotron-3-ultra (OpenCode free) · fix round sent (determinism, atomic parts, >3 cue, replay test) · O2
 
 ### T-028 Distinct voices
-  - planned: nemotron-3-ultra (OpenCode, OpenRouter free) · tags: [implementer, opencode] · C1
+  - model: nemotron-3-ultra (OpenCode free) · fix round sent (restore weakened assertions, legacy tag test) · C1
 
-### T-036 Player identity + topic lore
-  - planned: nemotron-3-ultra (OpenCode, OpenRouter free) · tags: [prompt-engineer, opencode] · C1
-
-### T-008 Unwelcome flirt by personality + ladder pace
-  - planned: gpt-6.1-sol (Codex) · tags: [implementer, codex] · O2
+### T-030 She texts first · T-031 Lust baseline · T-032 Anniversaries · T-034 Jealousy
+  - planned: nemotron-3-ultra (OpenCode free; Codex paused by owner) · C1
 
 ## Review
+
+### T-008 Unwelcome flirt by personality + ladder pace
+  - model: gpt-6.1-sol (Codex) · branch t-008 2dc7071 · 945 pass · awaiting owner OK
+
+### T-036 Player identity + topic lore
+  - model: nemotron-3-ultra (OpenCode free) · branch t-036 7f1dd20 · 945 pass · awaiting owner OK
 
 ## Done
 

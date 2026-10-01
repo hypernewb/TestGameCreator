@@ -14,35 +14,20 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
   - T-030 She texts first · T-031 Lust baseline · T-032 Anniversaries · T-034 Jealousy · planned: codex
 
 ### Parked
-  - T-009b Suggest auto-fill · O1 · O3 · creator leftovers · Director-as-DM (other session; owner to place)
+  - T-009b Suggest auto-fill · O1 · O3 · creator leftovers · Director-as-DM (owner: after C1 character depth)
 
 
 ## Doing
 
-### T-029 Hidden daily need
-  - planned: gpt-6.1-sol (Codex) · tags: [implementer, codex] · C1
-
-### T-033 Gift repeats + keepsakes
-  - planned: gpt-6.1-sol (Codex) · tags: [implementer, codex] · C1
-
-### T-026 UI milestone list from owner UI research
-  - planned: gpt-6.1-sol (Codex) · tags: [analyzer, codex]
-
-### T-027 Trio body maps from archetypes (owner delegated)
-  - planned: gpt-6.1-sol (Codex) · tags: [writer, codex]
-
-
-### T-024 Body-region limits drive intimate acts
-  - planned: gpt-6.1-sol (Codex)
-  - tags: [implementer, codex] · O2 phase 1 · round 2: stale studio label test
-
-### T-025 Refusal object: reason + alternatives, no error strings
-  - planned: gpt-6.1-sol (Codex)
-  - tags: [implementer, codex] · O2 phase 1 · round 2: hint style, no buttons (owner)
+### T-037 Hard limit (no absolute never on trio)
+  - planned: gpt-6.1-sol (Codex) · tags: [implementer, codex] · O2
 
 ## Review
 
 ## Done
+
+### T-024 T-025 T-027 T-029 T-033 (body limits, hint refusals, trio body maps, daily need, gift repeats) + T-026 UI milestones
+  - model: gpt-6.1-sol (Codex) · merged together as int-1 2026-10-01, npm test 935/935 after LF fix
 
 ### T-012 Relationship stages + repairable breakups
   - model: gpt-6.1-sol (Codex)

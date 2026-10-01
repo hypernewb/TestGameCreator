@@ -30,7 +30,8 @@ import {sobriety} from './sobriety.mjs';
 import {secrecy} from './secrecy.mjs';
 import {minigames} from './minigames.mjs';
 import {firsts} from './firsts.mjs';
-export const registry=Object.fromEntries([conversation,relationships,schedule,quests,inventory,abilities,objects,daypart,worldEvents,scenes,facts,equipment,bonds,npcSocial,economy,stats,progression,dating,romanceNetwork,intimacy,gossip,romanceTempo,phone,feed,endings,timedEvents,director,moments,calendarWorld,acts,arc,sobriety,secrecy,minigames,firsts].map(m=>[m.id,m]));
+import {touchLadder} from './touch-ladder.mjs';
+export const registry=Object.fromEntries([conversation,relationships,schedule,quests,inventory,abilities,objects,daypart,worldEvents,scenes,facts,equipment,bonds,npcSocial,economy,stats,progression,dating,romanceNetwork,intimacy,gossip,romanceTempo,phone,feed,endings,timedEvents,director,moments,calendarWorld,acts,arc,sobriety,secrecy,minigames,firsts,touchLadder].map(m=>[m.id,m]));
 const descriptions={
  'social.conversation':['Character conversation','Enables conversations with characters who share the player’s location.'],
  'social.relationships':['Relationships','Tracks trust changes from recorded conversations.'],
@@ -66,6 +67,7 @@ const descriptions={
  'character.arc':['Character change arc','Drifts hidden traits and reaches named character stages.'],
  'character.sobriety':['Sobriety','Tracks drinks and recovery as dayparts advance.'],
  'social.secrecy':['Secrets and suspicion','Tracks secret relationships, who knows, suspicion with evidence, confrontations, and public reveals.'],
- 'social.firsts':['Free-typed firsts','Talk, date, kiss and first night play as typed scenes with engine-held checkpoints scored from act tags; the first-night check-in is required and Stop is always there.']
+ 'social.firsts':['Free-typed firsts','Talk, date, kiss and first night play as typed scenes with engine-held checkpoints scored from act tags; the first-night check-in is required and Stop is always there.'],
+ 'social.touch-ladder':['Intimate action ladder','Maps a typed physical action to the nearest ladder step and has the engine, not the model, accept, hesitate or refuse it from trust, sobriety and privacy — refusals stay in character with a vague hint.']
 };
 export const moduleCatalog=Object.fromEntries(Object.values(registry).map(m=>[m.id,{id:m.id,version:m.version,requires:m.requires||[],title:descriptions[m.id][0],description:descriptions[m.id][1],group:m.id.split('.')[0]}]));

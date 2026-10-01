@@ -19,16 +19,13 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ## Doing
 
-### T-035 Mixed actions in one turn
-  - model: nemotron-3-ultra then space-bunny (OpenCode free) · fix round sent (determinism, atomic parts, >3 cue, replay test) · O2
-
-### T-028 Distinct voices
-  - model: nemotron-3-ultra then space-bunny (OpenCode free) · fix round sent (restore weakened assertions, legacy tag test) · C1
-
-### T-030 She texts first · T-031 Lust baseline · T-032 Anniversaries · T-034 Jealousy
-  - planned: space-bunny (OpenCode free; Codex paused by owner) · C1
+### T-032 Anniversaries · T-034 Jealousy
+  - model: space-bunny (OpenCode free) · resumed from partial work · C1
 
 ## Review
+
+### T-035 Mixed actions · T-028 Distinct voices · T-030 She texts first · T-031 Lust baseline
+  - model: space-bunny (OpenCode free; T-035/T-028 first pass nemotron) · branches t-035 34405d5, t-028 daf1f57, t-030 d5f4ca2, t-031 e3e05c9 · 945/949/950/946 pass (4 known art fails) · awaiting int-2 + owner OK
 
 ### T-008 Unwelcome flirt by personality + ladder pace
   - model: gpt-6.1-sol (Codex) · branch t-008 2dc7071 · 945 pass · awaiting owner OK

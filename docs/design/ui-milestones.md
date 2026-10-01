@@ -217,3 +217,6 @@ Recommendations below are proposals; existing scene-feedback decisions remain se
 4. **Q: How prominent should map and phone navigation be?** A) **Recommended:** retain hub entries, add dialogs and optional node map; use pack labels and list fallback. B) Persistent phone shell with app navigation. C) Full-screen spatial map as the primary hub. (UI7/UI8; geometry is authored, never invented.)
 5. **Q: Should weekly planning change the game's time model?** A) **Recommended:** known-plan agenda first; keep current three periods until O3 is designed. B) Editable weekly plan with current periods and separately approved conflict rules. C) Four-period/minute-based planner after a new clock brief. (UI12/UI13; none authorizes invented plans or rewards.)
 6. **Q: Which delivery target follows F1's simplest working install?** A) **Recommended:** local web release and complete project export first. B) Windows desktop package first. C) PWA/offline package first with model-dependent limits shown. (UI23; framework migration and other desktop platforms remain later.)
+
+## Owner decisions
+- 2026-10-01: Q1–Q5 delegated to the director, who took the recommended option (A) for each. Q6 (delivery target) stays with the owner and is still open.

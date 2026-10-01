@@ -4,19 +4,26 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 ## Todo
 
 ### Wave 1 (after T-024/T-025 merge, shares the acts path)
-  - T-035 Mixed actions in one turn · planned: codex
 
 ### Wave 2 (C1 character depth)
-  - T-028 Distinct voices · T-036 Player identity + topic lore · planned: codex
 
 ### Wave 3 (C1 she acts first / visible progress)
-  - T-030 She texts first · T-031 Lust baseline · T-032 Anniversaries · T-034 Jealousy · planned: codex
+  - T-030 She texts first · T-031 Lust baseline · T-032 Anniversaries · T-034 Jealousy · planned: opencode (Codex paused by owner)
 
 ### Parked
   - T-009b Suggest auto-fill · O1 · O3 · creator leftovers · Director-as-DM (owner: after C1 character depth)
 
 
 ## Doing
+
+### T-035 Mixed actions in one turn
+  - planned: nemotron-3-ultra (OpenCode, OpenRouter free) · tags: [implementer, opencode] · O2
+
+### T-028 Distinct voices
+  - planned: nemotron-3-ultra (OpenCode, OpenRouter free) · tags: [implementer, opencode] · C1
+
+### T-036 Player identity + topic lore
+  - planned: nemotron-3-ultra (OpenCode, OpenRouter free) · tags: [prompt-engineer, opencode] · C1
 
 ### T-008 Unwelcome flirt by personality + ladder pace
   - planned: gpt-6.1-sol (Codex) · tags: [implementer, codex] · O2

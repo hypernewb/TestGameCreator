@@ -320,6 +320,7 @@ export function execute(world,command,pack,registry,packChecked=false) {
   // A kept conversation spends the day too: every gameProject.turnsPerTick exchanges (default 3) costs one tick, so a long talk visibly turns the clock without cutting the scene.
   advance(kept?(!['core.wait','core.waitUntil'].includes(command.type)&&EXCHANGE_COMMANDS.has(command.type)&&((state.scene.exchanges||0)+1)%(pack.gameProject?.turnsPerTick??3)===0?1:0):opened?travelCost:soloClosed?Math.max(travelCost,boundary-state.tick):closes?Math.max(cost,until()-state.tick):cost);react();
   if(continuous&&world.scene)sceneLifecycle(tx,world,emitted,kept&&EXCHANGE_COMMANDS.has(command.type),true,command.deferExchangeCap===true);else if(world.scene){sceneLifecycle(tx,world,emitted,false,false);react();}
+  for(const m of mods)m.afterTurn?.(tx,command);react();
   // The period is spent once, when its scene closes: whoever ended it, the clock moves to the next morning, afternoon or evening.
   if(continuous&&world.scene&&!state.scene&&!['world.nextDaypart','core.waitUntil'].includes(command.type)&&!(command.type==='core.scene'&&command.args.activity==='rest')){advance(until()-state.tick);react();}
   tx.set(['revision'],world.revision+1);

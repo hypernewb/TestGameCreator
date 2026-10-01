@@ -4,7 +4,6 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 ## Todo
 
 ### Wave 1 (after T-024/T-025 merge, shares the acts path)
-  - T-008 Unwelcome flirt by personality + ladder pace · planned: codex
   - T-035 Mixed actions in one turn · planned: codex
 
 ### Wave 2 (C1 character depth)
@@ -18,6 +17,9 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 
 ## Doing
+
+### T-008 Unwelcome flirt by personality + ladder pace
+  - planned: gpt-6.1-sol (Codex) · tags: [implementer, codex] · O2
 
 ## Review
 

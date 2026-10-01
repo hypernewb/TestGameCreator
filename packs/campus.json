@@ -3763,6 +3763,16 @@
   "romanceStats": {
     "dailyGain": 6
   },
+  "lustBaseline": {
+    "perDaypart": 0.25,
+    "milestones": {
+      "intimateFirst": 5,
+      "dating": 5,
+      "exclusive": 5,
+      "preference": 2
+    },
+    "hint": "some earlier warmth lingers"
+  },
   "characterSheets": [
     {
       "actorId": "jana",

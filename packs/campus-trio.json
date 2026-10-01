@@ -1380,6 +1380,17 @@
       ]
     }
   ],
+  "giftRepeatScale": [
+    1,
+    0.5,
+    0
+  ],
+  "giftSettings": {
+    "likedMultiplier": 1.5,
+    "dislikedPoints": -2,
+    "keepsakeMinGain": 3,
+    "keepsakeLimit": 5
+  },
   "romanceTempoProfiles": [
     {
       "character": "yuna",

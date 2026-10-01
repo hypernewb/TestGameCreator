@@ -1,49 +1,46 @@
-# Relationship stages + repairable breakups: design card
-Status: draft · Tickets: T-017, T-012
+﻿# Relationship stages + repairable breakups: design card
+Status: decided · Tickets: T-017, T-012, T-018
 
 ## Goal (what the player feels)
-Commitment feels earned, conflict matters, and an ex remains a possible future relationship with remembered hurt.
-Owner direction: a commitment ladder, repairable breakups with a lasting stat scar, and routes that never permanently close, including affairs (brief; docs/research/owner-answers.md).
+Commitment feels earned, conflict matters, and reunion remembers the hurt. Routes never permanently close, including affairs.
 
 ## What we have (self-audit, cite docs/map)
-Scope checked against docs/map/README.md, docs/map/modules.md and docs/map/packs.md; the digest's missing-stage claim is outdated.
-- packages/modules/dating.mjs already owns available/crush/dating/exclusive/rejected/broken phases, attraction gates, agreements, satisfaction, strain, breakup thresholds and cooldowns.
-- Its askDate can move broken back to dating after eligibility/cooldown checks; satisfaction recovery clears strain but does not itself reconcile the phase. No breakup count or dedicated scar is stored there.
-- setDatingPhase is also an authored setter; it does not enforce ladder adjacency or reset an old agreement. A new design must handle every breakup entry path, not just satisfaction-triggered breaks.
-- packages/modules/progression.mjs owns a separate authored relationship-state graph with event/stat/bond/flag gates; packages/modules/scenes.mjs can set either graph state or dating phase and apply memory/stat effects.
-- packages/modules/romance-network.mjs owns NPC pairs and rivalry stay/leave/open outcomes; its leave outcome directly breaks the player relationship. Player and NPC phase storage overlap but are distinct.
-- packages/modules/intimacy.mjs already owns current consent, phase/score eligibility, aftercare windows and satisfaction consequences; reuse its events rather than adding another aftercare judge.
-- packages/modules/social.mjs refuses invitations in broken/rejected phases. Reconciliation therefore needs a reachable public interaction path rather than depending on an accepted invitation.
-- packs/campus.json enables dating, intimacy, scenes, secrecy, romance tempo and character arcs, but not social.progression or romance-network; its dating profiles have no authored maintenance settings.
-- Campus already has attraction thresholds and character-specific allowed agreements. Preserve these; commitment stage and exclusivity agreement must remain separate concepts.
-Gaps in the inspected system: durable breakup history/scar, coordinated stage changes, and an explicit repair path; further rank/arc/secrecy integration needs a mapped follow-up audit.
+[Modules](../map/modules.md) identifies dating, authored progression, scenes, romance-network, intimacy and social; the [map index](../map/README.md) separates pack policy and runtime state.
+The draft identifies existing dating phases, attraction/agreement gates, satisfaction/strain, breakup thresholds/cooldowns and a broken-to-dating ask path. Satisfaction recovery alone does not reconcile.
+Authored setters/scenes and rivalry can also break relationships; all paths need coordinated history/scar bookkeeping. Existing setters do not necessarily enforce ladder adjacency or clear old agreements.
+Progression owns a separate authored state graph; intimacy owns eligibility, consent and aftercare. Reuse those systems rather than add an aftercare judge.
+Social invitations reject broken phases, so repair needs a reachable public interaction path. Campus already has attraction thresholds/allowed agreements; commitment and exclusivity policy remain separate.
+Gaps: durable breakup history/scar, coordinated stage changes and explicit repair. Further rank/arc/secrecy integration needs implementation audit.
 
-## Reference games (2–3, one line each)
-- rp-master: .rp-master/src/lib/dating/stage.ts separates warmth stages from requested commitment tiers, warns before breakup and applies a stat scar; .rp-master/src/lib/world/triggers.ts runs deterministic gated events; .rp-master/src/lib/dating/aftercare.ts supplies aftermath deltas through its existing judge, which we replace with engine rules under the owner's single-call decision.
-- Venus: .venus/shared/relationship.ts applies milestone flags, breakup counts/memories and renewed lover status; .venus/prompts/relationship.ts narrates current danger and past breakups independently, retaining history after reunion rather than implementing a commitment ladder.
+## Reference games (one line each)
+- rp-master: warmth and commitment tiers, warnings/scars and gated events; use deterministic engine rules in place of its aftercare judge.
+- Venus: breakup memories/counts and renewed lover status retain history after reunion without supplying our commitment ladder.
 
 ## Owner decisions (dated; every number lives here)
+- 2026-10-01 Breakups: stages exist; a breakup leaves a lasting stat scar but is repairable, so routes never fully close.
+- 2026-10-01 Stages (campus): acquaintance → dating → exclusive.
+- 2026-10-01 Breakup scar: one-time −10 Trust, −10 Chemistry, recoverable; breakup always remembered.
+- 2026-10-01 Strain: 2 in-game days of visible strain before an engine breakup; authored breakups separate.
+- 2026-10-01 Repair: after 2 in-game days, rapport back to a set level, plus a reconciliation scene she accepts; restarts at dating.
+- 2026-10-01 Judging (aftercare, rapport): no extra AI calls; the engine judges from state plus the turn's interpreted action. One call per turn stays.
+Every mechanic choice is a per-world creator option; ship the simplest mode first ([owner answers](../research/owner-answers.md)).
 
 ## Creator option (field, modes, campus default; creator UI screen)
-Proposed pack field: relationshipStageSettings with mode, ladder, scar, warning and repair policy; actor exceptions remain in datingProfiles.
-Modes: basic uses existing dating phases plus scar/history and repair; authored adds custom named commitment rungs and scene/event gates. Both retain repairability and affair possibilities.
-Proposed campus default: basic, presenting acquaintance → dating → exclusive; available/crush remain readiness states, and broken/strained remain conditions rather than extra ladder rungs. Final rung choice is in the report.
-Creator UI: public/studio.mjs, add a Relationship stages control beside Attraction and dating and above datingMaintenanceEditor()'s Relationship maintenance section; show advanced rung editing only in authored mode.
-Reuse existing Relationship states / Relationship progression controls for authored story graphs; explain their distinction from commitment, with dating as the commitment authority.
-Keep the current pack's thresholds on import; no silent retuning, phase migration or changes to character agreement support. Missing settings preserve legacy behavior until opted in.
-Affairs remain possible without rewriting a monogamous agreement into an open one; secrecy/exposure consequences stay with the existing systems, with their integration audited before implementation.
+Proposed relationshipStageSettings holds mode, ladder, scar, visible-strain policy and repair policy; character exceptions stay with dating profiles.
+Basic ships the decided campus ladder, scar/history and repair; authored permits named commitment rungs and scene/event gates. Both retain repairability and affair possibilities.
+Available/crush remain readiness states, broken/strained remain conditions. Keep existing thresholds and character agreement support on import; missing settings preserve legacy behavior.
+Place Relationship stages beside Attraction and dating, above Relationship maintenance in public/studio.mjs. Keep authored progression graph editing separate from dating's commitment authority.
+Show scar recovery, remembered history and the next ask/repair requirements. The repair rapport metric/level remains an owner question.
+Affairs remain possible without silently rewriting a monogamous agreement as open; preserve existing boundaries and secrecy/exposure consequences.
 
 ## Thin slice → full version
-Thin: extend dating state with breakup history and scar bookkeeping; apply the chosen stat hit once per genuine breakup, including rivalry/authored paths, and retain the record after reunion.
-Reuse current available/crush → dating → exclusive asks and deterministic gates; crossing a score threshold only makes commitment askable, and does not imply consent to intimacy.
-Broken relationships stay socially reachable; an engine-validated repair outcome reopens dating without restoring exclusive status or erasing the scar/history. Repair action/gates await the report's owner answer.
-Separate strain recovery from reconciliation; clear the obsolete commitment agreement on breakup and require fresh agreement on reunion. Warning timing and scar tuning await owner answers.
-Use state plus the existing interpreted action or authored event for judgment; keep the single model call per turn. Do not import rp-master's real-time timeout or physical milestone requirements.
-Full: custom commitment rungs, authored repair scenes and warning cues, coordinated graph/rank/arc gates, NPC pair parity and secrecy/exposure integration; stage UI and narration show current status alongside breakup history.
-Implementation acceptance: test ladder gates, every breakup path, exactly-once scar application, save/reload, repeat breaks, reachable repair, retained history, renewed agreements and affair eligibility with existing boundaries intact.
+Thin: dating owns coordinated commitment, breakup history and scar bookkeeping. Apply the decided hit once per genuine breakup across engine, authored and rivalry paths; repeat notifications cannot reapply it.
+The stat loss can recover, but breakup history persists after recovery/reunion. Visible strain lasts the decided duration before engine-triggered breakup; authored breakups follow their separate authored conditions.
+Clear obsolete commitment agreements on breakup. Thresholds only make asks eligible; they do not grant commitment or intimacy consent.
+Keep broken relationships socially reachable. After the decided delay and rapport recovery, require an engine-validated reconciliation scene she accepts; restart at dating with fresh agreement rather than restoring exclusivity.
+Separate strain recovery from reconciliation. Preserve existing consent/eligibility and use state plus the interpreted turn; no real-time timeout, invented physical milestones or extra model call.
+Full: custom rungs, authored repair scenes, coordinated graph/rank/arc gates, NPC-pair parity and secrecy/exposure integration; UI/narration show current status with remembered breakup history.
+Implementation checks: ladder gates, visible strain timing, every breakup path, exactly-once scar, repeat breaks, save/load, reachable repair/delay/acceptance, retained history, renewed agreements and affair eligibility.
 
 ## Fun rubric notes (agency, surprise, payoff, repetition)
-Agency: expose the next ask and why it is unavailable; rejection today is not a permanently closed route.
-Surprise: use witnessed consequences and character-authored reactions; stages alone never invent character choices.
-Payoff: a reunion acknowledges the hurt and renewed commitment rather than resetting the relationship.
-Repetition: scar application must not repeat on bookkeeping events; repair must not become an apology-spam shortcut.
+Agency: explain the next ask and repair requirements; rejection is not permanent closure. Surprise: witnessed consequences use authored reactions. Payoff: reunion acknowledges hurt. Repetition: bookkeeping never reapplies scars and apology spam cannot bypass accepted reconciliation.

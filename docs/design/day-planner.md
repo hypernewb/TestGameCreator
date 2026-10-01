@@ -1,47 +1,40 @@
-# Day planner: design card
-Status: draft · Tickets: T-016, T-011
+﻿# Day planner: design card
+Status: decided · Tickets: T-016, T-011, T-018
 
 ## Goal (what the player feels)
-Know what is worth doing today, choose where to spend time, and see that choice matter without guessing how to advance the day.
-Owner direction: clock-only is the long-term ideal; a planner is acceptable for this iteration if simpler to playtest, selected per world (see `docs/research/owner-answers.md`).
+Know what is worth doing today, choose where to spend time, and understand the remaining opportunities.
 
 ## What we have (self-audit, cite docs/map)
-- Scope: `docs/map/README.md`, `docs/map/modules.md`, and `docs/map/packs.md`; the module registry exposes relevant systems beyond the map's short list.
-- `packages/modules/social.mjs`: `world.schedule` moves NPCs on committed time advances, supports repeating/weekly routines and exceptions, holds scene participants, and offers wait-until-arrival; conversation can reveal the next scheduled stop.
-- `packages/modules/daypart.mjs` (named by `packages/modules/index.mjs`): next-daypart returns the player to an intro location, then exposes eligible invitations from the completed intro artifact; accepting uses travel and meeting-arrival checks.
-- `packs/living-world.json`: enables schedules and daypart introductions. This is an existing day-loop example, not a blank slate.
-- `packs/campus.json`: enables schedules, authored activities with durations and effects, and scripted scenes; defines `gameProject.sceneBudget` and `goodbyeEndsDay`, but does not enable `world.daypart` or author `daypart` settings.
-- `packages/modules/scenes.mjs`: offered scenes already expose who/where/time-cost hints and locked reasons; persistent promises have deadlines and kept/broken outcomes. These promises are distinct from a daily activity menu.
-- `packages/modules/dating.mjs`: attraction preferences can react to kept/broken promises; planner selection alone must not create a promise or award relationship progress.
-- `packages/modules/economy.mjs` and `stats.mjs`: deterministic money/stat effects already exist; campus activities author these rewards, so planner should reuse them.
-- `packages/modules/abilities.mjs` (named by the registry): an optional named energy pool buys powers and refills at a rest location; it is not a daily social-action budget and campus does not enable it.
-- Gap in the audited surface: no registered day-planner module or campus planner selector; the research digest's claim that ours has no day loop overlooks the systems above. Core time handlers were outside this audit's file scope.
-- Overlap risk: activity duration, scene budget, goodbye-to-day-end, daypart intros, and power energy must not become competing charges for the same selection.
+[Modules](../map/modules.md) locates social schedules, scenes, dating, economy and stats; the [map index](../map/README.md) separates pack content, engine time and presentation.
+The draft identifies schedules/exceptions and active-cast holds, daypart introductions/invitations, offered scenes, timed promises and authored activities with effects.
+Campus already has schedules, activities, scene-budget and goodbye-to-day-end settings; the draft reports no campus planner selector or enabled daypart introduction loop.
+Promise acceptance remains distinct from planner selection. Optional power energy is not a daily social-action budget.
+Avoid overlapping charges from activity duration, travel, scene budgets, goodbye handling and daypart transitions.
 
-## Reference games (2–3, one line each)
-- rp-master: `.rp-master/src/lib/world/dayPlanner.ts` offers Meet/Text/Rest without a menu-generation call; meet location falls back from schedule to frequented place to home, and busy status is narrative rather than a hard gate; `world/calendar.ts` derives energy from day/phase and advances on spending.
-- Venus: `.venus/stores/slotActions.ts` prioritizes today's plans, classes, shifts, and projects, then fills with weak-stat activities; `timetable.ts` resolves current obligations/presence, and `gameStore.ts` advances alternating slots with date rollover.
+## Reference games (one line each)
+- rp-master: deterministic Meet/Text/Rest menu, schedule/haunt/home fallbacks and calendar-derived spending; narrative busy status is not our permission contract.
+- Venus: obligation-first slot menus, weak-stat activity fillers, timetable presence and date rollover.
 
 ## Owner decisions (dated; every number lives here)
+- 2026-10-01 Day loop: clock-only is the ideal; a day-planner screen is fine for this iteration if it's simpler to playtest. Make it a creator option (clock | planner).
+- 2026-10-01 Planner: campus default = planner; 3 slots/day (morning/afternoon/evening), one activity each; ending a chat doesn't end the day in planner (still does in clock).
+- 2026-10-01 Judging (aftercare, rapport): no extra AI calls; the engine judges from state plus the turn's interpreted action. One call per turn stays.
+Every mechanic choice is a per-world creator option; ship the simplest mode first ([owner answers](../research/owner-answers.md)).
 
 ## Creator option (field, modes, campus default; creator UI screen)
-- Proposed pack field: `gameProject.timeMode`, enum `clock | planner`; absent field means `clock` for compatibility. Both use the same deterministic world clock and schedule state.
-- `clock`: existing exploration, activities, and continuous conversation advance through existing commands; no planner landing screen.
-- `planner`: a “Plan today” screen groups existing legal opportunities by daypart, showing destination, known company, time cost, and availability; choose an activity now rather than booking a whole day.
-- Proposed campus default: `planner` for the thin-slice playtest, pending report Q1; today's pack has no explicit mode. No pack change in this ticket.
-- `public/studio.mjs`: add “Day loop” to the existing “Game project” section in `render()`, alongside “Conversation gameplay” and calendar settings; keep schedule/activity authoring in their existing editors. Explain planner's time accounting beside the selector.
-- Preserve creator location/schedule visibility settings: undiscovered whereabouts must not appear just because the planner knows the schedule. Show only authored/known information and ordinary availability hints.
+Proposed gameProject.timeMode = clock | planner; campus default planner. Missing settings preserve legacy clock behavior.
+Add Day loop beside conversation/calendar settings in public/studio.mjs; retain existing schedule/activity editors.
+Clock retains exploration/time commands and goodbye-to-day-end behavior. Planner shows the decided day slots and an activity choice for the current slot.
+Show known destination/company, availability and remaining slots; preserve authored location/schedule visibility. Planner knowledge must not reveal undiscovered whereabouts.
 
 ## Thin slice → full version
-- Thin slice: build a deterministic menu from existing available activities, offered scenes, and waits; keep free exploration accessible. Do not require AI-generated daypart invitations or introduce an energy pool merely to render the menu.
-- Selecting dispatches the existing action; retain its duration and effects pending Q2. Check conditions again at commitment/arrival, report unavailable choices without rewards, and never teleport an NPC or imply agreement to meet.
-- Browsing is free. Return to the planner when a scene ends; use existing time-boundary reactions for schedules, promises, and daily limits. Pending Q3, ending a conversation should leave the rest of the day usable in planner mode.
-- Carry the active scene and committed clock through save/load; selecting or reloading must not duplicate rewards/time charges. Keep `clock` behavior compatible and do not add model calls.
-- Full version: forecast known opportunities across the day, add editable future reservations with explicit acceptance and cancellation, and show clashes/missed commitments through the existing promise ledger.
-- Only after the menu is useful, consider a creator-tunable daily activity budget derived from the same clock; settle numerical costs separately, keep it distinct from power energy, and avoid double-charging travel and scene turns.
-- Implementation acceptance: play through an activity, conversation, wait, day rollover, unavailable arrival, and save/load in both modes; verify matching committed effects, correct schedules/deadlines, free browsing, and a usable remaining day.
+Thin: build a deterministic menu from legal activities, offered scenes and waits, with exploration accessible. No menu-generation call, new energy pool or pending daily-budget decision.
+Commit the selected activity through existing actions/effects and consume the current planner slot once. Recheck conditions at commitment/arrival; unavailable choices grant no rewards.
+Use the shared world clock for slot transitions, schedules, promise deadlines and daily limits. Activity durations, travel and scene turns must fit that slot accounting without duplicate activity charges; exact duration-to-slot mapping needs an owner decision.
+Browsing is free. Ending a chat returns to the planner without ending the day; ending a chat in clock mode still ends the day. Consume remaining slots and roll over through the shared calendar.
+Keep active scene, slot progress and committed effects through save/load; retries cannot duplicate rewards or slot spending. Planner selection never creates a promise, teleports an NPC or implies meeting consent.
+Full: forecast known opportunities, add accepted/cancellable future reservations and show clashes/missed commitments through the existing promise ledger; retain the decided slot model.
+Implementation checks: activity/chat/wait, remaining-day usability, unavailable arrival, rollover, save/load, visibility and correct schedule/deadline effects in both modes.
 
 ## Fun rubric notes (agency, surprise, payoff, repetition)
-- Highest impact: unclear next move; evidence is the split across schedule waits, activities, scene offers, and intro invitations. Cheap experiment: surface existing actions together and compare hesitation before the next choice.
-- Next: opaque time loss; campus authors activity duration, scene budget, and goodbye-to-day-end settings. Cheap experiment: preview committed time cost and test whether players can predict their remaining opportunities.
-- Next: repetitive filler; menus can flatten authored surprises into repeated grind. Cheap experiment: put due commitments and newly available scenes ahead of repeat activities, retain exploration, and compare repeat selections and new-scene encounters.
+Agency: show useful choices and remaining opportunities. Surprise: surface new scenes and due commitments without exposing secrets. Payoff: predictable slot use makes choices matter. Repetition: prioritize obligations/new scenes over filler while keeping exploration.

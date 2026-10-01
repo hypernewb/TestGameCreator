@@ -48,6 +48,7 @@ export interface SheetRule { id:string;event:string;enabled:boolean;condition:Sh
 export type SheetSocialLink={id:string;relation:string;notes:string}&({actorId:string;externalName:null}|{actorId:null;externalName:string});
 export interface SheetWeeklyStop { weekday:'Monday'|'Tuesday'|'Wednesday'|'Thursday'|'Friday'|'Saturday'|'Sunday';daypart:'Morning'|'Afternoon'|'Evening';location:string;skipHolidays?:boolean }
 export interface SheetException { id:string;startTick:number;endTick:number;location:string;notes?:string }
+export interface SheetWant { id:string;text:string;keys:string[];reward?:number }
 export interface CharacterSheet {
  actorId:string;
  identity:{name:string;age:number|null;pronouns:string;occupation:string;year:string;birthday:string;workplace:string|null;home:string|null;haunts:string[];lifeNotes:string};
@@ -88,6 +89,10 @@ export interface DailyNeedMatch { kind:ActKind|'ask'; target?:string }
 export interface DailyNeedDefinition { id:string; hint:string; weight?:number; traitWeights?:Record<string,number>; matches:DailyNeedMatch[]; against?:DailyNeedMatch[] }
 export interface DailyNeedsPack { reward:{like:number;trust:number}; againstLike:number; needs:DailyNeedDefinition[] }
 export interface DailyNeedState { day:number; need:string|null; rewarded:boolean; sources:string[] }
+export interface WantSettings { reward?:number; active?:number }
+export interface WantPack { wantSettings?:WantSettings }
+export interface WantState { week:number; active:string[]; spent:Record<string,number> }
+export interface WantFulfilledEvent { character:string; want:string; source:string; points:number; text:string }
 export interface LustBaselineTuning { perDaypart?:number; milestones?:{intimateFirst?:number;dating?:number;exclusive?:number;preference?:number}; hint?:string }
 export interface LustBaselinePack { lustBaseline?:LustBaselineTuning }
 export interface LustBaselineRaisedEvent { character:string; milestone:string; preference?:string; from:number; to:number; delta:number; text:string }

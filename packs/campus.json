@@ -84,7 +84,8 @@
     "social.npc": "0.2.0",
     "social.gossip": "0.1.0",
     "social.firsts": "0.1.0",
-    "social.anniversary": "0.1.0"
+    "social.anniversary": "0.1.0",
+    "social.wants": "0.1.0"
   },
   "gameProject": {
     "timeMode": "planner",
@@ -1899,6 +1900,10 @@
       "character": "abigail"
     }
   ],
+  "wantSettings": {
+    "reward": 3,
+    "active": 2
+  },
   "dailyNeeds": {
     "reward": {
       "like": 2,

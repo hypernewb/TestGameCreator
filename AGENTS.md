@@ -25,3 +25,4 @@ Deviations: <none | what differs from the brief and why>
 Noticed: <out-of-scope issues, one line each>
 Questions: <none | for the director>
 ```
+Questions for the owner (design calls you can't make) go on the `Questions:` line as multiple choice: `Q: <question>? A) <recommended> B) … C) …`. Never guess on actions, consent or character content.

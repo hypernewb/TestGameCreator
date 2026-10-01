@@ -10,10 +10,13 @@ Rules that hold for every milestone:
 
 ## Order
 
-1. **Run the M5 fun gate** (M5 is done, social-link unlocks included).
-2. **Open-play tier:** O1 free-typed firsts first ([FIRSTS-PLAN.md](FIRSTS-PLAN.md)), with O0 alongside. Then O2 → O3 → O4 → O5 → O6.
-3. **Fun gate** runs on campus after M5, and again after O1, O2 and O5 (the milestones that change how play feels).
-4. **M4 leftovers**, the **Later** list, then **P1–P4**, where a Game or Open-play milestone needs them.
+Re-planned 2026-10-01 (owner interview). **v1 done = campus is fun** on a cloud model, for the owner and a few friends. Felt pains: typing doesn't change the world, and characters feel flat. Work is delegated through `docs/briefs/` (see `AGENTS.md`, `docs/roles/`).
+
+1. **O2, intimate-first:** physical and intimate typed actions become state (consent, limits, gates; state wins over prose). Move/buy/plans come after.
+2. **C1. Character depth (new):** a distinct voice per heroine, NPC initiative (texts first, suggests plans, teases, jealousy, wants of her own), and visible progression of chemistry and desire, so day 5 doesn't feel like day 1.
+3. **Fun gate** on campus (cloud model).
+4. **F1. Friends-ready:** easy install, bring-your-own API key, first-run setup.
+5. Then O1 firsts, O3 clock and O0 routes, when play shows they're needed. Creator/M2 leftovers, M4 leftovers and P1–P4 are parked until v1.
 5. `after-hours` stays a test fixture only. Tests move to campus, then the pack is deleted in a reviewed change.
 
 ## Game tier (what's left)

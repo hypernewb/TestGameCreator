@@ -40,7 +40,7 @@ function secondsFor(turns,measured){
 export function funMetrics(state,pack,{seconds:measured={}}={}){
  const turns=playerTurns(state),{source,seconds}=secondsFor(turns,measured),romantic=new Set((pack.datingProfiles||[]).map(d=>d.character));
  const sceneById=new Map((pack.scriptedScenes||[]).map(s=>[s.id,s]));
- const seen={scenes:new Set(),beats:new Set(),places:new Set([state.actors?.[pack.playerId]?.location].filter(Boolean)),people:new Set(),objects:new Set()};let clock=0,deadRun=0,quietRun=0,lastBeat=0;const beatWindows=new Set();
+ const seen={scenes:new Set(),beats:new Set(),places:new Set([state.actors?.[pack.playerId]?.location].filter(Boolean)),people:new Set(),objects:new Set()};let clock=0,deadRun=0,quietRun=0,lastBeat=0;const beatWindows=new Set(),beatCast=new Map();
  const m={turns:turns.length,timing:source,minutes:0,choices:0,typed:0,typedLive:0,deadTurns:0,longestDeadStreak:0,freshTurns:0,firstChoice:null,firstSpark:null,firstDiscovery:null,firstPayoff:null,firstDrama:null,firstCg:null,deadByCommand:{},maxQuietDayparts:pack.directorProfile?0:null,inputLost:0,longestBeatGap:0,trailingDrought:null,zeroBeatWindows:null};
  const mark=(key,i,via)=>{if(!m[key])m[key]={turn:i+1,minutes:Number((clock/60).toFixed(1)),via};};
  turns.forEach((t,i)=>{
@@ -63,6 +63,8 @@ export function funMetrics(state,pack,{seconds:measured={}}={}){
    if(scene&&(e.type==='story.sceneSelected'||e.type==='story.sceneStarted')&&sceneById.get(scene)?.cg)mark('firstCg',i,scene); // a gallery unlock: delight, not necessarily romance
    const object=e.type==='world.objectExamined'?p.object??p.target??p.id:null;if(object&&!seen.objects.has(object)){seen.objects.add(object);fresh=true;}
    if(DRAMA.has(e.type))mark('firstDrama',i,e.type);
+   // Spotlight equity (director-dm card): who the dealt beats actually starred, so rotation can be falsified.
+   if(e.type==='story.incident'||e.type==='story.directorDealt')for(const id of new Set(Object.values(p.roles||{})))if(id&&id!==pack.playerId)beatCast.set(id,(beatCast.get(id)||0)+1);
   }
   if(fresh)m.freshTurns++;
   if(beat){m.longestBeatGap=Math.max(m.longestBeatGap,(clock-lastBeat)/60);lastBeat=clock;beatWindows.add(Math.floor(clock/600));}
@@ -73,6 +75,7 @@ export function funMetrics(state,pack,{seconds:measured={}}={}){
  const narrated=turns.map(t=>t.narrative),withText=narrated.filter(narrativeGrams).length,dupes=narrativeDupes(narrated);
  m.minutes=Number((clock/60).toFixed(1));
  Object.assign(m,{choicesPer10:m.minutes?Number((m.choices*10/m.minutes).toFixed(1)):0,deadRatio:m.turns?Number((m.deadTurns/m.turns).toFixed(2)):0,freshRatio:m.turns?Number((m.freshTurns/m.turns).toFixed(2)):0,typedEffective:m.typed?Number((m.typedLive/m.typed).toFixed(2)):null,storylets:{seen:seen.scenes.size,total:sceneById.size},storyletIds:[...seen.scenes],repeatedProse:withText?Number((new Set(dupes.map(d=>d.turns[1])).size/withText).toFixed(2)):null,nearDuplicates:dupes,ending:state.modules?.['story.endings']?.selected||null,trailingDrought:Number(((clock-lastBeat)/60).toFixed(1)),zeroBeatWindows:clock>0?Math.max(0,Math.ceil(clock/600)-beatWindows.size):0});
+ const cast=[...beatCast.entries()].map(([id,n])=>({id,n})).sort((a,b)=>b.n-a.n||a.id.localeCompare(b.id));m.spotlight=cast.length?{counts:cast,spread:cast.at(-1).n?Number((cast[0].n/cast.at(-1).n).toFixed(1)):null}:null;
  return m;
 }
 
@@ -89,5 +92,5 @@ export function funGate(m){
 }
 
 const mins=x=>x?`${x.minutes}m/t${x.turn}`:'—';
-export function funLine(m){return `fun[${m.timing}]: ${m.turns} turns ${m.minutes}m | 1st choice ${mins(m.firstChoice)} | 1st discovery ${mins(m.firstDiscovery)} | 1st spark ${mins(m.firstSpark)} | 1st payoff ${mins(m.firstPayoff)} | 1st CG ${mins(m.firstCg)} | drama ${mins(m.firstDrama)} | choices/10m ${m.choicesPer10} | dead ${m.deadTurns} (${Math.round(m.deadRatio*100)}%, streak ${m.longestDeadStreak}) | fresh ${Math.round(m.freshRatio*100)}% | typed ${m.typed?`${m.typed} (${Math.round(m.typedEffective*100)}% landed)`:'0'} | quiet max ${m.maxQuietDayparts==null?'—':m.maxQuietDayparts} | storylets ${m.storylets.seen}/${m.storylets.total} | repeat prose ${m.repeatedProse==null?'—':Math.round(m.repeatedProse*100)+'%'} | lost inputs ${m.inputLost} | beat gap max ${m.longestBeatGap?Number(m.longestBeatGap.toFixed(1))+'m':'—'} | tail drought ${m.trailingDrought?m.trailingDrought+'m':'—'}${m.ending?` | ending ${m.ending}`:''}`;}
+export function funLine(m){return `fun[${m.timing}]: ${m.turns} turns ${m.minutes}m | 1st choice ${mins(m.firstChoice)} | 1st discovery ${mins(m.firstDiscovery)} | 1st spark ${mins(m.firstSpark)} | 1st payoff ${mins(m.firstPayoff)} | 1st CG ${mins(m.firstCg)} | drama ${mins(m.firstDrama)} | choices/10m ${m.choicesPer10} | dead ${m.deadTurns} (${Math.round(m.deadRatio*100)}%, streak ${m.longestDeadStreak}) | fresh ${Math.round(m.freshRatio*100)}% | typed ${m.typed?`${m.typed} (${Math.round(m.typedEffective*100)}% landed)`:'0'} | quiet max ${m.maxQuietDayparts==null?'—':m.maxQuietDayparts} | storylets ${m.storylets.seen}/${m.storylets.total} | repeat prose ${m.repeatedProse==null?'—':Math.round(m.repeatedProse*100)+'%'} | lost inputs ${m.inputLost} | beat gap max ${m.longestBeatGap?Number(m.longestBeatGap.toFixed(1))+'m':'—'} | tail drought ${m.trailingDrought?m.trailingDrought+'m':'—'} | spotlight ${m.spotlight?m.spotlight.counts.slice(0,3).map(c=>`${c.id}:${c.n}`).join(' ')+(m.spotlight.spread?` (×${m.spotlight.spread})`:' (starved cast)'):'—'}${m.ending?` | ending ${m.ending}`:''}`;}
 export function gateLine(gate){return 'gate: '+gate.map(g=>`${g.id} ${g.pass===true?'ok':g.pass===false?'NO':g.status==='not-exercised'?'—':'?'}`).join(' · ');}

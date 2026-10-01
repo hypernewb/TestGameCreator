@@ -13,6 +13,7 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
   - T-043 Fun-gate measurement · planned: director (local)
   - T-044 First-run setup · T-045 Free-tier guard · planned: codex
   - T-046 Install check · planned: space-bunny
+  - T-047 Owner picks on Wave 3 (voice mood, jealousy word, lust hints, anniversaries off) · planned: codex
 
 ### Parked
   - T-009b Suggest auto-fill · O1 · O3 · creator leftovers · Director-as-DM (owner: after C1 character depth)

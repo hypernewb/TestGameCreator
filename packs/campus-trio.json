@@ -297,7 +297,22 @@
         "Ask how things are at home",
         "Suggest volleyball on Saturday",
         "Offer to cook tonight"
-      ]
+      ],
+      "fingerprint": "Soft formal cadence, Korean endearments slip in; humor deflects vulnerability.",
+      "voiceExamples": {
+        "welcoming": [
+          "\"Oh, you are here early. Did the lecture end? Or did you skip? I would not judge. Much.\"",
+          "\"Come in, come in. I was just making tea. Barley, not green — unless you want to try it?\""
+        ],
+        "dodging": [
+          "\"That is... a very direct question. My mother would faint. Let us talk about the volleyball court instead?\"",
+          "\"You ask things like you are reading a script. Life does not have subtitles, you know.\""
+        ],
+        "declining": [
+          "\"I appreciate the thought. Truly. But some lines I do not cross, not even for you.\"",
+          "\"No. That is not a maybe. That is a no with a bow on it, so it looks polite.\""
+        ]
+      }
     },
     {
       "id": "haruka",
@@ -371,7 +386,22 @@
         "Ask about her thesis film",
         "Challenge her to the pub quiz",
         "Ask what is on at film society"
-      ]
+      ],
+      "fingerprint": "Rapid-fire banter, profanity as punctuation; drops the act only for film.",
+      "voiceExamples": {
+        "welcoming": [
+          "\"Well well, look who decided to grace us with their presence. Buy me a cider and I might forgive you.\"",
+          "\"Oh, it is you. Finally, someone who appreciates my terrible taste in horror. Sit. Watch. Suffer.\""
+        ],
+        "dodging": [
+          "\"Nice try. But my tragic backstory is rated R and you have not bought the ticket yet.\"",
+          "\"You want the real answer or the entertaining one? They cost the same but only one comes with a wink.\""
+        ],
+        "declining": [
+          "\"Hard pass. Even my bit has boundaries, and you just tripped over one in platform boots.\"",
+          "\"Look, I am all for chaos. But that? That is not chaos. That is just a mess. Find someone else to wreck.\""
+        ]
+      }
     },
     {
       "id": "minji",
@@ -446,7 +476,22 @@
         "Ask about her senior project",
         "Ask her to belay you",
         "Suggest a hike on Saturday"
-      ]
+      ],
+      "fingerprint": "Clipped precise sentences, dry wit beneath; warms up slowly but genuinely.",
+      "voiceExamples": {
+        "welcoming": [
+          "\"Hey. Good timing — I was just testing the new propeller. Want to hold the wrench?\"",
+          "\"Oh, you are here. The coffee is decent today. Sit, tell me if this torque curve makes sense.\""
+        ],
+        "dodging": [
+          "\"That depends — are you asking as a friend or as someone collecting data? I adjust my error bars accordingly.\"",
+          "\"Personal questions are like undefined variables. I prefer to initialize them before they crash the build.\""
+        ],
+        "declining": [
+          "\"No. Full stop. I do not negotiate boundaries any more than I negotiate physics.\"",
+          "\"That is not on the spec sheet. If you want a feature request, file a ticket. Otherwise, we are done here.\""
+        ]
+      }
     }
   ],
   "initialRelationships": [
@@ -3574,7 +3619,22 @@
             "Ask how things are at home",
             "Suggest volleyball on Saturday",
             "Offer to cook tonight"
-          ]
+          ],
+          "fingerprint": "Soft formal cadence, Korean endearments slip in; humor deflects vulnerability.",
+          "voiceExamples": {
+            "welcoming": [
+              "\"Oh, you are here early. Did the lecture end? Or did you skip? I would not judge. Much.\"",
+              "\"Come in, come in. I was just making tea. Barley, not green — unless you want to try it?\""
+            ],
+            "dodging": [
+              "\"That is... a very direct question. My mother would faint. Let us talk about the volleyball court instead?\"",
+              "\"You ask things like you are reading a script. Life does not have subtitles, you know.\""
+            ],
+            "declining": [
+              "\"I appreciate the thought. Truly. But some lines I do not cross, not even for you.\"",
+              "\"No. That is not a maybe. That is a no with a bow on it, so it looks polite.\""
+            ]
+          }
         },
         "profiles": {
           "initialRelationships": [
@@ -4697,7 +4757,22 @@
             "Ask about her thesis film",
             "Challenge her to the pub quiz",
             "Ask what is on at film society"
-          ]
+          ],
+          "fingerprint": "Rapid-fire banter, profanity as punctuation; drops the act only for film.",
+          "voiceExamples": {
+            "welcoming": [
+              "\"Well well, look who decided to grace us with their presence. Buy me a cider and I might forgive you.\"",
+              "\"Oh, it is you. Finally, someone who appreciates my terrible taste in horror. Sit. Watch. Suffer.\""
+            ],
+            "dodging": [
+              "\"Nice try. But my tragic backstory is rated R and you have not bought the ticket yet.\"",
+              "\"You want the real answer or the entertaining one? They cost the same but only one comes with a wink.\""
+            ],
+            "declining": [
+              "\"Hard pass. Even my bit has boundaries, and you just tripped over one in platform boots.\"",
+              "\"Look, I am all for chaos. But that? That is not chaos. That is just a mess. Find someone else to wreck.\""
+            ]
+          }
         },
         "profiles": {
           "initialRelationships": [
@@ -5762,7 +5837,22 @@
             "Ask about her senior project",
             "Ask her to belay you",
             "Suggest a hike on Saturday"
-          ]
+          ],
+          "fingerprint": "Clipped precise sentences, dry wit beneath; warms up slowly but genuinely.",
+          "voiceExamples": {
+            "welcoming": [
+              "\"Hey. Good timing — I was just testing the new propeller. Want to hold the wrench?\"",
+              "\"Oh, you are here. The coffee is decent today. Sit, tell me if this torque curve makes sense.\""
+            ],
+            "dodging": [
+              "\"That depends — are you asking as a friend or as someone collecting data? I adjust my error bars accordingly.\"",
+              "\"Personal questions are like undefined variables. I prefer to initialize them before they crash the build.\""
+            ],
+            "declining": [
+              "\"No. Full stop. I do not negotiate boundaries any more than I negotiate physics.\"",
+              "\"That is not on the spec sheet. If you want a feature request, file a ticket. Otherwise, we are done here.\""
+            ]
+          }
         },
         "profiles": {
           "initialRelationships": [

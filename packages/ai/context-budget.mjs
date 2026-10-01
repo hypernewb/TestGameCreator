@@ -82,8 +82,19 @@ export function recentlySurfaced(world,turnId,window=8){
  return seen;
 }
 
-const profileOf=a=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',description:a.description||'',personality:a.personality||'',behavior:a.behavior||{},traits:a.traits||[],voice:a.voice||'',style:a.style||'',examples:a.examples||[],goal:a.goal||'',backstory:a.backstory||'',likes:a.likes||[],dislikes:a.dislikes||[]});
-const compactProfile=a=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',personality:clip(a.personality||a.description||'',240),traits:a.traits||[],voice:a.voice||'',style:a.style||'',examples:(a.examples||[]).slice(0,2)});
+// Pick 2 voice examples by relationship stage and mood tier
+function voiceExamplesByState(a,stage,mood,strained){
+  const ex=a.voiceExamples||{};
+  const moodTier=mood?mood.includes('good')||mood.includes('chattier')?'welcoming':mood.includes('tired')||mood.includes('quieter')?'dodging':'declining':'welcoming';
+  const pick=(cat)=>[].concat(ex[cat]||[]).slice(0,2);
+  // Stage priority: dating/exclusive -> welcoming, strained/rejected/broken -> declining, else mood-based
+  if(['dating','exclusive','crush'].includes(stage))return pick('welcoming');
+  if(strained||['rejected','broken'].includes(stage))return pick('declining');
+  return pick(moodTier);
+}
+
+const profileOf=(a,stage='',mood='',strained=false)=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',description:a.description||'',personality:a.personality||'',behavior:a.behavior||{},traits:a.traits||[],voice:a.voice||'',fingerprint:a.fingerprint||'',style:a.style||'',examples:a.examples||[],goal:a.goal||'',backstory:a.backstory||'',likes:a.likes||[],dislikes:a.dislikes||[],voiceBlock:{fingerprint:a.fingerprint||'',examples:voiceExamplesByState(a,stage,mood,strained)}});
+const compactProfile=(a,stage='',mood='',strained=false)=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',personality:clip(a.personality||a.description||'',240),traits:a.traits||[],voice:a.voice||'',fingerprint:a.fingerprint||'',voiceBlock:{fingerprint:a.fingerprint||'',examples:voiceExamplesByState(a,stage,mood,strained)},examples:(a.examples||[]).slice(0,2)});
 
 /**
  * Fits a scene context into the model's window. `render(context)` must return the prompt messages so the fixed
@@ -98,7 +109,10 @@ export function budgetSceneContext(context,pack,world,turnId,{window=8192,reply=
  const budget=Math.max(0,Math.floor(window*(1-margin))-reply),poolBudget=Math.max(0,budget-base);
  const items=[],add=(pool,tier,key,rank,pairs,extra={})=>{const levels=lods(pairs,ratio,promptView[pool]);if(levels.length)items.push({pool,tier,key,rank,lods:levels,...extra});};
  const actors=pack.actors.filter(a=>cast.includes(a.id));
- actors.forEach((a,i)=>add('castProfiles',1,`cast:${a.id}`,100-i,[['full',profileOf(a)],['compact',compactProfile(a)],['name',{id:a.id,name:a.name,pronouns:a.pronouns||'they/them'}]]));
+ // Determine stage and mood for voice example selection
+  const datingInfo=a=>(context.dating||[]).find(d=>d.character===a.id)||{};
+  const currentMood=context.mood||'';
+  actors.forEach((a,i)=>{const d=datingInfo(a);const phase=d.phase||'';const strained=d.strained||false;add('castProfiles',1,`cast:${a.id}`,100-i,[['full',profileOf(a,phase,currentMood,strained)],['compact',compactProfile(a,phase,currentMood,strained)],['name',{id:a.id,name:a.name,pronouns:a.pronouns||'they/them'}]]);});
  const history=context.sceneHistory||[];
  // `verbatim` caps how many recent turns may stay word for word even when they fit: a small model given 25 full turns
   // loses track of which question it is answering, and does better with a short transcript plus one-line digests.

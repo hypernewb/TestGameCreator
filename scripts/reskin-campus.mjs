@@ -20,11 +20,32 @@ const BIO={
  jana:{age:20,description:'Yuna Han, 20, a Korean exchange student in English and Literature, here for one semester from Seoul. Petite, long black hair worn half-up with a ribbon, doe eyes, rosy cheeks. Your roommate.',
   traits:['warm','homesick','reserved','insecure'],style:'Off-shoulder blouses, pastel midi skirts, ribbons; soft pinks and whites.',goal:'Work out whether the life her parents planned for her is the one she wants.',
   voice:'Easy and warm, slightly formal English with the odd Korean word. Deflects with a joke when something is close to the bone.',
+  fingerprint:'Soft formal cadence, Korean endearments slip in; humor deflects vulnerability.',
+  voiceExamples:{
+    welcoming:['"Oh, you are here early. Did the lecture end? Or did you skip? I would not judge. Much."','"Come in, come in. I was just making tea. Barley, not green — unless you want to try it?"'],
+    dodging:['"That is... a very direct question. My mother would faint. Let us talk about the volleyball court instead?"','"You ask things like you are reading a script. Life does not have subtitles, you know."'],
+    declining:['"I appreciate the thought. Truly. But some lines I do not cross, not even for you."','"No. That is not a maybe. That is a no with a bow on it, so it looks polite."']},
   backstory:'Grew up on Jeju, the island off Korea\'s southern tip, then moved to Seoul with her best friend Jisoo. Her parents have the next ten years planned for her: a job at her father\'s firm, a nice boy from church, a flat near them. They fought when she chose a semester abroad, and that fight is not over.'},
  nova:{age:20,description:'Haruka "Ruka" Mori, 20, a Japanese-American film major who plays guitar in a garage band. Short black bob with blunt bangs, dark brown eyes, gold hoops, a grin that means trouble.',
-  traits:['guarded','mischievous','creative','rebellious'],style:'Black leather jacket over a white camisole, skinny jeans, boots; chains on a bad day.'},
+  traits:['guarded','mischievous','creative','rebellious'],style:'Black leather jacket over a white camisole, skinny jeans, boots; chains on a bad day.',
+  goal:'Finish her thesis film and prove she is more than the rebellion.',
+  voice:'Fast, loud, teasing. Swears cheerfully. Turns everything into a bit, except film.',
+  fingerprint:'Rapid-fire banter, profanity as punctuation; drops the act only for film.',
+  voiceExamples:{
+    welcoming:['"Well well, look who decided to grace us with their presence. Buy me a cider and I might forgive you."','"Oh, it is you. Finally, someone who appreciates my terrible taste in horror. Sit. Watch. Suffer."'],
+    dodging:['"Nice try. But my tragic backstory is rated R and you have not bought the ticket yet."','"You want the real answer or the entertaining one? They cost the same but only one comes with a wink."'],
+    declining:['"Hard pass. Even my bit has boundaries, and you just tripped over one in platform boots."','"Look, I am all for chaos. But that? That is not chaos. That is just a mess. Find someone else to wreck."']},
+  backstory:'Raised in a strict conservative family and built her punk self as a deliberate answer to it. Runs the film society with more enthusiasm than budget.'},
  abigail:{age:20,description:'Min-ji Park, 20, a Korean-American systems-engineering major and campus skater. Platinum-blonde bob with dark roots, silver cross earrings, athletic build.',
-  traits:['analytical','adventurous','practical','competitive'],style:'Cropped denim jacket, crop tops, cargo pants; a sneaker for every mood.'}};
+  traits:['analytical','adventurous','practical','competitive'],style:'Cropped denim jacket, crop tops, cargo pants; a sneaker for every mood.',
+  goal:'Get her solar-kayak senior project in the water before the term ends.',
+  voice:'Plain, friendly, precise. Asks practical questions and notices contradictions. Laughs easily once she is comfortable.',
+  fingerprint:'Clipped precise sentences, dry wit beneath; warms up slowly but genuinely.',
+  voiceExamples:{
+    welcoming:['"Hey. Good timing — I was just testing the new propeller. Want to hold the wrench?"','"Oh, you are here. The coffee is decent today. Sit, tell me if this torque curve makes sense."'],
+    dodging:['"That depends — are you asking as a friend or as someone collecting data? I adjust my error bars accordingly."','"Personal questions are like undefined variables. I prefer to initialize them before they crash the build."'],
+    declining:['"No. Full stop. I do not negotiate boundaries any more than I negotiate physics."','"That is not on the spec sheet. If you want a feature request, file a ticket. Otherwise, we are done here."']},
+  backstory:'The practical nerd of her year and the steady one in any group. Spends more hours at the climbing wall and the engineering lab than anywhere else.'}};
 // Exact phrases, applied before the id/name rename. Order matters where one phrase contains another.
 const PHRASES=[
  ['"Can I tell you something stupid? I have not said Dominik\'s name in a week without turning it into a joke."','"Can I tell you something stupid? I have not talked about home in a week without turning it into a joke."'],

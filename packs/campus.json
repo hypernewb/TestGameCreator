@@ -75,6 +75,7 @@
     "character.arc": "0.1.0",
     "character.sobriety": "0.1.0",
     "social.phone": "0.1.0",
+    "social.outreach": "0.1.0",
     "story.endings": "0.1.0",
     "story.scenes": "0.1.0",
     "social.secrecy": "0.2.0",
@@ -3057,6 +3058,227 @@
       }
     }
   ],
+  "outreachSettings": {
+    "stageChance": {"acquaintance": 0.1, "dating": 0.35, "exclusive": 0.55},
+    "likeScale": 1,
+    "maxPerDay": 2,
+    "neglectDays": 2,
+    "teaseLust": 40,
+    "replyLike": 1,
+    "replyTrust": 1,
+    "replyLikeCap": 2,
+    "ignoredLike": -1
+  },
+  "outreachMessages": [
+    {
+      "id": "outreach-jana-check-in",
+      "character": "jana",
+      "kind": "check-in",
+      "text": "Hey. Thinking of you. How's your day going?",
+      "replies": [
+        {"id": "good", "text": "Going great. How about you?"},
+        {"id": "okay", "text": "Okay, just busy."},
+        {"id": "tired", "text": "Long day. Ready for it to be over."}
+      ]
+    },
+    {
+      "id": "outreach-jana-plan",
+      "character": "jana",
+      "kind": "plan",
+      "text": "Want to meet at Campbell's later? I could go for a cinnamon roll.",
+      "replies": [
+        {"id": "yes", "text": "Sounds good. See you there."},
+        {"id": "raincheck", "text": "Can't today, maybe tomorrow?"}
+      ],
+      "offer": {"location": "campbells", "expiresIn": 12}
+    },
+    {
+      "id": "outreach-jana-tease",
+      "character": "jana",
+      "kind": "tease",
+      "text": "Saw something that reminded me of you. Don't ask, I'm not telling.",
+      "replies": [
+        {"id": "curious", "text": "Now you have to tell me."},
+        {"id": "playful", "text": "Is it something embarrassing?"},
+        {"id": "hush", "text": "Okay, keep your secrets."}
+      ]
+    },
+    {
+      "id": "outreach-jana-neglected",
+      "character": "jana",
+      "kind": "neglected",
+      "text": "You've been quiet. Everything okay?",
+      "replies": [
+        {"id": "fine", "text": "Yeah, just busy. Sorry."},
+        {"id": "honest", "text": "Actually, it's been a rough few days."},
+        {"id": "dismiss", "text": "I'm fine. Why?"}
+      ]
+    },
+    {
+      "id": "outreach-jana-strain",
+      "character": "jana",
+      "kind": "strain",
+      "text": "We need to talk. Things don't feel right between us.",
+      "replies": [
+        {"id": "talk", "text": "You're right. When can we meet?"},
+        {"id": "defend", "text": "What do you mean?"},
+        {"id": "avoid", "text": "Can this wait?"}
+      ]
+    },
+    {
+      "id": "outreach-monique-check-in",
+      "character": "monique",
+      "kind": "check-in",
+      "text": "Checking in. Let me know if you need anything.",
+      "replies": [
+        {"id": "good", "text": "All good. Thanks for checking."},
+        {"id": "okay", "text": "Fine. Long morning."}
+      ]
+    },
+    {
+      "id": "outreach-monique-plan",
+      "character": "monique",
+      "kind": "plan",
+      "text": "Campbell's in an hour? I have a gap in my schedule.",
+      "replies": [
+        {"id": "yes", "text": "On my way."},
+        {"id": "raincheck", "text": "Can't make it today."}
+      ],
+      "offer": {"location": "campbells", "expiresIn": 12}
+    },
+    {
+      "id": "outreach-monique-tease",
+      "character": "monique",
+      "kind": "tease",
+      "text": "You're surprisingly hard to pin down. Anyone ever tell you that?",
+      "replies": [
+        {"id": "laugh", "text": "Plenty of people."},
+        {"id": "curious", "text": "And you? Why do you want to?"}
+      ]
+    },
+    {
+      "id": "outreach-monique-neglected",
+      "character": "monique",
+      "kind": "neglected",
+      "text": "Haven't heard from you in a while. Busy or avoiding me?",
+      "replies": [
+        {"id": "busy", "text": "Busy. Sorry about that."},
+        {"id": "honest", "text": "Honestly? I did not know where to start."}
+      ]
+    },
+    {
+      "id": "outreach-monique-strain",
+      "character": "monique",
+      "kind": "strain",
+      "text": "This isn't working. We need to figure out what we're doing.",
+      "replies": [
+        {"id": "talk", "text": "Then let's talk it through tonight."},
+        {"id": "space", "text": "I need a couple of days."}
+      ]
+    },
+    {
+      "id": "outreach-nova-check-in",
+      "character": "nova",
+      "kind": "check-in",
+      "text": "yo. alive?",
+      "replies": [
+        {"id": "alive", "text": "Barely. You?"},
+        {"id": "busy", "text": "Rehearsal ran long."}
+      ]
+    },
+    {
+      "id": "outreach-nova-plan",
+      "character": "nova",
+      "kind": "plan",
+      "text": "Murphy's tonight? Quiz night. We'd crush it.",
+      "replies": [
+        {"id": "yes", "text": "Wouldn't miss it."},
+        {"id": "raincheck", "text": "Rain check. Next week?"}
+      ],
+      "offer": {"location": "murphys", "expiresIn": 12}
+    },
+    {
+      "id": "outreach-nova-tease",
+      "character": "nova",
+      "kind": "tease",
+      "text": "Bet you can't guess what I'm thinking right now. Go on, try.",
+      "replies": [
+        {"id": "guess", "text": "That I'm thinking about last night."},
+        {"id": "deflect", "text": "No chance. Guess yourself."}
+      ]
+    },
+    {
+      "id": "outreach-nova-neglected",
+      "character": "nova",
+      "kind": "neglected",
+      "text": "Radio silence for days. You dead or just ghosting?",
+      "replies": [
+        {"id": "alive", "text": "Alive. Sorry, things got away from me."},
+        {"id": "honest", "text": "Guilty. I've been avoiding you."}
+      ]
+    },
+    {
+      "id": "outreach-nova-strain",
+      "character": "nova",
+      "kind": "strain",
+      "text": "Look, I'm not good at this feelings stuff. But this? This is weird. Fix it or don't.",
+      "replies": [
+        {"id": "talk", "text": "Tell me what's weird. I'm listening."},
+        {"id": "space", "text": "I need space to think."}
+      ]
+    },
+    {
+      "id": "outreach-abigail-check-in",
+      "character": "abigail",
+      "kind": "check-in",
+      "text": "Hey. Hope your day's going well. Mine's productive so far.",
+      "replies": [
+        {"id": "good", "text": "Productive here too. Finally."},
+        {"id": "okay", "text": "Slow start, better now."}
+      ]
+    },
+    {
+      "id": "outreach-abigail-plan",
+      "character": "abigail",
+      "kind": "plan",
+      "text": "Low tide at 7:40 tomorrow. Want to check the tide pools? Bring a thermos.",
+      "replies": [
+        {"id": "yes", "text": "I'll bring the thermos."},
+        {"id": "raincheck", "text": "Maybe the day after?"}
+      ],
+      "offer": {"location": "hewett", "expiresIn": 12}
+    },
+    {
+      "id": "outreach-abigail-tease",
+      "character": "abigail",
+      "kind": "tease",
+      "text": "You'd be surprised how many people can't identify basic rock types. You're not one of them, right?",
+      "replies": [
+        {"id": "flirt", "text": "Depends what you offer me."},
+        {"id": "humble", "text": "Teach me, then."}
+      ]
+    },
+    {
+      "id": "outreach-abigail-neglected",
+      "character": "abigail",
+      "kind": "neglected",
+      "text": "Didn't see you the last couple days. Everything okay?",
+      "replies": [
+        {"id": "fine", "text": "Fine. It got hectic."},
+        {"id": "honest", "text": "Honestly, I was not sure you wanted me around."}
+      ]
+    },
+    {
+      "id": "outreach-abigail-strain",
+      "character": "abigail",
+      "kind": "strain",
+      "text": "I value honesty. So I'll be honest: something's off. We should talk about it.",
+      "replies": [
+        {"id": "talk", "text": "Agreed. Tonight?"},
+        {"id": "space", "text": "Give me a day to get it straight."}
+      ]
+    }
+  ],
   "momentsProfile": {
     "chancePercent": 25,
     "dryStepPercent": 15,
@@ -4625,6 +4847,105 @@
               }
             }
           ],
+          "outreachMessages": [
+              {
+                "id": "outreach-jana-check-in",
+                "character": "jana",
+                "kind": "check-in",
+                "text": "Hey. Thinking of you. How's your day going?",
+                "replies": [
+                  {
+                    "id": "good",
+                    "text": "Going great. How about you?"
+                  },
+                  {
+                    "id": "okay",
+                    "text": "Okay, just busy."
+                  },
+                  {
+                    "id": "tired",
+                    "text": "Long day. Ready for it to be over."
+                  }
+                ]
+              },
+              {
+                "id": "outreach-jana-plan",
+                "character": "jana",
+                "kind": "plan",
+                "text": "Want to meet at Campbell's later? I could go for a cinnamon roll.",
+                "replies": [
+                  {
+                    "id": "yes",
+                    "text": "Sounds good. See you there."
+                  },
+                  {
+                    "id": "raincheck",
+                    "text": "Can't today, maybe tomorrow?"
+                  }
+                ],
+                "offer": {"location":"campbells","expiresIn":12}
+              },
+              {
+                "id": "outreach-jana-tease",
+                "character": "jana",
+                "kind": "tease",
+                "text": "Saw something that reminded me of you. Don't ask, I'm not telling.",
+                "replies": [
+                  {
+                    "id": "curious",
+                    "text": "Now you have to tell me."
+                  },
+                  {
+                    "id": "playful",
+                    "text": "Is it something embarrassing?"
+                  },
+                  {
+                    "id": "hush",
+                    "text": "Okay, keep your secrets."
+                  }
+                ]
+              },
+              {
+                "id": "outreach-jana-neglected",
+                "character": "jana",
+                "kind": "neglected",
+                "text": "You've been quiet. Everything okay?",
+                "replies": [
+                  {
+                    "id": "fine",
+                    "text": "Yeah, just busy. Sorry."
+                  },
+                  {
+                    "id": "honest",
+                    "text": "Actually, it's been a rough few days."
+                  },
+                  {
+                    "id": "dismiss",
+                    "text": "I'm fine. Why?"
+                  }
+                ]
+              },
+              {
+                "id": "outreach-jana-strain",
+                "character": "jana",
+                "kind": "strain",
+                "text": "We need to talk. Things don't feel right between us.",
+                "replies": [
+                  {
+                    "id": "talk",
+                    "text": "You're right. When can we meet?"
+                  },
+                  {
+                    "id": "defend",
+                    "text": "What do you mean?"
+                  },
+                  {
+                    "id": "avoid",
+                    "text": "Can this wait?"
+                  }
+                ]
+              }
+          ],
           "endings": [
             {
               "id": "jana-stays",
@@ -5542,6 +5863,89 @@
                 "expiresIn": 12
               }
             }
+          ],
+          "outreachMessages": [
+              {
+                "id": "outreach-monique-check-in",
+                "character": "monique",
+                "kind": "check-in",
+                "text": "Checking in. Let me know if you need anything.",
+                "replies": [
+                  {
+                    "id": "good",
+                    "text": "All good. Thanks for checking."
+                  },
+                  {
+                    "id": "okay",
+                    "text": "Fine. Long morning."
+                  }
+                ]
+              },
+              {
+                "id": "outreach-monique-plan",
+                "character": "monique",
+                "kind": "plan",
+                "text": "Campbell's in an hour? I have a gap in my schedule.",
+                "replies": [
+                  {
+                    "id": "yes",
+                    "text": "On my way."
+                  },
+                  {
+                    "id": "raincheck",
+                    "text": "Can't make it today."
+                  }
+                ],
+                "offer": {"location":"campbells","expiresIn":12}
+              },
+              {
+                "id": "outreach-monique-tease",
+                "character": "monique",
+                "kind": "tease",
+                "text": "You're surprisingly hard to pin down. Anyone ever tell you that?",
+                "replies": [
+                  {
+                    "id": "laugh",
+                    "text": "Plenty of people."
+                  },
+                  {
+                    "id": "curious",
+                    "text": "And you? Why do you want to?"
+                  }
+                ]
+              },
+              {
+                "id": "outreach-monique-neglected",
+                "character": "monique",
+                "kind": "neglected",
+                "text": "Haven't heard from you in a while. Busy or avoiding me?",
+                "replies": [
+                  {
+                    "id": "busy",
+                    "text": "Busy. Sorry about that."
+                  },
+                  {
+                    "id": "honest",
+                    "text": "Honestly? I did not know where to start."
+                  }
+                ]
+              },
+              {
+                "id": "outreach-monique-strain",
+                "character": "monique",
+                "kind": "strain",
+                "text": "This isn't working. We need to figure out what we're doing.",
+                "replies": [
+                  {
+                    "id": "talk",
+                    "text": "Then let's talk it through tonight."
+                  },
+                  {
+                    "id": "space",
+                    "text": "I need a couple of days."
+                  }
+                ]
+              }
           ],
           "endings": [
             {
@@ -6493,6 +6897,89 @@
                 "expiresIn": 12
               }
             }
+          ],
+          "outreachMessages": [
+              {
+                "id": "outreach-nova-check-in",
+                "character": "nova",
+                "kind": "check-in",
+                "text": "yo. alive?",
+                "replies": [
+                  {
+                    "id": "alive",
+                    "text": "Barely. You?"
+                  },
+                  {
+                    "id": "busy",
+                    "text": "Rehearsal ran long."
+                  }
+                ]
+              },
+              {
+                "id": "outreach-nova-plan",
+                "character": "nova",
+                "kind": "plan",
+                "text": "Murphy's tonight? Quiz night. We'd crush it.",
+                "replies": [
+                  {
+                    "id": "yes",
+                    "text": "Wouldn't miss it."
+                  },
+                  {
+                    "id": "raincheck",
+                    "text": "Rain check. Next week?"
+                  }
+                ],
+                "offer": {"location":"murphys","expiresIn":12}
+              },
+              {
+                "id": "outreach-nova-tease",
+                "character": "nova",
+                "kind": "tease",
+                "text": "Bet you can't guess what I'm thinking right now. Go on, try.",
+                "replies": [
+                  {
+                    "id": "guess",
+                    "text": "That I'm thinking about last night."
+                  },
+                  {
+                    "id": "deflect",
+                    "text": "No chance. Guess yourself."
+                  }
+                ]
+              },
+              {
+                "id": "outreach-nova-neglected",
+                "character": "nova",
+                "kind": "neglected",
+                "text": "Radio silence for days. You dead or just ghosting?",
+                "replies": [
+                  {
+                    "id": "alive",
+                    "text": "Alive. Sorry, things got away from me."
+                  },
+                  {
+                    "id": "honest",
+                    "text": "Guilty. I've been avoiding you."
+                  }
+                ]
+              },
+              {
+                "id": "outreach-nova-strain",
+                "character": "nova",
+                "kind": "strain",
+                "text": "Look, I'm not good at this feelings stuff. But this? This is weird. Fix it or don't.",
+                "replies": [
+                  {
+                    "id": "talk",
+                    "text": "Tell me what's weird. I'm listening."
+                  },
+                  {
+                    "id": "space",
+                    "text": "I need space to think."
+                  }
+                ]
+              }
           ],
           "endings": [
             {
@@ -7446,6 +7933,89 @@
                 "expiresIn": 12
               }
             }
+          ],
+          "outreachMessages": [
+              {
+                "id": "outreach-abigail-check-in",
+                "character": "abigail",
+                "kind": "check-in",
+                "text": "Hey. Hope your day's going well. Mine's productive so far.",
+                "replies": [
+                  {
+                    "id": "good",
+                    "text": "Productive here too. Finally."
+                  },
+                  {
+                    "id": "okay",
+                    "text": "Slow start, better now."
+                  }
+                ]
+              },
+              {
+                "id": "outreach-abigail-plan",
+                "character": "abigail",
+                "kind": "plan",
+                "text": "Low tide at 7:40 tomorrow. Want to check the tide pools? Bring a thermos.",
+                "replies": [
+                  {
+                    "id": "yes",
+                    "text": "I'll bring the thermos."
+                  },
+                  {
+                    "id": "raincheck",
+                    "text": "Maybe the day after?"
+                  }
+                ],
+                "offer": {"location":"hewett","expiresIn":12}
+              },
+              {
+                "id": "outreach-abigail-tease",
+                "character": "abigail",
+                "kind": "tease",
+                "text": "You'd be surprised how many people can't identify basic rock types. You're not one of them, right?",
+                "replies": [
+                  {
+                    "id": "flirt",
+                    "text": "Depends what you offer me."
+                  },
+                  {
+                    "id": "humble",
+                    "text": "Teach me, then."
+                  }
+                ]
+              },
+              {
+                "id": "outreach-abigail-neglected",
+                "character": "abigail",
+                "kind": "neglected",
+                "text": "Didn't see you the last couple days. Everything okay?",
+                "replies": [
+                  {
+                    "id": "fine",
+                    "text": "Fine. It got hectic."
+                  },
+                  {
+                    "id": "honest",
+                    "text": "Honestly, I was not sure you wanted me around."
+                  }
+                ]
+              },
+              {
+                "id": "outreach-abigail-strain",
+                "character": "abigail",
+                "kind": "strain",
+                "text": "I value honesty. So I'll be honest: something's off. We should talk about it.",
+                "replies": [
+                  {
+                    "id": "talk",
+                    "text": "Agreed. Tonight?"
+                  },
+                  {
+                    "id": "space",
+                    "text": "Give me a day to get it straight."
+                  }
+                ]
+              }
           ],
           "endings": [
             {

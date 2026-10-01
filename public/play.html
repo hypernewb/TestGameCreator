@@ -23,6 +23,7 @@
 
     <nav class="scene-nav" aria-label="Scene controls" hidden>
       <button type="button" data-action="history"><svg aria-hidden="true"><use href="assets/showcase/ui-icons.svg#history"></use></svg>History</button>
+      <button type="button" data-action="messages" id="messages-open">Messages<em class="badge" id="messages-badge" hidden>0</em></button>
       <button type="button" data-action="auto"><svg aria-hidden="true"><use href="assets/showcase/ui-icons.svg#auto"></use></svg>Auto</button>
       <button type="button" data-action="menu"><svg aria-hidden="true"><use href="assets/showcase/ui-icons.svg#menu"></use></svg>Menu</button>
     </nav>
@@ -134,6 +135,24 @@
         <header><div><small>WHAT YOU KNOW</small><h2>Journal</h2></div><button value="close">Close ×</button></header>
         <div id="journal-entries"></div>
       </form>
+    </dialog>
+
+    <dialog id="messages" class="messages-panel">
+      <form method="dialog" class="messages__head">
+        <div><small>YOUR PHONE</small><h2>Messages</h2></div>
+        <button value="close">Close ×</button>
+      </form>
+      <div class="messages__body">
+        <nav id="messages-threads" class="messages__threads" aria-label="Conversations"></nav>
+        <div class="messages__main">
+          <div id="messages-log" class="messages__log"></div>
+          <form id="messages-reply" class="messages__compose" hidden>
+            <label for="messages-input">Reply to <span id="messages-who">her</span></label>
+            <input id="messages-input" maxlength="500" autocomplete="off" placeholder="What do you text back?">
+            <button type="submit"><span>Send</span></button>
+          </form>
+        </div>
+      </div>
     </dialog>
 
     <dialog id="preferences" class="preferences-panel">

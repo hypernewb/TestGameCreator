@@ -20,12 +20,15 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ## Doing
 
+### T-044 First-run setup · T-047 Owner picks · T-048 Decline invite · T-058 Retire after-hours
+  - model: codex · dispatched 2026-10-02 via scripts/wt.sh
+
 ## Review
 
-### int-3: T-038 T-040 T-041 T-042 (every input lands, her own wants, prompt slips, messages panel)
-  - model: gpt-6.1-sol (Codex: T-038) · space-bunny (OpenCode free: rest) · int-3 tests 1076 pass + 4 known worktree art failures; validate PASS · awaiting owner merge OK
-
 ## Done
+
+### int-3: T-038 T-040 T-041 T-042 (every input lands, her own wants, prompt slips, messages panel)
+  - model: gpt-6.1-sol (Codex: T-038) · space-bunny (OpenCode free: rest) · int-3 tests 1076 pass + 4 known worktree art failures; validate PASS · merged 2026-10-02, npm test 1080/1080
 
 ### int-2: T-008 T-036 T-035 T-028 T-030 T-031 T-032 T-034 (unwelcome flirt + ladder pace, player identity + lore, mixed actions, distinct voices, she texts first, lust baseline, anniversaries, jealousy)
   - model: gpt-6.1-sol (Codex: T-008) · nemotron-3-ultra / space-bunny (OpenCode free: rest) · merged together 2026-10-02, npm test 1042/1042

@@ -9,4 +9,7 @@
 | 5 | Anniversary neglect rule (T-032) | Pause anniversaries; play won't last that long | T-047: off on campus, module kept |
 | 6 | How much jealousy to show (T-034) | Mood word only (number in Studio) | T-047 |
 
-Still open: T-040, can a fulfilled want come back in a later week (worker default: yes).
+Round 2 (Wave 4 questions):
+- T-040: a fulfilled want can come back in a later week: yes (already so).
+- T-041: echo check on for every world by default: yes (T-047).
+- T-042: declining an invite is recorded in the engine: yes (T-048).

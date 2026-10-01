@@ -33,7 +33,8 @@ import {firsts} from './firsts.mjs';
 import {touchLadder} from './touch-ladder.mjs';
 import {dailyNeed} from './daily-need.mjs';
 import {outreach} from './outreach.mjs';
-export const registry=Object.fromEntries([conversation,relationships,schedule,quests,inventory,abilities,objects,daypart,worldEvents,scenes,facts,equipment,bonds,npcSocial,economy,stats,progression,dating,romanceNetwork,intimacy,gossip,romanceTempo,phone,feed,endings,timedEvents,director,moments,calendarWorld,acts,arc,sobriety,secrecy,minigames,firsts,touchLadder,dailyNeed,outreach].map(m=>[m.id,m]));
+import {anniversary} from './anniversary.mjs';
+export const registry=Object.fromEntries([conversation,relationships,schedule,quests,inventory,abilities,objects,daypart,worldEvents,scenes,facts,equipment,bonds,npcSocial,economy,stats,progression,dating,romanceNetwork,intimacy,gossip,romanceTempo,phone,feed,endings,timedEvents,director,moments,calendarWorld,acts,arc,sobriety,secrecy,minigames,firsts,touchLadder,dailyNeed,outreach,anniversary].map(m=>[m.id,m]));
 const descriptions={
   'social.daily-need':['Hidden daily need','Picks a quiet daily want per character and rewards reading it from interpreted acts.'],
   'social.conversation':['Character conversation','Enables conversations with characters who share the player\'s location.'],
@@ -72,6 +73,7 @@ const descriptions={
   'character.sobriety':['Sobriety','Tracks drinks and recovery as dayparts advance.'],
   'social.secrecy':['Secrets and suspicion','Tracks secret relationships, who knows, suspicion with evidence, confrontations, and public reveals.'],
   'social.firsts':['Free-typed firsts','Talk, date, kiss and first night play as typed scenes with engine-held checkpoints scored from act tags; the first-night check-in is required and Stop is always there.'],
-  'social.touch-ladder':['Intimate action ladder','Maps a typed physical action to the nearest ladder step and has the engine, not the model, accept, hesitate or refuse it from trust, sobriety and privacy — refusals stay in character with a vague hint.']
+  'social.touch-ladder':['Intimate action ladder','Maps a typed physical action to the nearest ladder step and has the engine, not the model, accept, hesitate or refuse it from trust, sobriety and privacy — refusals stay in character with a vague hint.'],
+  'social.anniversary':['Anniversaries and shared history','Records key shared moments, marks every 28 days from the dating start, and offers up to two of them to the narrator when the day or the place fits.']
 };
 export const moduleCatalog=Object.fromEntries(Object.values(registry).map(m=>[m.id,{id:m.id,version:m.version,requires:m.requires||[],title:descriptions[m.id][0],description:descriptions[m.id][1],group:m.id.split('.')[0]}]));

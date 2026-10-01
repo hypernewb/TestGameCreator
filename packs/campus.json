@@ -82,7 +82,8 @@
     "social.secrecy": "0.2.0",
     "social.npc": "0.2.0",
     "social.gossip": "0.1.0",
-    "social.firsts": "0.1.0"
+    "social.firsts": "0.1.0",
+    "social.anniversary": "0.1.0"
   },
   "gameProject": {
     "timeMode": "planner",
@@ -1295,6 +1296,12 @@
     "scar": {"trust": -10, "chemistry": -10},
     "repairDelayDays": 2,
     "repairTrustBar": 35
+  },
+  "anniversarySettings": {
+    "interval": 28,
+    "maxMoments": 8,
+    "acknowledgeReward": {"like": 2},
+    "neglectPenalty": {"like": -1}
   },
   "datingProfiles": [
     {

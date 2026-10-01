@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {mkdtempSync,writeFileSync,readFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {createWorld,execute,replay} from '../packages/core/engine.mjs';
+import {createWorld,execute,replay,mechanicsShape,mechanicsDigest} from '../packages/core/engine.mjs';
 import {registry} from '../packages/modules/index.mjs';
 import {dating,datingContext,setDatingPhase,setAgreement,changeSatisfaction} from '../packages/modules/dating.mjs';
 import {changeTrust} from '../packages/modules/romance-stats.mjs';
@@ -21,6 +21,9 @@ const trust=s=>s.modules['social.relationships'].edges['her--player'];
 const days=(s,p,n)=>{for(let i=0;i<n*12;i++)s=step(s,p,'core.wait');return s;};
 const date=(s,p)=>step(s,p,'social.askDate',{character:'her'});
 const repair=(s,p)=>step(s,p,'social.reconcile',{character:'her'});
+
+test('relationship stage settings are mechanics and edits invalidate existing worlds',()=>{for(const [key,value] of [['stages',['acquaintance','dating']],['strainTrustFloor',21],['strainDays',3],['scar',{trust:-11,chemistry:-10}],['scar',{trust:-10,chemistry:-11}],['repairDelayDays',3],['repairTrustBar',36]]){const p=pack(),s=createWorld(p,mods),before=mechanicsDigest(p);assert.deepEqual(mechanicsShape(p).relationshipStageSettings,p.relationshipStageSettings);p.relationshipStageSettings[key]=value;assert.notEqual(mechanicsDigest(p),before,key);assert.throws(()=>step(s,p,'core.inspect'),/digest|rules|pack/i);}});
+test('absent stage settings preserve the previous serialized shape and digest',()=>{const p={schemaVersion:1,id:'legacy-stages',version:'0.1.0',modules:{},playerId:'player',locations:[],actors:[]},shape=mechanicsShape(p);assert.equal(Object.hasOwn(shape,'relationshipStageSettings'),false);assert.equal(mechanicsDigest(p),'97c0a607');p.relationshipStageSettings={};assert.notEqual(mechanicsDigest(p),'97c0a607');delete p.relationshipStageSettings;assert.equal(mechanicsDigest(p),'97c0a607');});
 
 test('ladder requires asks and adjacency, including authored gates',()=>{const p=pack();let s=createWorld(p,mods);s=step(s,p,'core.inspect');assert.equal(datingContext(s,p,'player')[0].stage,'acquaintance');assert.equal(her(s).phase,'crush');assert.throws(()=>step(s,p,'social.defineRelationship',{character:'her',agreement:'monogamous'}),/dating/);assert.throws(()=>step(s,p,'test.phase',{phase:'exclusive'}),/dating/);s=date(s,p);assert.equal(her(s).stage,'dating');s=step(s,p,'social.defineRelationship',{character:'her',agreement:'monogamous'});assert.equal(her(s).stage,'exclusive');assert.equal(her(s).agreement,'monogamous');});
 test('date and exclusive asks retain attraction and identity gates',()=>{const p=pack();p.datingProfiles[0].initialChemistry=34;let s=createWorld(p,mods);assert.throws(()=>date(s,p),/ready/);p.datingProfiles[0].initialChemistry=40;s=date(createWorld(p,mods),p);assert.throws(()=>step(s,p,'social.defineRelationship',{character:'her',agreement:'monogamous'}),/commitment/);p.datingProfiles[0].eligibility={requiredFlags:['permission']};assert.throws(()=>date(createWorld(p,mods),p),/flag/);});

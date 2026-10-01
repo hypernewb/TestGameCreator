@@ -14,17 +14,16 @@
 
 ## Doing
 
-### T-007 Stat chips + mood line on heroine panel
-  - tags: [implementer, codex]
-
 ### T-010 Daily flirt cap + "she has to go" cue
-  - tags: [implementer, codex]
+  - tags: [implementer, codex] · round 2: allowlist + acts.mjs
 
 ### T-011 Day-planner mode (creator option: clock | planner)
-  - tags: [implementer, codex]
+  - tags: [implementer, codex] · round 2: pin clock tests
 
-### T-021 Character-sheet fixed lists (owner approves)
-  - tags: [analyzer, codex]
+## Review
+
+### T-007 Stat chips + mood line on heroine panel
+  - tags: [implementer, codex]
 
 ### T-019 Heartmorrow analysis (steal list)
   - tags: [researcher, codex] · redo after Gemini pass failed review
@@ -32,7 +31,8 @@
 ### T-020 RisuAI analysis (steal list)
   - tags: [researcher, codex] · redo after Gemini pass failed review
 
-## Review
+### T-021 Character-sheet fixed lists (owner approves)
+  - tags: [analyzer, codex]
 
 ## Done
 

@@ -18,6 +18,7 @@ import {contextPreset} from './local-settings.mjs';
 import {actsEnabled,sceneActs,typedListen,typedDislike,ACTS_RULE,sceneClaims,CLAIMS_RULE} from './scene-acts.mjs';
 import {sobrietyLevel} from '../modules/intimacy.mjs';
 import {firstBrief,typedStop} from '../modules/firsts.mjs';
+import {parseInvite} from '../modules/social.mjs';
 // A scene's start/continue events carry the player's own words; echoing them back reads as if the story repeated
 // the player. Keep only real outcomes (travel, items, time) and say plainly that the reply failed.
 const ECHO=new Set(['core.sceneStarted','core.sceneContinued','social.spoke']);
@@ -68,8 +69,36 @@ import {scenePlanForTurn} from '../core/scene-plan.mjs';
 import {guardSceneLines,stripStateSyntax,dropRepeats,dropAdvances,dropStock} from './untrusted-output.mjs';
 import {beatDirection,topicExhaustion} from './beats.mjs';
 import {incidentBrief,incidentCast} from '../modules/scenes.mjs';
-import {parseInvite,isRepeat} from '../modules/social.mjs';
+import {isRepeat} from '../modules/social.mjs';
 import {resolveSceneLocation} from '../../vendor/venus/sceneClassifier.mjs';
+// How many operations one typed turn may carry, the spoken act included.
+const MIXED_OPS=3;
+// Read the world operations a typed turn carries beside its main act ("I tease her about her coffee and buy us two
+// coffees"). The engine settles them in order on one transaction; anything past the cap comes back as a cue the
+// narrator weaves in, so the player hears that the rest has to wait.
+function parseMixedActions(input,world,pack,available,proposal){
+  const parts=deeds(input).split(/\s+(?:and|then|also)\s+/i);
+  const cast=[...new Set([...(proposal?.type==='core.scene'?proposal.args.characters||[]:proposal?.type==='social.speak'?[proposal.args.target]:[]),...(world.scene?.characters||[])])];
+  const components=[];
+  for(const part of parts.slice(1,MIXED_OPS)){
+    const say=part.trim().toLowerCase();if(!say)continue;
+    const named=(pack.items||[]).find(i=>say.includes(i.name.toLowerCase())),invite=pack.modules['social.conversation']?parseInvite(world,pack,part):null;
+    if(pack.modules['world.economy']&&/^(?:buy|purchase|sell)\b/.test(say)){
+      const type=/^sell\b/.test(say)?'world.sell':'world.buy';
+      const hit=available.filter(a=>a.type===type&&a.args?.item&&say.includes((pack.items.find(i=>i.id===a.args.item)?.name||'').toLowerCase()));
+      if(hit.length===1)components.push({type:hit[0].type,args:hit[0].args});
+    }else if(pack.modules['items.inventory']&&named&&/\b(?:give|hand)\b/.test(say)){
+      const here=pack.actors.filter(a=>a.id!==pack.playerId&&world.actors[a.id]?.location===world.actors[pack.playerId].location).map(a=>a.id);
+      const target=pack.actors.find(a=>cast.includes(a.id)&&say.includes(a.name.toLowerCase()))?.id||(cast.length===1?cast[0]:null)||(here.length===1?here[0]:null);
+      if(target)components.push({type:'items.give',args:{item:named.id,target}});
+    }else if(pack.modules['social.conversation']&&invite)components.push({type:'social.invite',args:invite});
+    else if(/\b(?:go|leave|exit|travel|head to|move to|walk to|run to)\b/.test(say)){
+      const to=resolveSceneLocation(pack,part);
+      if(to&&to!==world.actors[pack.playerId].location)components.push({type:'core.move',args:{to}});
+    }
+  }
+  return {components,cue:parts.length>MIXED_OPS?'The player tried to do more in one turn than the moment allows. Only what has already happened counts here; let the rest wait for another moment, in character, without naming commands or options.':''};
+}
 // Kept for callers of the old name: the transcript is now whole and budgeted per turn instead of capped at six.
 export const recentSceneHistory=sceneTranscript;
 export const refusalHint=r=>`The attempt is refused: ${r.reason} Possible ways forward: ${r.alternatives.map(a=>a.label).join('; ')}. Weave the reason and a vague in-story nudge into the scene in character voice. Never list actions, buttons, exact commands or instructions. Do not enact an alternative or change consent or eligibility.${r.redirect?' Redirect the subject toward a fresh moment instead of repeating the refusal.':''}`;
@@ -157,11 +186,14 @@ export class GameService {
     // (0-tick clarification, no turn committed) instead of charging for a deflection the model has to invent.
     if(proposal.type==='social.speak'&&request.input!==undefined&&pack.modules['social.conversation']){const heard=(world.modules['social.conversation'].memories||[]).filter(x=>x.knownBy.includes(proposal.args.target)).map(x=>x.topic);if(isRepeat(proposal.args.text,heard))return await this.refuse(id,request,'repeat',proposal.args.target,'You already said that to '+world.actors[proposal.args.target].name+', and they have nothing new to add. Try a different topic.',true,signal);}
     assert(!signal?.aborted,'Cancelled before commit');
-    const result=execute(world,{...proposal,...(pack.gameProject?.conversationStyle==='continuous'&&EXCHANGE_COMMANDS.has(proposal.type)?{deferExchangeCap:true}:{}),id:request.id,actorId:pack.playerId,expectedRevision:request.expectedRevision},pack,this.registry);
+    // One typed turn can carry world operations beside its main act; they ride on the same command so the engine
+    // settles, prices and records the split in one atomic, replayable transaction.
+    const mixed=request.input!==undefined?parseMixedActions(request.input,world,pack,available,proposal):{components:[],cue:''};
+    const result=execute(world,{...proposal,...(pack.gameProject?.conversationStyle==='continuous'&&EXCHANGE_COMMANDS.has(proposal.type)?{deferExchangeCap:true}:{}),...(mixed.components.length?{components:mixed.components}:{}),id:request.id,actorId:pack.playerId,expectedRevision:request.expectedRevision},pack,this.registry);
     if(request.input!==undefined)result.turn.input=request.input;
-    this.store.commit(result.state,world.revision);return await this.finish(id,request.id,signal);
+    this.store.commit(result.state,world.revision);return await this.finish(id,request.id,signal,false,mixed.cue);
   }catch(e){const world=this.store.load(id);if(!this.packs[world.packId])throw e;const r=await this.refuse(id,request,refusalCode(e),request.command?.args?.target||request.command?.args?.location||request.input?.trim().toLowerCase()||'','',request.input!==undefined,signal);e.refusal=r.refusal;e.refusalNarrative=r.refusalNarrative;throw e;}finally{this.locks.delete(id);this.previews.delete(id);}}
-  async finish(id,turnId,signal,retry=false){const world=this.store.load(id),pack=this.packs[world.packId],turn=world.turns[turnId];assert(turn,'Unknown turn');if(retry)assert(turn.status==='complete'&&turn.fallback,'Only a failed generated turn can be retried');else if(turn.status==='complete')return {state:world,turn,...(turn.refusal?{refusal:turn.refusal}:{})};
+  async finish(id,turnId,signal,retry=false,mixedCue=''){const world=this.store.load(id),pack=this.packs[world.packId],turn=world.turns[turnId];assert(turn,'Unknown turn');if(retry)assert(turn.status==='complete'&&turn.fallback,'Only a failed generated turn can be retried');else if(turn.status==='complete')return {state:world,turn,...(turn.refusal?{refusal:turn.refusal}:{})};
     if(turn.refusal&&turn.command.type==='core.refuse'){const hinted=pack.refusalStyle!=='buttons',text=hinted?await this.narrateRefusal(world,pack,turn,turn.input||'',signal):turn.refusal.reason,state=this.store.narrative(id,turnId,text,{sceneLines:[{speaker:'',text}],fallback:false,refusal:turn.refusal,refusalNarrated:hinted});return {state,turn:state.turns[turnId],refusal:turn.refusal};}
     const scripted=pack.scriptedScenes?.find(s=>s.id===world.modules['story.scenes']?.pending);
     const opened=turn.events.some(e=>e.type==='story.sceneStarted');
@@ -223,6 +255,7 @@ const budgetDone=Boolean(world.scene?.budget&&cast.length&&world.scene.inputs>=w
     const repeatAsk=turn.events.find(e=>e.type==='social.spoke'&&e.payload.repeat);context.repeatAsk=repeatAsk?pack.actors.find(a=>a.id===repeatAsk.payload.target)?.name||null:null;
     if(pack.modules['social.acts']){const cue=(await import('../modules/acts.mjs')).flirtDepartureCue(world,pack),left=turn.events.filter(e=>e.type==='social.departed').map(e=>e.payload.text).join(' ');if(cue||left)context.direction=[context.direction,cue,left].filter(Boolean).join(' ');}
     const hintRefusal=turn.refusal||Object.values(world.turns).filter(t=>t.id!==turnId).at(-1)?.refusal;if(hintRefusal&&pack.refusalStyle!=='buttons')context.direction=[context.direction,turn.refusal?'':'An earlier attempt was refused; respond to the current input while gently keeping the way forward available.',refusalHint(hintRefusal)].filter(Boolean).join(' ');
+    if(mixedCue)context.direction=[context.direction,mixedCue].filter(Boolean).join(' ');
     context.giftCue=giftSceneCue(world,pack,cast,context.playerAction||'',turn);
     const budgeted=budgetSceneContext(context,pack,world,turnId,{window:this.provider.contextWindow||8192,reply:replyReserve(this.provider.usage,this.provider.maxTokens||1800,512,5,this.provider.contextWindow||8192),ratio:this.provider.calibration?.ratio||1,verbatim:this.provider.contextSize?contextPreset(this.provider.contextSize,this.provider.remote).verbatim:Infinity,render:c=>scenePromptMessages(c,pack),wideContext:this.provider.wideContext});Object.assign(context,budgeted.context);const contextReport=budgeted.report;
     let generatedRefusal=null,priced=[],claimStance=null,text,visualLines,failed=false,sceneEnded=false,sceneSummary='',lintTrace=[],bundledMemories=[],bundledFacts=[];

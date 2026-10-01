@@ -9,6 +9,10 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ### Wave 3 (C1 she acts first / visible progress)
 
+### Wave 4 (after int-2 lands; plan PLAN-2026-10-02.md)
+  - T-038 Every typed input lands · T-039 Stall interrupt · planned: codex
+  - T-040 Her own wants · T-041 Prompt pass · T-042 UI7 texts panel · planned: space-bunny (OpenCode, OpenRouter free)
+
 ### Parked
   - T-009b Suggest auto-fill · O1 · O3 · creator leftovers · Director-as-DM (owner: after C1 character depth)
 
@@ -16,13 +20,13 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 ## Doing
 
 ### T-035 Mixed actions in one turn
-  - model: nemotron-3-ultra (OpenCode free) · fix round sent (determinism, atomic parts, >3 cue, replay test) · O2
+  - model: nemotron-3-ultra then space-bunny (OpenCode free) · fix round sent (determinism, atomic parts, >3 cue, replay test) · O2
 
 ### T-028 Distinct voices
-  - model: nemotron-3-ultra (OpenCode free) · fix round sent (restore weakened assertions, legacy tag test) · C1
+  - model: nemotron-3-ultra then space-bunny (OpenCode free) · fix round sent (restore weakened assertions, legacy tag test) · C1
 
 ### T-030 She texts first · T-031 Lust baseline · T-032 Anniversaries · T-034 Jealousy
-  - planned: nemotron-3-ultra (OpenCode free; Codex paused by owner) · C1
+  - planned: space-bunny (OpenCode free; Codex paused by owner) · C1
 
 ## Review
 

@@ -19,12 +19,12 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ## Doing
 
-### T-037 Hard limit (no absolute never on trio)
-  - planned: gpt-6.1-sol (Codex) · tags: [implementer, codex] · O2
-
 ## Review
 
 ## Done
+
+### T-037 Hard limit (no absolute never on trio)
+  - model: gpt-6.1-sol (Codex) · tags: [implementer, codex] · O2 · merged 2026-10-01, npm test 941/941
 
 ### T-024 T-025 T-027 T-029 T-033 (body limits, hint refusals, trio body maps, daily need, gift repeats) + T-026 UI milestones
   - model: gpt-6.1-sol (Codex) · merged together as int-1 2026-10-01, npm test 935/935 after LF fix

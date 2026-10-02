@@ -14,23 +14,23 @@ test('skips copies of existing characters and rejects duplicate generated IDs',(
 
 test('world population drafts objects, seed-placed hidden finds and stat activities for review before publish',async()=>{
  const {createWorld}=await import('../packages/core/engine.mjs'),{registry}=await import('../packages/modules/index.mjs'),{messagesFor}=await import('../packages/ai/bulk-authoring.mjs');
- const p=JSON.parse(readFileSync(new URL('../packs/after-hours.json',import.meta.url),'utf8')),counts={objectCount:2,itemCount:1,activityCount:1};
- const world={objects:[{id:'cellar-door',name:'the cellar door',location:'bar',description:'Padlocked, cold, humming faintly.',effectFlag:'cellar-open',useText:'The padlock gives. Stairs, dark, a smell of old beer and older secrets.',requiresItem:'cellar-key'},{id:'bike-rack',name:'the bike rack',location:'canal',description:'Six bikes, four wheels between them.'}],
-  items:[{id:'cellar-key',name:'Cellar key',description:'Iron, heavy, labelled CELLAR in biro.',hideIn:['bike-rack','photo-wall']}],
-  activities:[{id:'cellar-tasting',name:'Taste the cellar stock',description:'Juno teaches you what each barrel is for.',location:'bar',duration:2,phrases:['cellar','tasting'],effects:[{type:'stat',stat:'wit',delta:1}],requiresFlag:'cellar-open'}]};
- const c=normalizeCandidate(JSON.stringify(world),p,counts);assert.equal(c.items[0].hidden,true);assert.deepEqual(c.characters,[]);
+ const p=JSON.parse(readFileSync(new URL('../packs/campus.json',import.meta.url),'utf8')),counts={objectCount:2,itemCount:1,activityCount:1};
+ const world={objects:[{id:'cellar-door',name:'the cellar door',location:'murphys',description:'Padlocked, cold, humming faintly.',effectFlag:'cellar-open',useText:'The padlock gives. Stairs, dark, a smell of old beer and older secrets.',requiresItem:'cellar-key'},{id:'bike-rack',name:'the bike rack',location:'langley',description:'Six bikes, four wheels between them.'}],
+  items:[{id:'cellar-key',name:'Cellar key',description:'Iron, heavy, labelled CELLAR in biro.',hideIn:['bike-rack','dining-noticeboard']}],
+  activities:[{id:'cellar-tasting',name:'Taste the cellar stock',description:'Juno teaches you what each barrel is for.',location:'murphys',duration:2,phrases:['cellar','tasting'],effects:[{type:'stat',stat:'wit',delta:1}],requiresFlag:'cellar-open'}]};
+ p.modules['world.objects']='0.1.0';p.objects=[{id:'dining-noticeboard',name:'Noticeboard',location:'langley',description:'Pinned notices.'}];const c=normalizeCandidate(JSON.stringify(world),p,counts);assert.equal(c.items[0].hidden,true);assert.deepEqual(c.characters,[]);
  const proposal=createProposal(p,c,{counts});assert.ok(proposal.objects.every(x=>x.status==='pending'));
  assert.equal(applyProposal(p,proposal).objects.length,p.objects.length,'nothing lands until approved');
  for(const k of ['objects','items','activities'])for(const x of proposal[k])x.status='approved';
- const next=applyProposal(p,proposal),spots=new Set(Array.from({length:12},(_,n)=>createWorld(next,registry,'s'+n,n*2654435761).modules['world.objects'].stash['cellar-key']));
- assert.deepEqual([...spots].sort(),['bike-rack','photo-wall'],'the key moves between its candidate spots across new games');
+ const next=applyProposal(p,proposal),spots=new Set(Array.from({length:12},(_,n)=>createWorld(next,registry,'s'+n,n*104729).modules['world.objects'].stash['cellar-key']));
+ assert.deepEqual([...spots].sort(),['bike-rack','dining-noticeboard'],'the key moves between its candidate spots across new games');
  const bad=(patch,re)=>assert.throws(()=>normalizeCandidate(JSON.stringify({...world,...patch}),p,counts),re);
  bad({items:[{...world.items[0],hideIn:['cellar-door']}]},/cannot hide inside the object it unlocks/);
  bad({items:[{...world.items[0],hideIn:['nowhere']}]},/hideIn/);
  bad({activities:[{...world.activities[0],effects:[{type:'stat',stat:'wit',delta:9}]}]},/effects/);
  bad({activities:[{...world.activities[0],effects:[{type:'stat',stat:'strength',delta:1}]}]},/effects/);
  bad({objects:[{...world.objects[0],location:'moon'},world.objects[1]]},/location/);
- bad({objects:[{...world.objects[0],id:'jukebox'},world.objects[1]]},/already used/);
+ bad({objects:[{...world.objects[0],id:'dining-noticeboard'},world.objects[1]]},/already used/);
  assert.match(messagesFor(p,'brief',counts)[0].content,/hideIn/);assert.doesNotMatch(messagesFor(p,'brief',{characterCount:1,sceneCount:0})[0].content,/hideIn/,'the extra schema costs no tokens unless asked for');
 });
 test('a strict first attempt rejects copies of existing characters so the repair can ask for new ones',()=>{assert.throws(()=>normalizeCandidate({characters:[{...character,id:'ada'}],scenes:[]},pack(),{characterCount:1,sceneCount:0},{strict:true}),/ada already exists; characters\[\] and locations\[\] hold only NEW/);});

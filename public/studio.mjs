@@ -353,9 +353,10 @@ refresh().catch(fail);
 
 function sceneFeedbackEditor(p){const s=section('Scene feedback','Show what a turn changed and a mood line for each character present.');for(const [key,label] of [['chips','Stat chips'],['mood','Mood lines']]){const wrap=node('label'),input=node('input');input.type='checkbox';input.checked=p.sceneFeedback?.[key]===true;input.onchange=()=>{p.sceneFeedback||={chips:false,mood:false};p.sceneFeedback[key]=input.checked;message('Unsaved changes');};wrap.append(input,node('span',label));s.append(wrap);}}
 
-function dayRecapEditor(p){if(!p.modules['story.recap'])return;const s=section('Day recap','When a day closes the engine writes a few plain lines about what changed - rungs reached, who warmed or cooled, promises kept or broken, new clues, wants met - in words, never numbers, with no model call. The morning card shows the newest day; the journal keeps the rest. Omit dayRecap for the default window.');
+function dayRecapEditor(p){if(!p.modules['story.recap'])return;const s=section('Day recap','Review who warmed up, promises, new clues, overdue plans and what tomorrow holds. Choose a popup card, a short reminder for the narrator, or both. The journal keeps the same recap in every mode. Legacy keeps the original delivery and window.');
  const enabled=field(s,{value:p.dayRecap?'on':'off'},'value','Day recap','text',[['off','Legacy'],['on','Enabled']]);
- enabled.onchange=()=>{if(enabled.value==='on')p.dayRecap={max:6,keep:7};else delete p.dayRecap;message('Unsaved changes');render();};
+ enabled.onchange=()=>{if(enabled.value==='on')p.dayRecap={mode:'card',max:6,keep:7};else delete p.dayRecap;message('Unsaved changes');render();};
+ if(p.dayRecap)field(s,p.dayRecap,'mode','Recap delivery','text',[['','Legacy'],['card','Popup card'],['prompt','Model context'],['both','Card and context']]).onchange=e=>{if(e.target.value)p.dayRecap.mode=e.target.value;else delete p.dayRecap.mode;message('Unsaved changes');};
  if(p.dayRecap)for(const [k,label] of [['max','Most lines in one day'],['keep','Days kept in the journal']])field(s,p.dayRecap,k,label,'number');}
 
 function slipGuardEditor(p){const s=section('Narrator slips','A reply that repeats this many of the player’s own words is logged in the turn trace, never blocked. Missing echoWords uses 8; set 0 to disable the echo check.');if(p.slipGuard)field(s,p.slipGuard,'echoWords','Consecutive player words that count as an echo','number');else s.append(node('p','This pack uses the default echo threshold of 8 words.'));}

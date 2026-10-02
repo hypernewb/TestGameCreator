@@ -1,6 +1,6 @@
 // Campus-sim screens (day card, hub, end card, journal) as pure view models over (state, pack). The browser cannot
 // import packages/, so the few reads below mirror acts.knownActs / arc.stageOf / acts.sceneVerdicts (tests pin them).
-import {calendarFor,WEEKDAYS} from './calendar.mjs';
+import {calendarFor,WEEKDAYS,PERIODS} from './calendar.mjs';
 import {firstEndCard} from './firsts-ui.mjs';
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const nameOf=(pack,id)=>pack.actors.find(a=>a.id===id)?.name||id;
@@ -19,15 +19,16 @@ const stopAt=(pack,actor,tick)=>{const s=(pack.schedules||[]).find(x=>x.actor===
 export function dayCard(state,pack){
  const cal=calendarFor(state.tick,pack),days=pack.run?.days||0,kinds=pack.calendar?.weather||[],w=kinds.find(k=>k.id===state.modules['world.calendar']?.weather)||kinds[0]||null;
  const holiday=holidayOf(pack,cal);
- const dayStart=(cal.day-1)*12,prev=(state.events||[]).filter(e=>e.tick>=dayStart-12&&e.tick<dayStart);
+ const interval=pack.daypart?.interval||4,per=interval*PERIODS.length,dayStart=(cal.day-1)*per,prev=(state.events||[]).filter(e=>e.tick>=dayStart-per&&e.tick<dayStart);
  const felt=prev.filter(e=>e.type==='social.actPriced'&&['liked','disliked'].includes(e.payload.verdict)).at(-1),met=prev.filter(e=>e.type==='core.sceneEnded'&&e.payload.characters?.length).at(-1);
  const yesterday=cal.day<2?null:felt?`Yesterday, ${felt.payload.text}`:met?`Yesterday you spent time with ${met.payload.characters.map(c=>nameOf(pack,c)).join(' and ')}.`:'Yesterday was a quiet one.';
- const evening=Math.floor(state.tick/12)*12+8,li=loveInterests(pack),start=hash(`${state.campaignId}:${cal.day}`),spots=li.map((_,i)=>li[(start+i)%li.length]).map(who=>({who,loc:pack.locations.find(l=>l.id===stopAt(pack,who,evening))})),pick=spots.find(x=>x.loc&&!closedWhy(state,pack,x.loc.id,cal));
+ const evening=dayStart+interval*(PERIODS.length-1),li=loveInterests(pack),start=hash(`${state.campaignId}:${cal.day}`),spots=li.map((_,i)=>li[(start+i)%li.length]).map(who=>({who,loc:pack.locations.find(l=>l.id===stopAt(pack,who,evening))})),pick=spots.find(x=>x.loc&&!closedWhy(state,pack,x.loc.id,cal));
  const rumor=pick?`Word is ${nameOf(pack,pick.who)} will be at ${pick.loc.name} tonight.`:null;
  return {day:cal.day,weekday:cal.weekday,date:dateLabel(cal.date),daysLeft:Math.max(0,days-cal.day),weather:w&&{name:w.name,text:w.text||''},holiday:holiday&&{name:holiday.name,text:holiday.text||''},yesterday,rumor};
 }
 // True on the first turn of a new day (or a fresh campaign): the UI shows the day card once.
 export const newDay=(state,pack,prevTick)=>prevTick===undefined?state.tick===0:calendarFor(prevTick,pack).day!==calendarFor(state.tick,pack).day;
+export const recapCard=(state,pack)=>pack.dayRecap?.mode==='prompt'?null:(state.modules['story.recap']?.days||[]).at(-1)||null;
 
 // Hub: every place with what you can do there right now and who is around. Engine rules still decide; this only previews.
 export function hub(state,pack){

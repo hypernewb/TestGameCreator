@@ -1,5 +1,15 @@
 # Story Framework · prototype 1.11
 
+## Play it
+
+1. Install **Node.js 24 or later** from <https://nodejs.org/en/download> — the Windows `.msi`, keep the default options. This is the only program you must install.
+2. Download this game and extract the **whole** ZIP into a writable folder, for example `Documents\StoryFramework`.
+3. Double-click **Start-Windows.cmd**. A server window opens and your browser opens http://127.0.0.1:4317. Keep the window open while you play; close it or press Ctrl+C to stop.
+4. The first-run setup asks how to write the story. Choose **Gemini free** or **OpenRouter free** and get a free key: [Google AI Studio](https://aistudio.google.com/apikey) or [OpenRouter](https://openrouter.ai/settings/keys). Paste the key, press **Test connection**, then **Save and start playing**. Keys are stored on your own computer and cost nothing at the free tiers.
+5. Pick a scenario and play. Without a key you can still use the offline demo writer, which uses fixed text.
+
+Something did not start? Open a terminal in this folder and run `npm run doctor`; it checks the Node version, dependencies, the `data` folder and port 4317, and prints the fix. For a desktop window instead of a browser, double-click **Start-Desktop-Windows.cmd** — it downloads Electron once.
+
 ## Multi-step events and event debugger
 
 The **Friday Exhibition — Event Chain** sample demonstrates a scene that pauses and resumes. Start its Friday morning opening, press **Wait** four times, choose **Look at the sketch**, then talk to Brin. You can use **Talk to Brin** or type “I ask Brin about the sketch and promise to help.” Her conversation is recorded, the scene resumes at its next beat, and the support choice becomes available after trust rises. The optional **Event debugger** panel in the play view lists each scripted event's status, missing world conditions, awaited event, and locked choices.
@@ -107,7 +117,7 @@ Fixed a Windows path separator issue that caused the browser to show `{"error":"
 4. The browser opens http://127.0.0.1:4317. Keep the server window open.
 5. Choose a scenario. Use buttons first; no AI key is required.
 
-If the browser opened before the server was ready, refresh it. To stop, press Ctrl+C in the server window. This is a local browser application with a Windows launcher, **not an Electron installer or an EXE**. It has no npm runtime dependencies and needs no `npm install` for normal use.
+If the browser opened before the server was ready, refresh it. To stop, press Ctrl+C in the server window. Run `npm run doctor` to check the install. This is a local browser application with a Windows launcher, **not an Electron installer or an EXE**. It has no npm runtime dependencies: the launcher runs `npm install --omit=dev` once only to create the `node_modules` folder, and the game never reads it. Electron is downloaded only by **Start-Desktop-Windows.cmd**.
 
 macOS/Linux or terminal:
 

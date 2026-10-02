@@ -115,7 +115,7 @@ export interface JealousySettings { max?:number; decayPerDay?:number; coolAt?:nu
 export interface JealousyProfile { character:string; insecureMultiplier?:number; guardedMultiplier?:number; competitiveMultiplier?:number }
 export interface JealousyPack { jealousySettings?:JealousySettings; jealousyProfiles?:JealousyProfile[] }
 export interface JealousyRuntime { characters?:Record<string,{meter:number;stage:'acquaintance'|'dating'|'exclusive';lastTrustHit:number|null}> }
-export interface DayRecapSettings { max?:number; keep?:number }
+export interface DayRecapSettings { mode?:'card'|'prompt'|'both'; max?:number; keep?:number }
 export interface DayRecapPack { dayRecap?:DayRecapSettings }
 export interface DayRecap { day:number; weekday:string; date:string|null; lines:string[] }
 export interface DayRecapRuntime { days:DayRecap[] }

@@ -95,6 +95,7 @@
     "story.recap": "0.1.0"
   },
   "dayRecap": {
+    "mode": "card",
     "max": 6,
     "keep": 7
   },

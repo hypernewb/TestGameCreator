@@ -8,7 +8,7 @@ import {plannerReady,renderPlanner} from './planner.mjs';
 import {openGallery,readKey} from './gallery.mjs';
 import {play as playGame} from './minigames-ui.mjs';
 import {firstProgress,firstOffers} from './firsts-ui.mjs';
-import {featuredFirst,isCampus,dayCard,newDay,hub,goals,activityCommand,promptFill,speakCommand,actionHint,endCard,journal,phone,messages,poseFor,PHONE_ACTIONS,clockDigits} from './campus.mjs';
+import {featuredFirst,isCampus,dayCard,newDay,recapCard,hub,goals,activityCommand,promptFill,speakCommand,actionHint,endCard,journal,phone,messages,poseFor,PHONE_ACTIONS,clockDigits} from './campus.mjs';
 const $=s=>document.querySelector(s),el=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const fontStacks={source:"'VN Source Sans 3','Segoe UI',sans-serif",noto:"'VN Noto Sans','Arial',sans-serif",open:"'VN Open Sans','Tahoma',sans-serif",lato:"'VN Lato','Trebuchet MS',sans-serif",custom:"'Player Uploaded Font','Segoe UI',sans-serif"};
 const GROUPS=[['Look around',t=>t.startsWith('world.')],['Clothes and belongings',t=>t.startsWith('items.')]];
@@ -62,9 +62,9 @@ function next(){if(cursor<lines.length-1){cursor++;showLine();return;}stopAuto()
 const useHub=()=>(plannerReady(current.state,current.pack)||isCampus(current?.pack)&&!current.state.scene&&!current.state.modules['story.scenes']?.pending&&!current.state.modules['social.firsts']?.active)&&!current.diagnostics?.ended;
 
 // Campus layer: end card, then the day card, once per turn / per day. Views come from campus.mjs; the engine still decides.
-function queueCards(data){const {state:s,pack:p}=data;if(!isCampus(p)&&!p.firsts?.length)return;const fresh=seen.campaign!==s.campaignId;if(fresh)seen={campaign:s.campaignId,tick:undefined,end:'',recap:undefined};
+function queueCards(data){const {state:s,pack:p}=data;if(!isCampus(p)&&!p.firsts?.length&&!p.modules['story.recap'])return;const fresh=seen.campaign!==s.campaignId;if(fresh)seen={campaign:s.campaignId,tick:undefined,end:'',recap:undefined};
  const turn=Object.values(s.turns).at(-1),card=!fresh&&endCard(s,p);if(card&&turn&&seen.end!==turn.id&&(card.rows.length||card.characters.length)){seen.end=turn.id;cards.push(()=>showEndCard(card));}
-  const recap=(s.modules['story.recap']?.days||[]).at(-1);if(recap&&seen.recap!==recap.day&&seen.tick!==undefined&&newDay(s,p,seen.tick)){seen.recap=recap.day;cards.push(()=>showRecapCard(recap));}
+  const recap=recapCard(s,p);if(recap&&seen.recap!==recap.day&&seen.tick!==undefined&&newDay(s,p,seen.tick)){seen.recap=recap.day;cards.push(()=>showRecapCard(recap));}
  if(!s.modules['social.firsts']?.active){if(isCampus(p)&&(seen.tick===undefined||newDay(s,p,seen.tick)))cards.push(()=>showDayCard(dayCard(s,p)));seen.tick=s.tick;}if(!document.querySelector('dialog[open]'))nextCard();}
 function nextCard(){const show=cards.shift();if(show)show();}
 // Yesterday's recap, straight off committed state (story.recap): no numbers, no model call, one dismissable card.

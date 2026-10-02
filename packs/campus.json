@@ -3511,7 +3511,7 @@
       "priority": -10,
       "requires": {
         "flags": {
-          "term-over": true
+          "run-over": true
         }
       },
       "text": "The term ends the way terms do: a last night at Murphy's, Kaylee crying at everyone, promises to keep in touch. Some of them you might even keep."

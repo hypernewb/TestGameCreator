@@ -1291,6 +1291,7 @@
   "economySettings": {
     "debtLimit": 10
   },
+  "routeRepair": {"cooldownTicks": 24, "trustBar": 35},
   "relationshipStageSettings": {
     "stages": ["acquaintance", "dating", "exclusive"],
     "strainTrustFloor": 20,

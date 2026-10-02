@@ -13,3 +13,8 @@ test('T-085 ignore exceptions admit exactly the allowlist and keep unrelated ass
  const probes=['public/assets/campus/unused.png','public/assets/campus/cg/unused_v99.png','public/assets/characters/unknown/character.json','public/assets/characters/yuna/room_day.png','public/assets/characters/yuna/profile.png','public/assets/characters/yuna/expressions/neutral_v99.png','public/assets/characters/yuna/scenes/unused.png','public/assets/characters/yuna/renders/neutral.json','data/T085-probe.json','.env','node_modules/T085-probe.mjs'],input=[...rows.map(r=>r.path),...probes].join('\n')+'\n';
  const ignored=execFileSync('git',['check-ignore','--no-index','--stdin'],{cwd:root,input,encoding:'utf8'}).trim().split(/\r?\n/);assert.deepEqual(ignored,probes);
 });
+test('T-085 byte-preserving Git attributes cover only the audited files and manifest',()=>{
+ const manifest='docs/research/asset-manifest-76-T-085.csv',paths=[...rows.map(r=>r.path),manifest],rules=readFileSync(new URL('.gitattributes',root),'utf8').trim().split(/\r?\n/).filter(l=>l.endsWith(' -text'));assert.deepEqual(rules,paths.map(p=>`/${p} -text`));
+ const probes=['public/assets/characters/yuna/room_day.png','public/assets/characters/yuna/character-extra.json','public/assets/campus/unused.png','docs/research/unrelated.csv'],input=[...paths,...probes].join('\n')+'\n';
+ for(const mode of ['true','false']){const attrs=execFileSync('git',['-c',`core.autocrlf=${mode}`,'check-attr','text','--stdin'],{cwd:root,input,encoding:'utf8'}).trim().split(/\r?\n/);assert.deepEqual(attrs,[...paths.map(p=>`${p}: text: unset`),...probes.map(p=>`${p}: text: unspecified`)]);}
+});

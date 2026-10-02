@@ -20,6 +20,10 @@ Render histories and unused outputs are outside the allowlist and were not impor
 
 ## Fresh-checkout restoration and verification
 
+Correction: independent combined validation found 13 JSON checkout hash/size mismatches under system core.autocrlf=true (1278 passed, 1 failed, 10 skipped); their Git blobs were correct. Earlier focused verification used core.autocrlf=false and did not prove ordinary Windows checkout integrity.
+Repository .gitattributes now sets -text for each exact allowlisted asset/metadata file and the exact manifest path, preserving audited bytes at checkout/add. Existing *.mjs text eol=lf remains intact; unrelated JSON/CSV/assets receive no new attribute. No global or repository Git configuration is changed.
+Verification explicitly uses git -c core.autocrlf=true worktree add --detach <NEW_EMPTY_TEMP_PATH> <CANDIDATE_COMMIT> before running the tests below.
+
 After obtaining the reported local candidate commit, run `git worktree add --detach <NEW_EMPTY_TEMP_PATH> <CANDIDATE_COMMIT>` from this repository. Git restores the assets from its objects; do not copy assets from main or use an asset symlink.
 Run `node --test tests/asset-manifest-76.test.mjs tests/campus-trio.test.mjs tests/character-sprites.test.mjs tests/ui-campus.test.mjs` in that checkout. This verifies original manifest identity, PNG signatures, JSON parseability, every byte count/hash, ignored-path exclusions, and the three unchanged art test files.
 A missing file, changed manifest, wrong size or wrong hash fails verification with the file path. Do not regenerate, replace, or accept placeholder images to fix such failures. Retain the checkout and report the mismatch; restore only the approved Git blob into a separate fresh checkout for comparison.

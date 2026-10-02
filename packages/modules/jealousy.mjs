@@ -66,7 +66,7 @@ export function jealousyContext(state,pack,viewer){
   const cfg=settings(pack);
   return (pack.jealousyProfiles||[]).filter(profile=>viewer===pack.playerId||viewer===profile.character).map(profile=>{
     const runtime=runtimeOf(state,profile.character);
-    return {character:profile.character,stage:runtime?.stage||'acquaintance',meter:runtime?.meter??0,tension:(runtime?.meter??0)>=cfg.confrontAt?'confronting':(runtime?.meter??0)>=cfg.coolAt?'cooling':'none'};
+    return {character:profile.character,...(viewer===pack.playerId?{}:{stage:runtime?.stage||'acquaintance',meter:runtime?.meter??0}),tension:(runtime?.meter??0)>=cfg.confrontAt?'confronting':(runtime?.meter??0)>=cfg.coolAt?'cooling':'none'};
   });
 }
 
@@ -97,5 +97,5 @@ export const jealousy={
     const cfg=settings(tx.pack);
     for(const profile of tx.pack.jealousyProfiles||[]){witnessed(tx,event,profile.character,cfg);told(tx,event,profile.character,cfg);}
   },
-  panel(s,p){return {title:'Jealousy',lines:(p.jealousyProfiles||[]).map(profile=>{const runtime=runtimeOf(s,profile.character);return runtime?.meter?`${s.actors[profile.character].name}: ${runtime.meter}/${settings(p).max} · ${runtime.stage}${runtime.lastTrustHit!=null?' · confronted you':''}`:'';}).filter(Boolean)};}
+  panel(s,p){return {title:'Jealousy',lines:(p.jealousyProfiles||[]).map(profile=>{const runtime=runtimeOf(s,profile.character);return runtime?.meter?`${s.actors[profile.character].name}: ${runtime.meter>=settings(p).confrontAt?'confronting':runtime.meter>=settings(p).coolAt?'cooling':'none'}`:'';}).filter(Boolean)};}
 };

@@ -5,6 +5,7 @@
   "title": "Ashford: Yuna, Haruka and Min-ji",
   "subtitle": "One autumn term at a small coastal university",
   "playerId": "player",
+  "tickMinutes": 60,
   "sceneFeedback": {
     "chips": true,
     "mood": true

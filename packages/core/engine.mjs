@@ -392,7 +392,7 @@ export function actions(world,pack,registry){
   return list.map((a,i)=>{try{execute(world,{...a,id:`preview-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry,ok);return {...a,enabled:true};}catch(e){return {...a,enabled:false,reason:e.message};}});
 }
 // Bookkeeping that takes no story time: looking, dressing, reading the phone.
-export const FREE_ACTIONS=new Set(['core.refuse','core.inspect','items.equip','items.unequip','social.readFeed','social.readThread','social.reactToPost','social.setRumorStance','social.resolveConfrontation','social.scoreFirst','social.stopFirst','world.pushLuck']);
+export const FREE_ACTIONS=new Set(['core.refuse','core.inspect','items.equip','items.unequip','social.readFeed','social.readThread','social.acceptPhoneOffer','social.declinePhoneOffer','social.reactToPost','social.setRumorStance','social.resolveConfrontation','social.scoreFirst','social.stopFirst','world.pushLuck']);
 // The typed turns a model scene answers inside an open continuous scene: the only ones that count toward the
 // sceneTurns safety cap. Score sub-turns (priceActs, scoreFirst, resolveConfrontation), waits and rules-only
 // commands are not conversation, and failed generations are refunded by the service, so none of them spend the scene.

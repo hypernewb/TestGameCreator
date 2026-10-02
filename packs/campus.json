@@ -2969,6 +2969,7 @@
       ]
     }
   ],
+  "declinePenalty": 0,
   "phoneContacts": [
     "jana",
     "kaylee",

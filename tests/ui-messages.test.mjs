@@ -79,10 +79,10 @@ test('a plan suggestion maps to the pending invite: accept travels and commits o
 
 test('the reply box is the ordinary typed turn, addressed to her',()=>{
   const js=read('play.mjs');
-  assert.match(js,/act\(\{input:`Reply to \$\{who\}: \$\{text\}`\}\)/,'the reply box sends a typed turn, not a command');
+  assert.match(js,/act\(\{input:`Reply to \$\{who\}: \$\{text\}`\}\)\.then\(d=>\{if\(d&&!d\.refusal\)\$\('#messages-input'\)\.value='';\}\)/,'the reply box sends a typed turn, not a command');
   assert.match(js,/msgAct\('social\.acceptPhoneOffer'/,'accept stays an engine action');
   assert.match(js,/type:'social\.readThread'/,'opening a thread stays an engine action');
-  assert.match(js,/no\.onclick=\(\)=>\{msgPassed\.add\(m\.id\);renderMessages\(\);\}/,'decline sends no command: the engine has none, so the player passes in the panel');
+  assert.match(js,/no\.onclick=\(\)=>act\(\{command:\{type:decline\.type,args:decline\.args\}\}\)/,'decline sends the pending invitation engine action');assert.match(js,/msgAct\('social\.declinePhoneOffer',m\.id\)/);assert.doesNotMatch(js,/msgPassed/);
   assert.match(js,/for\(const id of \['day-card','end-card','messages'\]\)/,'closing the panel lets a queued card through');
 });
 
@@ -92,7 +92,7 @@ test('the panel button carries the unread badge, and the panel holds at phone wi
   assert.match(html,/<dialog id="messages"/);assert.match(html,/data-action="messages"/,'the panel has an entry point');
   assert.match(html,/<form method="dialog" class="messages__head">/);assert.match(html,/<form id="messages-reply"/,'the reply box is its own form, never nested');
   assert.match(js,/\bmessages\(current\.state,current\.pack\)/);assert.match(js,/messages-badge/);
-  assert.match(js,/pending&&m\.offer\.expires<s\.tick\?'expired':pending\?'declined':m\.offer\.status/,'the panel reads the tick it renders against, and never invents an expiry');
+  assert.match(js,/pending&&m\.offer\.expires<s\.tick\?'expired':pending\?'pending':m\.offer\.status/,'the panel reads the tick it renders against, and never invents an expiry');
   assert.match(css,/\.messages-panel\{[^}]*padding:16px/,'16px gutters');
   assert.match(css,/\.messages__body\{[^}]*grid-template-columns:[^;]*\d+px[^;]*minmax\(0,1fr\)/,'two columns on the desktop app');
   assert.match(css,/@media\(max-width:600px\)\{\.messages-panel\{[^}]*padding:16px/,'the same gutters at phone width');

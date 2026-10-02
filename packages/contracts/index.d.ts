@@ -113,3 +113,5 @@ export interface OutreachSettings { stageChance:Record<'acquaintance'|'dating'|'
 export interface OutreachPack { outreachSettings?:OutreachSettings; outreachMessages?:OutreachText[] }
 export interface OutreachState { sent:{day:number;count:number}; contactDay:number|null; ignoredDay:number|null; gained:{day:number;amount:number}|null; lastKind:OutreachKind|null }
 export interface OutreachRuntime { characters:Record<string,OutreachState> }
+
+export interface PhonePack { declinePenalty?:number }

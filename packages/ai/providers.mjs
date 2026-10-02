@@ -1,3 +1,5 @@
+import {AsyncLocalStorage} from 'node:async_hooks';
+export const modelTurn=new AsyncLocalStorage();
 import {createRequestQueue} from '../../vendor/venus/requestQueue.mjs';
 import {lintScene} from './narration-lint.mjs';
 import {isLoopback} from './local-settings.mjs';
@@ -103,30 +105,36 @@ export class CompatibleProvider {
   name='Configured model';
   bundlesSceneMetadata=true;
   enqueue=createRequestQueue();
-  constructor({endpoint,model,key='',timeout=30000,maxRequests=10000,maxTokens=1800,contextWindow=null,fetchImpl=fetch,wideContext=false}){const url=new URL(endpoint);assert(url.protocol==='https:'||url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname),'Endpoint must be HTTPS or local HTTP');assert(model,'Model ID is required');Object.assign(this,{endpoint,model,key,timeout,maxRequests,maxTokens,contextWindow,fetchImpl,wideContext});this.remote=!isLoopback(endpoint);this.requests=0;this.usage=[];this.calibration={ratio:1,samples:0};this.reasoningParam=true;}
+  constructor({endpoint,model,key='',timeout=30000,maxRequests=10000,maxTokens=1800,contextWindow=null,fetchImpl=fetch,wideContext=false,sleep=null}){const url=new URL(endpoint);assert(url.protocol==='https:'||url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname),'Endpoint must be HTTPS or local HTTP');assert(model,'Model ID is required');Object.assign(this,{endpoint,model,key,timeout,maxRequests,maxTokens,contextWindow,fetchImpl,wideContext,sleep});this.remote=!isLoopback(endpoint);this.requests=0;this.usage=[];this.calibration={ratio:1,samples:0};this.reasoningParam=true;}
   // Local servers (Ollama num_ctx, LM Studio) drop the start of a prompt when prompt+max_tokens overflows the window; ask only for what is left.
   outputCap(messages){return this.contextWindow?Math.min(this.maxTokens,Math.max(256,this.contextWindow-Math.ceil(messageTokens(messages,this.calibration?.ratio||1)*1.03)-16)):this.maxTokens;}
   complete(messages,signal,responseFormat,onDelta){return this.enqueue(()=>this.performComplete(messages,signal,responseFormat,0,onDelta),signal);}
-  async performComplete(messages,signal,responseFormat,retry=0,onDelta){
+  async waitBusy(retry,waited,header,signal){
+    if(signal?.aborted)throw signal.reason||Error('Cancelled');if(retry>=3)return null;
+    const seconds=header?.trim()?Number(header):NaN,date=Date.parse(header),ms=Number.isFinite(seconds)?Math.max(0,seconds*1000):Number.isFinite(date)?Math.max(0,date-Date.now()):[2000,5000,12000][retry];
+    if(waited+ms>30000)return null;modelTurn.getStore()?.record({retries:1});modelTurn.getStore()?.status(`The model is busy, retrying in ${Math.ceil(ms/1000)}s...`);
+    if(this.sleep)await this.sleep(ms,signal);else await backoff(0,signal,[ms]);return waited+ms;
+  }
+  async performComplete(messages,signal,responseFormat,retry=0,onDelta,waited=0){
     const formats=responseFormat?.type==='json_schema'?[responseFormat,{type:'json_object'},null]:responseFormat?.type==='json_object'?[responseFormat,null]:[responseFormat||null];
     for(const format of formats){
-      assert(this.requests<this.maxRequests,`Session request limit reached (${this.maxRequests} model calls). Restart the server or raise STORY_MAX_REQUESTS`);this.requests++;
-      const began=Date.now(),controller=new AbortController(),abort=()=>controller.abort();
-      signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)controller.abort();const timer=setTimeout(abort,this.timeout);
+      assert(this.requests<this.maxRequests,`Session request limit reached (${this.maxRequests} model calls). Restart the server or raise STORY_MAX_REQUESTS`);this.requests++;modelTurn.getStore()?.record({calls:1});
+      const began=Date.now(),controller=new AbortController(),abort=()=>controller.abort();let timedOut=false;
+      signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)controller.abort();const timer=setTimeout(()=>{timedOut=true;abort();},this.timeout);
       try{
         const response=await this.fetchImpl(this.endpoint,{method:'POST',headers:{'Content-Type':'application/json',...(this.key?{Authorization:`Bearer ${this.key}`}:{})},body:JSON.stringify({model:this.model,messages,temperature:0.5,max_tokens:this.outputCap(messages),...(this.reasoningParam?{reasoning_effort:'none'}:{}),...(onDelta?{stream:true,stream_options:{include_usage:true}}:{}),...(format?{response_format:format}:{})}),signal:controller.signal});
-        if(!response.ok){const detail=await response.text().catch(()=>'');if(this.reasoningParam&&(response.status===400||response.status===422)&&/reasoning/i.test(detail)){this.reasoningParam=false;this.requests--;return this.performComplete(messages,signal,responseFormat,retry,onDelta);}const unsupported=format&&(response.status===400||response.status===422)&&/response.?format|json.?schema|json.?object|structured.?output|unsupported.*(schema|format)/i.test(detail);if(unsupported&&format!==formats.at(-1))continue;if(RETRYABLE_STATUSES.has(response.status)&&await backoff(retry,signal))return this.performComplete(messages,signal,responseFormat,retry+1,onDelta);throw Error(`Model request failed (${response.status})${detail?`: ${/<html|<!doctype/i.test(detail)?htmlGist(detail):detail.slice(0,180)}`:''}`);}
+        if(!response.ok){const detail=await response.text().catch(()=>'');if(this.reasoningParam&&(response.status===400||response.status===422)&&/reasoning/i.test(detail)){this.reasoningParam=false;this.requests--;return this.performComplete(messages,signal,responseFormat,retry,onDelta,waited);}const unsupported=format&&(response.status===400||response.status===422)&&/response.?format|json.?schema|json.?object|structured.?output|unsupported.*(schema|format)/i.test(detail);if(unsupported&&format!==formats.at(-1))continue;if(RETRYABLE_STATUSES.has(response.status)){clearTimeout(timer);const next=await this.waitBusy(retry,waited,response.headers?.get?.('retry-after'),signal);if(next!==null)return this.performComplete(messages,signal,responseFormat,retry+1,onDelta,next);if([429,503].includes(response.status))throw Object.assign(Error('The model is still busy. Your action is saved in the input box. Please retry.'),{modelBusy:true});}throw Error(`Model request failed (${response.status})${detail?`: ${/<html|<!doctype/i.test(detail)?htmlGist(detail):detail.slice(0,180)}`:''}`);}
         let result;if(onDelta&&response.body&&response.headers?.get?.('content-type')?.includes('text/event-stream')){
           const reader=response.body.getReader(),decoder=new TextDecoder();let pending='',text='',usage=null,finishReason=null;
           while(true){const {done,value}=await reader.read();pending+=decoder.decode(value||new Uint8Array(),{stream:!done});const records=pending.split(/\r?\n/);pending=records.pop()||'';for(const record of records){if(!record.startsWith('data:'))continue;const data=record.slice(5).trim();if(!data||data==='[DONE]')continue;const chunk=JSON.parse(data);if(chunk.error)throw Error(chunk.error.message||'Model stream failed');const choice=chunk.choices?.[0],delta=choice?.delta?.content;if(typeof delta==='string'){text+=delta;onDelta(delta);}if(choice?.finish_reason)finishReason=choice.finish_reason;usage=chunk.usage||usage;}if(done)break;}if(finishReason&&finishReason!=='stop')throw Error(finishReason==='length'?'Model ran out of output tokens before finishing.':`Model stream stopped early (${finishReason}).`);result={text,usage};assert(text.trim(),'Model stream returned no answer text.');
         }else result=completionOf(await response.json());
         assert(result.text.length<=20000,'Oversized model response');
-        this.usage.push({model:this.model,latencyMs:Date.now()-began,tokens:result.usage||null});this.usage.splice(0,Math.max(0,this.usage.length-200));
+        modelTurn.getStore()?.record({promptTokens:result.usage?.prompt_tokens||0,completionTokens:result.usage?.completion_tokens||0});this.usage.push({model:this.model,latencyMs:Date.now()-began,tokens:result.usage||null});this.usage.splice(0,Math.max(0,this.usage.length-200));
         // Reported prompt size tunes the token estimate the context budget uses for this model.
         if(result.usage?.prompt_tokens)this.calibration=calibrate(this.calibration,messageTokens(messages),result.usage.prompt_tokens);
         // Just-in-time loaders (LM Studio) only report the loaded window once a request has loaded the model.
         if(!this.detectedWindow&&this.detectWindow&&(this.detectAttempts=(this.detectAttempts||0)+1)<=3)this.detectWindow();return result.text;
-      }finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
+      }catch(e){if(timedOut&&this.remote&&!signal?.aborted){clearTimeout(timer);const next=await this.waitBusy(retry,waited,null,signal);if(next!==null)return this.performComplete(messages,signal,responseFormat,retry+1,onDelta,next);throw Object.assign(Error('The model took too long. Your action is saved in the input box. Please retry.'),{modelBusy:true});}throw e;}finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
     }
   }
   async interpret(input,context,available,signal){const messages=intentMessages(input,context,available);for(let attempt=0;attempt<2;attempt++){const raw=await this.complete(messages,signal,intentFormat(available));try{return parseModelChoice(raw,available,input);}catch(e){if(attempt)throw e;messages.push({role:'assistant',content:raw},{role:'user',content:`Return only a JSON object with an enabled action index and question. ${e.message}`});}}}

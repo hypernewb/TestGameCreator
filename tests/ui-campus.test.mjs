@@ -41,7 +41,7 @@ test('the end card shows why and which way each heart moved, never a number',()=
 });
 
 test('the journal shows only discovered preferences and the arc stage by name',()=>{
- const p=pack(),g=run(p,'journal');assert.deepEqual(journal(g.state,p).map(j=>[j.id,j.likes.length,j.dislikes.length]),[['jana',0,0],['monique',0,0],['nova',0,0],['abigail',0,0]]);
+ const p=pack();delete p.likesOpen;const g=run(p,'journal');assert.deepEqual(journal(g.state,p).map(j=>[j.id,j.likes.length,j.dislikes.length]),[['jana',0,0],['monique',0,0],['nova',0,0],['abigail',0,0]]);
  g.act('core.scene',{text:'Hey',location:'apartment',characters:['jana'],activity:'talk'});const sceneId=g.state.scene.id;
  g.act('social.priceActs',{character:'jana',sceneId,private:true,acts:[{kind:'listen',target:'dominik',size:'medium'},{kind:'pushy',target:'dominik',size:'small'}]});
  const jana=journal(g.state,p)[0],known=knownActs(g.state,p,'jana');assert.equal(jana.stage,stageOf(g.state,p,'jana').name);

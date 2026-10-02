@@ -1881,6 +1881,106 @@
   "actProfiles": [
     {
       "character": "yuna",
+      "likeClues": [
+        {
+          "id": "yuna-taste-1",
+          "character": "yuna",
+          "tag": "the sea",
+          "liked": true,
+          "entries": [
+            "yuna-island"
+          ],
+          "clues": [
+            "Her shoulders loosened when the conversation drifted toward salt air.",
+            "She lingered over a story of waves breaking beyond the windows."
+          ],
+          "softLabel": "Drawn to the shore"
+        },
+        {
+          "id": "yuna-taste-2",
+          "character": "yuna",
+          "tag": "beach volleyball",
+          "liked": true,
+          "entries": [
+            "yuna-volley"
+          ],
+          "clues": [
+            "She was already checking the forecast when you mentioned the sandy court.",
+            "Her smile came back at the thought of bare feet and a ball over a net."
+          ],
+          "softLabel": "A team game in the sand"
+        },
+        {
+          "id": "yuna-taste-3",
+          "character": "yuna",
+          "tag": "hotteok",
+          "liked": true,
+          "entries": [
+            "yuna-roll"
+          ],
+          "clues": [
+            "She held the warm pastry close before taking the first bite.",
+            "The smell of butter and sugar made her homesick in a happy way."
+          ],
+          "softLabel": "A sweet taste of home"
+        },
+        {
+          "id": "yuna-taste-4",
+          "character": "yuna",
+          "tag": "being asked about Jeju",
+          "liked": true,
+          "entries": [
+            "yuna-island"
+          ],
+          "clues": [
+            "She kept talking when your questions stayed with the place she grew up.",
+            "She seemed relieved that you wanted her memories rather than a quick answer."
+          ],
+          "softLabel": "Someone curious about home"
+        },
+        {
+          "id": "yuna-taste-5",
+          "character": "yuna",
+          "tag": "being told what she wants",
+          "liked": false,
+          "entries": [
+            "yuna-harp-wants"
+          ],
+          "clues": [
+            "Her expression closed when someone decided her answer for her.",
+            "She warmed again only after the choice was left in her hands."
+          ],
+          "softLabel": "Room to choose for herself"
+        },
+        {
+          "id": "yuna-taste-6",
+          "character": "yuna",
+          "tag": "pushiness",
+          "liked": false,
+          "entries": [
+            "yuna-pushy"
+          ],
+          "clues": [
+            "She drew back when the same request came around again.",
+            "Her relief showed when the conversation finally gave her breathing room."
+          ],
+          "softLabel": "Time to find her answer"
+        },
+        {
+          "id": "yuna-taste-7",
+          "character": "yuna",
+          "tag": "people who pick sides about home",
+          "liked": false,
+          "entries": [
+            "yuna-harp-home"
+          ],
+          "clues": [
+            "She fell quiet as soon as the conversation became a contest over who was right.",
+            "She kept looking for someone who would hear the whole story before judging."
+          ],
+          "softLabel": "An ear without a verdict"
+        }
+      ],
       "entries": [
         {
           "id": "yuna-island",
@@ -1982,6 +2082,106 @@
     },
     {
       "character": "haruka",
+      "likeClues": [
+        {
+          "id": "haruka-taste-1",
+          "character": "haruka",
+          "tag": "old horror films",
+          "liked": true,
+          "entries": [
+            "haruka-film"
+          ],
+          "clues": [
+            "She relaxed as the grainy monster lurched across the screen.",
+            "She mouthed the next line before the shadow appeared in the doorway."
+          ],
+          "softLabel": "Comfort in a midnight screening"
+        },
+        {
+          "id": "haruka-taste-2",
+          "character": "haruka",
+          "tag": "vinyl",
+          "liked": true,
+          "entries": [
+            "haruka-vinyl"
+          ],
+          "clues": [
+            "She handled the sleeve carefully and checked both sides of the disc.",
+            "She let the needle settle and listened through the soft hiss before the song."
+          ],
+          "softLabel": "Music with a little crackle"
+        },
+        {
+          "id": "haruka-taste-3",
+          "character": "haruka",
+          "tag": "cider",
+          "liked": true,
+          "entries": [
+            "haruka-cider"
+          ],
+          "clues": [
+            "She brightened at the dry apple smell rising from the glass.",
+            "She took a slow sip of the tart golden drink before joining the conversation."
+          ],
+          "softLabel": "A crisp orchard drink"
+        },
+        {
+          "id": "haruka-taste-4",
+          "character": "haruka",
+          "tag": "being teased back",
+          "liked": true,
+          "entries": [
+            "haruka-tease"
+          ],
+          "clues": [
+            "Your comeback made her grin instead of reaching for another joke.",
+            "She laughed harder when you returned the joke with one of your own."
+          ],
+          "softLabel": "Banter that comes back at her"
+        },
+        {
+          "id": "haruka-taste-5",
+          "character": "haruka",
+          "tag": "authority",
+          "liked": false,
+          "entries": [
+            "haruka-pushy"
+          ],
+          "clues": [
+            "Her grin vanished when someone started giving orders.",
+            "She bristled at the assumption that someone else could set the terms."
+          ],
+          "softLabel": "Her own rules"
+        },
+        {
+          "id": "haruka-taste-6",
+          "character": "haruka",
+          "tag": "being called cute",
+          "liked": false,
+          "entries": [
+            "haruka-cute"
+          ],
+          "clues": [
+            "The sugary little nickname made her expression sharpen.",
+            "She stopped playing along when the compliment made her sound small and harmless."
+          ],
+          "softLabel": "Taken seriously beneath the grin"
+        },
+        {
+          "id": "haruka-taste-7",
+          "character": "haruka",
+          "tag": "anyone who mocks her films",
+          "liked": false,
+          "entries": [
+            "haruka-insult-film"
+          ],
+          "clues": [
+            "She could laugh at herself until the joke landed on the work she had made.",
+            "She went still when a throwaway remark dismissed months behind the camera."
+          ],
+          "softLabel": "Care for the work beneath the joke"
+        }
+      ],
       "entries": [
         {
           "id": "haruka-tease",
@@ -2083,6 +2283,120 @@
     },
     {
       "character": "minji",
+      "likeClues": [
+        {
+          "id": "minji-taste-1",
+          "character": "minji",
+          "tag": "puzzles",
+          "liked": true,
+          "entries": [
+            "minji-cube"
+          ],
+          "clues": [
+            "Her fingers were already testing how the pieces fit together.",
+            "She forgot the time while trying one more arrangement."
+          ],
+          "softLabel": "Something to figure out"
+        },
+        {
+          "id": "minji-taste-2",
+          "character": "minji",
+          "tag": "climbing",
+          "liked": true,
+          "entries": [
+            "minji-bar"
+          ],
+          "clues": [
+            "She glanced at the holds above and tucked the snack away for the next route.",
+            "Her mood lifted at the thought of chalky hands and one more reach."
+          ],
+          "softLabel": "A challenge up the wall"
+        },
+        {
+          "id": "minji-taste-3",
+          "character": "minji",
+          "tag": "hiking",
+          "liked": true,
+          "entries": [
+            "minji-hike"
+          ],
+          "clues": [
+            "She checked the tide and chose shoes that could handle wet stone.",
+            "A stretch of open trail seemed to clear her head."
+          ],
+          "softLabel": "A path beyond campus"
+        },
+        {
+          "id": "minji-taste-4",
+          "character": "minji",
+          "tag": "technical projects",
+          "liked": true,
+          "entries": [
+            "minji-project"
+          ],
+          "clues": [
+            "She leaned closer when you followed the numbers instead of just nodding.",
+            "She stayed to sketch another fix after everyone else had packed up."
+          ],
+          "softLabel": "Work that can be made real"
+        },
+        {
+          "id": "minji-taste-5",
+          "character": "minji",
+          "tag": "spontaneous outings",
+          "liked": true,
+          "entries": [
+            "minji-hike"
+          ],
+          "clues": [
+            "She was ready to leave before the whole afternoon had been planned.",
+            "A last-minute detour brought out a laugh you had not heard all day."
+          ],
+          "softLabel": "A little room for the unexpected"
+        },
+        {
+          "id": "minji-taste-6",
+          "character": "minji",
+          "tag": "pointless drama",
+          "liked": false,
+          "entries": [
+            "minji-harp-drama"
+          ],
+          "clues": [
+            "She looked tired when the argument kept going without anything to resolve.",
+            "Her attention returned as soon as someone offered a useful next step."
+          ],
+          "softLabel": "A problem worth solving"
+        },
+        {
+          "id": "minji-taste-7",
+          "character": "minji",
+          "tag": "showing off",
+          "liked": false,
+          "entries": [
+            "minji-boast"
+          ],
+          "clues": [
+            "She waited for the grand claim to turn into something she could check.",
+            "The louder the self-praise got, the less she had to say."
+          ],
+          "softLabel": "Results over a performance"
+        },
+        {
+          "id": "minji-taste-8",
+          "character": "minji",
+          "tag": "vague answers",
+          "liked": false,
+          "entries": [
+            "minji-harp-answers"
+          ],
+          "clues": [
+            "She asked again when the reply kept skating around the question.",
+            "Her patience thinned with each answer that left the details out."
+          ],
+          "softLabel": "An answer she can use"
+        }
+      ],
       "entries": [
         {
           "id": "minji-project",
@@ -4252,6 +4566,106 @@
           "actProfiles": [
             {
               "character": "yuna",
+              "likeClues": [
+                {
+                  "id": "yuna-taste-1",
+                  "character": "yuna",
+                  "tag": "the sea",
+                  "liked": true,
+                  "entries": [
+                    "yuna-island"
+                  ],
+                  "clues": [
+                    "Her shoulders loosened when the conversation drifted toward salt air.",
+                    "She lingered over a story of waves breaking beyond the windows."
+                  ],
+                  "softLabel": "Drawn to the shore"
+                },
+                {
+                  "id": "yuna-taste-2",
+                  "character": "yuna",
+                  "tag": "beach volleyball",
+                  "liked": true,
+                  "entries": [
+                    "yuna-volley"
+                  ],
+                  "clues": [
+                    "She was already checking the forecast when you mentioned the sandy court.",
+                    "Her smile came back at the thought of bare feet and a ball over a net."
+                  ],
+                  "softLabel": "A team game in the sand"
+                },
+                {
+                  "id": "yuna-taste-3",
+                  "character": "yuna",
+                  "tag": "hotteok",
+                  "liked": true,
+                  "entries": [
+                    "yuna-roll"
+                  ],
+                  "clues": [
+                    "She held the warm pastry close before taking the first bite.",
+                    "The smell of butter and sugar made her homesick in a happy way."
+                  ],
+                  "softLabel": "A sweet taste of home"
+                },
+                {
+                  "id": "yuna-taste-4",
+                  "character": "yuna",
+                  "tag": "being asked about Jeju",
+                  "liked": true,
+                  "entries": [
+                    "yuna-island"
+                  ],
+                  "clues": [
+                    "She kept talking when your questions stayed with the place she grew up.",
+                    "She seemed relieved that you wanted her memories rather than a quick answer."
+                  ],
+                  "softLabel": "Someone curious about home"
+                },
+                {
+                  "id": "yuna-taste-5",
+                  "character": "yuna",
+                  "tag": "being told what she wants",
+                  "liked": false,
+                  "entries": [
+                    "yuna-harp-wants"
+                  ],
+                  "clues": [
+                    "Her expression closed when someone decided her answer for her.",
+                    "She warmed again only after the choice was left in her hands."
+                  ],
+                  "softLabel": "Room to choose for herself"
+                },
+                {
+                  "id": "yuna-taste-6",
+                  "character": "yuna",
+                  "tag": "pushiness",
+                  "liked": false,
+                  "entries": [
+                    "yuna-pushy"
+                  ],
+                  "clues": [
+                    "She drew back when the same request came around again.",
+                    "Her relief showed when the conversation finally gave her breathing room."
+                  ],
+                  "softLabel": "Time to find her answer"
+                },
+                {
+                  "id": "yuna-taste-7",
+                  "character": "yuna",
+                  "tag": "people who pick sides about home",
+                  "liked": false,
+                  "entries": [
+                    "yuna-harp-home"
+                  ],
+                  "clues": [
+                    "She fell quiet as soon as the conversation became a contest over who was right.",
+                    "She kept looking for someone who would hear the whole story before judging."
+                  ],
+                  "softLabel": "An ear without a verdict"
+                }
+              ],
               "entries": [
                 {
                   "id": "yuna-island",
@@ -5495,6 +5909,106 @@
           "actProfiles": [
             {
               "character": "haruka",
+              "likeClues": [
+                {
+                  "id": "haruka-taste-1",
+                  "character": "haruka",
+                  "tag": "old horror films",
+                  "liked": true,
+                  "entries": [
+                    "haruka-film"
+                  ],
+                  "clues": [
+                    "She relaxed as the grainy monster lurched across the screen.",
+                    "She mouthed the next line before the shadow appeared in the doorway."
+                  ],
+                  "softLabel": "Comfort in a midnight screening"
+                },
+                {
+                  "id": "haruka-taste-2",
+                  "character": "haruka",
+                  "tag": "vinyl",
+                  "liked": true,
+                  "entries": [
+                    "haruka-vinyl"
+                  ],
+                  "clues": [
+                    "She handled the sleeve carefully and checked both sides of the disc.",
+                    "She let the needle settle and listened through the soft hiss before the song."
+                  ],
+                  "softLabel": "Music with a little crackle"
+                },
+                {
+                  "id": "haruka-taste-3",
+                  "character": "haruka",
+                  "tag": "cider",
+                  "liked": true,
+                  "entries": [
+                    "haruka-cider"
+                  ],
+                  "clues": [
+                    "She brightened at the dry apple smell rising from the glass.",
+                    "She took a slow sip of the tart golden drink before joining the conversation."
+                  ],
+                  "softLabel": "A crisp orchard drink"
+                },
+                {
+                  "id": "haruka-taste-4",
+                  "character": "haruka",
+                  "tag": "being teased back",
+                  "liked": true,
+                  "entries": [
+                    "haruka-tease"
+                  ],
+                  "clues": [
+                    "Your comeback made her grin instead of reaching for another joke.",
+                    "She laughed harder when you returned the joke with one of your own."
+                  ],
+                  "softLabel": "Banter that comes back at her"
+                },
+                {
+                  "id": "haruka-taste-5",
+                  "character": "haruka",
+                  "tag": "authority",
+                  "liked": false,
+                  "entries": [
+                    "haruka-pushy"
+                  ],
+                  "clues": [
+                    "Her grin vanished when someone started giving orders.",
+                    "She bristled at the assumption that someone else could set the terms."
+                  ],
+                  "softLabel": "Her own rules"
+                },
+                {
+                  "id": "haruka-taste-6",
+                  "character": "haruka",
+                  "tag": "being called cute",
+                  "liked": false,
+                  "entries": [
+                    "haruka-cute"
+                  ],
+                  "clues": [
+                    "The sugary little nickname made her expression sharpen.",
+                    "She stopped playing along when the compliment made her sound small and harmless."
+                  ],
+                  "softLabel": "Taken seriously beneath the grin"
+                },
+                {
+                  "id": "haruka-taste-7",
+                  "character": "haruka",
+                  "tag": "anyone who mocks her films",
+                  "liked": false,
+                  "entries": [
+                    "haruka-insult-film"
+                  ],
+                  "clues": [
+                    "She could laugh at herself until the joke landed on the work she had made.",
+                    "She went still when a throwaway remark dismissed months behind the camera."
+                  ],
+                  "softLabel": "Care for the work beneath the joke"
+                }
+              ],
               "entries": [
                 {
                   "id": "haruka-tease",
@@ -6715,6 +7229,120 @@
           "actProfiles": [
             {
               "character": "minji",
+              "likeClues": [
+                {
+                  "id": "minji-taste-1",
+                  "character": "minji",
+                  "tag": "puzzles",
+                  "liked": true,
+                  "entries": [
+                    "minji-cube"
+                  ],
+                  "clues": [
+                    "Her fingers were already testing how the pieces fit together.",
+                    "She forgot the time while trying one more arrangement."
+                  ],
+                  "softLabel": "Something to figure out"
+                },
+                {
+                  "id": "minji-taste-2",
+                  "character": "minji",
+                  "tag": "climbing",
+                  "liked": true,
+                  "entries": [
+                    "minji-bar"
+                  ],
+                  "clues": [
+                    "She glanced at the holds above and tucked the snack away for the next route.",
+                    "Her mood lifted at the thought of chalky hands and one more reach."
+                  ],
+                  "softLabel": "A challenge up the wall"
+                },
+                {
+                  "id": "minji-taste-3",
+                  "character": "minji",
+                  "tag": "hiking",
+                  "liked": true,
+                  "entries": [
+                    "minji-hike"
+                  ],
+                  "clues": [
+                    "She checked the tide and chose shoes that could handle wet stone.",
+                    "A stretch of open trail seemed to clear her head."
+                  ],
+                  "softLabel": "A path beyond campus"
+                },
+                {
+                  "id": "minji-taste-4",
+                  "character": "minji",
+                  "tag": "technical projects",
+                  "liked": true,
+                  "entries": [
+                    "minji-project"
+                  ],
+                  "clues": [
+                    "She leaned closer when you followed the numbers instead of just nodding.",
+                    "She stayed to sketch another fix after everyone else had packed up."
+                  ],
+                  "softLabel": "Work that can be made real"
+                },
+                {
+                  "id": "minji-taste-5",
+                  "character": "minji",
+                  "tag": "spontaneous outings",
+                  "liked": true,
+                  "entries": [
+                    "minji-hike"
+                  ],
+                  "clues": [
+                    "She was ready to leave before the whole afternoon had been planned.",
+                    "A last-minute detour brought out a laugh you had not heard all day."
+                  ],
+                  "softLabel": "A little room for the unexpected"
+                },
+                {
+                  "id": "minji-taste-6",
+                  "character": "minji",
+                  "tag": "pointless drama",
+                  "liked": false,
+                  "entries": [
+                    "minji-harp-drama"
+                  ],
+                  "clues": [
+                    "She looked tired when the argument kept going without anything to resolve.",
+                    "Her attention returned as soon as someone offered a useful next step."
+                  ],
+                  "softLabel": "A problem worth solving"
+                },
+                {
+                  "id": "minji-taste-7",
+                  "character": "minji",
+                  "tag": "showing off",
+                  "liked": false,
+                  "entries": [
+                    "minji-boast"
+                  ],
+                  "clues": [
+                    "She waited for the grand claim to turn into something she could check.",
+                    "The louder the self-praise got, the less she had to say."
+                  ],
+                  "softLabel": "Results over a performance"
+                },
+                {
+                  "id": "minji-taste-8",
+                  "character": "minji",
+                  "tag": "vague answers",
+                  "liked": false,
+                  "entries": [
+                    "minji-harp-answers"
+                  ],
+                  "clues": [
+                    "She asked again when the reply kept skating around the question.",
+                    "Her patience thinned with each answer that left the details out."
+                  ],
+                  "softLabel": "An answer she can use"
+                }
+              ],
               "entries": [
                 {
                   "id": "minji-project",
@@ -7228,6 +7856,11 @@
       ]
     }
   ],
+  "likesOpen": true,
+  "likeClueSettings": {
+    "promotionThreshold": 2,
+    "gossipDailyCap": 1
+  },
   "lorebook": [
     {
       "id": "yuna-jeju",

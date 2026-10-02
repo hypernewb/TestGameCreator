@@ -5,6 +5,7 @@
   "title": "Ashford",
   "subtitle": "One autumn term at a small coastal university",
   "playerId": "player",
+  "tickMinutes": 60,
   "sceneFeedback": {"chips": true, "mood": true},
   "slipGuard": {"echoWords": 8},
   "calendar": {

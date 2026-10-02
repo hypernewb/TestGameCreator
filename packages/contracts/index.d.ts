@@ -10,6 +10,9 @@ export interface Turn { id:string; command:Command; events:Event[]; narrative:st
 export interface Transaction { state:World; pack:unknown; set(path:(string|number)[],value:unknown):void; emit(type:string,payload:Record<string,unknown>,visibility?:'public'|string[]):void; random():number }
 export interface Module { id:string; version:string; coreApi:string; requires:string[]; validate?(pack:any):void; init?(pack:any):unknown; commands?:Record<string,(tx:Transaction,args:any)=>void>; react?(tx:Transaction,event:Event):void; actions?(state:World,pack:any):Action[]; panel?(state:World,pack:any):{title:string;lines:string[]} }
 export interface Action { label:string; type:string; args:Record<string,unknown> }
+export interface TimeCost { ticks:number; display:string }
+export interface TimeCostPack { tickMinutes?:number }
+export interface Action { cost?:TimeCost }
 export interface Provider { interpret(input:string,context:unknown,actions:Action[],signal?:AbortSignal):Promise<{type:string;args:Record<string,unknown>}>; narrate(context:unknown,signal?:AbortSignal):Promise<string> }
 export type ActKind='flirt'|'compliment'|'gift'|'touch'|'insult'|'buy'|'invite'|'tease'|'listen'|'boast'|'pushy';
 export interface SceneAct { kind:ActKind; target:string; size?:'small'|'medium'|'large'; landed?:boolean; region?:BodyRegion }

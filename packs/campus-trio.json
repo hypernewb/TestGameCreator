@@ -5,6 +5,7 @@
   "title": "Ashford: Yuna, Haruka and Min-ji",
   "subtitle": "One autumn term at a small coastal university",
   "playerId": "player",
+  "tickMinutes": 60,
   "sceneFeedback": {
     "chips": true,
     "mood": true
@@ -90,7 +91,12 @@
     "social.npc": "0.2.0",
     "social.gossip": "0.1.0",
     "social.firsts": "0.1.0",
-    "social.wants": "0.1.0"
+    "social.wants": "0.1.0",
+    "story.recap": "0.1.0"
+  },
+  "dayRecap": {
+    "max": 6,
+    "keep": 7
   },
   "gameProject": {
     "timeMode": "planner",
@@ -1202,6 +1208,10 @@
   "initialMoney": 60,
   "economySettings": {
     "debtLimit": 10
+  },
+  "routeRepair": {
+    "cooldownTicks": 24,
+    "trustBar": 35
   },
   "relationshipStageSettings": {
     "stages": [
@@ -3103,7 +3113,7 @@
       "priority": -10,
       "requires": {
         "flags": {
-          "term-over": true
+          "run-over": true
         }
       },
       "text": "The term ends the way terms do: a last night at Murphy's, half your floor crying at everyone, promises to keep in touch. Some of them you might even keep."

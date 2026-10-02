@@ -83,7 +83,7 @@ test('the reply box is the ordinary typed turn, addressed to her',()=>{
   assert.match(js,/msgAct\('social\.acceptPhoneOffer'/,'accept stays an engine action');
   assert.match(js,/type:'social\.readThread'/,'opening a thread stays an engine action');
   assert.match(js,/no\.onclick=\(\)=>\{msgPassed\.add\(m\.id\);renderMessages\(\);\}/,'decline sends no command: the engine has none, so the player passes in the panel');
-  assert.match(js,/for\(const id of \['day-card','end-card','messages'\]\)/,'closing the panel lets a queued card through');
+  assert.match(js,/for\(const id of \['recap-card','day-card','end-card','messages'\]\)/,'closing the panel lets a queued card through');
 });
 
 test('the panel button carries the unread badge, and the panel holds at phone width',()=>{

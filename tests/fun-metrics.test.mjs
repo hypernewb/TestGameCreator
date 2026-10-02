@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {pack as personaCampus} from './fixtures/persona-campus.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {registry} from '../packages/modules/index.mjs';
@@ -97,7 +98,7 @@ test('fun metrics: drought metrics expose long stretches without a beat',()=>{
 });
 
 test('persona playtest: seeded, player-like, and reaches authored content',()=>{
- const after=JSON.parse(readFileSync(new URL('../packs/after-hours.json',import.meta.url),'utf8'));
+ const after=personaCampus();
  const a=runPersonaPlaytest(after,registry,{turns:25,seed:7}),b=runPersonaPlaytest(after,registry,{turns:25,seed:7});
  assert.deepEqual(a.errors,[]);assert.deepEqual(Object.values(a.state.turns).map(t=>t.command.type),Object.values(b.state.turns).map(t=>t.command.type));
  const m=funMetrics(a.state,after);assert.ok(m.firstChoice,'a romancer takes an offered scene early');assert.ok(m.storylets.seen>=1);assert.ok(!m.deadByCommand['items.place']);

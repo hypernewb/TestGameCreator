@@ -104,7 +104,10 @@ export function contextFor(s,p,actorId=p.playerId,turn=null,query='',opts={}){
  // Score events are UI feedback ("Ada: Trust 45 → 50", "Balance: $30."), not conversation: the model reads trust
  // and money from their context panels, so the raw score lines never reach it as recent actions.
  const scoreEvent=new Set(['social.relationshipChanged','social.bondChanged','social.chemistryChanged','social.satisfactionChanged','world.moneyChanged','character.statChanged']);
- const recentActions=s.events.filter(e=>e.type!=='core.patch'&&!scoreEvent.has(e.type)&&canSee(e.visibility)&&e.payload.text).slice(-10).map(e=>({source:e.id,tick:e.tick,type:e.type,text:e.payload.text}));
+ // One turn can settle the same line twice (a choice plus the activity it resolved): the narrator reads the repeat as
+ // two events and plays it out twice. Identical lines collapse into one here, the way `outcomes` merges them below.
+ const acted=new Set(),recent=[];for(const e of s.events){if(e.type==='core.patch'||scoreEvent.has(e.type)||!canSee(e.visibility)||!e.payload.text||acted.has(e.payload.text))continue;acted.add(e.payload.text);recent.push({source:e.id,tick:e.tick,type:e.type,text:e.payload.text});}
+ const recentActions=recent.slice(-10);
  const clock=calendarFor(s.tick,p),{day,weekday,week}=clock,part=clock.daypart;
  // One line, only when the open scene has crossed a daypart boundary: the model can wrap the talk up naturally instead of a hard cut.
  const timeNote=s.scene&&Number.isInteger(s.scene.startedTick)&&calendarFor(s.scene.startedTick,p).daypart!==part?`It is now ${part}; the conversation has run long.`:null;

@@ -5,6 +5,7 @@
   "title": "Ashford",
   "subtitle": "One autumn term at a small coastal university",
   "playerId": "player",
+  "tickMinutes": 60,
   "sceneFeedback": {"chips": true, "mood": true},
   "slipGuard": {"echoWords": 8},
   "calendar": {
@@ -85,7 +86,12 @@
     "social.npc": "0.2.0",
     "social.gossip": "0.1.0",
     "social.firsts": "0.1.0",
-    "social.wants": "0.1.0"
+    "social.wants": "0.1.0",
+    "story.recap": "0.1.0"
+  },
+  "dayRecap": {
+    "max": 6,
+    "keep": 7
   },
   "gameProject": {
     "timeMode": "planner",
@@ -1291,6 +1297,7 @@
   "economySettings": {
     "debtLimit": 10
   },
+  "routeRepair": {"cooldownTicks": 24, "trustBar": 35},
   "relationshipStageSettings": {
     "stages": ["acquaintance", "dating", "exclusive"],
     "strainTrustFloor": 20,
@@ -3505,7 +3512,7 @@
       "priority": -10,
       "requires": {
         "flags": {
-          "term-over": true
+          "run-over": true
         }
       },
       "text": "The term ends the way terms do: a last night at Murphy's, Kaylee crying at everyone, promises to keep in touch. Some of them you might even keep."

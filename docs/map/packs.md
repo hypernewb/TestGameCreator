@@ -1,23 +1,27 @@
 # Packs
 
-**Purpose**: Content packs for the game, defining actors, locations, items, scenes, and other game data.
+**Purpose**: Authored actors, locations, scenes, schedules, preferences and module tuning.
 
 **Key Files**:
-- `packs/*.json`: JSON files containing game content.
-- `packs/living-world.json`: Sample content pack.
+- `packs/campus.json`: Showcase; planner mode, feedback toggles, touch pacing/body maps, outreach, earned desire, jealousy and wants.
+- `packs/campus-trio.json`: Regenerated trio with approved sheets, distinct voices and bounded heroine lore (T-009/028/036).
+- `scripts/reskin-campus.mjs`: Source of trio generation; regenerate after source edits.
+- `packs/*.json`: Other worlds and test fixtures; `after-hours` remains a fixture.
 
-**Main Contents**:
-- `actors`: Definitions of characters in the game.
-- `locations`: Definitions of places in the game world.
-- `items`: Definitions of usable items.
-- `scenes`: Definitions of scripted game scenes.
-- `schedules`: Character schedules.
-- `dialogue`: Dialogue trees and lines.
+**Settings introduced in integration reports**:
+- `sceneFeedback`, `socialPacing`, `relationshipStageSettings`: Feedback/pacing/stages and mechanics compatibility.
+- `unwelcomeFlirt`, `lustBaseline`: Reaction tuning and earned-desire floor/easing.
+- `outreachSettings`, `outreachMessages`: Send/reply budgets and authored initiative texts.
+- `anniversarySettings`, `jealousySettings`, `jealousyProfiles`: Shared-history and evidence-based jealousy tuning.
+- `wantSettings`: Weekly wants/reward defaults; individual want rows can override reward.
+- `slipGuard.echoWords`: Echo warning threshold; absent defaults to 8, 0 disables it (T-047).
 
 **Rules/Invariants**:
-- Content packs are JSON files.
-- Each pack should be self-contained.
-- `living-world.json` serves as a reference example.
+- No hand edits to regenerated trio; its tests compare reskin output.
+- Optional systems preserve legacy behavior as documented by their tests.
+- Campus/trio disable anniversaries after T-047; creator support remains.
+- Character limits and consent are engine gates, never model awards.
 
 **Tests**:
-- `tests/campus.test.mjs`, `npm run validate`
+- `tests/campus.test.mjs`, `campus-trio.test.mjs`, `character-sheet.test.mjs`, `body-limits.test.mjs`.
+- `npm run validate` checks pack schema.

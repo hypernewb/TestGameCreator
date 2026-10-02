@@ -253,17 +253,17 @@ test('the meter stays out of a calm prompt entirely',()=>{
   assert.ok(!/jealous/i.test(text));
 });
 
-test('the context exposes the meter to the player and to her alone',()=>{
+test('the context gives the player a tone word and keeps the meter private to her',()=>{
   const p=basePack();
   p.datingProfiles[0].initialPhase='exclusive';
   const c=run(p);
   c.act('test.flirt',{target:'brin',witnesses:['ada']});
   c.act('test.flirt',{target:'brin',witnesses:['ada']});
   const player=jealousyContext(c.s,p,'player')[0],her=jealousyContext(c.s,p,'ada')[0],other=jealousyContext(c.s,p,'brin');
-  assert.equal(player.meter,JEALOUSY.flirtAmount*4,'two exclusive flirts');
-  assert.equal(her.meter,player.meter);
+  assert.equal(player.meter,undefined,'the player never sees the meter');
+  assert.equal(her.meter,JEALOUSY.flirtAmount*4,'two exclusive flirts remain engine-held');
   assert.deepEqual(other,[],'an unrelated character never sees it');
-  assert.equal(player.stage,'exclusive');
+  assert.equal(her.stage,'exclusive');
   assert.equal(player.tension,'confronting');
 });
 
@@ -276,8 +276,8 @@ test('the panel reports only characters who are actually jealous',()=>{
   c.act('test.flirt',{target:'brin',witnesses:['ada']});
   const lines=jealousy.panel(c.s,p).lines;
   assert.equal(lines.length,1);
-  assert.match(lines[0],/^Ada: \d+\/10 · exclusive/);
-  assert.match(lines[0],/confronted you/);
+  assert.equal(lines[0],'Ada: confronting');
+  assert.doesNotMatch(lines[0],/\d/);
 });
 
 test('a missing pack field preserves legacy behaviour',()=>{

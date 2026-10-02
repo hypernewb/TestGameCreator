@@ -130,3 +130,9 @@ tests/_tmp_*.mjs
 !/public/assets/characters/yuna/expressions/smug.png
 !/public/assets/characters/yuna/expressions/surprised.png
 !/public/assets/characters/yuna/scenes/missionary.png
+
+# test artifacts & logs
+*.log
+test_output.txt
+test_results.json
+falsify-typed-run*.log

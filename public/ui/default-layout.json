@@ -1,0 +1,2318 @@
+{
+  "format": "vn-ui-studio",
+  "version": 1,
+  "units": "percent of canvas; top-left origin",
+  "config": {
+    "version": 1,
+    "theme": "parchment",
+    "layout": "bottom_adv",
+    "interaction": "hybrid",
+    "choice": "tagged_pills",
+    "aiBar": "bottom_bar",
+    "relationship": "venus_hud",
+    "screen": "dialogue",
+    "device": "desktop",
+    "sample": "normal",
+    "navigation": "dock",
+    "accent": "#a65f3f",
+    "textSize": 18,
+    "opacity": 96,
+    "radius": 4,
+    "snap": true,
+    "smartSnap": true,
+    "showGuides": true,
+    "showOverlaps": false,
+    "reducedMotion": false,
+    "widgets": {
+      "date": {
+        "x": 3,
+        "y": 4,
+        "w": 23,
+        "h": 18,
+        "z": 10,
+        "visible": true,
+        "locked": false
+      },
+      "balance": {
+        "x": 80,
+        "y": 4,
+        "w": 17,
+        "h": 18,
+        "z": 10,
+        "visible": true,
+        "locked": false
+      },
+      "radar": {
+        "x": 79,
+        "y": 26,
+        "w": 18,
+        "h": 29,
+        "z": 10,
+        "visible": true,
+        "locked": false
+      },
+      "relationship": {
+        "x": 31,
+        "y": 4,
+        "w": 39,
+        "h": 15,
+        "z": 10,
+        "visible": true,
+        "locked": false
+      },
+      "shop": {
+        "x": 71,
+        "y": 76,
+        "w": 12,
+        "h": 10,
+        "z": 10,
+        "visible": true,
+        "locked": false
+      },
+      "map": {
+        "x": 85,
+        "y": 76,
+        "w": 12,
+        "h": 10,
+        "z": 10,
+        "visible": true,
+        "locked": false
+      },
+      "board": {
+        "x": 71,
+        "y": 88,
+        "w": 12,
+        "h": 10,
+        "z": 10,
+        "visible": true,
+        "locked": false
+      },
+      "calendar": {
+        "x": 85,
+        "y": 88,
+        "w": 12,
+        "h": 10,
+        "z": 10,
+        "visible": true,
+        "locked": false
+      },
+      "utilities": {
+        "x": 3,
+        "y": 25,
+        "w": 64,
+        "h": 12,
+        "z": 30,
+        "visible": true,
+        "locked": false
+      },
+      "dialogue": {
+        "x": 3,
+        "y": 60,
+        "w": 66,
+        "h": 36,
+        "z": 20,
+        "visible": true,
+        "locked": false
+      },
+      "choices": {
+        "x": 3,
+        "y": 48,
+        "w": 63,
+        "h": 48,
+        "z": 20,
+        "visible": true,
+        "locked": false
+      },
+      "panel": {
+        "x": 12,
+        "y": 24,
+        "w": 63,
+        "h": 71,
+        "z": 20,
+        "visible": true,
+        "locked": false
+      },
+      "tool_history": {
+        "x": 3,
+        "y": 25,
+        "w": 6.222222222222222,
+        "h": 12,
+        "z": 30,
+        "visible": true,
+        "locked": false
+      },
+      "tool_save": {
+        "x": 10.222222222222221,
+        "y": 25,
+        "w": 6.222222222222222,
+        "h": 12,
+        "z": 30,
+        "visible": true,
+        "locked": false
+      },
+      "tool_load": {
+        "x": 17.444444444444443,
+        "y": 25,
+        "w": 6.222222222222222,
+        "h": 12,
+        "z": 30,
+        "visible": true,
+        "locked": false
+      },
+      "tool_settings": {
+        "x": 24.666666666666668,
+        "y": 25,
+        "w": 6.222222222222222,
+        "h": 12,
+        "z": 30,
+        "visible": true,
+        "locked": false
+      },
+      "tool_planner": {
+        "x": 31.88888888888889,
+        "y": 25,
+        "w": 6.222222222222222,
+        "h": 12,
+        "z": 30,
+        "visible": true,
+        "locked": false
+      },
+      "tool_updates": {
+        "x": 39.111111111111114,
+        "y": 25,
+        "w": 6.222222222222222,
+        "h": 12,
+        "z": 30,
+        "visible": true,
+        "locked": false
+      },
+      "tool_dossier": {
+        "x": 46.333333333333336,
+        "y": 25,
+        "w": 6.222222222222222,
+        "h": 12,
+        "z": 30,
+        "visible": true,
+        "locked": false
+      },
+      "tool_inventory": {
+        "x": 53.55555555555556,
+        "y": 25,
+        "w": 6.222222222222222,
+        "h": 12,
+        "z": 30,
+        "visible": true,
+        "locked": false
+      },
+      "tool_location": {
+        "x": 60.77777777777778,
+        "y": 25,
+        "w": 6.222222222222222,
+        "h": 12,
+        "z": 30,
+        "visible": true,
+        "locked": false
+      }
+    },
+    "layouts": {
+      "desktop": {
+        "date": {
+          "x": 3,
+          "y": 4,
+          "w": 23,
+          "h": 18,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "balance": {
+          "x": 80,
+          "y": 4,
+          "w": 17,
+          "h": 18,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "radar": {
+          "x": 79,
+          "y": 26,
+          "w": 18,
+          "h": 29,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "relationship": {
+          "x": 31,
+          "y": 4,
+          "w": 39,
+          "h": 15,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "shop": {
+          "x": 71,
+          "y": 76,
+          "w": 12,
+          "h": 10,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "map": {
+          "x": 85,
+          "y": 76,
+          "w": 12,
+          "h": 10,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "board": {
+          "x": 71,
+          "y": 88,
+          "w": 12,
+          "h": 10,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "calendar": {
+          "x": 85,
+          "y": 88,
+          "w": 12,
+          "h": 10,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "utilities": {
+          "x": 3,
+          "y": 25,
+          "w": 64,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "dialogue": {
+          "x": 3,
+          "y": 60,
+          "w": 66,
+          "h": 36,
+          "z": 20,
+          "visible": true,
+          "locked": false
+        },
+        "choices": {
+          "x": 3,
+          "y": 48,
+          "w": 63,
+          "h": 48,
+          "z": 20,
+          "visible": true,
+          "locked": false
+        },
+        "panel": {
+          "x": 12,
+          "y": 24,
+          "w": 63,
+          "h": 71,
+          "z": 20,
+          "visible": true,
+          "locked": false
+        },
+        "tool_history": {
+          "x": 3,
+          "y": 25,
+          "w": 6.222222222222222,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_save": {
+          "x": 10.222222222222221,
+          "y": 25,
+          "w": 6.222222222222222,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_load": {
+          "x": 17.444444444444443,
+          "y": 25,
+          "w": 6.222222222222222,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_settings": {
+          "x": 24.666666666666668,
+          "y": 25,
+          "w": 6.222222222222222,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_planner": {
+          "x": 31.88888888888889,
+          "y": 25,
+          "w": 6.222222222222222,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_updates": {
+          "x": 39.111111111111114,
+          "y": 25,
+          "w": 6.222222222222222,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_dossier": {
+          "x": 46.333333333333336,
+          "y": 25,
+          "w": 6.222222222222222,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_inventory": {
+          "x": 53.55555555555556,
+          "y": 25,
+          "w": 6.222222222222222,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_location": {
+          "x": 60.77777777777778,
+          "y": 25,
+          "w": 6.222222222222222,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        }
+      },
+      "tablet": {
+        "date": {
+          "x": 3,
+          "y": 4,
+          "w": 23,
+          "h": 18,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "balance": {
+          "x": 80,
+          "y": 4,
+          "w": 17,
+          "h": 18,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "radar": {
+          "x": 79,
+          "y": 26,
+          "w": 18,
+          "h": 29,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "relationship": {
+          "x": 31,
+          "y": 4,
+          "w": 39,
+          "h": 15,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "shop": {
+          "x": 71,
+          "y": 76,
+          "w": 12,
+          "h": 10,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "map": {
+          "x": 85,
+          "y": 76,
+          "w": 12,
+          "h": 10,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "board": {
+          "x": 71,
+          "y": 88,
+          "w": 12,
+          "h": 10,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "calendar": {
+          "x": 85,
+          "y": 88,
+          "w": 12,
+          "h": 10,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "utilities": {
+          "x": 3,
+          "y": 25,
+          "w": 64,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "dialogue": {
+          "x": 3,
+          "y": 65,
+          "w": 72,
+          "h": 31,
+          "z": 20,
+          "visible": true,
+          "locked": false
+        },
+        "choices": {
+          "x": 3,
+          "y": 53,
+          "w": 66,
+          "h": 43,
+          "z": 20,
+          "visible": true,
+          "locked": false
+        },
+        "panel": {
+          "x": 9,
+          "y": 19,
+          "w": 70,
+          "h": 72,
+          "z": 20,
+          "visible": true,
+          "locked": false
+        },
+        "tool_history": {
+          "x": 3,
+          "y": 25,
+          "w": 6.222222222222222,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_save": {
+          "x": 10.222222222222221,
+          "y": 25,
+          "w": 6.222222222222222,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_load": {
+          "x": 17.444444444444443,
+          "y": 25,
+          "w": 6.222222222222222,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_settings": {
+          "x": 24.666666666666668,
+          "y": 25,
+          "w": 6.222222222222222,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_planner": {
+          "x": 31.88888888888889,
+          "y": 25,
+          "w": 6.222222222222222,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_updates": {
+          "x": 39.111111111111114,
+          "y": 25,
+          "w": 6.222222222222222,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_dossier": {
+          "x": 46.333333333333336,
+          "y": 25,
+          "w": 6.222222222222222,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_inventory": {
+          "x": 53.55555555555556,
+          "y": 25,
+          "w": 6.222222222222222,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_location": {
+          "x": 60.77777777777778,
+          "y": 25,
+          "w": 6.222222222222222,
+          "h": 12,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        }
+      },
+      "phone": {
+        "date": {
+          "x": 3,
+          "y": 3,
+          "w": 61,
+          "h": 8,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "balance": {
+          "x": 68,
+          "y": 3,
+          "w": 29,
+          "h": 8,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "radar": {
+          "x": 69,
+          "y": 23,
+          "w": 28,
+          "h": 18,
+          "z": 10,
+          "visible": false,
+          "locked": false
+        },
+        "relationship": {
+          "x": 3,
+          "y": 13,
+          "w": 94,
+          "h": 7,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "shop": {
+          "x": 3,
+          "y": 90,
+          "w": 22,
+          "h": 7,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "map": {
+          "x": 27,
+          "y": 90,
+          "w": 22,
+          "h": 7,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "board": {
+          "x": 51,
+          "y": 90,
+          "w": 22,
+          "h": 7,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "calendar": {
+          "x": 75,
+          "y": 90,
+          "w": 22,
+          "h": 7,
+          "z": 10,
+          "visible": true,
+          "locked": false
+        },
+        "utilities": {
+          "x": 3,
+          "y": 23,
+          "w": 94,
+          "h": 17,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "dialogue": {
+          "x": 3,
+          "y": 60,
+          "w": 94,
+          "h": 28,
+          "z": 20,
+          "visible": true,
+          "locked": false
+        },
+        "choices": {
+          "x": 3,
+          "y": 54,
+          "w": 94,
+          "h": 34,
+          "z": 20,
+          "visible": true,
+          "locked": false
+        },
+        "panel": {
+          "x": 3,
+          "y": 23,
+          "w": 94,
+          "h": 65,
+          "z": 20,
+          "visible": true,
+          "locked": false
+        },
+        "tool_history": {
+          "x": 3,
+          "y": 23,
+          "w": 18,
+          "h": 8,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_save": {
+          "x": 22,
+          "y": 23,
+          "w": 18,
+          "h": 8,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_load": {
+          "x": 41,
+          "y": 23,
+          "w": 18,
+          "h": 8,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_settings": {
+          "x": 60,
+          "y": 23,
+          "w": 18,
+          "h": 8,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_planner": {
+          "x": 79,
+          "y": 23,
+          "w": 18,
+          "h": 8,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_updates": {
+          "x": 3,
+          "y": 32,
+          "w": 18,
+          "h": 8,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_dossier": {
+          "x": 22,
+          "y": 32,
+          "w": 18,
+          "h": 8,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_inventory": {
+          "x": 41,
+          "y": 32,
+          "w": 18,
+          "h": 8,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        },
+        "tool_location": {
+          "x": 60,
+          "y": 32,
+          "w": 18,
+          "h": 8,
+          "z": 30,
+          "visible": true,
+          "locked": false
+        }
+      }
+    },
+    "constraints": {
+      "desktop": {
+        "date": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "balance": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "radar": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "relationship": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "shop": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "map": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "board": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "calendar": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "dialogue": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "choices": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "panel": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "utilities": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_history": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_save": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_load": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_settings": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_planner": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_updates": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_dossier": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_inventory": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_location": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        }
+      },
+      "tablet": {
+        "date": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "balance": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "radar": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "relationship": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "shop": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "map": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "board": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "calendar": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "dialogue": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "choices": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "panel": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "utilities": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_history": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_save": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_load": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_settings": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_planner": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_updates": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_dossier": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_inventory": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_location": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        }
+      },
+      "phone": {
+        "date": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "balance": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "radar": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "relationship": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "shop": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "map": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "board": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "calendar": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "dialogue": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "choices": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "panel": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "utilities": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_history": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_save": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_load": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_settings": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_planner": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_updates": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_dossier": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_inventory": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        },
+        "tool_location": {
+          "x": "free",
+          "y": "free",
+          "offsetX": 0,
+          "offsetY": 0,
+          "fixed": false,
+          "width": 40,
+          "height": 40
+        }
+      }
+    },
+    "utilities": {
+      "history": {
+        "label": "History",
+        "glyph": "history",
+        "tint": "auto",
+        "visible": true,
+        "asset": ""
+      },
+      "save": {
+        "label": "Save",
+        "glyph": "save",
+        "tint": "auto",
+        "visible": true,
+        "asset": ""
+      },
+      "load": {
+        "label": "Load",
+        "glyph": "load",
+        "tint": "auto",
+        "visible": true,
+        "asset": ""
+      },
+      "settings": {
+        "label": "Settings",
+        "glyph": "settings",
+        "tint": "auto",
+        "visible": true,
+        "asset": ""
+      },
+      "planner": {
+        "label": "Planner",
+        "glyph": "calendar",
+        "tint": "auto",
+        "visible": true,
+        "asset": ""
+      },
+      "updates": {
+        "label": "Updates",
+        "glyph": "spark",
+        "tint": "auto",
+        "visible": true,
+        "asset": ""
+      },
+      "dossier": {
+        "label": "Dossier",
+        "glyph": "profile",
+        "tint": "auto",
+        "visible": true,
+        "asset": ""
+      },
+      "inventory": {
+        "label": "Inventory",
+        "glyph": "bag",
+        "tint": "auto",
+        "visible": true,
+        "asset": ""
+      },
+      "location": {
+        "label": "Location",
+        "glyph": "map",
+        "tint": "auto",
+        "visible": true,
+        "asset": ""
+      }
+    },
+    "buttons": {
+      "shop": {
+        "display": "both",
+        "orientation": "horizontal",
+        "skin": "tab",
+        "iconSize": 20,
+        "radius": 4,
+        "padding": 5,
+        "states": {
+          "normal": {
+            "fill": "#211c18",
+            "ink": "#f3ead9",
+            "border": "#c09a55",
+            "opacity": 100,
+            "art": ""
+          },
+          "hover": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "pressed": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "selected": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "disabled": {
+            "fill": "auto",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 45,
+            "art": ""
+          }
+        }
+      },
+      "map": {
+        "display": "both",
+        "orientation": "horizontal",
+        "skin": "tab",
+        "iconSize": 20,
+        "radius": 4,
+        "padding": 5,
+        "states": {
+          "normal": {
+            "fill": "#211c18",
+            "ink": "#f3ead9",
+            "border": "#c09a55",
+            "opacity": 100,
+            "art": ""
+          },
+          "hover": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "pressed": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "selected": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "disabled": {
+            "fill": "auto",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 45,
+            "art": ""
+          }
+        }
+      },
+      "board": {
+        "display": "both",
+        "orientation": "horizontal",
+        "skin": "tab",
+        "iconSize": 20,
+        "radius": 4,
+        "padding": 5,
+        "states": {
+          "normal": {
+            "fill": "#211c18",
+            "ink": "#f3ead9",
+            "border": "#c09a55",
+            "opacity": 100,
+            "art": ""
+          },
+          "hover": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "pressed": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "selected": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "disabled": {
+            "fill": "auto",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 45,
+            "art": ""
+          }
+        }
+      },
+      "calendar": {
+        "display": "both",
+        "orientation": "horizontal",
+        "skin": "tab",
+        "iconSize": 20,
+        "radius": 4,
+        "padding": 5,
+        "states": {
+          "normal": {
+            "fill": "#211c18",
+            "ink": "#f3ead9",
+            "border": "#c09a55",
+            "opacity": 100,
+            "art": ""
+          },
+          "hover": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "pressed": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "selected": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "disabled": {
+            "fill": "auto",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 45,
+            "art": ""
+          }
+        }
+      },
+      "tool_history": {
+        "display": "icon",
+        "orientation": "horizontal",
+        "skin": "bare",
+        "iconSize": 20,
+        "radius": 4,
+        "padding": 5,
+        "states": {
+          "normal": {
+            "fill": "#211c18",
+            "ink": "#f3ead9",
+            "border": "#c09a55",
+            "opacity": 100,
+            "art": ""
+          },
+          "hover": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "pressed": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "selected": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "disabled": {
+            "fill": "auto",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 45,
+            "art": ""
+          }
+        }
+      },
+      "tool_save": {
+        "display": "icon",
+        "orientation": "horizontal",
+        "skin": "bare",
+        "iconSize": 20,
+        "radius": 4,
+        "padding": 5,
+        "states": {
+          "normal": {
+            "fill": "#211c18",
+            "ink": "#f3ead9",
+            "border": "#c09a55",
+            "opacity": 100,
+            "art": ""
+          },
+          "hover": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "pressed": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "selected": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "disabled": {
+            "fill": "auto",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 45,
+            "art": ""
+          }
+        }
+      },
+      "tool_load": {
+        "display": "icon",
+        "orientation": "horizontal",
+        "skin": "bare",
+        "iconSize": 20,
+        "radius": 4,
+        "padding": 5,
+        "states": {
+          "normal": {
+            "fill": "#211c18",
+            "ink": "#f3ead9",
+            "border": "#c09a55",
+            "opacity": 100,
+            "art": ""
+          },
+          "hover": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "pressed": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "selected": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "disabled": {
+            "fill": "auto",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 45,
+            "art": ""
+          }
+        }
+      },
+      "tool_settings": {
+        "display": "icon",
+        "orientation": "horizontal",
+        "skin": "bare",
+        "iconSize": 20,
+        "radius": 4,
+        "padding": 5,
+        "states": {
+          "normal": {
+            "fill": "#211c18",
+            "ink": "#f3ead9",
+            "border": "#c09a55",
+            "opacity": 100,
+            "art": ""
+          },
+          "hover": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "pressed": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "selected": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "disabled": {
+            "fill": "auto",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 45,
+            "art": ""
+          }
+        }
+      },
+      "tool_planner": {
+        "display": "icon",
+        "orientation": "horizontal",
+        "skin": "bare",
+        "iconSize": 20,
+        "radius": 4,
+        "padding": 5,
+        "states": {
+          "normal": {
+            "fill": "#211c18",
+            "ink": "#f3ead9",
+            "border": "#c09a55",
+            "opacity": 100,
+            "art": ""
+          },
+          "hover": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "pressed": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "selected": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "disabled": {
+            "fill": "auto",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 45,
+            "art": ""
+          }
+        }
+      },
+      "tool_updates": {
+        "display": "icon",
+        "orientation": "horizontal",
+        "skin": "bare",
+        "iconSize": 20,
+        "radius": 4,
+        "padding": 5,
+        "states": {
+          "normal": {
+            "fill": "#211c18",
+            "ink": "#f3ead9",
+            "border": "#c09a55",
+            "opacity": 100,
+            "art": ""
+          },
+          "hover": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "pressed": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "selected": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "disabled": {
+            "fill": "auto",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 45,
+            "art": ""
+          }
+        }
+      },
+      "tool_dossier": {
+        "display": "icon",
+        "orientation": "horizontal",
+        "skin": "bare",
+        "iconSize": 20,
+        "radius": 4,
+        "padding": 5,
+        "states": {
+          "normal": {
+            "fill": "#211c18",
+            "ink": "#f3ead9",
+            "border": "#c09a55",
+            "opacity": 100,
+            "art": ""
+          },
+          "hover": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "pressed": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "selected": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "disabled": {
+            "fill": "auto",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 45,
+            "art": ""
+          }
+        }
+      },
+      "tool_inventory": {
+        "display": "icon",
+        "orientation": "horizontal",
+        "skin": "bare",
+        "iconSize": 20,
+        "radius": 4,
+        "padding": 5,
+        "states": {
+          "normal": {
+            "fill": "#211c18",
+            "ink": "#f3ead9",
+            "border": "#c09a55",
+            "opacity": 100,
+            "art": ""
+          },
+          "hover": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "pressed": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "selected": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "disabled": {
+            "fill": "auto",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 45,
+            "art": ""
+          }
+        }
+      },
+      "tool_location": {
+        "display": "icon",
+        "orientation": "horizontal",
+        "skin": "bare",
+        "iconSize": 20,
+        "radius": 4,
+        "padding": 5,
+        "states": {
+          "normal": {
+            "fill": "#211c18",
+            "ink": "#f3ead9",
+            "border": "#c09a55",
+            "opacity": 100,
+            "art": ""
+          },
+          "hover": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "pressed": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "selected": {
+            "fill": "#a65f3f",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 100,
+            "art": ""
+          },
+          "disabled": {
+            "fill": "auto",
+            "ink": "auto",
+            "border": "auto",
+            "opacity": 45,
+            "art": ""
+          }
+        }
+      }
+    },
+    "presets": [],
+    "appearance": {
+      "date": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 6,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      },
+      "balance": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 6,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      },
+      "radar": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 10,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      },
+      "relationship": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 10,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      },
+      "shop": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 6,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      },
+      "map": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 6,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      },
+      "board": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 6,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      },
+      "calendar": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 6,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      },
+      "dialogue": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 10,
+        "border": 1,
+        "slice": 20,
+        "background": "#f3ead9",
+        "ink": "#211c18",
+        "fit": true,
+        "frame": ""
+      },
+      "choices": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 10,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      },
+      "panel": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 10,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      },
+      "utilities": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 10,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      },
+      "tool_history": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 10,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      },
+      "tool_save": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 10,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      },
+      "tool_load": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 10,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      },
+      "tool_settings": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 10,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      },
+      "tool_planner": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 10,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      },
+      "tool_updates": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 10,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      },
+      "tool_dossier": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 10,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      },
+      "tool_inventory": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 10,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      },
+      "tool_location": {
+        "shape": "auto",
+        "font": "sans",
+        "texture": "auto",
+        "icon": "auto",
+        "fontSize": 100,
+        "padding": 10,
+        "border": 1,
+        "slice": 20,
+        "background": "#211c18",
+        "ink": "#f3ead9",
+        "fit": true,
+        "frame": ""
+      }
+    }
+  },
+  "css": ":root { --ui-accent: #a65f3f; --ui-text-size: 18px; --ui-radius: 4px; --ui-panel-opacity: 0.96; }"
+}

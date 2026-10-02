@@ -1,4 +1,11 @@
 /* Runtime additions on top of ui-showcase.css: title screen, long choice lists, up to three characters. */
+.scene-nav,.scene-nav:hover{right:0;max-width:calc(4em + 112px)}
+.dialogue{right:max(7%,calc(4em + 124px));padding-right:calc(3em + 90px)}
+.dialogue p{max-height:50vh;overflow:auto}
+.choices{left:calc((100% - max(7%,calc(4em + 124px)))/2);max-width:calc(100% - max(7%,calc(4em + 124px)) - 7%)}
+.speaker{top:auto;bottom:calc(100% - 25px)}
+.dialogue p:focus-visible{outline:2px solid var(--copper);outline-offset:3px}
+@media(max-width:900px){.scene-header{gap:12px}.place-mark strong{overflow-wrap:anywhere}.scene-nav,.scene-nav:hover{top:180px;left:12px;right:12px;max-width:none;grid-template-columns:repeat(2,minmax(0,1fr));transform:none}.scene-nav button{min-width:0;min-height:44px}.dialogue{right:3%;padding-right:54px;padding-bottom:75px}.dialogue p{max-height:22vh;overflow:auto}.stage .choices{top:380px;left:50%;max-width:94vw;max-height:calc(100vh - 510px);transform:translateX(-50%)}}
 .title-screen{position:absolute;z-index:8;inset:0;overflow:auto;padding:8vh 7vw;background:linear-gradient(90deg,#16110ef2 0,#16110ecc 55%,#16110e55)}
 .title-screen .menu-list{margin:0 0 28px}.title-screen .menu-list p{color:#e7d9c6}
 .writer-choice{display:flex;flex-direction:column;gap:5px;width:min(340px,100%);margin:0 0 18px;color:#f3e7d4;font:700 13px var(--sans)}.writer-choice select{padding:8px 10px;border:1px solid #c09a5577;border-radius:7px;background:#211914;color:#f3e7d4;font:600 14px var(--sans)}.writer-choice small{font-weight:400;opacity:.8}

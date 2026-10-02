@@ -3,13 +3,13 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ## Todo
 
-### Wave 5 (draft; owner paused new work; plan PLAN-WAVE-5.md)
+### Wave 5 (active; plan PLAN-WAVE-5.md)
   - T-043 Fun-gate measurement · planned: director (local)
   - T-044 First-run setup · T-045 Free-tier guard · planned: codex
   - T-046 Install check · planned: space-bunny
   - T-047 Owner picks on Wave 3 (voice mood, jealousy word, lust hints, anniversaries off) · planned: codex
 
-### Wave 6 (draft; plan PLAN-WAVE-6.md)
+### Wave 6 (active; plan PLAN-WAVE-6.md)
   - T-048 Decline invite · T-050 Likes clues · T-053 Routes never close · T-054 Endings · T-057 Time cost · T-058 Retire after-hours · planned: codex
   - T-049 Prompt slips 2 · T-051 Day recap · T-052 Director audit · T-055 M4 Studio forms · T-059 Messages polish · T-060 Docs catch-up · planned: space-bunny
   - T-056 M4 bot validation · planned: director (local)
@@ -20,10 +20,12 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ## Doing
 
-### T-044 First-run setup · T-047 Owner picks · T-048 Decline invite · T-058 Retire after-hours
+### codex: T-048 T-058 T-053 T-054 T-061 T-062 T-063 · opencode: T-049 T-051
   - model: codex · dispatched 2026-10-02 via scripts/wt.sh
 
 ## Review
+  - T-044 First-run setup, T-047 Owner picks: clean (only the 4 known art failures), awaiting merge OK
+  - T-048 Decline invite, T-058 Retire after-hours: partial, each waits on a scope question
 
 ## Done
 

@@ -77,15 +77,16 @@ export function journal(state,pack){
 }
 // Phone: threads newest-first; replying and accepting stay engine actions (social.replyMessage / social.acceptPhoneOffer).
 export const PHONE_ACTIONS=['social.readThread','social.replyMessage','social.acceptPhoneOffer'];
+const threadOrder=(a,b)=>Number(b.unread>0)-Number(a.unread>0)||b.at-a.at;
 export function phone(state,pack){
  const threads=state.modules['social.phone']?.threads||{};
- return Object.entries(threads).filter(([,t])=>t.length).map(([id,t])=>({character:id,name:nameOf(pack,id),unread:t.filter(m=>!m.read).length,messages:t.map(m=>({id:m.id,text:m.text,reply:m.replyText||null,offer:m.offer?{place:pack.locations.find(l=>l.id===m.offer.location)?.name||m.offer.location,status:m.offer.status}:null})).reverse()})).sort((a,b)=>b.unread-a.unread);
+ return Object.entries(threads).filter(([,t])=>t.length).map(([id,t])=>({character:id,name:nameOf(pack,id),unread:t.filter(m=>!m.read).length,messages:t.map(m=>({id:m.id,text:m.text,reply:m.replyText||null,offer:m.offer?{place:pack.locations.find(l=>l.id===m.offer.location)?.name||m.offer.location,status:m.offer.status}:null})).reverse()})).sort((a,b)=>threadOrder({...a,at:threads[a.character].at(-1).tick??0},{...b,at:threads[b.character].at(-1).tick??0}));
 }
 // Messages panel: every thread newest-first with the invitation each one is waiting on. Reading, replying and accepting stay engine actions.
 export function messages(state,pack){
   const threads=state.modules['social.phone']?.threads||{};
   const list=Object.entries(threads).filter(([,t])=>t.length).map(([character,t])=>({character,name:nameOf(pack,character),unread:t.filter(m=>!m.read).length,at:t.at(-1).tick,
-    messages:[...t].reverse().map(m=>({id:m.id,text:m.text,read:Boolean(m.read),mine:Boolean(m.replyText),reply:m.replyText||null,offer:m.offer?{place:pack.locations.find(l=>l.id===m.offer.location)?.name||m.offer.location,status:m.offer.status,expires:m.offer.expiresTick}:null}))})).sort((a,b)=>b.at-a.at||b.unread-a.unread);
+    messages:[...t].reverse().map(m=>({id:m.id,text:m.text,read:Boolean(m.read),mine:Boolean(m.replyText),reply:m.replyText||null,offer:m.offer?{place:pack.locations.find(l=>l.id===m.offer.location)?.name||m.offer.location,status:m.offer.status,expires:m.offer.expiresTick}:null}))})).sort(threadOrder);
   return {unread:list.reduce((n,t)=>n+t.unread,0),threads:list};
 }
 // Sprite expression for a love interest in the open scene: her last reaction this scene, else neutral.

@@ -20,7 +20,7 @@ Every ticket lists `model:` (the AI that did the work) or `planned:` (before dis
 
 ## Doing
 
-### codex: T-048 T-058 T-053 T-054 T-061 T-062 T-063 · opencode: T-049 T-051
+### codex: T-048 T-058 T-053 T-054 T-055 T-059 T-060 T-061 T-062 T-063 · opencode: T-049 T-051
   - model: codex · dispatched 2026-10-02 via scripts/wt.sh
 
 ## Review

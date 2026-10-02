@@ -36,8 +36,10 @@ import {outreach} from './outreach.mjs';
 import {anniversary} from './anniversary.mjs';
 import {jealousy} from './jealousy.mjs';
 import {wants} from './wants.mjs';
-export const registry=Object.fromEntries([conversation,relationships,schedule,quests,inventory,abilities,objects,daypart,worldEvents,scenes,facts,equipment,bonds,npcSocial,economy,stats,progression,dating,romanceNetwork,intimacy,gossip,romanceTempo,phone,feed,endings,timedEvents,director,moments,calendarWorld,acts,arc,sobriety,secrecy,minigames,firsts,touchLadder,dailyNeed,outreach,anniversary,jealousy,wants].map(m=>[m.id,m]));
+import {recap} from './recap.mjs';
+export const registry=Object.fromEntries([conversation,relationships,schedule,quests,inventory,abilities,objects,daypart,worldEvents,scenes,facts,equipment,bonds,npcSocial,economy,stats,progression,dating,romanceNetwork,intimacy,gossip,romanceTempo,phone,feed,endings,timedEvents,director,moments,calendarWorld,acts,arc,sobriety,secrecy,minigames,firsts,touchLadder,dailyNeed,outreach,anniversary,jealousy,wants,recap].map(m=>[m.id,m]));
 const descriptions={
+  'story.recap':['Day recap','When a day closes the engine writes a few plain lines about what changed - rungs reached, who warmed or cooled, promises kept or broken, what she let slip - with no numbers and no model call, shown as a morning card and kept in the journal.'],
   'social.wants':['Her own wants','Each heroine carries one or two wants of her own this week, brings them up herself, and is pleased when the player helps: a matching act or a kept plan retires the want for Like, inside the normal daily cap.'],
   'social.daily-need':['Hidden daily need','Picks a quiet daily want per character and rewards reading it from interpreted acts.'],
   'social.jealousy':['Jealousy','Per-heroine meter that reacts to witnessed flirtation or intimacy with rivals, scaled by relationship stage and personality.'],

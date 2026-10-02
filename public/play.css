@@ -25,6 +25,9 @@
 .hub__place--here{outline:2px solid var(--brass)}.hub__place--closed{opacity:.6}.hub .hub__activity{display:block;padding:10px 12px;font-size:14px}.hub .hub__activity small{font-weight:500}
 .hub .hub__yields{display:block;margin:3px 0 1px;color:#efd098;font:700 12px var(--sans)}
 .hub__people{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0}.hub .hub__person{width:auto;margin:0;padding:5px 10px;border-left:0;border-radius:999px;font:700 12px var(--sans)}.hub .hub__person--interest::before{content:'♥ ';color:var(--copper)}.hub .hub__person:hover{padding-left:10px}
+.recap-line{margin:6px 0;padding-left:11px;border-left:2px solid #c09a5577;font:14px/1.5 var(--sans)}
+.history-panel .journal-recaps strong{display:block;margin:14px 0 4px;color:var(--copper);font:700 12px var(--sans);letter-spacing:.08em;text-transform:uppercase}
+.history-panel .journal-recaps p{margin:4px 0;font:14px/1.5 var(--sans)}
 .campus-card{width:min(560px,92vw)}.campus-card .campus-card__go{display:block;margin:16px 0 0 auto;padding:10px 18px;border:0;border-radius:9px;background:var(--copper);color:#fff;font:700 14px var(--sans)}
 .heart-row{display:flex;gap:14px;align-items:center}.heart{flex:none;min-width:52px;font:700 26px var(--serif);text-align:center}.heart--up{color:#e8796b;animation:heart-up .9s ease-out both}.heart--down{color:#9aa3b5;animation:heart-down .9s ease-out both}.heart--none{color:#c9b89c}
 @keyframes heart-up{0%{opacity:0;transform:translateY(10px) scale(.6)}55%{opacity:1;transform:translateY(-6px) scale(1.25)}100%{transform:none}}

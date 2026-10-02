@@ -30,7 +30,7 @@ test('adultEntry and missingStops read content, not a stored flag; the lint name
  const p=aged(),c=intimacyCandidate(p,{characters:'rumi',contentLevel:'fade'}),first=c.scenes[0];first.beats[1].choices=first.beats[1].choices.filter(x=>x.id!=='stop');first.choices=first.choices.map(x=>x.id==='stop'?{...x,when:{flags:{never:true}}}:x);
  assert.deepEqual(missingStops(first),['','check-in']);
  const w=playability(withProposal(p,approve(createProposal(p,c))));assert.ok(w.includes('scene rumi-intimate: no stop choice (an unconditional choice that withdraws consent)'));assert.ok(w.includes('scene rumi-intimate.check-in: no stop choice (an unconditional choice that withdraws consent)'));
- for(const f of ['after-hours','activity-workshop'])assert.ok(!playability(JSON.parse(readFileSync(new URL(`../packs/${f}.json`,import.meta.url),'utf8'))).some(x=>/no stop choice/.test(x)),f);
+ for(const f of ['campus','activity-workshop'])assert.ok(!playability(JSON.parse(readFileSync(new URL(`../packs/${f}.json`,import.meta.url),'utf8'))).some(x=>/no stop choice/.test(x)),f);
 });
 
 test('the generator never sets ages: apply fails until the author marks them 18+, then frames only approved encounters',()=>{

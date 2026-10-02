@@ -60,5 +60,5 @@ test('a moved scene says where from, and whether its text still names the old pl
 test('playability: a scene where no choice does anything is flagged; shipped packs have none',()=>{
  const p=huntrix(),bare={...scene('bare'),choices:[{id:'a',label:'A',result:'r'},{id:'b',label:'B',result:'r'}]};
  assert.ok(playability({...p,scriptedScenes:[bare]}).includes('scene bare: no choice has an effect, so nothing the player picks matters'));assert.deepEqual(playability({...p,scriptedScenes:[scene('ok')]}),[]);
- for(const f of ['after-hours','activity-workshop','crossed-plans'])assert.ok(!playability(JSON.parse(readFileSync(new URL(`../packs/${f}.json`,import.meta.url),'utf8'))).some(w=>/no choice has an effect/.test(w)),f);
+ for(const f of ['campus','activity-workshop','crossed-plans'])assert.ok(!playability(JSON.parse(readFileSync(new URL(`../packs/${f}.json`,import.meta.url),'utf8'))).some(w=>/no choice has an effect/.test(w)),f);
 });

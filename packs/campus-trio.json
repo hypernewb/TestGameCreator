@@ -2584,6 +2584,7 @@
       ]
     }
   ],
+  "declinePenalty": 0,
   "phoneContacts": [
     "yuna",
     "haruka",

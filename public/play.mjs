@@ -36,7 +36,7 @@ function render(data){current=data;const {state:s,pack:p}=data;localStorage.setI
  $('#place-index').textContent=String(p.locations.indexOf(loc)+1).padStart(2,'0');$('#pack-title').textContent=p.title.toUpperCase();$('#place').textContent=loc.name;$('#weekday').textContent=String(clock.weekday).slice(0,3).toUpperCase();$('#day').textContent=`Day ${clock.day}`;$('#daypart').textContent=String(clock.daypart).toUpperCase();$('#tick-clock').textContent=clockDigits(s,p);$('#menu-where').textContent=`${loc.name} · ${clock.weekday} ${clock.daypart}`;
  const nextKey=`${s.campaignId}:${turn?.id||'start'}:${scene?.id||''}:${s.modules['story.scenes']?.pendingBeat||''}`;if(nextKey!==key){key=nextKey;lines=linesFor(data);cursor=0;$('#choices').hidden=true;$('#hub').hidden=true;$('.dialogue').hidden=false;queueCards(data);}
  const here=s.actors[p.playerId].location,present=id=>s.actors[id]?.location===here,voiced=beat&&![...(beat.pages||[]).map(x=>x.speaker),...Object.keys(beat.when?.charactersAt||{}),...Object.values(scene?.template?.roles||{}),...(s.scene?.characters||[])].some(id=>id&&present(id)),blocked=beat?.allowInput===false||voiced||Boolean(data.diagnostics?.ended);$('#player-prompt').disabled=blocked||busy;$('#player-prompt').placeholder=blocked?'Choose one of the options':'What do you say or do?';
- if(s.campaignId!==msgCampaign){msgCampaign=s.campaignId;msgPassed.clear();msgShown.clear();msgThread=null;}
+ if(s.campaignId!==msgCampaign){msgCampaign=s.campaignId;msgShown.clear();msgThread=null;}
  renderFirstControls();renderMessageBadge();renderRefusal(data.refusal||turn?.refusal);retryId=turn?.fallback?turn.id:null;if(busy)return;if(retryId)showError('The writing was interrupted','The moment falls quiet. Take a breath and choose what to do next.',true);else clearState();
  let sceneBox=$('#scene-feedback');if(!sceneBox){sceneBox=el('section',undefined,'scene-feedback');sceneBox.id='scene-feedback';$('#prompt-composer').before(sceneBox);}renderSceneFeedback(sceneBox,s,p);
  renderChoices();showLine();}
@@ -93,7 +93,7 @@ function renderHub(){const {state:s,pack:p}=current,box=$('#hub'),go=command=>ac
  const cal=calendarFor(s.tick,p),skip=el('button',costLabel(cal.daypart==='Evening'?'Call it a night':'Skip to Evening',{type:'core.wait',args:{until:cal.daypart==='Evening'?'Morning':'Evening'}}),'hub__skip'),head=el('div',undefined,'hub__clock');skip.type='button';skip.disabled=busy;skip.onclick=()=>go({type:'core.wait',args:{until:cal.daypart==='Evening'?'Morning':'Evening'}});head.append(el('p',`${cal.weekday} · Day ${cal.day} · ${cal.daypart} · where to?`),skip);
  box.replaceChildren(head,...(pushB?[pushB]:[]),aims,tabs,...(hubTab==='places'&&offers.length?[offerList()]:[]),body);}
 // Messages panel: her texts newest-first, the invitation she is waiting on, and a typed reply that is one ordinary turn.
-let msgThread=null,msgCampaign='';const msgPassed=new Set(),msgShown=new Map();
+let msgThread=null,msgCampaign='';const msgShown=new Map();
 function messageIcon(){const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg'),use=document.createElementNS(ns,'use');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('class','messages-icon');svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');use.setAttribute('href','assets/showcase/ui-icons.svg#phone');svg.append(use);$('[data-action=messages]').prepend(svg);}
 const msgAct=(type,message)=>(current.actions||[]).find(a=>a.type===type&&a.args.message===message);
 function renderMessageBadge(){const n=current?messages(current.state,current.pack).unread:0,b=$('#messages-badge');b.hidden=!n;b.textContent=String(n);}
@@ -104,10 +104,10 @@ function renderMessages(){const {state:s,pack:p}=current,view=messages(s,p),open
   b.append(el('strong',t.name),el('small',t.unread?`${t.unread} new`:'read'),el('p',t.messages[0].text));b.onclick=()=>{msgThread=t.character;renderMessages();if(t.unread)act({command:{type:'social.readThread',args:{character:t.character}}});};return b;}):[el('p','No messages yet.','muted')]));
  const shown=msgShown.get(msgThread)||50;
  $('#messages-log').replaceChildren(...(open?open.messages.slice(0,shown).map(m=>{const a=el('article',undefined,`messages__say${m.mine?' messages__say--mine':''}`);a.append(el('p',m.mine?`You: ${m.reply}`:m.text));
-   if(m.offer){const o=el('div',undefined,'messages__offer'),pending=m.offer.status==='pending'&&!msgPassed.has(m.id),accept=pending?msgAct('social.acceptPhoneOffer',m.id):null;o.append(el('small',`Invite to ${m.offer.place}`));
-    if(accept){const yes=el('button',costLabel(`Accept · ${m.offer.place}`,accept),'messages__accept'),no=el('button',`Decline · ${timeCost(0,p).display}`,'messages__decline');yes.type='button';no.type='button';yes.disabled=busy||accept.enabled===false;no.disabled=busy;
-     yes.onclick=()=>act({command:{type:accept.type,args:accept.args}});no.onclick=()=>{msgPassed.add(m.id);renderMessages();};o.append(yes,no);if(accept.enabled===false)o.append(el('small',accept.reason||accept.refusal?.reason||'That will have to wait.'));}
-    else o.append(el('small',pending&&m.offer.expires<s.tick?'expired':pending?'declined':m.offer.status));
+   if(m.offer){const o=el('div',undefined,'messages__offer'),pending=m.offer.status==='pending',accept=pending?msgAct('social.acceptPhoneOffer',m.id):null,decline=pending?msgAct('social.declinePhoneOffer',m.id):null;o.append(el('small',`Invite to ${m.offer.place}`));
+    if(accept){const yes=el('button',costLabel(`Accept · ${m.offer.place}`,accept),'messages__accept'),no=el('button',costLabel('Decline',decline),'messages__decline');yes.type='button';no.type='button';yes.disabled=busy||accept.enabled===false;no.disabled=busy||!decline||decline.enabled===false;
+     yes.onclick=()=>act({command:{type:accept.type,args:accept.args}});no.onclick=()=>act({command:{type:decline.type,args:decline.args}});o.append(yes,no);if(accept.enabled===false)o.append(el('small',accept.reason||accept.refusal?.reason||'That will have to wait.'));}
+    else o.append(el('small',pending&&m.offer.expires<s.tick?'expired':pending?'pending':m.offer.status));
     a.append(o);}
    return a;}):[el('p','Pick a conversation.','muted')]));
  if(open&&open.messages.length>shown){const b=el('button','Show older','messages__older');b.type='button';b.onclick=()=>{msgShown.set(msgThread,shown+50);renderMessages();};$('#messages-log').append(b);}

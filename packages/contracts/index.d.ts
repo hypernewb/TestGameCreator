@@ -133,3 +133,4 @@ export interface RouteRepairPack { routeRepair?:RouteRepairSettings }
 export interface RouteRepairCauses { phase:string|null; flags:string[]; state:string|null }
 export interface RouteRepairThread { causes:RouteRepairCauses; sinceTick:number; untilTick:number }
 export interface RouteRepairCharacter { thread:RouteRepairThread|null; repairedFlags:string[]; repairedState:string|null; repairedPhase:string|null }
+export interface PhonePack { declinePenalty?:number }

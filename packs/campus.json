@@ -2061,6 +2061,106 @@
   "actProfiles": [
     {
       "character": "jana",
+      "likeClues": [
+          {
+            "id": "jana-taste-1",
+            "character": "jana",
+            "tag": "the sea",
+            "liked": true,
+            "entries": [
+              "jana-island"
+            ],
+            "clues": [
+              "Her shoulders loosened when the conversation drifted toward salt air.",
+              "She lingered over a story of waves breaking beyond the windows."
+            ],
+            "softLabel": "Drawn to the shore"
+          },
+          {
+            "id": "jana-taste-2",
+            "character": "jana",
+            "tag": "beach volleyball",
+            "liked": true,
+            "entries": [
+              "jana-volley"
+            ],
+            "clues": [
+              "She was already checking the forecast when you mentioned the sandy court.",
+              "Her smile came back at the thought of bare feet and a ball over a net."
+            ],
+            "softLabel": "A team game in the sand"
+          },
+          {
+            "id": "jana-taste-3",
+            "character": "jana",
+            "tag": "Franzbrötchen",
+            "liked": true,
+            "entries": [
+              "jana-roll"
+            ],
+            "clues": [
+              "She held the warm pastry close before taking the first bite.",
+              "The smell of butter and sugar made her homesick in a happy way."
+            ],
+            "softLabel": "A sweet taste of home"
+          },
+          {
+            "id": "jana-taste-4",
+            "character": "jana",
+            "tag": "being asked about Borkum",
+            "liked": true,
+            "entries": [
+              "jana-island"
+            ],
+            "clues": [
+              "She kept talking when your questions stayed with the place she grew up.",
+              "She seemed relieved that you wanted her memories rather than a quick answer."
+            ],
+            "softLabel": "Someone curious about home"
+          },
+          {
+            "id": "jana-taste-5",
+            "character": "jana",
+            "tag": "being told what she wants",
+            "liked": false,
+            "entries": [
+              "jana-harp-wants"
+            ],
+            "clues": [
+              "Her expression closed when someone decided her answer for her.",
+              "She warmed again only after the choice was left in her hands."
+            ],
+            "softLabel": "Room to choose for herself"
+          },
+          {
+            "id": "jana-taste-6",
+            "character": "jana",
+            "tag": "pushiness",
+            "liked": false,
+            "entries": [
+              "jana-pushy"
+            ],
+            "clues": [
+              "She drew back when the same request came around again.",
+              "Her relief showed when the conversation finally gave her breathing room."
+            ],
+            "softLabel": "Time to find her answer"
+          },
+          {
+            "id": "jana-taste-7",
+            "character": "jana",
+            "tag": "people who pick sides about Dominik",
+            "liked": false,
+            "entries": [
+              "jana-harp-dominik"
+            ],
+            "clues": [
+              "She fell quiet as soon as the conversation became a contest over who was right.",
+              "She kept looking for someone who would hear the whole story before judging."
+            ],
+            "softLabel": "An ear without a verdict"
+          }
+        ],
       "entries": [
         {
           "id": "jana-island",
@@ -2264,6 +2364,106 @@
     },
     {
       "character": "nova",
+      "likeClues": [
+          {
+            "id": "nova-taste-1",
+            "character": "nova",
+            "tag": "old horror films",
+            "liked": true,
+            "entries": [
+              "nova-film"
+            ],
+            "clues": [
+              "She relaxed as the grainy monster lurched across the screen.",
+              "She mouthed the next line before the shadow appeared in the doorway."
+            ],
+            "softLabel": "Comfort in a midnight screening"
+          },
+          {
+            "id": "nova-taste-2",
+            "character": "nova",
+            "tag": "vinyl",
+            "liked": true,
+            "entries": [
+              "nova-vinyl"
+            ],
+            "clues": [
+              "She handled the sleeve carefully and checked both sides of the disc.",
+              "She let the needle settle and listened through the soft hiss before the song."
+            ],
+            "softLabel": "Music with a little crackle"
+          },
+          {
+            "id": "nova-taste-3",
+            "character": "nova",
+            "tag": "cider",
+            "liked": true,
+            "entries": [
+              "nova-cider"
+            ],
+            "clues": [
+              "She brightened at the dry apple smell rising from the glass.",
+              "She took a slow sip of the tart golden drink before joining the conversation."
+            ],
+            "softLabel": "A crisp orchard drink"
+          },
+          {
+            "id": "nova-taste-4",
+            "character": "nova",
+            "tag": "being teased back",
+            "liked": true,
+            "entries": [
+              "nova-tease"
+            ],
+            "clues": [
+              "Your comeback made her grin instead of reaching for another joke.",
+              "She laughed harder when you returned the joke with one of your own."
+            ],
+            "softLabel": "Banter that comes back at her"
+          },
+          {
+            "id": "nova-taste-5",
+            "character": "nova",
+            "tag": "authority",
+            "liked": false,
+            "entries": [
+              "nova-pushy"
+            ],
+            "clues": [
+              "Her grin vanished when someone started giving orders.",
+              "She bristled at the assumption that someone else could set the terms."
+            ],
+            "softLabel": "Her own rules"
+          },
+          {
+            "id": "nova-taste-6",
+            "character": "nova",
+            "tag": "being called cute",
+            "liked": false,
+            "entries": [
+              "nova-cute"
+            ],
+            "clues": [
+              "The sugary little nickname made her expression sharpen.",
+              "She stopped playing along when the compliment made her sound small and harmless."
+            ],
+            "softLabel": "Taken seriously beneath the grin"
+          },
+          {
+            "id": "nova-taste-7",
+            "character": "nova",
+            "tag": "anyone who mocks her films",
+            "liked": false,
+            "entries": [
+              "nova-insult-film"
+            ],
+            "clues": [
+              "She could laugh at herself until the joke landed on the work she had made.",
+              "She went still when a throwaway remark dismissed months behind the camera."
+            ],
+            "softLabel": "Care for the work beneath the joke"
+          }
+        ],
       "entries": [
         {
           "id": "nova-tease",
@@ -2365,6 +2565,120 @@
     },
     {
       "character": "abigail",
+      "likeClues": [
+          {
+            "id": "abigail-taste-1",
+            "character": "abigail",
+            "tag": "puzzles",
+            "liked": true,
+            "entries": [
+              "abigail-cube"
+            ],
+            "clues": [
+              "Her fingers were already testing how the pieces fit together.",
+              "She forgot the time while trying one more arrangement."
+            ],
+            "softLabel": "Something to figure out"
+          },
+          {
+            "id": "abigail-taste-2",
+            "character": "abigail",
+            "tag": "climbing",
+            "liked": true,
+            "entries": [
+              "abigail-bar"
+            ],
+            "clues": [
+              "She glanced at the holds above and tucked the snack away for the next route.",
+              "Her mood lifted at the thought of chalky hands and one more reach."
+            ],
+            "softLabel": "A challenge up the wall"
+          },
+          {
+            "id": "abigail-taste-3",
+            "character": "abigail",
+            "tag": "hiking",
+            "liked": true,
+            "entries": [
+              "abigail-hike"
+            ],
+            "clues": [
+              "She checked the tide and chose shoes that could handle wet stone.",
+              "A stretch of open trail seemed to clear her head."
+            ],
+            "softLabel": "A path beyond campus"
+          },
+          {
+            "id": "abigail-taste-4",
+            "character": "abigail",
+            "tag": "technical projects",
+            "liked": true,
+            "entries": [
+              "abigail-project"
+            ],
+            "clues": [
+              "She leaned closer when you followed the numbers instead of just nodding.",
+              "She stayed to sketch another fix after everyone else had packed up."
+            ],
+            "softLabel": "Work that can be made real"
+          },
+          {
+            "id": "abigail-taste-5",
+            "character": "abigail",
+            "tag": "spontaneous outings",
+            "liked": true,
+            "entries": [
+              "abigail-hike"
+            ],
+            "clues": [
+              "She was ready to leave before the whole afternoon had been planned.",
+              "A last-minute detour brought out a laugh you had not heard all day."
+            ],
+            "softLabel": "A little room for the unexpected"
+          },
+          {
+            "id": "abigail-taste-6",
+            "character": "abigail",
+            "tag": "pointless drama",
+            "liked": false,
+            "entries": [
+              "abigail-harp-drama"
+            ],
+            "clues": [
+              "She looked tired when the argument kept going without anything to resolve.",
+              "Her attention returned as soon as someone offered a useful next step."
+            ],
+            "softLabel": "A problem worth solving"
+          },
+          {
+            "id": "abigail-taste-7",
+            "character": "abigail",
+            "tag": "showing off",
+            "liked": false,
+            "entries": [
+              "abigail-boast"
+            ],
+            "clues": [
+              "She waited for the grand claim to turn into something she could check.",
+              "The louder the self-praise got, the less she had to say."
+            ],
+            "softLabel": "Results over a performance"
+          },
+          {
+            "id": "abigail-taste-8",
+            "character": "abigail",
+            "tag": "vague answers",
+            "liked": false,
+            "entries": [
+              "abigail-harp-answers"
+            ],
+            "clues": [
+              "She asked again when the reply kept skating around the question.",
+              "Her patience thinned with each answer that left the details out."
+            ],
+            "softLabel": "An answer she can use"
+          }
+        ],
       "entries": [
         {
           "id": "abigail-project",
@@ -4643,6 +4957,106 @@
           "actProfiles": [
             {
               "character": "jana",
+              "likeClues": [
+                  {
+                    "id": "jana-taste-1",
+                    "character": "jana",
+                    "tag": "the sea",
+                    "liked": true,
+                    "entries": [
+                      "jana-island"
+                    ],
+                    "clues": [
+                      "Her shoulders loosened when the conversation drifted toward salt air.",
+                      "She lingered over a story of waves breaking beyond the windows."
+                    ],
+                    "softLabel": "Drawn to the shore"
+                  },
+                  {
+                    "id": "jana-taste-2",
+                    "character": "jana",
+                    "tag": "beach volleyball",
+                    "liked": true,
+                    "entries": [
+                      "jana-volley"
+                    ],
+                    "clues": [
+                      "She was already checking the forecast when you mentioned the sandy court.",
+                      "Her smile came back at the thought of bare feet and a ball over a net."
+                    ],
+                    "softLabel": "A team game in the sand"
+                  },
+                  {
+                    "id": "jana-taste-3",
+                    "character": "jana",
+                    "tag": "Franzbrötchen",
+                    "liked": true,
+                    "entries": [
+                      "jana-roll"
+                    ],
+                    "clues": [
+                      "She held the warm pastry close before taking the first bite.",
+                      "The smell of butter and sugar made her homesick in a happy way."
+                    ],
+                    "softLabel": "A sweet taste of home"
+                  },
+                  {
+                    "id": "jana-taste-4",
+                    "character": "jana",
+                    "tag": "being asked about Borkum",
+                    "liked": true,
+                    "entries": [
+                      "jana-island"
+                    ],
+                    "clues": [
+                      "She kept talking when your questions stayed with the place she grew up.",
+                      "She seemed relieved that you wanted her memories rather than a quick answer."
+                    ],
+                    "softLabel": "Someone curious about home"
+                  },
+                  {
+                    "id": "jana-taste-5",
+                    "character": "jana",
+                    "tag": "being told what she wants",
+                    "liked": false,
+                    "entries": [
+                      "jana-harp-wants"
+                    ],
+                    "clues": [
+                      "Her expression closed when someone decided her answer for her.",
+                      "She warmed again only after the choice was left in her hands."
+                    ],
+                    "softLabel": "Room to choose for herself"
+                  },
+                  {
+                    "id": "jana-taste-6",
+                    "character": "jana",
+                    "tag": "pushiness",
+                    "liked": false,
+                    "entries": [
+                      "jana-pushy"
+                    ],
+                    "clues": [
+                      "She drew back when the same request came around again.",
+                      "Her relief showed when the conversation finally gave her breathing room."
+                    ],
+                    "softLabel": "Time to find her answer"
+                  },
+                  {
+                    "id": "jana-taste-7",
+                    "character": "jana",
+                    "tag": "people who pick sides about Dominik",
+                    "liked": false,
+                    "entries": [
+                      "jana-harp-dominik"
+                    ],
+                    "clues": [
+                      "She fell quiet as soon as the conversation became a contest over who was right.",
+                      "She kept looking for someone who would hear the whole story before judging."
+                    ],
+                    "softLabel": "An ear without a verdict"
+                  }
+                ],
               "entries": [
                 {
                   "id": "jana-island",
@@ -6728,6 +7142,106 @@
           "actProfiles": [
             {
               "character": "nova",
+              "likeClues": [
+                  {
+                    "id": "nova-taste-1",
+                    "character": "nova",
+                    "tag": "old horror films",
+                    "liked": true,
+                    "entries": [
+                      "nova-film"
+                    ],
+                    "clues": [
+                      "She relaxed as the grainy monster lurched across the screen.",
+                      "She mouthed the next line before the shadow appeared in the doorway."
+                    ],
+                    "softLabel": "Comfort in a midnight screening"
+                  },
+                  {
+                    "id": "nova-taste-2",
+                    "character": "nova",
+                    "tag": "vinyl",
+                    "liked": true,
+                    "entries": [
+                      "nova-vinyl"
+                    ],
+                    "clues": [
+                      "She handled the sleeve carefully and checked both sides of the disc.",
+                      "She let the needle settle and listened through the soft hiss before the song."
+                    ],
+                    "softLabel": "Music with a little crackle"
+                  },
+                  {
+                    "id": "nova-taste-3",
+                    "character": "nova",
+                    "tag": "cider",
+                    "liked": true,
+                    "entries": [
+                      "nova-cider"
+                    ],
+                    "clues": [
+                      "She brightened at the dry apple smell rising from the glass.",
+                      "She took a slow sip of the tart golden drink before joining the conversation."
+                    ],
+                    "softLabel": "A crisp orchard drink"
+                  },
+                  {
+                    "id": "nova-taste-4",
+                    "character": "nova",
+                    "tag": "being teased back",
+                    "liked": true,
+                    "entries": [
+                      "nova-tease"
+                    ],
+                    "clues": [
+                      "Your comeback made her grin instead of reaching for another joke.",
+                      "She laughed harder when you returned the joke with one of your own."
+                    ],
+                    "softLabel": "Banter that comes back at her"
+                  },
+                  {
+                    "id": "nova-taste-5",
+                    "character": "nova",
+                    "tag": "authority",
+                    "liked": false,
+                    "entries": [
+                      "nova-pushy"
+                    ],
+                    "clues": [
+                      "Her grin vanished when someone started giving orders.",
+                      "She bristled at the assumption that someone else could set the terms."
+                    ],
+                    "softLabel": "Her own rules"
+                  },
+                  {
+                    "id": "nova-taste-6",
+                    "character": "nova",
+                    "tag": "being called cute",
+                    "liked": false,
+                    "entries": [
+                      "nova-cute"
+                    ],
+                    "clues": [
+                      "The sugary little nickname made her expression sharpen.",
+                      "She stopped playing along when the compliment made her sound small and harmless."
+                    ],
+                    "softLabel": "Taken seriously beneath the grin"
+                  },
+                  {
+                    "id": "nova-taste-7",
+                    "character": "nova",
+                    "tag": "anyone who mocks her films",
+                    "liked": false,
+                    "entries": [
+                      "nova-insult-film"
+                    ],
+                    "clues": [
+                      "She could laugh at herself until the joke landed on the work she had made.",
+                      "She went still when a throwaway remark dismissed months behind the camera."
+                    ],
+                    "softLabel": "Care for the work beneath the joke"
+                  }
+                ],
               "entries": [
                 {
                   "id": "nova-tease",
@@ -7775,6 +8289,120 @@
           "actProfiles": [
             {
               "character": "abigail",
+              "likeClues": [
+                  {
+                    "id": "abigail-taste-1",
+                    "character": "abigail",
+                    "tag": "puzzles",
+                    "liked": true,
+                    "entries": [
+                      "abigail-cube"
+                    ],
+                    "clues": [
+                      "Her fingers were already testing how the pieces fit together.",
+                      "She forgot the time while trying one more arrangement."
+                    ],
+                    "softLabel": "Something to figure out"
+                  },
+                  {
+                    "id": "abigail-taste-2",
+                    "character": "abigail",
+                    "tag": "climbing",
+                    "liked": true,
+                    "entries": [
+                      "abigail-bar"
+                    ],
+                    "clues": [
+                      "She glanced at the holds above and tucked the snack away for the next route.",
+                      "Her mood lifted at the thought of chalky hands and one more reach."
+                    ],
+                    "softLabel": "A challenge up the wall"
+                  },
+                  {
+                    "id": "abigail-taste-3",
+                    "character": "abigail",
+                    "tag": "hiking",
+                    "liked": true,
+                    "entries": [
+                      "abigail-hike"
+                    ],
+                    "clues": [
+                      "She checked the tide and chose shoes that could handle wet stone.",
+                      "A stretch of open trail seemed to clear her head."
+                    ],
+                    "softLabel": "A path beyond campus"
+                  },
+                  {
+                    "id": "abigail-taste-4",
+                    "character": "abigail",
+                    "tag": "technical projects",
+                    "liked": true,
+                    "entries": [
+                      "abigail-project"
+                    ],
+                    "clues": [
+                      "She leaned closer when you followed the numbers instead of just nodding.",
+                      "She stayed to sketch another fix after everyone else had packed up."
+                    ],
+                    "softLabel": "Work that can be made real"
+                  },
+                  {
+                    "id": "abigail-taste-5",
+                    "character": "abigail",
+                    "tag": "spontaneous outings",
+                    "liked": true,
+                    "entries": [
+                      "abigail-hike"
+                    ],
+                    "clues": [
+                      "She was ready to leave before the whole afternoon had been planned.",
+                      "A last-minute detour brought out a laugh you had not heard all day."
+                    ],
+                    "softLabel": "A little room for the unexpected"
+                  },
+                  {
+                    "id": "abigail-taste-6",
+                    "character": "abigail",
+                    "tag": "pointless drama",
+                    "liked": false,
+                    "entries": [
+                      "abigail-harp-drama"
+                    ],
+                    "clues": [
+                      "She looked tired when the argument kept going without anything to resolve.",
+                      "Her attention returned as soon as someone offered a useful next step."
+                    ],
+                    "softLabel": "A problem worth solving"
+                  },
+                  {
+                    "id": "abigail-taste-7",
+                    "character": "abigail",
+                    "tag": "showing off",
+                    "liked": false,
+                    "entries": [
+                      "abigail-boast"
+                    ],
+                    "clues": [
+                      "She waited for the grand claim to turn into something she could check.",
+                      "The louder the self-praise got, the less she had to say."
+                    ],
+                    "softLabel": "Results over a performance"
+                  },
+                  {
+                    "id": "abigail-taste-8",
+                    "character": "abigail",
+                    "tag": "vague answers",
+                    "liked": false,
+                    "entries": [
+                      "abigail-harp-answers"
+                    ],
+                    "clues": [
+                      "She asked again when the reply kept skating around the question.",
+                      "Her patience thinned with each answer that left the details out."
+                    ],
+                    "softLabel": "An answer she can use"
+                  }
+                ],
               "entries": [
                 {
                   "id": "abigail-project",
@@ -8465,5 +9093,10 @@
         }
       }
     }
-  ]
+  ],
+  "likesOpen": true,
+  "likeClueSettings": {
+    "promotionThreshold": 2,
+    "gossipDailyCap": 1
+  }
 }

@@ -4,7 +4,7 @@ import {readFileSync,existsSync} from 'node:fs';
 import {createWorld,execute,validatePack,replay,actions} from '../packages/core/engine.mjs';
 import {registry} from '../packages/modules/index.mjs';
 import {analyzeSceneGraphs} from '../packages/modules/scenes.mjs';
-const pack=JSON.parse(readFileSync(new URL('../packs/after-hours.json',import.meta.url)));
+const pack=JSON.parse(readFileSync(new URL('./fixtures/route-mechanics.json',import.meta.url)));
 // Days 2-14 storylets. Route tests skip them (leave, not complete) so they exercise one thread at a time; harness(p,[ids]) keeps the listed ones.
 const side=new Set(['juno-limes','juno-dream','juno-flea','theo-busking','theo-notebook','theo-song','juno-flea-ask','juno-no-show','theo-song-ask','theo-no-show','priya-books','priya-tips','rowdy-regular','open-mic-heckler','theo-request','friday-rush','staff-drinks','juno-needles','priya-candid','juno-text','theo-voicenote','till-short','ex-at-the-bar','market-shakedown','landlord-inspection','crate-digging','pub-quiz','market-hustle','study-slate','after-work-drinks','stock-windfall']);
 function harness(p,keep=[]){const skip=true;let s=createWorld(p,registry,'test');const run=(type,args)=>{const r=execute(s,{id:`t${s.revision}`,actorId:p.playerId,type,args,expectedRevision:s.revision},p,registry);s=r.state;return r;};
@@ -16,7 +16,7 @@ const doing=(h,id,location='bar')=>{const who=pack.activities.find(a=>a.id===id)
 const waitTo=(h,tick)=>{while(h.state.tick<tick){const p=h.state.modules['story.scenes'].pending;if(p)h.act('story.leave',{scene:p});else h.act('core.wait');}};
 const choice=(h,id)=>actions(h.state,pack,registry).find(a=>a.args?.choice===id);
 
-test('after-hours pack validates and every scene graph is reachable',()=>{
+test('route mechanics fixture validates and every scene graph is reachable',()=>{
  validatePack(pack,registry);
  for(const g of analyzeSceneGraphs(pack))assert.deepEqual(g.unreachable,[],g.scene);
  const flagsSet=new Set(JSON.stringify(pack).match(/"type": ?"flag", ?"id": ?"[^"]+"/g).map(x=>x.match(/"([^"]+)"$/)[1]));
@@ -149,7 +149,7 @@ test('a date is a plan: miss it and the phone tells you, and the date scene neve
 
 test('the play view shows check numbers as they resolve, and an ending replaces the actions with a closing card',async()=>{
  const {createApp}=await import('../server.mjs'),{mkdtempSync,rmSync}=await import('node:fs'),{tmpdir}=await import('node:os'),{join}=await import('node:path');
- const dir=mkdtempSync(join(tmpdir(),'after-hours-view-')),app=createApp({dataPath:join(dir,'campaigns.sqlite')});await new Promise(r=>app.server.listen(0,'127.0.0.1',r));
+ const dir=mkdtempSync(join(tmpdir(),'route-view-')),app=createApp({dataPath:join(dir,'campaigns.sqlite')});app.packs[pack.id]=pack;await new Promise(r=>app.server.listen(0,'127.0.0.1',r));
  try{const url=`http://127.0.0.1:${app.server.address().port}`,post=async(path,body)=>{const res=await fetch(url+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await res.json();assert.equal(res.status,200,JSON.stringify(d));return d;};
   let v=await post('/api/new',{packId:pack.id});const id=v.state.campaignId,turn=async(type,args)=>{v=await post('/api/action',{campaignId:id,id:`v${v.state.revision}`,expectedRevision:v.state.revision,command:{type,actorId:pack.playerId,args}});return v;};
   await turn('core.move',{to:'bar'});await turn('story.choose',{scene:'first-night',choice:'banter'});

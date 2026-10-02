@@ -71,7 +71,7 @@ test('the play screen wires the campus layer: day card, hub, end card, journal a
 });
 
 test('campus leads both start screens; the other worlds keep their order',()=>{
- const packs=[{id:'sample.neutral'},{id:'showcase.after-hours'},{id:SHOWCASE},{id:'sample.threshold'}];assert.deepEqual(featuredFirst(packs).map(p=>p.id),[SHOWCASE,'sample.neutral','showcase.after-hours','sample.threshold']);assert.equal(pack().id,SHOWCASE);
+ const packs=[{id:'sample.neutral'},{id:'sample.event-chain'},{id:SHOWCASE},{id:'sample.threshold'}];assert.deepEqual(featuredFirst(packs).map(p=>p.id),[SHOWCASE,'sample.neutral','sample.event-chain','sample.threshold']);assert.equal(pack().id,SHOWCASE);
  for(const f of ['play.mjs','app.mjs'])assert.match(read(f),/featuredFirst\(data\.packs\)/,f);
 });
 

@@ -6,7 +6,7 @@ import {registry} from '../packages/modules/index.mjs';
 import {castings,expandTemplate,bakeTemplates} from '../packages/cards/role-slots.mjs';
 
 const read=f=>JSON.parse(readFileSync(new URL(f,import.meta.url),'utf8'));
-const base=read('../packs/after-hours.json'),[tpl]=read('../packs/templates/after-hours.json'),pack=bakeTemplates(base,[tpl]);
+const base=read('./fixtures/route-mechanics.json'),[tpl]=read('./fixtures/role-template.json'),pack=bakeTemplates(base,[tpl]);
 const variants=pack.scriptedScenes.filter(x=>x.template?.id==='seen-together'),byId=id=>variants.find(x=>x.id===id);
 
 test('a role-slot template expands to one scene per distinct cast pairing',()=>{

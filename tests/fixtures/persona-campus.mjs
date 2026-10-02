@@ -1,0 +1,2 @@
+import {readFileSync} from 'node:fs';
+export const pack=()=>({...JSON.parse(readFileSync(new URL('../../packs/campus.json',import.meta.url),'utf8')),scriptedScenes:[{id:'fixture-choice',title:'Fixture choice',opening:'A test choice is ready.',trigger:{event:'core.timeAdvanced'},choices:[{id:'yes',label:'Continue',result:'The test continues.',effects:[{type:'flag',id:'fixture-chosen',value:true}]}]}]});

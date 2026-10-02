@@ -101,14 +101,14 @@ test('a reply that repeats the player word for word is logged, never blocked',as
   assert.match(echo[0].message,/i tell her the truth about why i/);
   assert.deepEqual(flagged.lines.map(l=>l.text),echoReply.map(l=>l.text),'the reply still reaches the player');
   assert.ok(flagged.lines.some(l=>l.speaker),'a scene where nobody speaks is not an echo');
-  // Legacy behaviour: no pack field, no post-check.
+  // A missing pack field uses the eight-word default.
   const legacy=await narrate(turn,{...p,slipGuard:undefined},echoReply);
-  assert.ok(!legacy.lintTrace?.some(t=>t.check==='echo'));
+  assert.ok(legacy.lintTrace?.some(t=>t.check==='echo'));
   // Seven words of the player coming back is phrasing, not an echo.
   const seven='You begin badly. I tell her the truth about why, and she hears it.';
   const short=await narrate(turn,p,[{speaker:'jana',text:seven}]);
   assert.ok(!short.lintTrace?.some(t=>t.check==='echo'));
-  assert.deepEqual(lintScene({lines:echoReply},turn,{...p,slipGuard:undefined}).map(w=>w.check),[]);
+  assert.deepEqual(lintScene({lines:echoReply},turn,{...p,slipGuard:undefined}).map(w=>w.check),['echo']);
 });
 
 test('the Studio gives the echo threshold its own section and writes it back to the pack',()=>{

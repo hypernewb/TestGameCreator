@@ -32,11 +32,9 @@ const JSON_ONLY={
 // KNOWN_GAPS: module-read options with no Studio control, acknowledged in docs/research/studio-coverage.md.
 // dailyNeeds is editable in Studio but cannot be enabled or added there, so it stays listed.
 const KNOWN_GAPS={
- actProfiles:'likes/limits pricing tables have no editor',
  arcTracks:'character change arc tracks have no editor',
  dailyNeeds:'hidden daily need: editable but no enable toggle or add flow',
  firsts:'typed-scene firsts checkpoints have no editor',
- likesOpen:'likes/clues reveal boolean exists only in pack JSON',
  moments:'ambient moments library has no editor',
  momentsProfile:'moment generation tuning has no editor',
  npcDialogue:'NPC run-in lines have no editor',

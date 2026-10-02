@@ -9,7 +9,7 @@ Status: **control** = a Studio editor binds it · **json-only (intended)** = del
 | Option | Read by (module:line) | Studio control (studio.mjs:line) | Template | Default | Status |
 |---|---|---|---|---|---|
 | abilities | abilities.mjs:4 | :338 | campus.json | — | control |
-| actProfiles | acts.mjs:31 | — | campus.json | fallback +2/−2, sceneCap 12 | GAP |
+| actProfiles | acts.mjs:31 | :429 | campus.json | fallback +2/−2, sceneCap 12 | control |
 | activities | minigames.mjs:32 | :194 | campus.json | duration 1 | control |
 | actors | conditions.mjs:10 | :321 | template | — | control |
 | anniversarySettings | anniversary.mjs:70 | :232 | campus.json | off; interval 7–365, maxMoments 1–20 | control |
@@ -46,7 +46,7 @@ Status: **control** = a Studio editor binds it · **json-only (intended)** = del
 | items | inventory.mjs:40 | :323 | template | owner · price 20 when sold | control |
 | jealousyProfiles | jealousy.mjs:75 | :228 | campus.json | blank = no trait | control |
 | jealousySettings | jealousy.mjs:75 | :226 | campus.json | max 10 · cool 3 · confront 6 · trust −2 | control |
-| likesOpen | dating.mjs:155 (read :145, gossip.mjs:20) | — | — | undefined (off) | GAP |
+| likesOpen | dating.mjs:155 (read :145, gossip.mjs:20) | — | — | undefined (off) | control |
 | locations | world-events.mjs:7 | :319 | template | — | control |
 | lustBaseline | romance-stats.mjs:13 | :363 | campus.json | off; 0.25/part, +5 milestones | control |
 | moments | moments.mjs:55 | — | campus.json | up to 200 | GAP |

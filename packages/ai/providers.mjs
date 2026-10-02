@@ -47,6 +47,12 @@ export function parseModelChoice(raw,available,input){
  assert(words.trim()&&words.length<=2000,'Enter something to say');
  return {type:selected.type,args:{target:selected.args.target,text:words.trim()}};
 }
+export const CONNECTION_PRESETS={
+  gemini:{label:'Gemini free',endpoint:'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',model:'gemini-2.5-flash',keyUrl:'https://aistudio.google.com/apikey'},
+  openrouter:{label:'OpenRouter free',endpoint:'https://openrouter.ai/api/v1/chat/completions',model:'openrouter/free',keyUrl:'https://openrouter.ai/settings/keys'},
+  lmstudio:{label:'Local LM Studio',endpoint:'http://127.0.0.1:1234/v1/chat/completions',model:'',keyUrl:''},
+  custom:{label:'Custom',endpoint:'',model:'',keyUrl:''}
+};
 export class MockProvider {
   name='Offline demo';
   async generateLedger(){return [];}

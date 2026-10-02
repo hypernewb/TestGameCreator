@@ -14,6 +14,12 @@ export interface Provider { interpret(input:string,context:unknown,actions:Actio
 export type ActKind='flirt'|'compliment'|'gift'|'touch'|'insult'|'buy'|'invite'|'tease'|'listen'|'boast'|'pushy';
 export interface SceneAct { kind:ActKind; target:string; size?:'small'|'medium'|'large'; landed?:boolean; region?:BodyRegion }
 export interface ActEntry { id:string; kind:ActKind; target:string; points:number; reason:string; memory?:string; when?:{private:boolean} }
+export interface ActEntry { clue?:string; softLabel?:string }
+export interface LikesCluesPack { likesOpen?:boolean }
+export interface LikeClue { entry:string; source:string; tick:number; text:string; label:string; liked:boolean; from:string|null }
+export interface LikesCluesRuntime { likeClues?:LikeClue[] }
+export interface LikeClueAddedEvent { character:string; text:string; from:string|null }
+export interface LikesCluesView { clues:{text:string;tick:number;from:string|null}[]; likes:{reason:string}[]; dislikes:{reason:string}[] }
 export interface ActProfile { character:string; entries:ActEntry[]; fallback?:{landed:number;missed:number}; sizeMultiplier?:{small:number;medium:number;large:number}; sceneCap?:number; repeatDecayPercent?:number }
 export interface ActPricedEvent { character:string; sceneId:string; source:string; act:SceneAct; entry:string|null; points:number; verdict:'liked'|'disliked'|'neutral'|'unpaid'; reason:string; memory?:string; text:string }
 export interface ActDiscoveredEvent { character:string; entry:string; reason:string; memory?:string }

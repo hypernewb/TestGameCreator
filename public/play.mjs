@@ -105,7 +105,7 @@ function renderMessages(){const {state:s,pack:p}=current,view=messages(s,p),open
    return a;}):[el('p','Pick a conversation.','muted')]));
  $('#messages-reply').hidden=!open;$('#messages-who').textContent=open?open.name:'her';$('#messages-input').disabled=busy||!open;}
 function showJournal(){const {state:s,pack:p}=current,list=(title,xs)=>el('p',`${title}: ${xs.length?xs.map(x=>x.reason).join('; '):'not yet known'}`);
- $('#journal-entries').replaceChildren(...journal(s,p).map(j=>{const a=el('article');a.append(el('strong',j.stage?`${j.name} · ${j.stage}`:j.name),list('Likes when',j.likes),list('Dislikes when',j.dislikes));return a;}));$('#game-menu').close();$('#journal').showModal();}
+ $('#journal-entries').replaceChildren(...journal(s,p).map(j=>{const a=el('article');a.append(el('strong',j.stage?`${j.name} · ${j.stage}`:j.name));if(j.clues){a.append(...(j.clues.length?j.clues.map(c=>el('p',`${c.from?`${p.actors.find(x=>x.id===c.from)?.name||'A friend'}: `:''}${c.text}`)):[el('p','No clues yet.','muted')]));if(p.likesOpen===true)a.append(list('Seems to like',j.likes),list('Seems to avoid',j.dislikes));}else a.append(list('Likes when',j.likes),list('Dislikes when',j.dislikes));return a;}));$('#game-menu').close();$('#journal').showModal();}
 function stopAuto(){clearInterval(auto);auto=null;$('[data-action=auto]')?.classList.remove('active');}
 
 async function act(request){if(busy||!current)return;busy=true;stopAuto();renderFirstControls();$('#choices').hidden=true;$('#hub').hidden=true;$('.dialogue').hidden=false;if(request.input){lines=[{speaker:current.pack.playerId,kind:'YOUR ACTION',text:request.input}];cursor=0;showLine();}showLoading();$('#player-prompt').disabled=true;

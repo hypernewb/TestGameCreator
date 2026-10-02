@@ -31,6 +31,9 @@ test('Venus-inspired prompt keeps the shared contract and requests a full scene 
  assert.doesNotMatch(system.content,/Then 2–5 short entries/);
  const [original]=scenePromptMessages({...context,sceneWriter:'framework'},pack);
  assert.doesNotMatch(original.content,/VENUS SCENE STRUCTURE/);
- assert.match(original.content,/6–9 visual-novel entries/);
+ assert.match(original.content,/5–7 visual-novel entries/);
  assert.match(original.content,/pursue the beat direction/);
+ assert.match(original.content,/connected beat of 1–2 sentences/);
+ assert.match(original.content,/reaction beat after one or two lines of dialogue/);
+ assert.match(original.content,/reader.s own second-person POV/);
 });

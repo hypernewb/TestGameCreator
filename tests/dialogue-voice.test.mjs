@@ -234,10 +234,10 @@ test('how close an NPC is to the player sets their tone and which beats they wil
  const p=JSON.parse(readFileSync(new URL('../packs/crossed-plans.json',import.meta.url)));
  const at=(extra,i=0)=>beatDirection({stagedCast:['mina'],scenePhase:'continuation',playerAction:'Nice frames.',sceneHistory:Array(i).fill({input:'',text:''}),...extra},p,'s1');
  const all=extra=>Array.from({length:12},(_,i)=>at(extra,i)).join('\n'),actor=t=>({actor:{id:'mina',relationshipToPlayer:t}});
- assert.match(at(actor(0)),/^Mina \(Short modern sentences with dry warmth\.; just met the player: polite, a little guarded\): /);assert.doesNotMatch(all(actor(0)),/admit one small|tease the player/);
- // Met before (memories) is not a stranger; middling trust is an explicit "familiar" stage with a hard
- // physical/flirtation boundary, since a 9B role-play model otherwise defaults to provocative behavior.
- assert.match(at({...actor(0),memories:[{text:'x'}]}),/^Mina \(Short modern sentences with dry warmth\.; knows the player a little: cordial, warming, but not close\): /);assert.match(at(actor(20)),/knows the player a little: cordial, warming, but not close\): /);assert.match(at(actor(20)),/keep it hands-off, no touching, no leaning in\./);assert.doesNotMatch(all(actor(20)),/admit one small/);
+ assert.match(at(actor(0)),/^Mina \(Short modern sentences with dry warmth\.; just met the player: polite but quick to spar — banter and teasing pushback welcome, confiding not\): /);assert.doesNotMatch(all(actor(0)),/admit one small/);assert.match(all(actor(0)),/tease the player/);
+ // Met before (memories) is not a stranger; middling trust is an explicit "familiar" stage with a hard physical
+ // boundary (9B role-play models default to provocative behavior), while spark and banter stay in play.
+ assert.match(at({...actor(0),memories:[{text:'x'}]}),/^Mina \(Short modern sentences with dry warmth\.; knows the player a little: warming up, easy banter, not close yet\): /);assert.match(at(actor(20)),/knows the player a little: warming up, easy banter, not close yet\): /);assert.match(at(actor(20)),/hands-off, no leaning in/);assert.match(at(actor(20)),/banter and charged looks are fair game/);assert.doesNotMatch(all(actor(20)),/admit one small/);
  assert.match(at(actor(45)),/; knows the player well: relaxed\)/);assert.match(all(actor(45)),/admit one small, true thing/);assert.match(at(actor(80)),/; close to the player: warm, at ease\)/);
  assert.match(at({}),/^Mina \(Short modern sentences with dry warmth\.\): /);assert.match(at({actor:{id:'rowan',relationshipToPlayer:90}}),/^Mina \(Short modern sentences with dry warmth\.[^;)]*\): /);
  // A dating phase outranks trust: a crush flirts, a rejection never does.

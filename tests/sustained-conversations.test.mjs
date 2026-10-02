@@ -17,7 +17,7 @@ test('calm changes continuation policy while preserving length, openings, closin
  context.calmDirection=beatDirection({...context,continuationStyle:'calm'},pack,'same-seed');
  const plain=scenePromptMessages(context,pack),calm=calmContinuationMessages(context,pack);
  assert.notDeepEqual(calm,plain);assert.match(plain[0].content,/INITIATIVE:/);assert.doesNotMatch(calm[0].content,/INITIATIVE:/);
- assert.match(calm[0].content,/6–9/);assert.match(calm[0].content,/At least four/);assert.match(calm[1].content,/same subject/);
+ assert.match(calm[0].content,/5–7/);assert.match(calm[0].content,/about half of them spoken NPC lines/);assert.match(calm[1].content,/same subject/);
  for(const override of [{scenePhase:'opening'},{scenePhase:'closing'},{first:{rung:'kiss'}},{scriptedScene:'authored'},{direction:'Engine-controlled closure'}])assert.deepEqual(calmContinuationMessages({...context,...override},pack),scenePromptMessages({...context,...override},pack));
 });
 

@@ -38,7 +38,7 @@ test('"go find Brin" walks to where she is and opens the scene with her',async()
 
 test('a solo scene tells the model who else is around, as bystanders',()=>{
  const p=load('neutral'),context={stagedCast:[],scenePhase:'opening',sceneHistory:[],playerAction:'I stretch.',location:p.locations[0],present:[{id:'player',name:'You'},{id:'ada',name:'Ada'}]};
- const all=scenePromptMessages(context,p).map(m=>m.content).join('\n');assert.match(all,/"bystanders":\["Ada"\]/);assert.match(all,/Bystanders may be glimpsed[^.]*do not speak/);
+ const all=scenePromptMessages(context,p).map(m=>m.content).join('\n');assert.match(all,/AROUND YOU\n- Ada/);assert.match(all,/Bystanders may be glimpsed[^.]*do not speak/);
 });
 
 test('no passive drift: getting fit alone does not move Jana until she spends time with you',()=>{

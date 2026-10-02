@@ -1,4 +1,5 @@
 import {calendarFor,PERIODS} from '../../public/calendar.mjs';
+import {timeCost} from '../../public/calendar.mjs';
 import {validateCharacterSheets} from './character-sheet.mjs';
 import {spokenLine} from '../../vendor/venus/sceneText.mjs';
 import {changeMoney} from '../modules/economy.mjs';
@@ -385,11 +386,16 @@ export function actions(world,pack,registry){
   if(world.modules['story.endings']?.selected)return [];
   // One pack check per call; each preview below would otherwise re-hash the pack.
   const ok=world.packDigest===mechanicsDigest(pack);
-  if(world.modules['story.scenes']?.pending)return resolveModules(pack,registry).flatMap(m=>m.actions?.(world,pack)||[]).filter(a=>['story.choose','story.leave','social.withdrawConsent'].includes(a.type)).map((a,i)=>{try{execute(world,{...a,id:`preview-choice-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry,ok);return {...a,enabled:true};}catch(e){return {...a,enabled:false,reason:e.message};}});
+  if(world.modules['story.scenes']?.pending)return resolveModules(pack,registry).flatMap(m=>m.actions?.(world,pack)||[]).filter(a=>['story.choose','story.leave','social.withdrawConsent'].includes(a.type)).map((a,i)=>{try{const next=execute(world,{...a,id:`preview-choice-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry,ok).state;return {...a,enabled:true,cost:actionCost(world,a,pack,registry,next)};}catch(e){return {...a,enabled:false,reason:e.message,cost:timeCost(0,pack)};}});
   const loc=pack.locations.find(l=>l.id===world.actors[pack.playerId].location);
   const extra=resolveModules(pack,registry).flatMap(m=>m.actions?.(world,pack)||[]),look=extra.filter(a=>a.type==='core.inspect'),cueTo=new Map(extra.filter(a=>a.type==='core.move').map(a=>[a.args.to,a])),list=[...(look.length?look:[{label:'Look around',type:'core.inspect',args:{}}]),{label:'Wait',type:'core.wait',args:{}},...(world.scene?[{label:world.scene.characters.length?'End conversation':'Finish activity',type:'core.endScene',args:{}}]:[]),...loc.exits.map(e=>cueTo.get(e.to)||{label:`Go to ${pack.locations.find(l=>l.id===e.to).name}`,type:'core.move',args:{to:e.to}}),...activityActions(world,pack,loc),...extra.filter(a=>!['core.inspect','core.move'].includes(a.type))];
   if(plannerMode(pack)&&!world.scene){const choices=plannerChoices(world,pack,extra);list.splice(0,list.length,...choices,...list.filter(a=>!['core.scene','core.wait','core.waitUntil','story.startOfferedScene','world.nextDaypart','social.speak'].includes(a.type)));}
-  return list.map((a,i)=>{try{execute(world,{...a,id:`preview-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry,ok);return {...a,enabled:true};}catch(e){return {...a,enabled:false,reason:e.message};}});
+  return list.map((a,i)=>{try{const next=execute(world,{...a,id:`preview-${world.revision}-${i}`,actorId:pack.playerId,expectedRevision:world.revision},pack,registry,ok).state;return {...a,enabled:true,cost:actionCost(world,a,pack,registry,next)};}catch(e){return {...a,enabled:false,reason:e.message,cost:timeCost(0,pack)};}});
+}
+export function actionCost(state,action,pack,registry={},next){
+ if(!next){let id=`cost-${state.revision}`;while(state.turns[id])id+='-next';next=execute(state,{...action,id,actorId:pack.playerId,expectedRevision:state.revision},pack,registry).state;}
+ const end=next.planner?.endTick??next.tick,to=state.run?Math.min(end,state.run.endTick):end;
+ return timeCost(Math.max(0,to-state.tick),pack);
 }
 // Bookkeeping that takes no story time: looking, dressing, reading the phone.
 export const FREE_ACTIONS=new Set(['core.refuse','core.inspect','items.equip','items.unequip','social.readFeed','social.readThread','social.reactToPost','social.setRumorStance','social.resolveConfrontation','social.scoreFirst','social.stopFirst','world.pushLuck']);

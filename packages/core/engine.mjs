@@ -93,7 +93,7 @@ export function mechanicsShape(pack) {
   ...(pack.moments?{moments:pack.moments.map(m=>pick(m,['id','kind','location','on','character','when','effects','maxUses','cooldown','stay','weight']))}:{}),...(pack.momentsProfile?{momentsProfile:pack.momentsProfile}:{}),
   initialRelationships:pack.initialRelationships||[],
   ...(pack.recipes?{recipes:pack.recipes}:{}),...(pack.calendar?{calendar:pack.calendar}:{}),
-  ...pick(pack,['relationshipStageSettings','anniversarySettings']),
+  ...pick(pack,['relationshipStageSettings','anniversarySettings','dayRecap']),
   startOptions:(pack.startOptions||[]).map(s=>pick(s,['id','playerLocation','tick'])),
  };
 }

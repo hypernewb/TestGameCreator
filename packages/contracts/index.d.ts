@@ -115,6 +115,11 @@ export interface JealousySettings { max?:number; decayPerDay?:number; coolAt?:nu
 export interface JealousyProfile { character:string; insecureMultiplier?:number; guardedMultiplier?:number; competitiveMultiplier?:number }
 export interface JealousyPack { jealousySettings?:JealousySettings; jealousyProfiles?:JealousyProfile[] }
 export interface JealousyRuntime { characters?:Record<string,{meter:number;stage:'acquaintance'|'dating'|'exclusive';lastTrustHit:number|null}> }
+export interface DayRecapSettings { max?:number; keep?:number }
+export interface DayRecapPack { dayRecap?:DayRecapSettings }
+export interface DayRecap { day:number; weekday:string; date:string|null; lines:string[] }
+export interface DayRecapRuntime { days:DayRecap[] }
+export interface DayClosedEvent { day:number; weekday:string; date:string|null; lines:string[]; text:string }
 export type OutreachKind='check-in'|'plan'|'tease'|'neglected'|'strain';
 export interface OutreachReply { id:string; text:string }
 export interface OutreachText { id:string; character:string; kind:OutreachKind; text:string; replies:OutreachReply[]; offer?:{location:string;expiresIn:number} }

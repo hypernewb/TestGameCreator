@@ -12,7 +12,7 @@ import {featuredFirst,isCampus,dayCard,newDay,hub,goals,activityCommand,promptFi
 const $=s=>document.querySelector(s),el=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const fontStacks={source:"'VN Source Sans 3','Segoe UI',sans-serif",noto:"'VN Noto Sans','Arial',sans-serif",open:"'VN Open Sans','Tahoma',sans-serif",lato:"'VN Lato','Trebuchet MS',sans-serif",custom:"'Player Uploaded Font','Segoe UI',sans-serif"};
 const GROUPS=[['Look around',t=>t.startsWith('world.')],['Clothes and belongings',t=>t.startsWith('items.')]];
-let current=null,busy=false,lines=[],cursor=0,key='',auto=null,retryId=null,seen={campaign:'',tick:undefined,end:''},cards=[],hubTab='places',retryRequest=null;
+let current=null,busy=false,lines=[],cursor=0,key='',auto=null,retryId=null,seen={campaign:'',tick:undefined,end:'',recap:undefined},cards=[],hubTab='places',retryRequest=null;
 const costLabel=(label,command)=>`${label} · ${(command?optionCost(current.state,command,current.pack,current.actions):timeCost(0,current.pack)).display}`;
 
 async function api(path,body){const r=await fetch(path,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{});const data=await r.json();if(!r.ok)throw Error(data.error||'Request failed');return data;}
@@ -62,16 +62,19 @@ function next(){if(cursor<lines.length-1){cursor++;showLine();return;}stopAuto()
 const useHub=()=>(plannerReady(current.state,current.pack)||isCampus(current?.pack)&&!current.state.scene&&!current.state.modules['story.scenes']?.pending&&!current.state.modules['social.firsts']?.active)&&!current.diagnostics?.ended;
 
 // Campus layer: end card, then the day card, once per turn / per day. Views come from campus.mjs; the engine still decides.
-function queueCards(data){const {state:s,pack:p}=data;if(!isCampus(p)&&!p.firsts?.length)return;const fresh=seen.campaign!==s.campaignId;if(fresh)seen={campaign:s.campaignId,tick:undefined,end:''};
+function queueCards(data){const {state:s,pack:p}=data;if(!isCampus(p)&&!p.firsts?.length)return;const fresh=seen.campaign!==s.campaignId;if(fresh)seen={campaign:s.campaignId,tick:undefined,end:'',recap:undefined};
  const turn=Object.values(s.turns).at(-1),card=!fresh&&endCard(s,p);if(card&&turn&&seen.end!==turn.id&&(card.rows.length||card.characters.length)){seen.end=turn.id;cards.push(()=>showEndCard(card));}
+  const recap=(s.modules['story.recap']?.days||[]).at(-1);if(recap&&seen.recap!==recap.day&&seen.tick!==undefined&&newDay(s,p,seen.tick)){seen.recap=recap.day;cards.push(()=>showRecapCard(recap));}
  if(!s.modules['social.firsts']?.active){if(isCampus(p)&&(seen.tick===undefined||newDay(s,p,seen.tick)))cards.push(()=>showDayCard(dayCard(s,p)));seen.tick=s.tick;}if(!document.querySelector('dialog[open]'))nextCard();}
 function nextCard(){const show=cards.shift();if(show)show();}
+// Yesterday's recap, straight off committed state (story.recap): no numbers, no model call, one dismissable card.
+function showRecapCard(r){$('#recap-card-date').textContent=r.weekday+(r.date?`, ${r.date}`:'');$('#recap-card-entries').replaceChildren(...r.lines.map(l=>el('p',l,'recap-line')));$('#recap-card').showModal();}
 function showDayCard(d){$('#day-card-date').textContent=`${d.weekday}, ${d.date}`;$('#day-card-left').textContent=d.daysLeft?`${d.daysLeft} day${d.daysLeft===1?'':'s'} left in term`:'Last day of term';
  const row=(label,text)=>{if(!text)return null;const a=el('article');a.append(el('strong',label),el('p',text));return a;};
  $('#day-card-entries').replaceChildren(...[row('Weather',d.weather&&[d.weather.name,d.weather.text].filter(Boolean).join(' · ')),row('Today',d.holiday&&[d.holiday.name,d.holiday.text].filter(Boolean).join(' · ')),row('Yesterday',d.yesterday?.replace(/^Yesterday, /,'')),row('Rumor',d.rumor)].filter(Boolean));$('#day-card').showModal();}
 function showEndCard(c){$('#end-card-text').textContent=c.text||(c.characters.length?`Time with ${c.characters.join(' and ')}.`:'');
  $('#end-card-entries').replaceChildren(...(c.note?[el('p',c.note)]:[]),...(c.rows.length?c.rows.map(r=>{const a=el('article',undefined,`heart-row heart-row--${r.mark}`),h=el('span',r.mark==='up'?'♥+':r.mark==='down'?'♥−':'♥',`heart heart--${r.mark}`);h.setAttribute('aria-label',r.mark==='up'?'Closer':r.mark==='down'?'Cooler':'No change');const copy=el('div');if(r.checkpoint)copy.append(el('strong',r.checkpoint));copy.append(el('p',r.text));a.append(h,copy);return a;}):[el('p',c.first?'You can find another moment together later.':'Nothing stood out this time.','muted')]));$('#end-card').showModal();}
-for(const id of ['day-card','end-card','messages'])$('#'+id).addEventListener('close',()=>setTimeout(nextCard,120));
+for(const id of ['recap-card','day-card','end-card','messages'])$('#'+id).addEventListener('close',()=>setTimeout(nextCard,120));
 
 // Hub: places (what you can do and who is around), phone, and everything else the engine offers. Free text stays open below.
 function renderHub(){const {state:s,pack:p}=current,box=$('#hub'),go=command=>act({command});box.hidden=false;
@@ -107,7 +110,9 @@ function renderMessages(){const {state:s,pack:p}=current,view=messages(s,p),open
    return a;}):[el('p','Pick a conversation.','muted')]));
  $('#messages-reply').hidden=!open;$('#messages-who').textContent=open?open.name:'her';$('#messages-input').disabled=busy||!open;}
 function showJournal(){const {state:s,pack:p}=current,list=(title,xs)=>el('p',`${title}: ${xs.length?xs.map(x=>x.reason).join('; '):'not yet known'}`);
- $('#journal-entries').replaceChildren(...journal(s,p).map(j=>{const a=el('article');a.append(el('strong',j.stage?`${j.name} · ${j.stage}`:j.name));if(j.clues){a.append(...(j.clues.length?j.clues.map(c=>el('p',`${c.from?`${p.actors.find(x=>x.id===c.from)?.name||'A friend'}: `:''}${c.text}`)):[el('p','No clues yet.','muted')]));if(p.likesOpen===true)a.append(list('Seems to like',j.likes),list('Seems to avoid',j.dislikes));}else a.append(list('Likes when',j.likes),list('Dislikes when',j.dislikes));return a;}));$('#game-menu').close();$('#journal').showModal();}
+ // The recap window the module kept, newest first, above what she has told you about herself.
+ const days=[...(s.modules['story.recap']?.days||[])].reverse(),recaps=days.flatMap(r=>{const a=el('article',undefined,'journal-recaps');a.append(el('strong',r.weekday+(r.date?`, ${r.date}`:'')),...r.lines.map(l=>el('p',l)));return [a];});
+ $('#journal-entries').replaceChildren(...recaps,...journal(s,p).map(j=>{const a=el('article');a.append(el('strong',j.stage?`${j.name} · ${j.stage}`:j.name));if(j.clues){a.append(...(j.clues.length?j.clues.map(c=>el('p',`${c.from?`${p.actors.find(x=>x.id===c.from)?.name||'A friend'}: `:''}${c.text}`)):[el('p','No clues yet.','muted')]));if(p.likesOpen===true)a.append(list('Seems to like',j.likes),list('Seems to avoid',j.dislikes));}else a.append(list('Likes when',j.likes),list('Dislikes when',j.dislikes));return a;}));$('#game-menu').close();$('#journal').showModal();}
 function stopAuto(){clearInterval(auto);auto=null;$('[data-action=auto]')?.classList.remove('active');}
 
 async function act(request){if(busy||!current)return;busy=true;stopAuto();renderFirstControls();$('#choices').hidden=true;$('#hub').hidden=true;$('.dialogue').hidden=false;if(request.input){lines=[{speaker:current.pack.playerId,kind:'YOUR ACTION',text:request.input}];cursor=0;showLine();}showLoading();$('#player-prompt').disabled=true;

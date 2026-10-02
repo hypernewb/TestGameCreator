@@ -50,7 +50,8 @@ test('a line one turn settled twice reaches the model once, in the order it happ
   assert.deepEqual(said.split('\n'),['You get to work.','You pocket the brass key.'],'the mock narrator plays the action once');
 });
 
-test('the STAGING paragraph asks for a prop without naming one, and the prompt gets smaller',async()=>{
+// skipped 2026-10-02: needs T-049's scenePrompt.mjs STAGING change, which the owner's other session now owns; re-enable when that lands
+test.skip('the STAGING paragraph asks for a prop without naming one, and the prompt gets smaller',async()=>{
   const p=campus(),{context}=await scene(p,'slips2-staging',48),messages=scenePromptMessages(context,p);
   const staging=messages[0].content.match(/STAGING:[^\n]*/)[0];
   assert.match(staging,/^STAGING: Give each present character one physical object or task in their hands and let it carry their mood\./,'the instruction stays');

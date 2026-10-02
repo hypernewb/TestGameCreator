@@ -10,10 +10,19 @@ export interface Turn { id:string; command:Command; events:Event[]; narrative:st
 export interface Transaction { state:World; pack:unknown; set(path:(string|number)[],value:unknown):void; emit(type:string,payload:Record<string,unknown>,visibility?:'public'|string[]):void; random():number }
 export interface Module { id:string; version:string; coreApi:string; requires:string[]; validate?(pack:any):void; init?(pack:any):unknown; commands?:Record<string,(tx:Transaction,args:any)=>void>; react?(tx:Transaction,event:Event):void; actions?(state:World,pack:any):Action[]; panel?(state:World,pack:any):{title:string;lines:string[]} }
 export interface Action { label:string; type:string; args:Record<string,unknown> }
+export interface TimeCost { ticks:number; display:string }
+export interface TimeCostPack { tickMinutes?:number }
+export interface Action { cost?:TimeCost }
 export interface Provider { interpret(input:string,context:unknown,actions:Action[],signal?:AbortSignal):Promise<{type:string;args:Record<string,unknown>}>; narrate(context:unknown,signal?:AbortSignal):Promise<string> }
 export type ActKind='flirt'|'compliment'|'gift'|'touch'|'insult'|'buy'|'invite'|'tease'|'listen'|'boast'|'pushy';
 export interface SceneAct { kind:ActKind; target:string; size?:'small'|'medium'|'large'; landed?:boolean; region?:BodyRegion }
 export interface ActEntry { id:string; kind:ActKind; target:string; points:number; reason:string; memory?:string; when?:{private:boolean} }
+export interface ActEntry { clue?:string; softLabel?:string }
+export interface LikesCluesPack { likesOpen?:boolean }
+export interface LikeClue { entry:string; source:string; tick:number; text:string; label:string; liked:boolean; from:string|null }
+export interface LikesCluesRuntime { likeClues?:LikeClue[] }
+export interface LikeClueAddedEvent { character:string; text:string; from:string|null }
+export interface LikesCluesView { clues:{text:string;tick:number;from:string|null}[]; likes:{reason:string}[]; dislikes:{reason:string}[] }
 export interface ActProfile { character:string; entries:ActEntry[]; fallback?:{landed:number;missed:number}; sizeMultiplier?:{small:number;medium:number;large:number}; sceneCap?:number; repeatDecayPercent?:number }
 export interface ActPricedEvent { character:string; sceneId:string; source:string; act:SceneAct; entry:string|null; points:number; verdict:'liked'|'disliked'|'neutral'|'unpaid'; reason:string; memory?:string; text:string }
 export interface ActDiscoveredEvent { character:string; entry:string; reason:string; memory?:string }

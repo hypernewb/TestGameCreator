@@ -8,6 +8,7 @@ import {changeTrust} from '../modules/romance-stats.mjs';
 import {validateConditions} from '../modules/conditions.mjs';
 import {heldBy,transfer} from '../modules/inventory.mjs';
 import {closedReason,holidayOf} from '../modules/calendar.mjs';
+import {validateProjectUi} from '../../public/ui-selection.mjs';
 export const CORE_API = '0.1.0';
 export const clone = x => structuredClone(x);
 export const plannerMode = pack => pack.gameProject?.timeMode==='planner';
@@ -136,6 +137,7 @@ export function resolveModules(pack, registry) {
 }
 export function validatePack(pack, registry) {
   assert(pack && pack.schemaVersion===1,'pack.schemaVersion: expected 1');
+  validateProjectUi(pack.gameProject?.ui);
   assert(pack.gameProject?.timeMode===undefined||['clock','planner'].includes(pack.gameProject.timeMode),'gameProject.timeMode: expected clock or planner');
   assert(safeKey(pack.id),'pack.id: invalid ID'); assert(typeof pack.title==='string','pack.title: required');
   assert(/^\d+\.\d+\.\d+$/.test(pack.version),'pack.version: expected x.y.z');

@@ -1,0 +1,286 @@
+{
+ "model": "nai-diffusion-5-full",
+ "size": [
+  832,
+  1216
+ ],
+ "steps": 18,
+ "scale": 9,
+ "cfgRescale": 0.7,
+ "ucPreset": 2,
+ "emotions": [
+  "neutral",
+  "smile",
+  "concerned",
+  "frustrated",
+  "surprised",
+  "embarrassed",
+  "smug"
+ ],
+ "style": "artist: 1::artist: 陰 祭::, 0.8::artist: zd_1995 ::, 0.15::artist: murata range::, 0.7::artist: yamaishi_(mukoubuti):: , 0.85::artist: seak5545 ::, 0.6::artist: kidmo::, 0.6::artist: zd_1995 ::, 0.7::artist: yamaishi_(mukoubuti):: manhwa style \nwoman in \nvariety+\n\n\n2:: masterpiece::, 2::very_aesthetic::\nspecular highlights\n\n,  1girl\n, very aesthetic, masterpiece, no text, very aesthetic, masterpiece, no text",
+ "poseTags": [
+  "1girl",
+  "solo",
+  "cowboy shot",
+  "standing",
+  "facing viewer",
+  "looking at viewer",
+  "arms at sides",
+  "simple background",
+  "white background"
+ ],
+ "expressionTags": {
+  "neutral": [
+   "neutral expression",
+   "closed mouth"
+  ],
+  "smile": [
+   "smile",
+   "happy",
+   "light blush"
+  ],
+  "concerned": [
+   "worried",
+   "concerned",
+   "furrowed brow",
+   "slight frown"
+  ],
+  "frustrated": [
+   "annoyed",
+   "frustrated",
+   "pout",
+   "frown",
+   "looking to the side"
+  ],
+  "surprised": [
+   "surprised",
+   "wide-eyed",
+   "open mouth",
+   "raised eyebrows"
+  ],
+  "embarrassed": [
+   "embarrassed",
+   "heavy blush",
+   "looking away",
+   "averting eyes",
+   "closed mouth"
+  ],
+  "smug": [
+   "smug",
+   "smirk",
+   "half-closed eyes",
+   "raised eyebrow",
+   "looking at viewer"
+  ]
+ },
+ "negative": "nsfw, lowres, artistic error, film grain, scan artifacts, worst quality, bad quality, jpeg artifacts, very displeasing, chromatic aberration, dithering, halftone, screentone, multiple views, logo, too many watermarks, negative space, blank page, censor, mosiac ,text,  characters in background, multiple scenes, frame, crowd multiple views, character sheet, concept sheet, sfw,chibi, loli, flat nose, animal ears, bunny ears, furry, drooling, fantasy, text ,fox ears, fat, schoolgirl, gloves, naked, nude, schoolgirl uniform, child, underage",
+ "sets": {
+  "gym": {
+   "emotions": [
+    "neutral",
+    "smile",
+    "concerned",
+    "frustrated"
+   ]
+  },
+  "formal": {
+   "emotions": [
+    "neutral",
+    "smile",
+    "concerned",
+    "frustrated"
+   ]
+  },
+  "lingerie": {
+   "emotions": [
+    "neutral",
+    "smile",
+    "concerned",
+    "frustrated"
+   ],
+   "negativeTags": [
+    "nipples",
+    "pussy",
+    "see-through",
+    "topless",
+    "bottomless"
+   ]
+  }
+ },
+ "room": {
+  "size": [
+   1216,
+   832
+  ],
+  "tags": [
+   "no humans",
+   "scenery",
+   "indoors",
+   "bedroom",
+   "wide shot",
+   "detailed background"
+  ],
+  "variants": {
+   "day": [
+    "daytime",
+    "sunlight through window",
+    "soft natural light"
+   ],
+   "night": [
+    "night",
+    "dark window",
+    "warm lamp light",
+    "cozy lighting"
+   ]
+  },
+  "style": "artist: 0.8::artist: zd_1995 ::, 0.7::artist: yamaishi_(mukoubuti)::, 0.6::artist: kidmo::, manhwa style, 2::masterpiece::, 2::very_aesthetic::, specular highlights, no text",
+  "negativeTags": [
+   "1girl",
+   "1boy",
+   "person",
+   "people",
+   "character",
+   "human"
+  ]
+ },
+ "takes": 3,
+ "scenes": {
+  "size": [
+   1216,
+   832
+  ],
+  "takes": 2,
+  "tags": [
+   "nsfw",
+   "explicit",
+   "1girl",
+   "1boy",
+   "hetero",
+   "pov",
+   "faceless male",
+   "indoors",
+   "bedroom",
+   "on bed"
+  ],
+  "lighting": [
+   "night",
+   "warm lamp light",
+   "intimate atmosphere"
+  ],
+  "negative": "lowres, artistic error, film grain, scan artifacts, worst quality, bad quality, jpeg artifacts, very displeasing, chromatic aberration, dithering, halftone, screentone, multiple views, logo, too many watermarks, negative space, blank page, text, characters in background, multiple scenes, frame, crowd multiple views, character sheet, concept sheet, chibi, loli, flat nose, animal ears, bunny ears, furry, drooling, fantasy, text, fox ears, fat, schoolgirl, gloves, schoolgirl uniform, child, underage, censored, mosaic censoring, bar censor, 2boys, multiple boys, 2girls, male focus, male face, bad anatomy, bad hands, extra fingers, extra limbs, missing limbs, deformed",
+  "list": {
+   "foreplay": {
+    "outfit": "lingerie",
+    "tags": [
+     "undressing",
+     "kissing distance",
+     "pov hands",
+     "hand on another's waist",
+     "kneeling on bed"
+    ],
+    "her": [
+     "pulling down bra strap",
+     "one breast out",
+     "nipples",
+     "seductive smile",
+     "blush",
+     "half-closed eyes",
+     "looking at viewer"
+    ]
+   },
+   "missionary": {
+    "tags": [
+     "sex",
+     "vaginal",
+     "missionary",
+     "penis",
+     "lying",
+     "on back",
+     "spread legs",
+     "pov hands",
+     "hands on another's thighs"
+    ],
+    "her": [
+     "completely nude",
+     "nipples",
+     "pussy",
+     "blush",
+     "open mouth",
+     "moaning",
+     "half-closed eyes",
+     "sweat",
+     "looking at viewer",
+     "arms above head",
+     "messy hair on pillow"
+    ]
+   },
+   "cowgirl": {
+    "tags": [
+     "sex",
+     "vaginal",
+     "cowgirl position",
+     "girl on top",
+     "straddling",
+     "penis",
+     "pov",
+     "from below"
+    ],
+    "her": [
+     "completely nude",
+     "nipples",
+     "pussy",
+     "hands on another's chest",
+     "blush",
+     "open mouth",
+     "sweat",
+     "looking down at viewer",
+     "hair falling forward"
+    ]
+   },
+   "oral": {
+    "tags": [
+     "fellatio",
+     "oral",
+     "penis",
+     "pov",
+     "kneeling",
+     "between legs"
+    ],
+    "her": [
+     "completely nude",
+     "nipples",
+     "looking up at viewer",
+     "blush",
+     "half-closed eyes",
+     "hand on penis"
+    ]
+   },
+   "afterglow": {
+    "tags": [
+     "after sex",
+     "lying",
+     "pillow",
+     "white bedsheets",
+     "pov",
+     "lying next to viewer",
+     "close-up"
+    ],
+    "her": [
+     "nude",
+     "blanket covering lower body",
+     "nipples",
+     "content smile",
+     "blush",
+     "sleepy",
+     "messy hair",
+     "lying on side",
+     "looking at viewer"
+    ],
+    "negativeTags": [
+     "penis",
+     "sex"
+    ]
+   }
+  }
+ }
+}

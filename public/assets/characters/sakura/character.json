@@ -1,0 +1,43 @@
+{
+ "id": "sakura",
+ "name": "Sakura",
+ "age": 31,
+ "origin": "japanese",
+ "baseAppearance": [
+  "adult woman",
+  "31 years old",
+  "japanese",
+  "dark hair in a loose low bun",
+  "loose strands framing face",
+  "mole under eye",
+  "jade drop earrings"
+ ],
+ "outfit": [
+  "navy silk blouse",
+  "cream wide-leg trousers"
+ ],
+ "negativeTags": [],
+ "seed": 565433,
+ "outfitSets": {
+  "gym": [
+   "navy yoga top",
+   "navy leggings"
+  ],
+  "formal": [
+   "dark blue kimono-inspired silk dress",
+   "obi belt"
+  ],
+  "lingerie": [
+   "navy silk bra",
+   "navy silk panties",
+   "silk robe"
+  ]
+ },
+ "roomTags": [
+  "elegant japanese-style bedroom",
+  "tatami mat",
+  "shoji screen",
+  "ikebana flower arrangement",
+  "low wooden table"
+ ]
+}

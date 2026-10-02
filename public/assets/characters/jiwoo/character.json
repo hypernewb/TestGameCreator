@@ -1,0 +1,44 @@
+{
+ "id": "jiwoo",
+ "name": "Ji-woo",
+ "age": 24,
+ "origin": "korean",
+ "baseAppearance": [
+  "adult woman",
+  "24 years old",
+  "korean",
+  "long straight dark brown hair with see-through bangs",
+  "soft brown eyes",
+  "pearl stud earrings"
+ ],
+ "outfit": [
+  "cream oversized cardigan",
+  "white blouse",
+  "pleated beige skirt"
+ ],
+ "negativeTags": [],
+ "seed": 525838,
+ "outfitSets": {
+  "gym": [
+   "lavender yoga top",
+   "lavender leggings",
+   "hair tie on wrist"
+  ],
+  "formal": [
+   "pastel blue chiffon midi dress",
+   "thin straps"
+  ],
+  "lingerie": [
+   "white lace bralette",
+   "white lace panties"
+  ]
+ },
+ "roomTags": [
+  "tidy bedroom",
+  "bookshelves full of books",
+  "potted plants",
+  "beige bedding",
+  "desk with laptop",
+  "fairy lights"
+ ]
+}

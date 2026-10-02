@@ -1,0 +1,41 @@
+{
+ "id": "seoyeon",
+ "name": "Seo-yeon",
+ "age": 27,
+ "origin": "korean",
+ "baseAppearance": [
+  "adult woman",
+  "27 years old",
+  "korean",
+  "wavy chestnut brown shoulder-length hair",
+  "hazel-brown eyes",
+  "small gold hoops"
+ ],
+ "outfit": [
+  "beige trench coat over striped top",
+  "blue jeans"
+ ],
+ "negativeTags": [],
+ "seed": 541676,
+ "outfitSets": {
+  "gym": [
+   "white crop tank top",
+   "grey joggers"
+  ],
+  "formal": [
+   "emerald green wrap dress",
+   "gold necklace"
+  ],
+  "lingerie": [
+   "nude-tone satin bra",
+   "nude-tone satin panties"
+  ]
+ },
+ "roomTags": [
+  "warm cozy bedroom",
+  "film camera on shelf",
+  "photographs pinned on wall",
+  "knitted blanket",
+  "wooden furniture"
+ ]
+}

@@ -1,0 +1,44 @@
+{
+ "id": "soojin",
+ "name": "Soo-jin",
+ "age": 30,
+ "origin": "korean",
+ "baseAppearance": [
+  "adult woman",
+  "30 years old",
+  "korean",
+  "long glossy black hair",
+  "middle part",
+  "sharp elegant eyes",
+  "diamond stud earrings"
+ ],
+ "outfit": [
+  "tailored charcoal blazer",
+  "white top",
+  "black slacks"
+ ],
+ "negativeTags": [],
+ "seed": 605028,
+ "outfitSets": {
+  "gym": [
+   "white fitted tank top",
+   "black leggings"
+  ],
+  "formal": [
+   "white tailored pantsuit",
+   "silk camisole underneath"
+  ],
+  "lingerie": [
+   "black satin bra",
+   "black satin panties",
+   "silk robe"
+  ]
+ },
+ "roomTags": [
+  "sleek executive apartment bedroom",
+  "floor-to-ceiling windows",
+  "city view",
+  "white bedding",
+  "modern art"
+ ]
+}

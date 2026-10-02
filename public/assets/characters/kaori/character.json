@@ -1,0 +1,45 @@
+{
+ "id": "kaori",
+ "name": "Kaori",
+ "age": 33,
+ "origin": "japanese",
+ "baseAppearance": [
+  "adult woman",
+  "33 years old",
+  "japanese",
+  "short layered dark auburn hair",
+  "half-lidded eyes",
+  "burgundy lipstick",
+  "large gold hoop earrings"
+ ],
+ "outfit": [
+  "black satin slip dress",
+  "cropped fur-trimmed coat"
+ ],
+ "negativeTags": [],
+ "seed": 597109,
+ "outfitSets": {
+  "gym": [
+   "burgundy sports bra",
+   "black leggings"
+  ],
+  "formal": [
+   "burgundy velvet evening gown",
+   "long gloves",
+   "bare shoulders"
+  ],
+  "lingerie": [
+   "burgundy lace bra",
+   "burgundy lace panties",
+   "black stockings",
+   "garter belt"
+  ]
+ },
+ "roomTags": [
+  "luxurious bedroom",
+  "velvet headboard",
+  "wine glasses",
+  "vanity with perfume bottles",
+  "dim moody decor"
+ ]
+}

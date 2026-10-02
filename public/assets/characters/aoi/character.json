@@ -1,0 +1,43 @@
+{
+ "id": "aoi",
+ "name": "Aoi",
+ "age": 28,
+ "origin": "japanese",
+ "baseAppearance": [
+  "adult woman",
+  "28 years old",
+  "japanese",
+  "blue-black hair",
+  "long hime cut",
+  "straight bangs",
+  "thin gold rimmed glasses"
+ ],
+ "outfit": [
+  "white button-up shirt",
+  "grey pencil skirt"
+ ],
+ "negativeTags": [],
+ "seed": 581271,
+ "outfitSets": {
+  "gym": [
+   "white t-shirt",
+   "navy track pants"
+  ],
+  "formal": [
+   "black high-neck evening dress",
+   "pearl necklace"
+  ],
+  "lingerie": [
+   "white satin bra",
+   "white satin panties"
+  ]
+ },
+ "roomTags": [
+  "scholarly bedroom",
+  "overflowing bookshelves",
+  "stacks of papers",
+  "desk lamp",
+  "wooden desk",
+  "globe"
+ ]
+}

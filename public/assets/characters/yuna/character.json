@@ -1,0 +1,44 @@
+{
+ "id": "yuna",
+ "name": "Yuna",
+ "age": 25,
+ "origin": "korean",
+ "baseAppearance": [
+  "adult woman",
+  "25 years old",
+  "korean",
+  "long black hair",
+  "half-up hairstyle with ribbon",
+  "doe eyes",
+  "aegyo sal",
+  "rosy cheeks"
+ ],
+ "outfit": [
+  "white off-shoulder blouse",
+  "pink midi skirt"
+ ],
+ "negativeTags": [],
+ "seed": 557514,
+ "outfitSets": {
+  "gym": [
+   "pink sports bra",
+   "white tennis skirt"
+  ],
+  "formal": [
+   "pink off-shoulder cocktail dress",
+   "ribbon"
+  ],
+  "lingerie": [
+   "pink lace bra",
+   "pink lace panties",
+   "ribbon details"
+  ]
+ },
+ "roomTags": [
+  "cute pastel bedroom",
+  "pink bedding",
+  "stuffed animals",
+  "vanity mirror with lights",
+  "heart pillows"
+ ]
+}

@@ -1,0 +1,44 @@
+{
+ "id": "mei",
+ "name": "Mei",
+ "age": 22,
+ "origin": "japanese",
+ "baseAppearance": [
+  "adult woman",
+  "22 years old",
+  "japanese",
+  "ash-pink wolf cut",
+  "bangs",
+  "winged eyeliner",
+  "multiple ear piercings",
+  "black choker"
+ ],
+ "outfit": [
+  "oversized black hoodie",
+  "plaid mini skirt"
+ ],
+ "negativeTags": [],
+ "seed": 549595,
+ "outfitSets": {
+  "gym": [
+   "oversized band t-shirt",
+   "black bike shorts",
+   "chunky sneakers"
+  ],
+  "formal": [
+   "black gothic lace dress",
+   "black choker"
+  ],
+  "lingerie": [
+   "black mesh bralette",
+   "black strappy panties"
+  ]
+ },
+ "roomTags": [
+  "messy bedroom",
+  "gaming pc with rgb lights",
+  "anime posters",
+  "plushies on bed",
+  "neon sign"
+ ]
+}

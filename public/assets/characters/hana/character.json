@@ -1,0 +1,41 @@
+{
+ "id": "hana",
+ "name": "Hana",
+ "age": 21,
+ "origin": "korean",
+ "baseAppearance": [
+  "adult woman",
+  "21 years old",
+  "korean",
+  "dark brown hair in two low pigtails",
+  "curtain bangs",
+  "star earrings"
+ ],
+ "outfit": [
+  "pastel yellow knit sweater",
+  "denim overall skirt"
+ ],
+ "negativeTags": [],
+ "seed": 589190,
+ "outfitSets": {
+  "gym": [
+   "yellow sports bra",
+   "denim shorts",
+   "white sneakers"
+  ],
+  "formal": [
+   "yellow sundress with puff sleeves"
+  ],
+  "lingerie": [
+   "pastel yellow cotton bra",
+   "pastel yellow cotton panties"
+  ]
+ },
+ "roomTags": [
+  "bright cheerful bedroom",
+  "sunflowers in vase",
+  "polaroid photos on wall",
+  "colorful bedding",
+  "art supplies"
+ ]
+}

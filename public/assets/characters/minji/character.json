@@ -1,0 +1,42 @@
+{
+ "id": "minji",
+ "name": "Min-ji",
+ "age": 23,
+ "origin": "korean",
+ "baseAppearance": [
+  "adult woman",
+  "23 years old",
+  "korean",
+  "platinum blonde short bob",
+  "dark roots",
+  "silver cross earrings"
+ ],
+ "outfit": [
+  "cropped black denim jacket",
+  "white crop top",
+  "cargo pants"
+ ],
+ "negativeTags": [],
+ "seed": 573352,
+ "outfitSets": {
+  "gym": [
+   "black cropped hoodie",
+   "grey sweatpants",
+   "sneakers"
+  ],
+  "formal": [
+   "silver sequin mini dress"
+  ],
+  "lingerie": [
+   "black sports-style bralette",
+   "black boyshort panties"
+  ]
+ },
+ "roomTags": [
+  "streetwear loft bedroom",
+  "sneaker collection on shelf",
+  "graffiti art",
+  "skateboard on wall",
+  "led strip lights"
+ ]
+}

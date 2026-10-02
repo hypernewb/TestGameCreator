@@ -1,0 +1,44 @@
+{
+ "id": "haruka",
+ "name": "Haruka",
+ "age": 26,
+ "origin": "japanese",
+ "baseAppearance": [
+  "adult woman",
+  "26 years old",
+  "japanese",
+  "short black bob with blunt bangs",
+  "dark brown eyes",
+  "gold hoop earrings"
+ ],
+ "outfit": [
+  "black leather jacket over white camisole",
+  "black skinny jeans"
+ ],
+ "negativeTags": [],
+ "seed": 517919,
+ "outfitSets": {
+  "gym": [
+   "black sports bra",
+   "black bike shorts",
+   "white sneakers"
+  ],
+  "formal": [
+   "black satin slip dress",
+   "silver chain necklace"
+  ],
+  "lingerie": [
+   "black lace bra",
+   "black lace panties",
+   "black garter belt"
+  ]
+ },
+ "roomTags": [
+  "small city apartment",
+  "vinyl records",
+  "band posters",
+  "guitar on stand",
+  "black bedsheets",
+  "string lights"
+ ]
+}

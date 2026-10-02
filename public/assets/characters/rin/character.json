@@ -1,0 +1,44 @@
+{
+ "id": "rin",
+ "name": "Rin",
+ "age": 29,
+ "origin": "japanese",
+ "baseAppearance": [
+  "adult woman",
+  "29 years old",
+  "japanese",
+  "sleek black hair in a low ponytail",
+  "sharp narrow eyes",
+  "red lipstick",
+  "silver chain earrings"
+ ],
+ "outfit": [
+  "black turtleneck",
+  "black high-waisted trousers"
+ ],
+ "negativeTags": [],
+ "seed": 533757,
+ "outfitSets": {
+  "gym": [
+   "black racerback tank top",
+   "black running shorts"
+  ],
+  "formal": [
+   "red satin evening gown",
+   "high slit",
+   "bare shoulders"
+  ],
+  "lingerie": [
+   "red lace bra",
+   "red lace panties",
+   "black stockings"
+  ]
+ },
+ "roomTags": [
+  "minimalist modern apartment",
+  "grey bedding",
+  "city skyline view",
+  "neat desk",
+  "monochrome decor"
+ ]
+}

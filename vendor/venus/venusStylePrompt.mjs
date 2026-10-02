@@ -2,7 +2,7 @@
 // continuation YOUR TURN), snapshot 79301df55bc39a0996229ccc6f12ccce422a80b2. AGPL-3.0-only; see LICENSE.
 // Same context and output schema as scenePromptMessages, but prose blocks and a persona instead of a rules list and a
 // state dump. Used by scripts/prompt-ab.mjs to compare the two shapes; the SFW persona (no sex direction) is used.
-import {soFarBlocks} from './scenePrompt.mjs';
+import {soFarBlocks,calendarLine,awayLine,STAY_RULE,ECHO_RULE,PROP_RULE} from './scenePrompt.mjs';
 const ordinal=n=>n+(['th','st','nd','rd'][n%100>10&&n%100<14?0:n%10]||'th');
 const list=a=>(a||[]).filter(Boolean).join(', ');
 export const VENUS_PERSONA=[
@@ -29,18 +29,22 @@ export function venusStyleMessages(context,pack){
   'Use an empty speaker ("") for narration lines. Otherwise, match who\'s saying what to their character key.',
   "Never mix dialogue and narration on a single line. Split them into two lines instead. An empty text field on a line isn't valid.",
   `Character keys that may speak: ${list(speakers)||'none (narration only)'}. Nobody else is in the scene or can walk in.`,
+  cast.length&&STAY_RULE,cast.length&&ECHO_RULE,cast.length&&PROP_RULE,
   'Write the summary in third person and refer to the MC as "the reader". Set end_scene only when the characters part ways.',
   'memories: at most one per present character about what they learned about the reader or how the reader made them feel, {charKey,type,desc} with type liked, disliked or neutral; [] when nothing meaningful happened. facts: at most three durable facts said on screen, {subject,text,quote} with quote copied exactly from the action or your lines.',
   context.actTags,context.claimsTags,'',
   'SETTING',[context.gameProject?.setting,context.gameProject?.premise].filter(Boolean).join(' ')
  ].filter(x=>x!==undefined&&x!==null&&x!==false).join('\n');
  const absent=(context.absentCharacters||[]).map(a=>a.name);
+ // The same slip lines the SFW prompt carries, reused rather than restated: a second copy would drift.
+ const day=calendarLine(context),away=awayLine(context.absentCharacters);
  const memories=[...(context.memories||[]).map(m=>m.text),...(context.facts||[]).map(f=>f.text),...(context.generatedFacts||[]).map(f=>f.text),...(context.lorebook||[]).map(e=>e.text)];
  const past=(context.pastScenes||[]).map(g=>g.summary||g.text).filter(Boolean);
  const context_=[
   'READER',`${reader?.name||'You'}: ${reader?.description||'the protagonist'}`,'',
   ...(profiles.length?['CAST',...profiles.map(a=>profileLine(a)+(bond(a.id)?` With the reader: ${bond(a.id)}.`:'')),'']:[]),
   ...(absent.length?[`NOT HERE (can be talked about, can't show up): ${list(absent)}`,'']:[]),
+  ...(day?[day]:[]),...(away?[away]:[]),
   'NOW',`${context.weekday||''} ${context.date||''}, ${context.daypart||''}. ${context.location?.name||''}: ${context.location?.description||''}${context.timeNote?` ${context.timeNote}`:''}`.trim(),
   ...(context.activeEvents?.length?[`Happening: ${context.activeEvents.map(e=>e.text||e.name||e).join(' ')}`]:[]),'',
   ...(past.length?['EARLIER',...past.map(t=>`- ${t}`),'']:[]),

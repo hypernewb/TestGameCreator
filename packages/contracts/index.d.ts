@@ -127,3 +127,9 @@ export interface OutreachSettings { stageChance:Record<'acquaintance'|'dating'|'
 export interface OutreachPack { outreachSettings?:OutreachSettings; outreachMessages?:OutreachText[] }
 export interface OutreachState { sent:{day:number;count:number}; contactDay:number|null; ignoredDay:number|null; gained:{day:number;amount:number}|null; lastKind:OutreachKind|null }
 export interface OutreachRuntime { characters:Record<string,OutreachState> }
+
+export interface RouteRepairSettings { cooldownTicks:number; trustBar:number }
+export interface RouteRepairPack { routeRepair?:RouteRepairSettings }
+export interface RouteRepairCauses { phase:string|null; flags:string[]; state:string|null }
+export interface RouteRepairThread { causes:RouteRepairCauses; sinceTick:number; untilTick:number }
+export interface RouteRepairCharacter { thread:RouteRepairThread|null; repairedFlags:string[]; repairedState:string|null; repairedPhase:string|null }

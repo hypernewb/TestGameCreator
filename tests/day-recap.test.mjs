@@ -131,7 +131,7 @@ test('the campus showcase ships the recap and the UI shows, dismisses and keeps 
  for(const p of [campus(),trio()]){
   validatePack(p,registry);
   assert.equal(p.modules['story.recap'],'0.1.0');
-  assert.deepEqual(p.dayRecap,{max:6,keep:7});
+  assert.deepEqual(p.dayRecap,{mode:'card',max:6,keep:7});
   assert.deepEqual(createWorld(p,registry,'recap-campus').modules['story.recap'],{days:[]});
  }
  const html=readFileSync(new URL('../public/play.html',import.meta.url),'utf8'),
@@ -149,5 +149,5 @@ test('the campus showcase ships the recap and the UI shows, dismisses and keeps 
  assert.match(css,/\.recap-line/);
  assert.match(studio,/function dayRecapEditor/);
  assert.match(studio,/section\('Day recap'/);
- assert.match(studio,/dayRecap=\{max:6,keep:7\}/,'the control offers the campus default');
+ assert.match(studio,/dayRecap=\{mode:'card',max:6,keep:7\}/,'the control offers the campus default');
 });

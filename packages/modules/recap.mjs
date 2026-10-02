@@ -46,7 +46,7 @@ export function dayRecap(state,pack,day){
  if(kept.length&&broke.length)lines.push(`You kept your word to ${join(kept)} and let ${join(broke)} down.`);
  else if(kept.length)lines.push(`You kept your word to ${join(kept)}.`);
  else if(broke.length)lines.push(`You let ${join(broke)} down.`);
- else if(made.length)lines.push(`You made a plan with ${join(made)}.`);
+ if(made.length&&(!kept.length&&!broke.length||pack.dayRecap?.mode))lines.push(`You made a plan with ${join(made)}.`);
  // What she let slip about herself: at most two clues, whatever the day turned up.
  const clues=[];
  for(const e of of('social.likeClueAdded'))clues.push(`${name(e.payload.character)}: ${e.payload.text}`);
@@ -61,6 +61,8 @@ export function dayRecap(state,pack,day){
  // The beat that landed, and the one you walked away from.
  for(const e of [...of('story.incident'),...of('story.beatIgnored'),...of('story.beatDropped'),...of('social.jealousyConfrontation')].slice(0,2))lines.push(e.payload.text);
  // What tomorrow holds.
+ const stale=[...new Set(((state.modules||{})['story.scenes']?.plans||[]).filter(p=>p.status==='pending'&&p.deadlineTick<start+per).map(p=>p.character).filter(Boolean).map(name))];
+ if(stale.length)ahead.push(`The plan's date has passed; ${join(stale)} ${stale.length>1?'are':'is'} still waiting.`);
  const due=[...new Set(((state.modules||{})['story.scenes']?.plans||[]).filter(p=>p.status==='pending'&&p.deadlineTick>=start+per).map(p=>p.character).filter(Boolean).map(name))];
  if(due.length)ahead.push(`Your plan with ${join(due)} is still open.`);
  const director=(state.modules||{})['story.director'];
@@ -72,11 +74,13 @@ export function dayRecap(state,pack,day){
 
 // The last closed day, and the whole kept window, straight off committed state.
 export const dayRecaps=(state,pack)=>state.modules['story.recap']?.days||[];
+export function recapContext(state,pack){if(!['prompt','both'].includes(pack.dayRecap?.mode))return null;const day=dayRecaps(state,pack).at(-1);if(!day)return null;const text=`Day recap: ${day.lines.join(' ')}`.replace(/\s+/g,' ').trim();return text.length<=240?text:text.slice(0,237)+'...';}
 
 export const recap={id:'story.recap',version:'0.1.0',coreApi:'0.1.0',requires:[],
  validate(p){
   const c=p.dayRecap;if(c===undefined)return;
   assert(c&&typeof c==='object'&&!Array.isArray(c),'dayRecap: expected an object');
+  assert(c.mode===undefined||['card','prompt','both'].includes(c.mode),'dayRecap.mode: expected card, prompt or both');
   for(const [k,lo,hi] of [['max',1,12],['keep',1,30]])assert(c[k]===undefined||Number.isInteger(c[k])&&c[k]>=lo&&c[k]<=hi,`dayRecap.${k}: expected an integer from ${lo} to ${hi}`);
  },
  init:()=>({days:[]}),

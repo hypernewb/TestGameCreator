@@ -1,5 +1,5 @@
 import http from 'node:http';
-import {readFileSync,readdirSync,existsSync,mkdirSync,writeFileSync} from 'node:fs';
+import {readFileSync,readdirSync,existsSync,mkdirSync,writeFileSync,realpathSync} from 'node:fs';
 import {diagnoseScenes} from './packages/modules/scenes.mjs';
 import {allGeneratedFacts,validateFactEdits,selectGeneratedFacts} from './packages/modules/facts.mjs';
 import {fileURLToPath} from 'node:url';
@@ -30,6 +30,8 @@ import {characterMessages,normalizeCharacter,characterResponseFormat} from './pa
 import {creatorRoutes} from './packages/cards/creator-routes.mjs';
 import {openRouterComplete} from './packages/cards/openrouter.mjs';
 import {defaultProjectUi,validateProjectUi} from './public/ui-selection.mjs';
+const wizardFiles=new Map([['/vn_game_ui_wizard.html','vn_game_ui_wizard.html'],['/ui/default-layout.json','public/ui/default-layout.json'],...['app.mjs','model.mjs','responsive.mjs','buttons.mjs','button-views.mjs','utilities.mjs','utility-views.mjs','campus-components.mjs','asset-catalog.mjs','asset-gallery.mjs','styles.css','campus.css','scene.svg','frame.svg','icons.svg','hud-speaker.svg','hud-quick-menu.svg','hud-objective.svg','hud-timeline.svg','hud-location.svg','hud-feedback.svg','hud-bond.svg','hud-check.svg','hud-inventory.svg','hud-save.svg','hud-inbox.svg','hud-journal.svg','hud-expansion-board.svg'].map(f=>['/vn_ui_studio/'+f,'vn_ui_studio/'+f])]);
+const wizardPath=p=>['/vn_ui_studio','/vn_game_ui_wizard.html','/ui/default-layout.json'].some(prefix=>p.startsWith(prefix));
 // Moments the player should notice this turn: check results with the numbers, rank-ups, endings and kept or broken plans.
 // One action's visible results span the action turn and the sub-turns that follow it (act pricing, first scoring,
 // the scene close), so diagnostics read the whole group, not just the last sub-turn.
@@ -77,6 +79,11 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider(),draf
     try{
       const host=req.headers.host;assert(host&&/^(127\.0\.0\.1|localhost):\d+$/.test(host),'Invalid Host');if(req.headers.origin)assert(req.headers.origin===`http://${host}`,'Cross-origin request rejected');
       const url=new URL(req.url,`http://${host}`),path=url.pathname;
+      const rawPath=req.url.split('?')[0];let decodedPath=rawPath;try{decodedPath=decodeURIComponent(rawPath);}catch{}
+      if([rawPath,decodedPath,path].some(wizardPath)){
+        assert(req.method==='GET','Unsupported method');assert(rawPath===path&&wizardFiles.has(path),'Unlisted wizard resource or invalid path');const file=resolve(root,wizardFiles.get(path));assert(isFileWithin(root,file)&&existsSync(file),'File not found');const canonical=realpathSync(file);assert(isFileWithin(root,canonical)&&(process.platform==='win32'?canonical.toLowerCase()===file.toLowerCase():canonical===file),'Invalid wizard resource path');
+        const mime={'.html':'text/html','.mjs':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json'}[extname(file)],policy="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'"+(path==='/vn_game_ui_wizard.html'?" data:":'')+"; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; object-src 'none'";res.writeHead(200,{'Content-Type':mime,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':policy});res.end(readFileSync(file));return;
+      }
       let body={};if(req.method==='POST'){assert(req.headers['content-type']?.startsWith('application/json'),'Expected JSON');let text='';for await(const chunk of req){text+=chunk;assert(text.length<=5000000,'Request too large');}body=JSON.parse(text||'{}');}
       if(path==='/api/bootstrap')return send({packs:Object.values(packs).sort((a,b)=>b.version.localeCompare(a.version)).map(p=>({id:p.id,title:p.title,subtitle:p.subtitle,starts:p.startOptions||[]})),modules:moduleCatalog,campaigns:store.list(),provider:service.provider.name,ai:publicSettings()});
       if(path==='/api/ai/config'&&req.method==='GET')return send({provider:service.provider.name,...publicSettings(),connectionPresets:CONNECTION_PRESETS,presets:LOCAL_PRESETS,contextWindow:service.provider.contextWindow||null,detectedWindow:service.provider.detectedWindow||null,contextSource:service.provider.contextSource||null,contextSizes:Object.entries(CONTEXT_SIZES).map(([id,x])=>({id,label:x.label,hint:x.hint,cap:Number.isFinite(x.cap)?x.cap:null})),tokenRatio:service.provider.calibration?.ratio??null});

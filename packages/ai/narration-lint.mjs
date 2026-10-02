@@ -128,7 +128,7 @@ export function repeatedQuestions(lines,before=[]){
  return (lines||[]).filter(l=>l.speaker).flatMap(l=>{const old=(before||[]).filter(b=>b.speaker===l.speaker).flatMap(b=>questionsOf(b.text)).map(qWords);return questionsOf(l.text).filter(q=>{const w=qWords(q);return old.some(o=>same(w,o));});});
 }
 // The typed run echoed the player's own words back as narration (Turn 65). Warn only: a reply is never blocked and the
-// player never sees this; it lands in the turn trace so the prompt pass can be judged on runs. Off without a pack field.
+// player never sees this; it lands in the turn trace so the prompt pass can be judged on runs. Eight words by default; a pack can set zero to disable it.
 const wordRun=t=>String(t||'').toLowerCase().match(/[\p{L}\p{N}']+/gu)||[];
 export function echoedRun(text,input,min){
  const theirs=wordRun(input);if(!Number.isInteger(min)||min<1||theirs.length<min)return null;
@@ -147,7 +147,7 @@ export function lintScene(value,context,pack,{lenient=false}={}){
  if(silent.length)warnings.push({check:'ensemble',message:'No line or beat for '+silent.map(id=>pack.actors.find(x=>x.id===id)?.name||id).join(', ')});
  const again=repeatedQuestions(value.lines,context.spokenBefore);
  if(again.length)warnings.push({check:'repeat-question',message:'Asked again: '+again.join(' | ').slice(0,200)});
- const echo=echoedRun(value.lines.map(l=>l.text).join(' '),context.playerAction,pack.slipGuard?.echoWords);
- if(echo)warnings.push({check:'echo',message:`Echoed ${pack.slipGuard.echoWords}+ words of the player: "${echo}"`});
+ const echoWords=pack.slipGuard?.echoWords??8,echo=echoedRun(value.lines.map(l=>l.text).join(' '),context.playerAction,echoWords);
+ if(echo)warnings.push({check:'echo',message:`Echoed ${echoWords}+ words of the player: "${echo}"`});
  return warnings;
 }

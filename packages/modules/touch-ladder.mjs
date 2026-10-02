@@ -105,5 +105,5 @@ export const touchLadder={id:'social.touch-ladder',version:'0.1.0',coreApi:'0.1.
  commands:{'social.attemptTouch'(tx,args){if(!args?.character||!tx.state.actors[args.character])return;assert(args.region===undefined||REGIONS.includes(args.region),'Touch region invalid');const stepId=args.step&&stepOf(args.step)?args.step:mapTouchText(args.text);if(!stepId)return;attemptTouch(tx,args.character,stepId,args.region||touchTextRegion(args.text));}},
  afterTurn(tx){clearRegionAgreements(tx);},
  actions(){return [];},
- panel(s){return {title:'Touch',lines:Object.entries(s.modules['social.touch-ladder'].characters).map(([c,x])=>`${s.actors[c].name}: Lust ${x.lust}${x.lustBaseline?` · warm floor ${x.lustBaseline}`:''}`)};}
+ panel(s,p){return {title:'Touch',lines:Object.entries(s.modules['social.touch-ladder'].characters).map(([c,x])=>`${s.actors[c].name}: Lust ${x.lust}${p?.lustBaseline&&x.lustBaseline&&p.lustBaseline.hint?` · ${p.lustBaseline.hint}`:''}`)};}
 };

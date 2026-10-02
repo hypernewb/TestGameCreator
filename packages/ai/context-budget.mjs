@@ -82,6 +82,10 @@ export function recentlySurfaced(world,turnId,window=8){
  return seen;
 }
 
+const MOODS=['in a good mood today','a little tired today','quieter than usual today','restless today','chattier than usual today'];
+const moodHash=s=>[...String(s)].reduce((h,c)=>Math.imul(h^c.charCodeAt(0),16777619)>>>0,2166136261);
+const dailyMood=(a,c)=>{if(c.day==null)return c.mood||'';const moods=[].concat(a.moods||MOODS),h=moodHash(`${a.id}:day${c.day}`);return !c.scriptedScene&&h%3===0?moods[(h>>>2)%moods.length]||'':'';};
+
 // Pick 2 voice examples by relationship stage and mood tier
 function voiceExamplesByState(a,stage,mood,strained){
   const ex=a.voiceExamples||{};
@@ -111,8 +115,8 @@ export function budgetSceneContext(context,pack,world,turnId,{window=8192,reply=
  const actors=pack.actors.filter(a=>cast.includes(a.id));
  // Determine stage and mood for voice example selection
   const datingInfo=a=>(context.dating||[]).find(d=>d.character===a.id)||{};
-  const currentMood=context.mood||'';
-  actors.forEach((a,i)=>{const d=datingInfo(a);const phase=d.phase||'';const strained=d.strained||false;add('castProfiles',1,`cast:${a.id}`,100-i,[['full',profileOf(a,phase,currentMood,strained)],['compact',compactProfile(a,phase,currentMood,strained)],['name',{id:a.id,name:a.name,pronouns:a.pronouns||'they/them'}]]);});
+  const currentMood=a=>dailyMood(a,context);
+  actors.forEach((a,i)=>{const d=datingInfo(a);const phase=d.phase||'';const strained=d.strained||false;add('castProfiles',1,`cast:${a.id}`,100-i,[['full',profileOf(a,phase,currentMood(a),strained)],['compact',compactProfile(a,phase,currentMood(a),strained)],['name',{id:a.id,name:a.name,pronouns:a.pronouns||'they/them'}]]);});
  const history=context.sceneHistory||[];
  // `verbatim` caps how many recent turns may stay word for word even when they fit: a small model given 25 full turns
   // loses track of which question it is answering, and does better with a short transcript plus one-line digests.

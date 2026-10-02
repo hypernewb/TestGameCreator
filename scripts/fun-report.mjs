@@ -27,6 +27,6 @@ if(arg('campaign')){
  }
 }
 if(json)console.log(JSON.stringify(out.map(({metrics:{nearDuplicates,...m},...r})=>({...r,metrics:m})),null,1));
-else for(const r of out){console.log(`${r.source}${r.errors?` (${r.errors} action errors)`:''}`);console.log('  '+funLine(r.metrics));console.log('  '+gateLine(r.gate)+`  dead by command ${JSON.stringify(r.metrics.deadByCommand)}`);}
+else for(const r of out){console.log(`${r.source}${r.errors?` (${r.errors} action errors)`:''}`);console.log('  '+funLine(r.metrics));console.log('  '+gateLine(r.gate)+`  dead by command ${JSON.stringify(r.metrics.deadByCommand)}`);for(const u of r.metrics.modelUsage||[])console.log(`  model usage ${u.hour}: calls ${u.calls} | prompt tokens ${u.promptTokens} | completion tokens ${u.completionTokens} | retries ${u.retries}`);}
 for(const r of out)appendLedger(root,{kind:'fun',source:r.source,pack:r.packId,minutes:r.metrics.minutes,deadTurns:r.metrics.deadTurns,ended:Boolean(r.metrics.ending),gate:gateLine(r.gate)});
 if(out.length>1&&!json){const pass=id=>out.filter(r=>r.gate.find(g=>g.id===id)?.pass).length;console.log(`\nfun summary: ${out.length} runs | endings ${new Set(out.map(r=>r.metrics.ending).filter(Boolean)).size} distinct (${out.filter(r=>r.metrics.ending).length} runs ended) | drama fired ${pass('drama')}/${out.length} | dead-turn gate ${pass('dead-turns')}/${out.length} | storylets seen (union) ${new Set(out.flatMap(r=>r.metrics.storyletIds||[])).size}`);}

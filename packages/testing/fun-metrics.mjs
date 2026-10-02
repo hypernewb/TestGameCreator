@@ -76,6 +76,7 @@ export function funMetrics(state,pack,{seconds:measured={}}={}){
  m.minutes=Number((clock/60).toFixed(1));
  Object.assign(m,{choicesPer10:m.minutes?Number((m.choices*10/m.minutes).toFixed(1)):0,deadRatio:m.turns?Number((m.deadTurns/m.turns).toFixed(2)):0,freshRatio:m.turns?Number((m.freshTurns/m.turns).toFixed(2)):0,typedEffective:m.typed?Number((m.typedLive/m.typed).toFixed(2)):null,storylets:{seen:seen.scenes.size,total:sceneById.size},storyletIds:[...seen.scenes],repeatedProse:withText?Number((new Set(dupes.map(d=>d.turns[1])).size/withText).toFixed(2)):null,nearDuplicates:dupes,ending:state.modules?.['story.endings']?.selected||null,trailingDrought:Number(((clock-lastBeat)/60).toFixed(1)),zeroBeatWindows:clock>0?Math.max(0,Math.ceil(clock/600)-beatWindows.size):0});
  const cast=[...beatCast.entries()].map(([id,n])=>({id,n})).sort((a,b)=>b.n-a.n||a.id.localeCompare(b.id));m.spotlight=cast.length?{counts:cast,spread:cast.at(-1).n?Number((cast[0].n/cast.at(-1).n).toFixed(1)):null}:null;
+ if(Array.isArray(state.modelUsage))m.modelUsage=state.modelUsage.map(u=>({...u})).sort((a,b)=>a.hour.localeCompare(b.hour));
  return m;
 }
 

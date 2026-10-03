@@ -29,10 +29,12 @@ if(trace.exchangeRefund&&s.scene&&s.scene.id===trace.exchangeRefund)refundSceneE
   close(){this.db.close();}
 }
 // Exports contain state only. Provider configuration and credentials never enter this object.
-export function exportCampaign(s){return {format:'story-framework',version:2,migrations:clone(s.saveMigrations||[]),state:clone(s)};}
+const assertPortable=s=>assert(!Array.isArray(s?.migrations)||!s.migrations.some(m=>typeof m?.from==='string'&&typeof m?.to==='string'&&m.from!==m.to),'Portable saves after a mechanics migration are not supported yet. Your local campaign is unchanged; retain the original compatible pack and save or pre-migration backup.');
+export function exportCampaign(s){assertPortable(s);return {format:'story-framework',version:2,migrations:clone(s.saveMigrations||[]),state:clone(s)};}
 export function migrateCampaignExport(data,backup=()=>{}){assert(data?.format==='story-framework','Unsupported save format');return migrateSave(data,2,{1:s=>({...s,version:2,migrations:[...(s.migrations||[]),{from:1,to:2,id:'export-envelope-v2'}]})},backup);}
 export function validateImport(data,p,registry){
   data=migrateCampaignExport(data);const s=data.state;
+  assertPortable(s);
   assert(s&&s.schemaVersion===1,'Unsupported world schema');assert(s.packId===p.id&&s.packVersion===p.version&&s.packDigest===mechanicsDigest(p),'Save requires its exact pack version');
   assert(JSON.stringify(s.moduleVersions)===JSON.stringify(p.modules),'Save module set differs');
   // Re-simulate accepted commands and compare mechanical state, never trusting arbitrary imported patches.

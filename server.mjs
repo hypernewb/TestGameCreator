@@ -5,7 +5,7 @@ import {allGeneratedFacts,validateFactEdits,selectGeneratedFacts} from './packag
 import {fileURLToPath} from 'node:url';
 import {resolve,dirname,extname,relative as pathRelative,isAbsolute,sep} from 'node:path';
 import {randomUUID,randomInt} from 'node:crypto';
-import {inflateSync} from 'node:zlib';
+import {validateImage,validateProjectMedia} from './packages/assets/project-media.mjs';
 import {createWorld,validatePack,actions,resolveModules,execute,assert,refusalFor,refusalCode} from './packages/core/engine.mjs';
 import {registry,moduleCatalog} from './packages/modules/index.mjs';
 import {Store,exportCampaign,validateImport} from './packages/persistence/store.mjs';
@@ -45,26 +45,11 @@ export function isFileWithin(base,file,pathApi={relative:pathRelative,isAbsolute
   const child=pathApi.relative(base,file);
   return child!=='' && child!=='..' && !child.startsWith('..'+pathApi.sep) && !pathApi.isAbsolute(child);
 }
-function imageInfo(bytes,type){
-  if(type==='png'&&bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))&&bytes.length>=33){
-    const width=bytes.readUInt32BE(16),height=bytes.readUInt32BE(20),depth=bytes[24],color=bytes[25];let offset=8;const data=[];
-    while(offset+12<=bytes.length){const length=bytes.readUInt32BE(offset),name=bytes.toString('ascii',offset+4,offset+8);if(offset+12+length>bytes.length)return null;if(name==='IDAT')data.push(bytes.subarray(offset+8,offset+8+length));if(name==='IEND')break;offset+=12+length;}
-    let transparent=false;
-    if(depth===8&&color===6&&width*height<=1600000){const raw=inflateSync(Buffer.concat(data)),stride=width*4;if(raw.length>=(stride+1)*height){let previous=Buffer.alloc(stride),cursor=0;
-      for(let y=0;y<height&&!transparent;y++){const filter=raw[cursor++],row=Buffer.from(raw.subarray(cursor,cursor+stride));cursor+=stride;
-        for(let x=0;x<stride;x++){const left=x>=4?row[x-4]:0,up=previous[x],upperLeft=x>=4?previous[x-4]:0;if(filter===1)row[x]=(row[x]+left)&255;else if(filter===2)row[x]=(row[x]+up)&255;else if(filter===3)row[x]=(row[x]+Math.floor((left+up)/2))&255;else if(filter===4){const p=left+up-upperLeft,pa=Math.abs(p-left),pb=Math.abs(p-up),pc=Math.abs(p-upperLeft),predictor=pa<=pb&&pa<=pc?left:pb<=pc?up:upperLeft;row[x]=(row[x]+predictor)&255;}else if(filter!==0)return null;}
-        for(let x=3;x<stride;x+=4)if(row[x]<255){transparent=true;break;}previous=row;
-      }
-    }}
-    return {width,height,alpha:transparent};
-  }
-  if(type==='jpeg'&&bytes[0]===255&&bytes[1]===216){let i=2;while(i+9<bytes.length){if(bytes[i]!==255){i++;continue;}while(bytes[i]===255)i++;const marker=bytes[i++];if(marker===0xd9||marker===0xda)break;if([0x01,0xd8,0xd9,...Array.from({length:8},(_,n)=>0xd0+n)].includes(marker))continue;const size=bytes.readUInt16BE(i);if(size<2||i+size>bytes.length)break;if([0xc0,0xc1,0xc2,0xc3,0xc5,0xc6,0xc7,0xc9,0xca,0xcb,0xcd,0xce,0xcf].includes(marker))return {height:bytes.readUInt16BE(i+3),width:bytes.readUInt16BE(i+5),alpha:false};i+=size;}}
-  return null;
-}
 export function createApp({dataPath,scenarioDir,provider=new MockProvider(),drafter,startupAsk}={}){
   const root=fileURLToPath(new URL('.',import.meta.url));const packs={};for(const f of readdirSync(resolve(root,'packs')).filter(f=>f.endsWith('.json'))){const p=readPack(resolve(root,'packs',f));validatePack(p,registry);assert(!packs[p.id],'Duplicate pack ID');packs[p.id]=p;}
   const authorDir=scenarioDir||resolve(root,'data/scenarios'),draftDir=resolve(authorDir,'drafts'),publishedDir=resolve(authorDir,'published'),mediaDir=resolve(authorDir,'media');for(const dir of [draftDir,publishedDir,mediaDir])mkdirSync(dir,{recursive:true});
   const assetFile=name=>{assert(typeof name==='string'&&/^scenario-media\/[a-f0-9-]{36}\.(png|jpg|webp)$/.test(name),'Invalid project asset path');const f=resolve(mediaDir,name.slice('scenario-media/'.length));assert(isFileWithin(mediaDir,f),'Invalid project asset path');return f;};
+  const readAsset=name=>{const file=assetFile(name);assert(existsSync(file),`Project image ${name}: file not found`);assert(isFileWithin(realpathSync(mediaDir),realpathSync(file)),`Project image ${name}: invalid media path`);return readFileSync(file);};
   for(const f of readdirSync(publishedDir).filter(f=>/^[a-f0-9-]+\.json$/.test(f))){const p=JSON.parse(readFileSync(resolve(publishedDir,f),'utf8'));validatePack(p,registry);assert(!packs[p.id],'Duplicate pack ID');packs[p.id]=p;}
   const draftFile=id=>{assert(typeof id==='string'&&/^[a-f0-9-]{36}$/.test(id),'Invalid draft ID');return resolve(draftDir,id+'.json');};
   const readDraft=id=>{const file=draftFile(id);assert(existsSync(file),'Draft not found');return JSON.parse(readFileSync(file,'utf8'));};
@@ -174,11 +159,11 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider(),draf
           const r=await regenerateEntry(ask,body.pack,body.proposal,{kind:String(body.kind),index:Number(body.index),note:typeof body.note==='string'?body.note:''});return send({...r,review:reviewProposal(body.pack,r.proposal,{play:false})});}
       }
       if(path==='/api/studio/director/preview'&&req.method==='POST'){assert(body.pack&&body.template,'Project and director template required');assert(body.pack.modules?.['story.director']&&body.pack.modules?.['story.scenes'],'Enable Drama director and Scripted scenes first');const baked=bakeDirectorTemplates(body.pack,[body.template]);validatePack(baked,registry);return send({scenes:baked.scriptedScenes.filter(s=>s.template?.id===body.template.id).map(s=>({id:s.id,title:s.title,opening:s.opening,roles:s.template.roles,choices:s.choices||[]}))});}
-      if(path==='/api/studio/validate'&&req.method==='POST'){validatePack(body.pack,registry);return send({ok:true});}
+      if(path==='/api/studio/validate'&&req.method==='POST'){validateProjectMedia(body.pack,{read:readAsset,media:body.media});validatePack(body.pack,registry);return send({ok:true});}
       if(path==='/api/studio/playtest'&&req.method==='POST'){validatePack(body.pack,registry);const turns=Math.max(5,Math.min(200,Number(body.turns)||50));return send(runPlaytestSuite(body.pack,registry,{turns}));}
-      if(path==='/api/studio/asset'&&req.method==='POST'){assert(typeof body.data==='string'&&body.data.length<=4900000,'Image is too large (maximum 3.5 MB)');const match=body.data.match(/^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)$/);assert(match,'Use a PNG, JPEG, or WebP image');const bytes=Buffer.from(match[2],'base64');assert(bytes.length>0&&bytes.length<=3500000,'Image is too large (maximum 3.5 MB)');const valid=match[1]==='png'?bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])):match[1]==='jpeg'?bytes[0]===255&&bytes[1]===216&&bytes.at(-2)===255&&bytes.at(-1)===217:bytes.toString('ascii',0,4)==='RIFF'&&bytes.toString('ascii',8,12)==='WEBP';assert(valid,'Image content does not match its file type');if(body.kind){const info=imageInfo(bytes,match[1]);if(body.kind==='background'){assert(match[1]==='jpeg'&&info?.width===1920&&info?.height===1080,'Backgrounds must be prepared as 1920 × 1080 landscape images (16:9).');}else if(body.kind==='character'){assert(match[1]==='png'&&info?.width===1024&&info?.height===1536&&info.alpha,'Character art must be a transparent PNG on a 1024 × 1536 canvas.');}else assert(false,'Unknown image type');}const ext=match[1]==='jpeg'?'jpg':match[1],name=`scenario-media/${randomUUID()}.${ext}`;writeFileSync(assetFile(name),bytes,{flag:'wx'});return send({path:name});}
-      if(path==='/api/studio/asset'&&req.method==='GET'){const name=url.searchParams.get('path'),file=assetFile(name);assert(existsSync(file),'Project image not found');const ext=extname(file).slice(1),data=readFileSync(file);return send({path:name,mime:`image/${ext==='jpg'?'jpeg':ext}`,data:data.toString('base64')});}
-      if(path==='/api/studio/publish'&&req.method==='POST'){const d=readDraft(body.id);let p=structuredClone(d.pack);const templates=p.directorTemplates||[],enabled=Boolean(p.modules?.['story.director']);assert(Array.isArray(templates),'Director templates must be a list');if(enabled){assert(templates.every(t=>t.reviewStatus==='approved'),'Review and approve every director template in Studio before publishing');if(templates.length)assert(p.modules?.['story.scenes'],'Enable Scripted scenes for director templates');}if(p.directorTemplates)p=bakeDirectorTemplates(p,enabled?templates:[]);p.id='created.'+randomUUID();p.version='0.1.0';validatePack(p,registry);writeFileSync(resolve(publishedDir,p.id.slice(8)+'.json'),JSON.stringify(p,null,2));packs[p.id]=p;return send({id:p.id,title:p.title});}
+      if(path==='/api/studio/asset'&&req.method==='POST'){const {bytes,type}=validateImage(body.data,body.kind),ext=type==='jpeg'?'jpg':type,name=`scenario-media/${randomUUID()}.${ext}`;writeFileSync(assetFile(name),bytes,{flag:'wx'});return send({path:name});}
+      if(path==='/api/studio/asset'&&req.method==='GET'){const name=url.searchParams.get('path'),data=readAsset(name),ext=extname(name).slice(1),mime=`image/${ext==='jpg'?'jpeg':ext}`;try{validateImage(`data:${mime};base64,${data.toString('base64')}`);}catch(e){throw Error(`Project image ${name}: ${e.message}`);}return send({path:name,mime,data:data.toString('base64')});}
+      if(path==='/api/studio/publish'&&req.method==='POST'){const d=readDraft(body.id);let p=structuredClone(d.pack);const templates=p.directorTemplates||[],enabled=Boolean(p.modules?.['story.director']);assert(Array.isArray(templates),'Director templates must be a list');if(enabled){assert(templates.every(t=>t.reviewStatus==='approved'),'Review and approve every director template in Studio before publishing');if(templates.length)assert(p.modules?.['story.scenes'],'Enable Scripted scenes for director templates');}if(p.directorTemplates)p=bakeDirectorTemplates(p,enabled?templates:[]);p.id='created.'+randomUUID();p.version='0.1.0';validateProjectMedia(p,{read:readAsset});validatePack(p,registry);writeFileSync(resolve(publishedDir,p.id.slice(8)+'.json'),JSON.stringify(p,null,2));packs[p.id]=p;return send({id:p.id,title:p.title});}
       if(path==='/api/new'&&req.method==='POST'){const p=packs[body.packId];assert(p,'Unknown pack');const s=createWorld(p,registry,randomUUID(),randomInt(2**32-1),body.startId,{sceneWriter:body.sceneWriter});store.insert(s);return send(view(s));}
       if(path==='/api/load'&&req.method==='POST'){return send(view(await service.recover(body.id)));}
       if(path==='/api/preview'&&req.method==='GET')return send({preview:service.preview(url.searchParams.get('id'))});

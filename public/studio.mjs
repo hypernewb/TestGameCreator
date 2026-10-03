@@ -227,7 +227,7 @@ function scheduleEditor(p){
    const row=node('div');row.className='schedule-row';row.append(node('strong',weekday));for(const daypart of ['Morning','Afternoon','Evening']){
     const stop=schedule.weekly.find(st=>st.weekday===weekday&&st.daypart===daypart);
     const select=node('select');option(select,'',daypart+' · keep current location');for(const [id,name] of locs())option(select,id,name);select.value=stop?.location||'';
-    select.onchange=()=>{schedule.weekly=schedule.weekly.filter(st=>!(st.weekday===weekday&&st.daypart===daypart));if(select.value)schedule.weekly.push({weekday,daypart,location:select.value});message('Unsaved changes');};row.append(select);
+    select.onchange=()=>{const current=schedule.weekly.find(st=>st.weekday===weekday&&st.daypart===daypart);if(select.value){if(current)current.location=select.value;else schedule.weekly.push({weekday,daypart,location:select.value});}else schedule.weekly=schedule.weekly.filter(st=>!(st.weekday===weekday&&st.daypart===daypart));message('Unsaved changes');};row.append(select);
    }card.append(row);
   }
   const old=node('details');old.append(node('summary','Repeating tick stops (advanced)'));const g=node('div');g.className='studio-grid';field(g,schedule,'period','Repeat every N ticks','number');schedule.stops||=[];for(const [j,stop] of schedule.stops.entries()){field(g,stop,'at','Tick offset','number');locationField(g,stop,'location','Location');const remove=node('button','Remove stop');remove.onclick=()=>{schedule.stops.splice(j,1);render();};g.append(remove);}const add=node('button','+ Add tick stop');add.onclick=()=>{schedule.period||=4;schedule.stops.push({at:0,location:p.locations[0]?.id||'start'});render();};g.append(add);old.append(g);card.append(old);

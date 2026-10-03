@@ -1,3 +1,4 @@
+import {relationshipStageOf} from './character-context.mjs';
 // Drama management in the spirit of Façade and Versu: the engine, not the model, picks the kind of beat an NPC plays next
 // (answer, tease, push back, confide, ask back, raise something of their own) from the authored profile. A small model left
 // to improvise flattens every character into the same agreeable voice; given one concrete instruction it only has to voice it.
@@ -48,9 +49,7 @@ export function beatDirection(context,pack,seed=''){
  const question=QUESTION.test(input),aboutPlayer=question&&/\b(?:my|mine|remember)\b|\b(?:what|where|when|who|how|why)\s+I\b/i.test(input);
  // How close they are shapes how they talk, as in Persona's ranks or Venus University's trust: a stranger is polite and keeps
  // their secrets, a friend teases and confides, a crush gets flustered and flirts. A dating phase outranks raw trust.
- const stageOf=a=>{const d=(context.dating||[]).find(x=>x.character===a.id);if(d?.strained&&!['rejected','broken'].includes(d.phase))return 'strained';if(d&&d.phase!=='available')return d.phase;
-  const trust=context.actor?.id===a.id?context.actor.relationshipToPlayer:null;if(trust==null)return '';
-  return trust>=75?'close':trust>=40?'friend':trust<5&&!(context.memories||[]).length&&!(context.pastScenes||[]).length?'stranger':'familiar';};
+ const stageOf=a=>relationshipStageOf(context,a);
  const movesOf=a=>{const temper=[a.personality,a.voice,a.fingerprint,...[].concat(a.traits||[])].filter(Boolean).join(' '),st=stageOf(a);
   return [...new Set([...TEMPERAMENT.filter(([r])=>r.test(temper)).flatMap(([,m])=>m),'opinion','ask',...(STAGE[st]?.add||[])])].filter(m=>!((question||phase==='opening')&&['deflect','challenge'].includes(m))&&!(STAGE[st]?.drop||[]).includes(m));};
  // The one memory the question is about, picked here rather than left to a 9B model scanning a dozen of them.

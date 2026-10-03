@@ -1,3 +1,4 @@
+import {relationshipStageOf,behaviorCueOf} from './character-context.mjs';
 import {allocate,lods,messageTokens,DEFAULT_TIERS} from './budget.mjs';
 import {calendarFor} from '../../public/calendar.mjs';
 import {promptView} from '../../vendor/venus/scenePrompt.mjs';
@@ -97,8 +98,8 @@ function voiceExamplesByState(a,stage,mood,strained){
   return pick(moodTier);
 }
 
-const profileOf=(a,stage='',mood='',strained=false)=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',description:a.description||'',personality:a.personality||'',behavior:a.behavior||{},traits:a.traits||[],voice:a.voice||'',fingerprint:a.fingerprint||'',style:a.style||'',examples:a.examples||[],goal:a.goal||'',backstory:a.backstory||'',likes:a.likes||[],dislikes:a.dislikes||[],voiceBlock:{fingerprint:a.fingerprint||'',examples:voiceExamplesByState(a,stage,mood,strained)}});
-const compactProfile=(a,stage='',mood='',strained=false)=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',personality:clip(a.personality||a.description||'',240),traits:a.traits||[],voice:a.voice||'',fingerprint:a.fingerprint||'',voiceBlock:{fingerprint:a.fingerprint||'',examples:voiceExamplesByState(a,stage,mood,strained)},examples:(a.examples||[]).slice(0,2)});
+const profileOf=(a,stage='',mood='',strained=false)=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',description:a.description||'',personality:a.personality||'',behavior:a.behavior||{},behaviorCue:a.behaviorCue||'',traits:a.traits||[],voice:a.voice||'',fingerprint:a.fingerprint||'',style:a.style||'',examples:a.examples||[],goal:a.goal||'',backstory:a.backstory||'',likes:a.likes||[],dislikes:a.dislikes||[],voiceBlock:{fingerprint:a.fingerprint||'',examples:voiceExamplesByState(a,stage,mood,strained)}});
+const compactProfile=(a,stage='',mood='',strained=false)=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',personality:clip(a.personality||a.description||'',240),behaviorCue:a.behaviorCue||'',traits:a.traits||[],voice:a.voice||'',fingerprint:a.fingerprint||'',voiceBlock:{fingerprint:a.fingerprint||'',examples:voiceExamplesByState(a,stage,mood,strained)},examples:(a.examples||[]).slice(0,2)});
 
 /**
  * Fits a scene context into the model's window. `render(context)` must return the prompt messages so the fixed
@@ -116,7 +117,7 @@ export function budgetSceneContext(context,pack,world,turnId,{window=8192,reply=
  // Determine stage and mood for voice example selection
   const datingInfo=a=>(context.dating||[]).find(d=>d.character===a.id)||{};
   const currentMood=a=>dailyMood(a,context);
-  actors.forEach((a,i)=>{const d=datingInfo(a);const phase=d.phase||'';const strained=d.strained||false;add('castProfiles',1,`cast:${a.id}`,100-i,[['full',profileOf(a,phase,currentMood(a),strained)],['compact',compactProfile(a,phase,currentMood(a),strained)],['name',{id:a.id,name:a.name,pronouns:a.pronouns||'they/them'}]]);});
+  actors.forEach((a,i)=>{const d=datingInfo(a);const phase=d.phase||'';a={...a,behaviorCue:behaviorCueOf(a,relationshipStageOf(context,a,world.modules?.['social.relationships']?.edges?.[`${a.id}--${pack.playerId}`]??null))};const strained=d.strained||false;add('castProfiles',1,`cast:${a.id}`,100-i,[['full',profileOf(a,phase,currentMood(a),strained)],['compact',compactProfile(a,phase,currentMood(a),strained)],['name',{id:a.id,name:a.name,pronouns:a.pronouns||'they/them'}]]);});
  const history=context.sceneHistory||[];
  // `verbatim` caps how many recent turns may stay word for word even when they fit: a small model given 25 full turns
   // loses track of which question it is answering, and does better with a short transcript plus one-line digests.

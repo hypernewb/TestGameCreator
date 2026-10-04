@@ -1,15 +1,10 @@
+import {holidayMatch as holidayOf} from '../../public/schedule-resolver.mjs';
 import {assert,safeKey} from '../core/engine.mjs';
 import {calendarFor,WEEKDAYS} from '../../public/calendar.mjs';
 // Holidays, closures and weather: the shared calendar flavor layer. Holidays are a pure function of the pack
 // and the clock (so schedules and scene gates can consult them without state); weather is rolled once per
 // campaign day from an authored weighted table (seeded, replay-safe) or pinned by `weatherByDate`.
-export function holidayOf(pack,cal){
- for(const h of pack.calendar?.holidays||[]){
-  if(h.weekday&&h.weekday===cal.weekday)return h;
-  if(h.date&&cal.date&&(h.annual?cal.date.slice(5)===h.date:cal.date===h.date))return h;
- }
- return null;
-}
+export {holidayMatch as holidayOf} from '../../public/schedule-resolver.mjs';
 // Why a location is closed right now, or null when it is open. Reads committed weather state, so a
 // weather-triggered closure is replay-exact.
 export function closedReason(pack,state,tick,locationId){

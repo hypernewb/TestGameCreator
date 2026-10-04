@@ -1,3 +1,4 @@
+import {scheduleDestination} from '../../public/schedule-resolver.mjs';
 import {validateKnowledge} from '../../public/creator-knowledge-contract.mjs';
 import {calendarFor,PERIODS} from '../../public/calendar.mjs';
 import {timeCost} from '../../public/calendar.mjs';
@@ -23,7 +24,7 @@ export function refusalFor(world,pack,registry,code='unavailable',retry=1){const
 function recordRefusal(tx,registry,code,target=''){const s=tx.state,scene=s.scene?.id||s.modules['story.scenes']?.pending||s.actors[tx.pack.playerId].location+':outside',prior=s.refusalHistory?.scene===scene?s.refusalHistory.counts:{},key=JSON.stringify([code,target]),retry=(prior[key]||0)+1;tx.set(['refusalHistory'],{scene,counts:{...prior,[key]:retry}});return refusalFor(s,tx.pack,registry,code,retry);}
 export function safeKey(s) { return typeof s === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,99}$/.test(s) && !['__proto__','constructor','prototype'].includes(s); }
 export function routeBetween(pack,from,to,flags={}) { const queue=[[from]],seen=new Set([from]);while(queue.length){const path=queue.shift(),at=path.at(-1);if(at===to)return path;for(const e of pack.locations.find(l=>l.id===at)?.exits||[])if(!seen.has(e.to)&&(!e.flag||flags[e.flag])){seen.add(e.to);queue.push([...path,e.to]);}}return null; }
-export function scheduleDestination(pack,schedule,tick) {const exception=(pack.scheduleExceptions||[]).find(x=>x.actor===schedule.actor&&tick>=x.startTick&&tick<=x.endTick);if(exception)return exception.location;for(const stop of schedule.stops||[])if(tick%schedule.period===stop.at)return stop.location;const interval=pack.daypart?.interval||4;if(tick%interval===0){const clock=calendarFor(tick,pack);for(const stop of schedule.weekly||[])if(stop.weekday===clock.weekday&&stop.daypart===clock.daypart&&!(stop.skipHolidays&&holidayOf(pack,clock)))return stop.location;}return null;}
+export {scheduleDestination} from '../../public/schedule-resolver.mjs';
 export function scheduledLocation(world,pack,id,arrivalTick) {if(!pack.modules['world.schedule'])return world.actors[id].location;let at=world.actors[id].location;for(let tick=world.tick+1;tick<=arrivalTick;tick++)for(const schedule of pack.schedules||[])if(schedule.actor===id)at=scheduleDestination(pack,schedule,tick)||at;return at;}
 // First tick after fromTick on which this actor's schedule places them at `location`
 // (or null if none within the horizon). Deterministic: depends only on pack and ticks.

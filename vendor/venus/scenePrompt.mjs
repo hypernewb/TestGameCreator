@@ -61,8 +61,9 @@ export function calmContinuationMessages(context,pack){
  if(context.scenePhase!=='continuation'||context.first||context.scriptedScene||!context.baseDirection||!context.direction?.startsWith(context.baseDirection))return scenePromptMessages(context,pack);
  return scenePromptMessages({...context,continuationStyle:'calm',direction:context.calmDirection+context.direction.slice(context.baseDirection.length)},pack);
 }
-export function scenePromptMessages(context,pack){
+export function scenePromptMessages(context,pack,{trace}={}){
  context=narrationContext(context,pack);
+ const emit=(pool,row,text,section)=>{if(text)trace?.({pool,row,text,section,...(pool==='memories'?{index:context.memories.indexOf(row)}:{})});return text;};
  const cast=context.stagedCast||[],phase=context.scenePhase||'opening',venus=context.sceneWriter==='venus',hybrid=!venus&&context.sceneStyle!=='plain',calm=context.continuationStyle==='calm'&&phase==='continuation',leaving=hybrid&&cast.length&&phase!=='closing'&&LEAVING.test(context.playerAction||'');
  const policy=exchangePolicy(context),quick=policy.quick;
  const profiles=context.castProfiles||pack.actors.filter(a=>cast.includes(a.id)).map(a=>({id:a.id,name:a.name,pronouns:a.pronouns,description:a.description||'',personality:a.personality||'',behavior:a.behavior||{},behaviorCue:behaviorCueOf(a,relationshipStageOf(context,a)),traits:a.traits||[],voice:a.voice||'',fingerprint:a.fingerprint||'',voiceBlock:a.voiceBlock||{fingerprint:a.fingerprint||'',examples:[]},examples:a.examples||[],goal:a.goal||'',backstory:a.backstory||'',likes:a.likes||[],dislikes:a.dislikes||[]}));
@@ -89,7 +90,7 @@ export function scenePromptMessages(context,pack){
  const continuous=context.gameProject?.conversationStyle==='continuous',task=phase==='closing'?`${context.playerAction?'This is the last beat of the scene. Answer the player action first, then ':'The scene is ending. '}write a brief, grounded goodbye with the present cast, then a final quiet line. Do not add a new event, new character, location, or player decision. Include a third-person summary of the completed scene and set end_scene true.`:phase==='continuation'?`Respond directly to the latest player words or action; briefly recast this turn’s submitted speech or action in a "You" narrator beat, then continue from the final transcript line without recapping earlier turns. ${quick?'Give a brief reaction on this same subject; no new question or agenda is required. Stop where the player can reply.':continuous?(calm?'Answer the player first and develop their current topic through a specific reaction. A new agenda and a final question are optional.':'Let the character react with initiative and subtext.')+' End the scene when its immediate purpose is complete, a character reasonably leaves, or attention is no longer believable; otherwise stop where the player can reply.':'Stop at a natural point for the player to respond.'} Do not present a command menu.`:cast.length?'Open the committed encounter with a "You" narrator beat of the player’s action landing: briefly recast the submitted speech or action with slight stat-ranked delivery flavor, then the cast reacts: they speak in character, pursuing their own goal. Stop where the player can naturally reply.':'Describe the committed solo action in 3–5 narration entries: the place, the effort, one concrete sensory detail, and its immediate result. Bystanders may be glimpsed doing their own thing, but they do not speak or approach. Do not create a cliffhanger or ask what the player wants to do.';
  const view=(pool,list)=>(list||[]).map(promptView[pool]);
  // Memories that share words with the action sit beside it, where a small model reads, rather than deep in the state.
- const recall=(context.memories||[]).filter(m=>m.relevant).map(m=>`- ${promptView.memories(m)}`);
+ const recall=(context.memories||[]).filter(m=>m.relevant).map(m=>`- ${emit('memories',m,promptView.memories(m),'RELEVANT MEMORY')}`);
  // Relevance-gated prose state (replaces the JSON dump): a scene with Jana in the kitchen gets Jana's world, not the
  // whole save. An entry is about this scene when it names the player or a present character, or shares two content
  // words with the player's words; recency breaks caps. Absent characters appear as names only — never their state.
@@ -117,16 +118,16 @@ export function scenePromptMessages(context,pack){
  const stateProse=[
   `${[context.weekday,context.date,context.daypart].filter(Boolean).join(', ')}. ${context.location?.name||''}${context.location?.description?`: ${context.location.description}`:''}${context.timeNote?` ${context.timeNote}`:''}`.replace(/^[,. ]+/,'').trim(),
   youLine,
-  profiles.map(profileLine).join('\n'),
+  profiles.map(a=>emit('persona',a,profileLine(a),'CURRENT STATE')).join('\n'),
   absent,
   section('WITH YOU',bondLines),
   section('AROUND',hereNames.length?[hereNames.join(', ')]:[]),
   stuff.length?section('ON YOU',stuff):'',
   section('JUST NOW',(context.outcomes||[]).map(o=>o.text||o.type)),
   section('HAPPENING',(context.activeEvents||[]).map(e=>e.description?`${e.name}: ${e.description}`:e.name)),
-  section('REMEMBERED',rel((context.memories||[]).filter(m=>!m.relevant),4).map(m=>m.text)),
-  section('KNOWN',rel([...sharedAuthoredFacts(context,pack),...(context.generatedFacts||[])],6).map(f=>f.text)),
-  section('LORE',(context.lorebook||[]).map(e=>e.text)),
+  section('REMEMBERED',rel((context.memories||[]).filter(m=>!m.relevant),4).map(m=>emit('memories',m,m.text,'REMEMBERED'))),
+  section('KNOWN',rel([...sharedAuthoredFacts(context,pack),...(context.generatedFacts||[])],6).map(f=>emit((context.facts||[]).includes(f)?'facts':'generatedFacts',f,f.text,'KNOWN'))),
+  section('LORE',(context.lorebook||[]).map(e=>emit('lorebook',e,e.text,'LORE'))),
   section('BEFORE THIS',rel(context.pastScenes,3).map(g=>g.summary||g.text||'')),
   section('LOOSE ENDS',rel(context.openThreads,4).map(t=>t.text||t)),
   section('WORD AROUND',rel(context.rumors,3).map(t=>t.text||t)),

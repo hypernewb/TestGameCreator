@@ -1,7 +1,10 @@
+import {compareSequences} from './packages/testing/activity-analysis.mjs';
+import {inspectSceneRequest} from './packages/ai/inspect.mjs';
+import {runScenario,scenarioActions,validateScenario,scenarioSnapshotDigest} from './packages/testing/scenarios.mjs';
 import {buildContentPackage,reviewContentPackage,applyContentPackage,commitContentPackage} from './packages/cards/content-package.mjs';
 import {memorySnapshot,memoryPreview} from './packages/ai/memory-controls.mjs';
 import http from 'node:http';
-import {readFileSync,readdirSync,existsSync,mkdirSync,writeFileSync,realpathSync} from 'node:fs';
+import {readFileSync,readdirSync,existsSync,mkdirSync,writeFileSync,realpathSync,rmSync} from 'node:fs';
 import {diagnoseScenes} from './packages/modules/scenes.mjs';
 import {allGeneratedFacts,validateFactEdits,selectGeneratedFacts} from './packages/modules/facts.mjs';
 import {fileURLToPath} from 'node:url';
@@ -51,6 +54,7 @@ export function isFileWithin(base,file,pathApi={relative:pathRelative,isAbsolute
 export function createApp({dataPath,scenarioDir,provider=new MockProvider(),drafter,startupAsk}={}){
   const root=fileURLToPath(new URL('.',import.meta.url));const packs={};for(const f of readdirSync(resolve(root,'packs')).filter(f=>f.endsWith('.json'))){const p=readPack(resolve(root,'packs',f));validatePack(p,registry);assert(!packs[p.id],'Duplicate pack ID');packs[p.id]=p;}
   const authorDir=scenarioDir||resolve(root,'data/scenarios'),draftDir=resolve(authorDir,'drafts'),publishedDir=resolve(authorDir,'published'),mediaDir=resolve(authorDir,'media');for(const dir of [draftDir,publishedDir,mediaDir])mkdirSync(dir,{recursive:true});
+  const testDir=resolve(authorDir,'test-scenarios');mkdirSync(testDir,{recursive:true});
   const assetFile=name=>{assert(typeof name==='string'&&/^scenario-media\/[a-f0-9-]{36}\.(png|jpg|webp)$/.test(name),'Invalid project asset path');const f=resolve(mediaDir,name.slice('scenario-media/'.length));assert(isFileWithin(mediaDir,f),'Invalid project asset path');return f;};
   const readAsset=name=>{const file=assetFile(name);assert(existsSync(file),`Project image ${name}: file not found`);assert(isFileWithin(realpathSync(mediaDir),realpathSync(file)),`Project image ${name}: invalid media path`);return readFileSync(file);};
   for(const f of readdirSync(publishedDir).filter(f=>/^[a-f0-9-]+\.json$/.test(f))){const p=JSON.parse(readFileSync(resolve(publishedDir,f),'utf8'));validatePack(p,registry);assert(!packs[p.id],'Duplicate pack ID');packs[p.id]=p;}
@@ -185,6 +189,7 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider(),draf
       if(path==='/api/backups/branch'&&req.method==='POST'){assert(!active.has(body.campaignId),'Wait for the current action to finish');const newId=randomUUID();return send({campaignId:newId,...view(store.branch(body.campaignId,body.backupId,newId))});}
       if(path==='/api/creator/memory/access'&&req.method==='POST'){assert(body.scope==='creator-debug','Creator/debug scope required');for(const [key,expires] of memoryAccess)if(expires<=Date.now())memoryAccess.delete(key);assert(memoryAccess.size<100,'Too many creator memory sessions; retry after sessions expire');const token=randomUUID();memoryAccess.set(token,Date.now()+3600000);return send({token});}
       if(path.startsWith('/api/creator/memory/')){const token=req.headers['x-story-memory'];assert(memoryAccess.get(token)>Date.now(),'Open memory controls from the Builder first');const id=req.method==='GET'?url.searchParams.get('id'):body.campaignId,s=store.load(id),p=packs[s.packId];assert(p,'Missing pack');if(path==='/api/creator/memory/list'&&req.method==='GET')return send(memorySnapshot(s,p));if(path==='/api/creator/memory/preview'&&req.method==='POST')return send(memoryPreview(s,p,body.actorId,body.query));if(path==='/api/creator/memory/edit'&&req.method==='POST'){assert(!active.has(id),'Wait for the current action to finish');return send(memorySnapshot(store.editMemory(id,body,p),p));}return send({error:'Not found'},404);}
+      if(path==='/api/creator/context/inspect'&&req.method==='POST'){const token=req.headers['x-story-memory'];assert(memoryAccess.get(token)>Date.now(),'Open memory controls from the Builder first');const s=store.load(body.campaignId),p=packs[s.packId];assert(p,'Missing pack');return send(await inspectSceneRequest(s,p,body.actorId,body.query,service.provider));}
       if(path==='/api/facts'&&req.method==='GET'){const s=store.load(url.searchParams.get('id')),p=packs[s.packId];assert(p&&s.modules['story.facts'],'Fact ledger is disabled');return send({facts:allGeneratedFacts(s),edits:s.factEdits||[],count:(s.factEdits||[]).length});}
       if(path==='/api/facts/search'&&req.method==='POST'){const s=store.load(body.campaignId),p=packs[s.packId];assert(p&&s.modules['story.facts'],'Fact ledger is disabled');assert(typeof body.query==='string'&&body.query.length<=200,'Search text is too long');return send(selectGeneratedFacts(s,p,p.playerId,body.query));}
       if(path==='/api/facts/edit'&&req.method==='POST'){assert(!active.has(body.campaignId),'Wait for the current action to finish');const s=store.load(body.campaignId),p=packs[s.packId];assert(p&&s.modules['story.facts'],'Fact ledger is disabled');const edit={id:randomUUID(),factId:body.factId,action:body.action,...(body.action==='correct'?{text:body.text?.trim()}:{}),...(body.action==='merge'?{targetId:body.targetId}:{}),at:new Date().toISOString()};validateFactEdits([...(s.factEdits||[]),edit],s,p);return send(view(store.editFact(body.campaignId,edit,body.expectedCount)));}
@@ -194,6 +199,36 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider(),draf
       if(path==='/api/export'){return send(exportCampaign(store.load(url.searchParams.get('id'))));}
       if(path==='/api/journal'&&req.method==='GET'){const state=store.load(url.searchParams.get('id'));res.writeHead(200,{'Content-Type':'application/x-ndjson; charset=utf-8','Content-Disposition':'attachment; filename=action-journal.jsonl','Cache-Control':'no-store'});res.end(state.events.filter(e=>e.type!=='core.patch').map(e=>JSON.stringify(e)).join('\n')+'\n');return;}
       if(path==='/api/import'&&req.method==='POST'){const p=packs[body.state?.packId];assert(p,'Install the matching pack before importing');validateProjectMedia(p,{read:readAsset});const s=validateImport(body,p,registry);s.campaignId=randomUUID();store.insert(s);return send(view(s));}
+      // Creator test scenarios: deterministic author → run → inspect loops against an isolated world.
+      // Runs never touch the campaign store or the AI provider, and never mutate the sent pack.
+      const scenarioFile=id=>{assert(typeof id==='string'&&/^[a-f0-9-]{36}$/.test(id),'Invalid scenario ID');return resolve(testDir,id+'.json');};
+      const readScenario=id=>{const file=scenarioFile(id);assert(existsSync(file),'Scenario not found');return JSON.parse(readFileSync(file,'utf8'));};
+      const scenarioSummary=({id,name,updated,rev,target,lastRun})=>({id,name,updated,rev,target:target||null,lastRun:lastRun?{at:lastRun.ranAt,ok:lastRun.ok,packId:lastRun.packId,packVersion:lastRun.packVersion,packDigest:lastRun.packDigest,steps:lastRun.steps.length}:null});
+      const draftDigest=id=>{try{return scenarioSnapshotDigest(readDraft(id).pack);}catch{return null;}};
+      if(path==='/api/studio/scenarios'&&req.method==='GET')return send({scenarios:readdirSync(testDir).filter(f=>/^[a-f0-9-]{36}\.json$/.test(f)).map(f=>readScenario(f.slice(0,-5))).sort((a,b)=>b.updated.localeCompare(a.updated)).map(scenarioSummary)});
+      if(path==='/api/studio/scenario'&&req.method==='GET'){const record=readScenario(url.searchParams.get('id'));return send({...record,lastRun:record.lastRun??null,currentDigest:record.target?.draftId?draftDigest(record.target.draftId):null});}
+      if(path==='/api/studio/scenario/save'&&req.method==='POST'){
+        validateScenario({name:body.name,fixture:body.fixture,steps:body.steps,assertions:body.assertions});
+        let record;
+        if(body.id){record=readScenario(body.id);assert(Number.isInteger(body.rev)&&body.rev===record.rev,'Stale scenario revision: reopen the scenario and save again');}
+        else record={id:randomUUID(),rev:0};
+        const unchanged=record.fixture!==undefined&&JSON.stringify([record.fixture,record.steps,record.assertions,record.target])===JSON.stringify([body.fixture||{},body.steps||[],body.assertions||[],body.target||null]);
+        Object.assign(record,{name:body.name,fixture:body.fixture||{},steps:body.steps||[],assertions:body.assertions||[],target:body.target||null,updated:new Date().toISOString()});
+        if(!unchanged)delete record.lastRun;record.rev++;
+        writeFileSync(scenarioFile(record.id),JSON.stringify(record,null,2));return send(record);
+      }
+      if(path==='/api/studio/scenario/duplicate'&&req.method==='POST'){const src=readScenario(body.id),copy=structuredClone(src);copy.id=randomUUID();copy.name=`${src.name} (copy)`.slice(0,120);copy.rev=1;copy.updated=new Date().toISOString();delete copy.lastRun;writeFileSync(scenarioFile(copy.id),JSON.stringify(copy,null,2));return send(copy);}
+      if(path==='/api/studio/scenario/delete'&&req.method==='POST'){rmSync(scenarioFile(body.id),{force:true});return send({ok:true});}
+      if(path==='/api/studio/scenario/actions'&&req.method==='POST'){validatePack(body.pack,registry);return send(scenarioActions(body.pack,registry,{name:'actions',fixture:body.fixture||{},steps:body.steps||[],assertions:[]},{seed:body.seed}));}
+      if(path==='/api/studio/activity-compare'&&req.method==='POST'){validatePack(body.pack,registry);return send(compareSequences(body.pack,registry,{fixture:body.fixture||{},sequences:body.sequences},{seed:body.seed}));}
+      if(path==='/api/studio/scenario/run'&&req.method==='POST'){
+        validatePack(body.pack,registry);
+        const saved=body.id?readScenario(body.id):null;if(saved)assert(Number.isInteger(body.rev)&&body.rev===saved.rev,'Stale scenario revision: reopen the scenario and run again');
+        const result=runScenario(body.pack,registry,{name:body.name||'Run',fixture:body.fixture||{},steps:body.steps||[],assertions:body.assertions||[]});
+        let persisted=false;
+        if(saved){saved.lastRun=result;writeFileSync(scenarioFile(body.id),JSON.stringify(saved,null,2));persisted=true;}
+        return send({result,persisted,currentDigest:scenarioSnapshotDigest(body.pack)});
+      }
       if(path.startsWith('/api/creator/')){const r=await creator(path,req.method,req.method==='GET'?Object.fromEntries(url.searchParams):body);if(r)return send(r);}
       if(path.startsWith('/api/'))return send({error:'Not found'},404);
       if(path==='/vendor/venus/sceneActions.mjs'&&req.method==='GET'){res.writeHead(200,{'Content-Type':'text/javascript','X-Content-Type-Options':'nosniff'});res.end(readFileSync(resolve(root,'vendor/venus/sceneActions.mjs')));return;}

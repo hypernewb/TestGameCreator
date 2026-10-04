@@ -61,10 +61,10 @@ const sceneCast=turn=>turn.events?.find(e=>e.type==='core.sceneStarted'||e.type=
 /**
  * Player statements visible to actorId, newest last. Sources: the conversation module's memories (social.speak and
  * scene "talk" turns) plus completed scene turns that recorded none ("continue" turns and group scenes).
- * Promises and disclosures are all kept (newest `keep`); plain statements only the newest `statements`.
+ * Original records retain their source and knowers; correction journals are applied by playerStatements.
  */
-export function playerStatements(state,pack,actorId,{keep=40,statements=4}={}){
- const nameOf=id=>pack.actors.find(a=>a.id===id)?.name||id,playerName=nameOf(pack.playerId),player=playerName&&playerName!=='You'?playerName:'the player';
+export function capturedStatements(state,pack,actorId=pack.playerId){
+ const nameOf=id=>pack.actors.find(a=>a.id===id)?.name||id;
  const visible=knownBy=>actorId===pack.playerId||knownBy.includes(actorId);
  const out=[],covered=new Set();
  for(const m of state.modules['social.conversation']?.memories||[]){
@@ -72,16 +72,21 @@ export function playerStatements(state,pack,actorId,{keep=40,statements=4}={}){
   const listeners=(m.knownBy||[]).filter(id=>id!==pack.playerId),names=listeners.flatMap(id=>[nameOf(id),nameOf(id).split(' ')[0]]);
   const raw=String(m.text||'').replace(/^You (?:tell|talk to) [^:]+:\s*/,'').replace(/^“|”$/g,'');
   const c=classifyUtterance(raw,names);covered.add(String(m.source).split('.')[0]);
-  out.push({source:m.source,tick:m.tick||0,kind:m.promise&&c.kind!=='question'?'promise':c.kind,said:c.said,listener:listeners.map(nameOf).join(' and ')||'someone'});
+  out.push({id:`heard:${m.id||m.source}`,knownBy:m.knownBy||[],original:raw,source:m.source,tick:m.tick||0,kind:m.promise&&c.kind!=='question'?'promise':c.kind,said:c.said,listener:listeners.map(nameOf).join(' and ')||'someone'});
  }
  for(const turn of Object.values(state.turns||{})){
   if(turn.status!=='complete'||covered.has(turn.id)||turn.command?.type!=='core.scene')continue;
   const cast=sceneCast(turn);if(!cast.length||!(actorId===pack.playerId||cast.includes(actorId)))continue;
   const input=turn.input||turn.command.args?.text||'';if(!input)continue;
   const c=classifyUtterance(input,cast.flatMap(id=>[nameOf(id),nameOf(id).split(' ')[0]]));
-  out.push({source:turn.id,tick:turn.events?.[0]?.tick||0,kind:c.kind,said:c.said,listener:cast.map(nameOf).join(' and ')});
+  out.push({id:`turn:${turn.id}`,knownBy:[pack.playerId,...cast],original:input,source:turn.id,tick:turn.events?.[0]?.tick||0,kind:c.kind,said:c.said,listener:cast.map(nameOf).join(' and ')});
  }
  out.sort((a,b)=>a.tick-b.tick);
+ return out;
+}
+export function playerStatements(state,pack,actorId,{keep=40,statements=4}={}){
+ const name=pack.actors.find(a=>a.id===pack.playerId)?.name,player=name&&name!=='You'?name:'the player',edits=new Map((state.statementEdits||[]).map(e=>[e.statementId,e]));
+ const out=capturedStatements(state,pack,actorId).flatMap(m=>{const e=edits.get(m.id);return e?.action==='retire'?[]:[{...m,said:e?.action==='correct'?e.text:m.said}];});
  // A correction replaces what it corrects: after "actually my favorite color is red", the older "…is teal" clause leaves
  // every prompt, or a small model recalls whichever of the two it reads first. Other clauses of that disclosure stay.
  const seen=new Set();

@@ -1,0 +1,135 @@
+{
+  "format": "story-framework-content-package",
+  "version": 1,
+  "manifest": {
+    "name": "Ada example package",
+    "created": "2026-10-04T07:45:36.344Z",
+    "source": {
+      "packId": "example.source",
+      "packVersion": "0.1.0",
+      "packSha256": "6410ef01f13a769f0256f7def3ddc2612cff952c0bee881cb0b34f2640a65c87"
+    },
+    "selected": {
+      "actors": [
+        "ada"
+      ],
+      "locations": [
+        "cafe"
+      ],
+      "scriptedScenes": [
+        "meet-ada"
+      ],
+      "worldEvents": []
+    },
+    "included": {
+      "actors": [],
+      "locations": [
+        "start"
+      ],
+      "lorebook": 1,
+      "profiles": 0
+    },
+    "unresolvedReferences": [],
+    "modules": [
+      "story.scenes"
+    ],
+    "description": "Example story-framework content package: one character, her location and an introduction scene. Import it from Studio (Content packages section) into any draft with the scripted-scenes and relationship modules enabled."
+  },
+  "content": {
+    "actors": [
+      {
+        "id": "ada",
+        "name": "Ada",
+        "location": "cafe",
+        "portrait": "assets/portraits/ada.png",
+        "pronouns": "she/her",
+        "description": "Runs the riverside café, remembers every regular order, trusts slowly."
+      }
+    ],
+    "locations": [
+      {
+        "id": "cafe",
+        "name": "Riverside Café",
+        "exits": [
+          {
+            "to": "start"
+          }
+        ],
+        "description": "A quiet café by the water."
+      },
+      {
+        "id": "start",
+        "name": "Start",
+        "exits": [
+          {
+            "to": "cafe"
+          }
+        ]
+      }
+    ],
+    "scriptedScenes": [
+      {
+        "id": "meet-ada",
+        "title": "Meet Ada",
+        "opening": "Ada sets down two cups, one unasked.",
+        "trigger": {
+          "event": "core.moved",
+          "match": {
+            "to": "cafe"
+          }
+        },
+        "when": {
+          "present": [
+            "ada"
+          ],
+          "location": "cafe"
+        },
+        "pages": [
+          {
+            "text": "\"You look like you need this,\" she says.",
+            "speaker": "ada",
+            "stage": [
+              "show:ada"
+            ]
+          }
+        ],
+        "choices": [
+          {
+            "id": "thank",
+            "label": "Thank her",
+            "effects": [
+              {
+                "type": "trust",
+                "character": "ada",
+                "delta": 5
+              }
+            ]
+          },
+          {
+            "id": "leave",
+            "label": "Slip out quietly"
+          }
+        ]
+      }
+    ],
+    "worldEvents": [],
+    "datingProfiles": [],
+    "actProfiles": [],
+    "romanceTempoProfiles": [],
+    "intimacyProfiles": [],
+    "jealousyProfiles": [],
+    "suspicionProfiles": [],
+    "lorebook": [
+      {
+        "id": "ada-cafe",
+        "text": "Ada keeps the café because her sister left it to her.",
+        "scope": "character",
+        "character": "ada",
+        "knownBy": [
+          "ada"
+        ]
+      }
+    ]
+  },
+  "media": {}
+}

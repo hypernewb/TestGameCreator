@@ -1,3 +1,4 @@
+import {projectMediaPath} from '../assets/project-media.mjs';
 import {assert,safeKey,releaseScene,routeBetween} from '../core/engine.mjs';
 import {closedReason} from './calendar.mjs';
 import {changeTrust} from './romance-stats.mjs';
@@ -25,7 +26,7 @@ import {advanceRomanceRank} from './romance-tempo.mjs';
 const path=['modules','story.scenes'];
 const MAX_PENDING_TRIGGERS=20;
 const validText=(value,label)=>assert(typeof value==='string'&&value.length<=4000,`${label}: expected text (up to 4000 characters)`);
-const validCg=v=>typeof v==='string'&&/^assets\/[\w./-]+\.(png|jpe?g|webp|svg)$/.test(v)&&!v.includes('..');
+const validCg=v=>projectMediaPath(v)||(typeof v==='string'&&/^assets\/[\w./-]+\.(png|jpe?g|webp|svg)$/.test(v)&&!v.includes('..'));
 const beatOf=(scene,id)=>id?(scene.beats||[]).find(b=>b.id===id):scene;
 // Players see the requirement as a rank name when the target sits on a rank, otherwise as a number; ✓/✗ says whether it would pass now.
 const checkTag=(s,p,check)=>{const d=p.statDefinitions.find(x=>x.id===check.stat),rank=(d.ranks||[]).find(r=>r.min===check.target),r=statCheck(s,p,check);return `${d.name} · ${rank?.name??check.target} ${r.passed?'✓':'✗'}`;};

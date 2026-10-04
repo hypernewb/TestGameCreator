@@ -84,9 +84,9 @@ export function capturedStatements(state,pack,actorId=pack.playerId){
  out.sort((a,b)=>a.tick-b.tick);
  return out;
 }
-export function playerStatements(state,pack,actorId,{keep=40,statements=4}={}){
+export function playerStatements(state,pack,actorId,{keep=40,statements=4,audience=null}={}){
  const name=pack.actors.find(a=>a.id===pack.playerId)?.name,player=name&&name!=='You'?name:'the player',edits=new Map((state.statementEdits||[]).map(e=>[e.statementId,e]));
- const out=capturedStatements(state,pack,actorId).flatMap(m=>{const e=edits.get(m.id);return e?.action==='retire'?[]:[{...m,said:e?.action==='correct'?e.text:m.said}];});
+ const out=capturedStatements(state,pack,actorId).filter(m=>!audience||audience.every(id=>m.knownBy.includes(id))).flatMap(m=>{const e=edits.get(m.id);return e?.action==='retire'?[]:[{...m,said:e?.action==='correct'?e.text:m.said}];});
  // A correction replaces what it corrects: after "actually my favorite color is red", the older "…is teal" clause leaves
  // every prompt, or a small model recalls whichever of the two it reads first. Other clauses of that disclosure stay.
  const seen=new Set();
@@ -97,7 +97,7 @@ export function playerStatements(state,pack,actorId,{keep=40,statements=4}={}){
  // Once this character has heard the player's name, later memories use it: "Mara promised Ada…" reads as a person.
  let known=player;
  return out.flatMap(m=>{const label=known;if(player==='the player'&&m.kind==='disclosure')known=disclosedName(m.said)||known;
-  const said=m.kept??m.said;return chosen.has(m)&&said?[{source:m.source,kind:m.kind,promise:m.kind==='promise',text:memoryText(m.kind,said,m.listener,label)}]:[];});
+  const said=m.kept??m.said;return chosen.has(m)&&said?[{source:m.source,...(audience?{knownBy:m.knownBy}:{}),kind:m.kind,promise:m.kind==='promise',text:memoryText(m.kind,said,m.listener,label)}]:[];});
 }
 const clauses=said=>String(said).split(/,\s*(?:(?:and|but)\s+)?|;\s*|\s+(?:and|but)\s+(?=(?:my|i|i'm|im|i've)\b)/iu).map(c=>c.trim()).filter(Boolean);
 /** What a first-person clause states about the player ("favorite color", "name", "live"), or '' when it is not a restatable fact. */

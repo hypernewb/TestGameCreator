@@ -1,15 +1,16 @@
 // Generalizes the truth guard in scene-boundaries.mjs into a full lint pass run on every narration
 // before it's shown: attendance, knowledge leaks, and content-level overflow.
+import {lintFacts,lintHistory,sharedAuthoredFact} from './knowledge.mjs';
 import {assertSceneBoundaries} from './scene-boundaries.mjs';
 import {onlyRepeats} from './untrusted-output.mjs';
 // A fact's quote is how facts.mjs proves a fact happened in narration; the same quote in a line spoken by
 // someone outside that fact's knownBy means the model let a character speak knowledge it was never given.
-function assertKnowledgeLeaks(value,context){
- for(const fact of context.knownFacts||[]){
-  if(!fact.quote)continue;
+function assertKnowledgeLeaks(value,context,pack){
+ for(const fact of lintFacts(context)){
+  if(!fact.quote||(context.facts||[]).some(f=>sharedAuthoredFact(f,context,pack)&&f.text.includes(fact.quote)))continue;
   for(const line of value.lines){
-   if(!line.speaker||fact.knownBy.includes(line.speaker))continue;
-   if(line.text.includes(fact.quote))throw Error(`${line.speaker} should not know: ${fact.text}`);
+   if(!line.speaker||fact.knownBy?.includes(line.speaker))continue;
+   if(line.text.includes(fact.quote))throw Error(`${line.speaker} should not know this private fact`);
   }
  }
 }
@@ -42,14 +43,11 @@ function assertPlayerPerson(value,context,pack){
 // asked for, and a second silent answer is still shown rather than failing the turn.
 function assertCastSpeaks(value,context,pack){
  const cast=context.stagedCast||[];if((context.scenePhase||'opening')!=='opening'||!cast.length||value.lines.some(l=>l.speaker))return;
- const who=pack.actors.filter(a=>cast.includes(a.id));throw Object.assign(Error(`${who.map(a=>a.name).join(' and ')} must speak: add their words as ${who.map(a=>`{"speaker":"${a.id}","text":"..."}`).join(' or ')}, after at most one line of narration`),{soft:true});
+ const who=pack.actors.filter(a=>cast.includes(a.id)),hint=`${who.map(a=>a.name).join(' and ')} must speak: add their words as ${who.map(a=>`{"speaker":"${a.id}","text":"..."}`).join(' or ')}, after at most one line of narration`;throw Object.assign(Error(hint),{soft:true,safeRepair:hint});
 }
-// A reply whose every spoken line was already said this scene (or is an authored example recited) loops the scene.
-// Soft, like speech: the second answer stands.
 function assertFresh(value,context,pack){
- if(!context.spokenBefore||!onlyRepeats(value.lines,context.spokenBefore,context.playerAction))return;
- const who=[...new Set(value.lines.filter(l=>l.speaker).map(l=>pack.actors.find(a=>a.id===l.speaker)?.name||l.speaker))];
- throw Object.assign(Error(`${who.join(' and ')} already said that: reply to "${context.playerAction||''}" with something new`),{soft:true});
+ if(!lintHistory(context)||!onlyRepeats(value.lines,lintHistory(context),context.playerAction))return;
+ const who=pack.actors.filter(a=>(context.stagedCast||[]).includes(a.id)&&value.lines.some(l=>l.speaker===a.id)).map(a=>a.name),hint=`${who.join(' and ')} already said that: reply to "${context.playerAction||''}" with something new`;throw Object.assign(Error(hint),{soft:true,safeRepair:hint});
 }
 // Local models contradict the calendar the context supplies ("a quiet Tuesday" on a Wednesday). Only narration
 // is checked: a character may still make plans for another day.
@@ -140,14 +138,15 @@ export function lintScene(value,context,pack,{lenient=false}={}){
  const warnings=[];
  for(const [check,run] of CHECKS){
   try{run(value,context,pack);}
-  catch(error){if(lenient&&STYLE_CHECKS.has(check)){warnings.push({check,message:String(error.message).slice(0,200)});continue;}throw Object.assign(Error(error.message),{lintCheck:check,soft:!!error.soft});}
+  catch(error){if(lenient&&STYLE_CHECKS.has(check)){warnings.push({check,message:String(error.message).slice(0,200)});continue;}throw Object.assign(Error(error.message),{lintCheck:check,soft:!!error.soft,safeRepair:error.safeRepair});}
  }
  // Warn only, never repair: in a group scene someone who gets no line or beat reads as a prop.
  const cast=context.stagedCast||[],silent=cast.length>1?cast.filter(id=>{const name=pack.actors.find(x=>x.id===id)?.name;return !value.lines.some(l=>l.speaker===id||(name&&!l.speaker&&l.text.includes(name)));}):[];
  if(silent.length)warnings.push({check:'ensemble',message:'No line or beat for '+silent.map(id=>pack.actors.find(x=>x.id===id)?.name||id).join(', ')});
- const again=repeatedQuestions(value.lines,context.spokenBefore);
+ const again=repeatedQuestions(value.lines,lintHistory(context));
  if(again.length)warnings.push({check:'repeat-question',message:'Asked again: '+again.join(' | ').slice(0,200)});
  const echoWords=pack.slipGuard?.echoWords??8,echo=echoedRun(value.lines.map(l=>l.text).join(' '),context.playerAction,echoWords);
  if(echo)warnings.push({check:'echo',message:`Echoed ${echoWords}+ words of the player: "${echo}"`});
  return warnings;
 }
+

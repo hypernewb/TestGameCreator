@@ -1,3 +1,4 @@
+import {sharedAuthoredFacts,narrationContext} from '../../packages/ai/knowledge.mjs';
 import {relationshipStageOf,behaviorCueOf} from '../../packages/ai/character-context.mjs';
 // soFarBlocks adapted from Venus University scenePrompt.ts, snapshot
 // 79301df55bc39a0996229ccc6f12ccce422a80b2. AGPL-3.0-only; see LICENSE.
@@ -61,6 +62,7 @@ export function calmContinuationMessages(context,pack){
  return scenePromptMessages({...context,continuationStyle:'calm',direction:context.calmDirection+context.direction.slice(context.baseDirection.length)},pack);
 }
 export function scenePromptMessages(context,pack){
+ context=narrationContext(context,pack);
  const cast=context.stagedCast||[],phase=context.scenePhase||'opening',venus=context.sceneWriter==='venus',hybrid=!venus&&context.sceneStyle!=='plain',calm=context.continuationStyle==='calm'&&phase==='continuation',leaving=hybrid&&cast.length&&phase!=='closing'&&LEAVING.test(context.playerAction||'');
  const policy=exchangePolicy(context),quick=policy.quick;
  const profiles=context.castProfiles||pack.actors.filter(a=>cast.includes(a.id)).map(a=>({id:a.id,name:a.name,pronouns:a.pronouns,description:a.description||'',personality:a.personality||'',behavior:a.behavior||{},behaviorCue:behaviorCueOf(a,relationshipStageOf(context,a)),traits:a.traits||[],voice:a.voice||'',fingerprint:a.fingerprint||'',voiceBlock:a.voiceBlock||{fingerprint:a.fingerprint||'',examples:[]},examples:a.examples||[],goal:a.goal||'',backstory:a.backstory||'',likes:a.likes||[],dislikes:a.dislikes||[]}));
@@ -123,7 +125,7 @@ export function scenePromptMessages(context,pack){
   section('JUST NOW',(context.outcomes||[]).map(o=>o.text||o.type)),
   section('HAPPENING',(context.activeEvents||[]).map(e=>e.description?`${e.name}: ${e.description}`:e.name)),
   section('REMEMBERED',rel((context.memories||[]).filter(m=>!m.relevant),4).map(m=>m.text)),
-  section('KNOWN',rel([...(context.facts||[]),...(context.generatedFacts||[])],6).map(f=>f.text)),
+  section('KNOWN',rel([...sharedAuthoredFacts(context,pack),...(context.generatedFacts||[])],6).map(f=>f.text)),
   section('LORE',(context.lorebook||[]).map(e=>e.text)),
   section('BEFORE THIS',rel(context.pastScenes,3).map(g=>g.summary||g.text||'')),
   section('LOOSE ENDS',rel(context.openThreads,4).map(t=>t.text||t)),

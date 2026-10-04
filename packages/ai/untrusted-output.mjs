@@ -1,3 +1,4 @@
+import {containsPrivateAuthoredFact} from './knowledge.mjs';
 // Model output is untrusted presentation text. The engine is the only writer of world state, so any
 // state-mutating syntax a model borrows from other front-ends (RisuAI/SillyTavern CBS variable macros,
 // MVU <UpdateVariable> blocks and _.set(...) patches) is stripped rather than interpreted.
@@ -55,7 +56,7 @@ export function splitRoleplay(lines,speakers,pack){
 // One choke point for every model-written scene line (previews, JSON and plain answers) before sanitation.
 // A model that closes and reopens its JSON inside a string leaves `"} {"` at the end of the text.
 const JSON_TAIL=/["\s]*\}\s*,?\s*\{?\s*"?\s*$/u;
-export const guardSceneLines=(lines,speakers,pack)=>splitRoleplay(enforceSpeakers((lines||[]).filter(l=>l&&typeof l.text==='string').map(l=>({...l,text:stripStateSyntax(l.text).replace(JSON_TAIL,'')})).filter(l=>l.text.trim()),speakers,pack),speakers,pack).map(l=>l.speaker&&/,\s*$/u.test(l.text)?{...l,text:l.text.replace(/,\s*$/u,'.')}:l);
+export const guardSceneLines=(lines,speakers,pack,context={stagedCast:speakers})=>splitRoleplay(enforceSpeakers((lines||[]).filter(l=>l&&typeof l.text==='string').map(l=>({...l,text:stripStateSyntax(l.text).replace(JSON_TAIL,'')})).filter(l=>l.text.trim()&&!containsPrivateAuthoredFact(l.text,context,pack)),speakers,pack),speakers,pack).map(l=>l.speaker&&/,\s*$/u.test(l.text)?{...l,text:l.text.replace(/,\s*$/u,'.')}:l);
 // Small models loop: a sentence an NPC already said this scene ("I don't need your help.") is dropped when said again.
 // Short beats ("Yeah.", "Hey.") may recur. If every spoken line would go, the reply is kept as it is rather than silenced.
 const words=t=>new Set(t.toLowerCase().match(/[\p{L}\p{N}']+/gu)||[]),alike=(a,b)=>{if(a.size<4||b.size<4)return false;let n=0;for(const w of a)if(b.has(w))n++;return n/(a.size+b.size-n)>=0.75;};

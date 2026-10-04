@@ -9,9 +9,10 @@ import {fileURLToPath} from 'node:url';
 
 const root=fileURLToPath(new URL('..',import.meta.url));
 const studio=readFileSync(join(root,'public','studio.mjs'),'utf8');
+const knowledge=readFileSync(join(root,'public','studio-knowledge.mjs'),'utf8');
 // The weekly preview reads exceptions to warn about precedence; it does not edit them.
 // A control counts when the key is bound as a field key ('key'), an editor/rows key, or a p.key / pack.key path.
-const controlSource=studio.replace(/\(p\.scheduleExceptions\|\|\[\]\)\.some\(x=>x\.actor===entry\.actor\)/g,'false');
+const controlSource=(studio+'\n'+knowledge).replace(/\(p\.scheduleExceptions\|\|\[\]\)\.some\(x=>x\.actor===entry\.actor\)/g,'false');
 const hasControl=k=>new RegExp(`(?:'|"|p\\.|pack\\.)${k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}(?![A-Za-z0-9_$])`).test(controlSource);
 // NOISE: pack-shaped locals that are not pack options (react uses `const p=event.payload`; plans, pages).
 const NOISE=new Set(['act','capped','character','characters','company','deadlineTick','entry','points','sceneId','source','status','target','verdict']);

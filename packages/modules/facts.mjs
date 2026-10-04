@@ -1,11 +1,17 @@
 import {assert,safeKey} from '../core/engine.mjs';
+import {validateKnowledge} from '../../public/creator-knowledge-contract.mjs';
+import {validateConditions,conditionReasons} from './conditions.mjs';
 
 // Narrative facts are attached to their source turns, so save replay and retries
 // never mutate the deterministic world state after the action has committed.
 export const facts={id:'story.facts',version:'0.1.0',coreApi:'0.1.0',requires:[],
+ validate(p){validateKnowledge(p);for(const [i,r] of (p.factReveals||[]).entries())if(r.when!==undefined)validateConditions(r.when,p,`factReveals[${i}].when`);},
  init:()=>({}),
+ react(tx,event){if(event.type==='core.patch')return;for(const rule of tx.pack.factReveals||[]){if(rule.event!==event.type||!Object.entries(rule.match||{}).every(([k,v])=>event.payload[k]===v)||conditionReasons(rule.when||{},tx.state,tx.pack).length)continue;const fact=tx.pack.facts.find(f=>f.id===rule.fact),known=tx.state.modules['story.facts'].knowledge?.[fact.id]||[],added=rule.recipients.filter(id=>!factKnownTo(tx.state,fact,id));if(!added.length)continue;if(!tx.state.modules['story.facts'].knowledge)tx.set(['modules','story.facts','knowledge'],{});tx.set(['modules','story.facts','knowledge',fact.id],[...new Set([...known,...added])]);tx.emit('story.factRevealed',{fact:fact.id,rule:rule.id,recipients:added},added);}},
  panel(s,p){const count=Object.values(s.turns).reduce((n,t)=>n+(t.generatedFacts?.length||0),0);return {title:'Discovered facts',lines:[`${count} sourced narrative facts recorded.`]};}
 };
+
+export const factKnownTo=(state,fact,actor)=>fact.knownBy==='public'||fact.knownBy.includes(actor)||Boolean(state.modules['story.facts']?.knowledge?.[fact.id]?.includes(actor));
 
 export function allGeneratedFacts(state){return Object.values(state.turns).filter(t=>t.status==='complete').flatMap(t=>t.generatedFacts||[]);}
 export function validateFactEdits(edits,state,pack){
@@ -38,11 +44,11 @@ export function validateGeneratedFacts(raw,pack,turn,narrative){
  });
 }
 
-export function selectGeneratedFacts(state,pack,actorId,query='',budget=650){
+export function selectGeneratedFacts(state,pack,actorId,query='',budget=650,audience=[actorId]){
  if(!state.modules['story.facts'])return {selected:[],omitted:[],budget,used:0};
  const location=state.actors[actorId].location,words=query.toLowerCase().match(/[\p{L}\p{N}]{4,}/gu)||[];
  const present=new Set(Object.entries(state.actors).filter(([,actor])=>actor.location===location).map(([id])=>id));
- const candidates=effectiveGeneratedFacts(state).filter(f=>f.knownBy.includes(actorId)).map(f=>{
+ const candidates=effectiveGeneratedFacts(state).filter(f=>Array.isArray(f.knownBy)&&audience.every(id=>f.knownBy.includes(id))).map(f=>{
   const subject=pack.actors.find(a=>a.id===f.subject)||pack.locations.find(l=>l.id===f.subject)||pack.items?.find(i=>i.id===f.subject)||pack.objects?.find(o=>o.id===f.subject);
   const related=f.subject===location||f.subject===actorId||present.has(f.subject);
   const matched=words.some(w=>`${subject?.name||''} ${f.subject} ${f.text}`.toLowerCase().includes(w));

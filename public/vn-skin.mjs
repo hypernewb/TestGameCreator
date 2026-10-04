@@ -1,3 +1,4 @@
+import {validateBindings} from '../vn_ui_studio/live-bindings.mjs';
 // Pure Studio v1 contract port; parity covered by vn-skin-contract.test.mjs.
 // No viewport thresholds exist in Studio; callers supply device and measured stage.
 const utilityInfo={history:['History','history'],save:['Save','save'],load:['Load','load'],settings:['Settings','settings'],planner:['Planner','calendar'],updates:['Updates','spark'],dossier:['Dossier','profile'],inventory:['Inventory','bag'],location:['Location','map']};
@@ -77,6 +78,7 @@ function validateState(raw) {
   for(const device of options.device)for(const id of Object.keys(names))s.constraints[device][id]=validateConstraint(raw.constraints?.[device]?.[id]);
   s.utilities=validateUtilities(raw.utilities);
   for(const id of buttonIds){const old=raw.buttons?.[id]||(!id.startsWith('tool_')?{...buttonDefaults(id),display:raw.navigation==='compact'?'icon':'both',orientation:raw.navigation==='rail'?'vertical':'horizontal'}:undefined);s.buttons[id]=validateButton(old,id);}s.presets=validatePresets(raw.presets);
+  if(raw.liveBindings!==undefined)s.liveBindings=validateBindings(raw.liveBindings);
   return s;
 }
 const units='percent of canvas; top-left origin';
@@ -99,7 +101,7 @@ export function validateSkinExport(raw){
   safeConfig(raw.config);const config=structuredClone(validateState(raw.config));
   const css=`:root { --ui-accent: ${config.accent}; --ui-text-size: ${config.textSize}px; --ui-radius: ${config.radius}px; --ui-panel-opacity: ${config.opacity / 100}; }`;
   if(typeof raw.css!=='string'||(raw.css!==''&&raw.css!==css))throw Error('Unsupported raw CSS; only the Studio token export is accepted and discarded.');
-  const warnings=['Raw CSS discarded; consume validated tokens only.','Optional widgets remain unbound: '+Object.keys(defaults).filter(id=>!coreIds.includes(id)).join(', '),'Input shares choices geometry; feedback shares dialogue geometry (no separate Studio widgets).'];
+  const warnings=['Raw CSS discarded; consume validated tokens only.','Optional widgets remain unbound: '+Object.keys(defaults).filter(id=>!coreIds.includes(id)&&!config.liveBindings?.[id]).join(', '),'Input shares choices geometry; feedback shares dialogue geometry (no separate Studio widgets).'];
   return {ok:true,skin:{format:'vn-ui-studio',version:1,units,config,css:''},warnings,error:null};
  }catch(e){return {ok:false,skin:null,warnings:[],error:e instanceof Error?e.message:'Invalid skin export.'};}
 }
@@ -110,7 +112,7 @@ export function resolveSkinLayout(skin,{width,height,device}={}){
  if(device===undefined)return invalid('device-required: Studio defines no viewport breakpoints.');
  if(!options.device.includes(device))return invalid('Unsupported device.');
  const s=r.skin.config,ws=device===s.device?s.widgets:s.layouts[device],widgets={},bindings={};
- for(const id of coreIds){const w=ws[id];if(!w.visible||(id.startsWith('tool_')&&(!ws.utilities.visible||!s.utilities[id.slice(5)].visible)))continue;widgets[id]={rect:anchorBox(fitBox(w,width,height,0,0,s.appearance[id].fit),width,height,s.constraints[device][id]),z:w.z,appearance:clone(s.appearance[id]),...(s.buttons[id]?{button:clone(s.buttons[id])}:{}),...(id.startsWith('tool_')?{utility:clone(s.utilities[id.slice(5)])}:{})};}
+ for(const id of [...new Set([...coreIds,...Object.keys(s.liveBindings||{})])]){const w=ws[id];if(!w.visible||(id.startsWith('tool_')&&(!ws.utilities.visible||!s.utilities[id.slice(5)].visible)))continue;widgets[id]={rect:anchorBox(fitBox(w,width,height,0,0,s.appearance[id].fit),width,height,s.constraints[device][id]),z:w.z,appearance:clone(s.appearance[id]),...(s.buttons[id]?{button:clone(s.buttons[id])}:{}),...(id.startsWith('tool_')?{utility:clone(s.utilities[id.slice(5)])}:{})};}
  for(const [binding,id] of [['dialogue','dialogue'],['input','choices'],['clock/location','date'],['feedback','dialogue']])if(widgets[id])bindings[binding]=id;
  bindings.navigation=coreIds.filter(id=>widgets[id]&&(id.startsWith('tool_')||['map','calendar'].includes(id)));
  return {ok:true,device,widgets,bindings,styles:{theme:s.theme,layout:s.layout,interaction:s.interaction,choice:s.choice,aiBar:s.aiBar,navigation:s.navigation,accent:s.accent,textSize:s.textSize,opacity:s.opacity,radius:s.radius,reducedMotion:s.reducedMotion,sample:s.sample},warnings:r.warnings,error:null};

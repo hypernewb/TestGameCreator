@@ -1,3 +1,4 @@
+import {validateBindings} from './live-bindings.mjs';
 import {constraintDefaults,validateConstraint} from './responsive.mjs';
 import {buttonIds,buttonDefaults,validateButton,validatePresets} from './buttons.mjs';
 import {utilityDefaults,validateUtilities,utilityInfo} from './utilities.mjs';
@@ -73,6 +74,7 @@ export function validateState(raw) {
   for(const device of options.device)for(const id of Object.keys(names))s.constraints[device][id]=validateConstraint(raw.constraints?.[device]?.[id]);
   s.utilities=validateUtilities(raw.utilities);
   for(const id of buttonIds){const old=raw.buttons?.[id]||(!id.startsWith('tool_')?{...buttonDefaults(id),display:raw.navigation==='compact'?'icon':'both',orientation:raw.navigation==='rail'?'vertical':'horizontal'}:undefined);s.buttons[id]=validateButton(old,id);}s.presets=validatePresets(raw.presets);
+  if(raw.liveBindings!==undefined)s.liveBindings=validateBindings(raw.liveBindings);
   return s;
 }
 const clamp = (n,min,max) => Math.max(min, Math.min(max,n));

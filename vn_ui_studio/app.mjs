@@ -1,3 +1,4 @@
+import {bindingChoices,validateBindings} from './live-bindings.mjs';
 import {anchorOptions,captureConstraint,anchorBox,arrangeWidgets,snapBox,overlapIssues,validateConstraint} from './responsive.mjs';
 import {buttonIds,buttonDefaults,setButton,saveComponentPreset,applyComponentPreset,applyButtonStarter} from './buttons.mjs';
 import {buttonInspector,presetInspector,designButton} from './button-views.mjs';
@@ -40,6 +41,11 @@ function renderSettings(){
   if(section==='assets')html=`<div class="eyebrow">A MORE EXPRESSIVE GAME</div><h2 class="panel-heading">The expansion kit.</h2><p class="panel-description">Twelve original components.<br>Dark ink, warm gold, and silhouettes with a purpose.</p><div class="field-heading">Browse by purpose</div>${[['all','Entire collection'],['story','Story & identity'],['feedback','Action feedback'],['progression','Time & progression'],['utility','Player utilities']].map(([id,title])=>`<button class="choice-control ${labCategory===id?'active':''}" data-lab-category="${id}" aria-pressed="${labCategory===id}">${title}<small>${filterAssets(id).length} concepts</small></button>`).join('')}<div class="field-heading">Start with the essentials</div><p class="lab-detail">Speaker identity, reading controls, objectives, action costs, outcome feedback, and recognizable saves.</p><div class="tip-card">Add components when the scene needs them. The complete collection should not all appear on screen at once.</div><button class="button full-width" data-section="style">← Back to the game canvas</button>`;
   $('settingsContent').innerHTML=html;
 }
+let bindingPack=null;try{const context=new URLSearchParams(location.search).get('context');if(context)bindingPack=JSON.parse(sessionStorage.getItem(context));}catch{}
+function bindingEditor(id){
+ if(!['balance','shop'].includes(id))return '';if(!bindingPack)return '<p class="hint">Open the Wizard from Creator’s Interface layout to choose live game bindings.</p>';const choices=bindingChoices(bindingPack),b=state.liveBindings?.[id],pick=(field,label,items,value)=>'<label class="field-label">'+label+'<select class="field-select" data-live="'+field+'"><option value="">Unbound preview</option>'+items.map(x=>'<option value="'+esc(x.id)+'" '+(x.id===value?'selected':'')+'>'+esc(x.label)+'</option>').join('')+'</select></label>';
+ return '<div class="field-heading">Live Game UI binding</div>'+(id==='balance'?pick('actor','Actor',choices.actors,b?.actor)+pick('stat','Stat',choices.stats,b?.stat):pick('action','Engine action and arguments',choices.actions.map((a,i)=>({id:String(i),label:a.label+' · '+JSON.stringify(a.args)})),b?String(choices.actions.findIndex(a=>a.type===b.type&&JSON.stringify(a.args)===JSON.stringify(b.args))):''))+'<p class="hint">Saved in this layout. Game values and availability are resolved by the player.</p>';
+}
 function renderInspector(){
   $('inspectorContent').querySelectorAll('details[class]').forEach(el=>inspectorDisclosure[el.className]=el.open);
   if(section==='assets'){$('inspectorContent').innerHTML=inspectorMarkup(labAsset);return;}
@@ -53,7 +59,7 @@ function renderInspector(){
   if(state.buttons[id])$('inspectorContent').insertAdjacentHTML('afterbegin',buttonInspector(state,id,stateMode,statePreview));
   $('inspectorContent').insertAdjacentHTML('afterbegin',presetInspector(state));
   const rule=state.constraints[state.device][id];$('inspectorContent').insertAdjacentHTML('afterbegin',anchorInspector(rule,w,state.device));
-  const title=$('inspectorContent').querySelector('h2');if(title)$('inspectorContent').prepend(title);
+  const title=$('inspectorContent').querySelector('h2');if(title){$('inspectorContent').prepend(title);title.insertAdjacentHTML('afterend',bindingEditor(id));}
   if(state.buttons[id]){const shape=$('inspectorContent').querySelector('[data-appearance=shape]');if(shape)shape.closest('label').hidden=true;const pad=$('inspectorContent').querySelector('[data-appearance=padding]');if(pad)pad.closest('label').hidden=true;}
   $('inspectorContent').querySelectorAll('details[class]').forEach(el=>{if(el.className in inspectorDisclosure)el.open=inspectorDisclosure[el.className];});
 }
@@ -183,6 +189,8 @@ document.addEventListener('click',e=>{
   if(b.dataset.asset)fetch(`vn_ui_studio/${b.dataset.asset==='icons'?'icons':b.dataset.asset}.svg`).then(r=>{if(!r.ok)throw Error();return r.text();}).then(svg=>{download(`vn-studio-${b.dataset.asset}.svg`,svg,'image/svg+xml');notify('SVG asset downloaded.');}).catch(()=>notify('Asset could not be downloaded.'));
 });
 document.addEventListener('change',e=>{
+ if(e.target.dataset.live&&bindingPack&&selected){try{const id=selected,field=e.target.dataset.live;const before=structuredClone(state.liveBindings);state.liveBindings||={};if(e.target.value==='')delete state.liveBindings[id];else if(id==='shop'){const a=bindingChoices(bindingPack).actions[Number(e.target.value)];state.liveBindings[id]={kind:'action',type:a.type,args:a.args};}else{const choices=bindingChoices(bindingPack),old=state.liveBindings[id]||{kind:'stat',actor:choices.actors[0]?.id,stat:choices.stats[0]?.id};state.liveBindings[id]={...old,[field]:e.target.value};}try{state.liveBindings=validateBindings(state.liveBindings);}catch(err){state.liveBindings=before;throw err;}commit();}catch(err){notify(err.message);renderInspector();}return;}
+
   const el=e.target;
   if(el.dataset.multi){if(el.checked)selection.add(el.dataset.multi);else selection.delete(el.dataset.multi);selected=selection.has(selected)?selected:[...selection].at(-1)||null;render();return;}
   if(el.dataset.anchor&&selected){changeAnchor(el);return;}

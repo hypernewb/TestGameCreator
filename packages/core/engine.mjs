@@ -1,5 +1,6 @@
 import {calendarFor,PERIODS} from '../../public/calendar.mjs';
 import {timeCost} from '../../public/calendar.mjs';
+import {validateWeeklyRoutines} from '../../public/weekly-routines.mjs';
 import {validateCharacterSheets} from './character-sheet.mjs';
 import {spokenLine} from '../../vendor/venus/sceneText.mjs';
 import {changeMoney} from '../modules/economy.mjs';
@@ -137,6 +138,7 @@ export function resolveModules(pack, registry) {
 }
 export function validatePack(pack, registry) {
   assert(pack && pack.schemaVersion===1,'pack.schemaVersion: expected 1');
+  validateWeeklyRoutines(pack);
   validateProjectUi(pack.gameProject?.ui);
   assert(pack.gameProject?.timeMode===undefined||['clock','planner'].includes(pack.gameProject.timeMode),'gameProject.timeMode: expected clock or planner');
   assert(safeKey(pack.id),'pack.id: invalid ID'); assert(typeof pack.title==='string','pack.title: required');

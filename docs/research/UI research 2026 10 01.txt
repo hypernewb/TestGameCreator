@@ -1,0 +1,444 @@
+UI Analysis & Improvement Suggestions for Story Framework
+Executive Summary
+Story Framework has a strong, distinctive foundation: a VN-style presentation layer (play.html) with a unique campus-sim overlay (hub, day/end cards, phone), a 4-step world creator wizard, and a deep studio for game authors. The CSS design system (copper/brass/ivory on walnut) is cohesive and readable. The architecture cleanly separates presentation (browser) from rules (server).
+
+However, the UI shows its origins as a single-world showcase (Campus) with affordances hardcoded for that content. To support arbitrary dating sims, sandboxes, and VNs, the presentation layer needs data-driven flexibility, better discoverability, and modern VN/UX patterns seen in peers.
+
+1. Play Screen (The Player Experience)
+Current Strengths
+VN-stage + dialogue box + character sprites — classic, readable, performant
+Free-form prompt composer — differentiates from pure choice VNs
+Hub system (places/phone/more) — excellent for sandbox feel
+Day card / End card / Gallery — strong "life sim" feedback loops
+Font customization + custom font upload — rare and valuable for accessibility
+History / Status / Journal dialogs — good information architecture
+Critical Gaps vs. Genre Standards
+Feature	Ren'Py / NVL	Persona 5 / Tokyo Chronos	Summertime Saga / DDLC+	Story Framework
+Text log / backlog	✓ Full, searchable	✓ Rich, voiced	✓	✓ (History dialog)
+Skip read / auto-forward	✓ Per-line	✓ Configurable	✓	✓ (Auto + Skip read in gallery)
+Quick save / load slots	✓ 100+ slots	✓ Visual thumbnails	✓	✗ (Only checkpoints via menu)
+Character sprite transitions	✓ Fade/move/slide	✓ 3D/Live2D	✓ Expressions	Basic (slot positioning only)
+CG gallery with unlock conditions	✓	✓	✓	✓ (Gallery)
+Relationship / stat screen	✓	✓ (Confidant screen)	✓	Status dialog (basic)
+Map / fast travel	✓	✓	✓	Hub places list
+Phone / messaging UI	✓ (NVL phones)	✓ (Realistic chat)	✓	Phone tab in hub
+Quest / objective tracker	✓	✓	✓	Goals list in hub (text only)
+Config: text speed, auto delay, voice	✓	✓	✗	Font only
+Accessibility: TTS, high contrast, dyslexia font	Partial	Growing	Rare	Font upload only
+High-Impact Improvements
+1.1 Quick Save / Load with Visual Thumbnails
+// Add to play.mjs: quick-save slot bar (F5/F9 style or UI buttons)
+// Thumbnail = current background + sprite composition + timestamp + location
+// Store in IndexedDB (not localStorage) for size
+// Show 5-10 slots in a hoverable bar (bottom-left, semi-transparent)
+Reference: Persona 5 save screen shows location, time, party, and a screenshot. DDLC+ has quick-save slots always visible.
+
+1.2 Sprite Animation & Expression System
+Current: static PNG per character, 3 fixed slots.
+
+// vn-stage.mjs needs:
+// - pose transitions (cross-fade 150ms)
+// - expression layers (face/eyes/mouth separate from body)
+// - Live2D / Spine / Rive support (optional, via module)
+// - "speaking" animation (subtle scale/breathing)
+// - entrance/exit transitions (slide from off-screen, fade)
+Reference: Tokyo Chronos / Altdeus use Live2D. DDLC+ uses layered sprites with smooth transitions. Even Ren'Py has show eileen happy with dissolve.
+
+1.3 Configurable Text Display (NVL + ADV modes)
+/* Add to ui-showcase.css */
+.dialogue--nvl { /* full-screen text, semi-transparent bg */ }
+.dialogue--adv { /* current bottom box */ }
+:root { --text-speed: 30; --auto-delay: 1.5; } /* ms per char, seconds per line */
+Reference: Fate/stay night (NVL), Steins;Gate (ADV). Players expect both.
+
+1.4 Persistent Quest/Objective Tracker
+Current: goals() returns text lines in hub only.
+
+// Add a collapsible sidebar (left) or overlay (Tab key):
+// - Active objectives with progress bars
+// - Character-specific tracks (romance, friendship, rivalry)
+// - World events with countdowns
+// - Click to set as "active" → shows hint in hub
+Reference: Persona 5 Confidant tracker. Summertime Saga quest log. Baldur's Gate 3 journal.
+
+1.5 Relationship Screen (Visual, Not Text-Only)
+// New dialog: status() → full-screen "Social Link" screen
+// Per character: portrait, arc stage, heart meter (visual), known likes/dislikes,
+// unlocked scenes, next milestone hint, gift history
+// Style: Persona 5 confidant screen / Stardew Valley relationship tab
+1.6 Map / Fast Travel Overlay
+// Hub currently shows places as cards. Add:
+// - Mini-map (SVG nodes + edges) showing adjacency
+// - Click to travel (sends core.moved)
+// - Filter: "Open now", "Has people", "Has activities"
+// - Keyboard: M opens map, arrows navigate, Enter travels
+Reference: Persona 5 map. Yakuza / Judgment mini-maps. Stardew Valley map.
+
+1.7 Phone UI Overhaul
+Current: threads in hub tab. Needs dedicated phone screen.
+
+// Full-screen phone (P key or button):
+// - Messages list (iOS/Android style)
+// - Contacts with relationship status
+// - Apps: Gallery, Map, Quest Log, Settings, Camera (CG viewer)
+// - Notifications badge on hub tab
+Reference: Persona 5 phone. Tokyo Chronos phone. Summertime Saga phone.
+
+1.8 Accessibility Suite
+// Preferences panel additions:
+// - Text-to-speech (Web Speech API) for dialogue
+// - High contrast mode (CSS variable swap)
+// - Dyslexia-friendly font (OpenDyslexic included)
+// - Line spacing / letter spacing sliders
+// - "Reduce motion" already respected — extend to all animations
+// - Screen reader announcements for choices, scene changes
+Reference: The Last of Us Part II accessibility gold standard. Ren'Py has self-voicing.
+
+2. Creator Wizard (World Authoring)
+Current Strengths
+4-step progressive disclosure — premise → proposal → draft → review
+AI-assisted drafting with human review gates
+Character card import (SillyTavern PNG/JSON) — great workflow
+Inline editing with tone badges — excellent UX
+Redraft per-card — granular control
+Gaps vs. Authoring Tools
+Feature	Ren'Py / VS Code	Twine / Ink	Articy Draft	Narrat	Story Framework Creator
+Visual node graph	✗	✓ (Twine)	✓	✗	✗
+Branch preview / playtest in-editor	✓ (Ren'Py)	✓	✓	✓	✗ (separate playtest)
+Variable / flag inspector	✓	✓	✓	✓	JSON only
+Character bible / wiki	✗	Partial	✓	Partial	In proposal only
+Asset management (art/audio)	Manual	Manual	✓	Manual	Upload only
+Collaboration / version control	Git	Git	Cloud	Git	Local only
+Export formats	.rpy	HTML/JSON	Unity/JSON	JSON	Campaign JSON only
+High-Impact Improvements
+2.1 Visual Scene Graph (Mini-Twine)
+// In stepReview: toggle "Graph view"
+// Nodes = scenes/beats, edges = choices/effects
+// Color-code: authored (blue) vs free (green) vs director (purple)
+// Click node → scrolls to card. Drag to rearrange (updates IDs)
+// Show prerequisites (completedScenes) as dotted lines
+Reference: Twine passage map. Articy flow view. Ink knot/variable visualization.
+
+2.2 Integrated Playtest Panel
+// In studio.mjs: "Playtest" button opens side panel (not new tab)
+// - Runs deterministic routes headless
+// - Shows coverage heatmap on graph
+// - "Play from here" → launches play.html with campaign ID + scene ID
+// - Console log stream in panel
+2.3 Character Bible / Wiki
+// New section in creator: "Cast Bible"
+// - Auto-generated from proposal + drafted cards
+// - Editable: backstory, secrets, schedule, preferences
+// - Cross-references: "Appears in scenes: X, Y, Z"
+// - Export as markdown for writers
+2.4 Asset Pipeline Integration
+// Current: upload → server processes → returns path
+// Add: 
+// - Sprite sheet slicer (upload grid → auto-slice poses)
+// - Background cropper with safe zones (16:9, 4:3, 21:9)
+// - Audio preview + loop point editor (for future voice/music)
+// - Asset usage report: "Used in scenes: 3, Unused: 7"
+2.5 Variable / Flag Inspector with Autocomplete
+// In stepReview: "Variables" tab
+// - List all storyVariables, flags, plan IDs, relationship dimensions
+// - Show where each is read/written (scene, choice, effect)
+// - Rename refactor across all cards
+// - Type hints (bool, number, string, character ID)
+3. Studio (Game Project Builder)
+Current Strengths
+Module composition with dependency resolution — excellent architecture
+AI scene/character assistants with validation — powerful
+Sheet editor for spreadsheets (stats, items, schedules) — practical
+Director templates for procedural drama — unique feature
+Playtest report with coverage graphs — strong QA
+Gaps vs. Game Engines / Authoring Suites
+Feature	Unity + Fungus/Dialogue System	Godot + Dialogic	TyranoBuilder	Visual Novel Maker	Studio
+Visual scene editor	✓	✓	✓	✓	Form-based only
+Timeline / sequencing	✓	✓	✓	✓	Stage actions only
+Animation curves for sprites	✓	✓	Partial	✓	✗
+Particle / effect preview	✓	✓	✗	Partial	✗
+Audio mixer / preview	✓	✓	✓	✓	✗
+Localization workflow	✓	✓	✓	✓	✗
+Build pipeline (desktop/mobile/web)	✓	✓	✓	✓	Web only
+Plugin / extension system	✓	✓	Limited	Limited	Module system only
+High-Impact Improvements
+3.1 Visual Scene Editor (Node-Based)
+// New tab in studio: "Scene Canvas"
+// - Nodes: pages, choices, beats, stage actions
+// - Edges: flow, wait-for events, prerequisites
+// - Mini-preview: renders current node's text + background + sprites
+// - Syncs with form editor (bidirectional)
+// - Keyboard: Space to play from node, arrow keys to navigate
+Reference: Dialogic (Godot), Fungus (Unity), Articy Draft. This is the single biggest authoring UX upgrade.
+
+3.2 Timeline Editor for Stage Directions
+// Current: text lines "show:ada, hide:ada, sprite:ada,smile"
+// Replace with timeline track per character:
+// - Tracks: Position, Expression, Effect, Audio
+// - Keyframes with easing
+// - Preview scrubber
+// - Export to stage action array
+Reference: Live2D Cubism timeline, Spine dopesheet, Ren'Py ATL (Animation Transformation Language).
+
+3.3 Localization Pipeline
+// Studio → "Localization" section
+// - Extract all user-facing strings (scene text, choices, UI)
+// - Export CSV/PO/XLIFF
+// - Import translations → generates per-language packs
+// - In-game language switcher (preferences)
+// - Pseudolocalization test mode
+Reference: Ren'Py translation framework. Godot CSV translation. Critical for adult VN market (JP/KR/CN/RU).
+
+3.4 Build & Export Pipeline
+// "Publish" button currently saves campaign JSON
+// Add: 
+// - Electron/Tauri desktop build (Windows/Mac/Linux)
+// - PWA manifest + service worker for offline play
+// - Itch.io / Steam deck compatible zip
+// - Asset bundling (only used assets)
+// - Minified JS + CSS
+// - Source map for debugging
+3.5 Audio Integration (Future-Proofing)
+// Module: "audio" (optional)
+// - BGM tracks per location/scene
+// - Voice lines per character (per line or per scene)
+// - SFX for stage actions
+// - Mixer: master/BGM/voice/SFX volumes
+// - Preview in studio scene editor
+4. Campus-Sim / Sandbox Layer (The "Venus University" Differentiator)
+Current Strengths
+Day card — weather, rumor, yesterday summary → strong daily ritual
+Hub with places/people/activities — clear spatial mental model
+End card with heart rows — visceral relationship feedback
+Phone threads — diegetic messaging
+Goals list — translates hidden stats to player intent
+Minigames for stats — gameplay variety
+Gaps vs. Life Sims / Sandbox VNs
+Feature	Persona 5	Stardew Valley	Summertime Saga	College Kings	Campus Module
+Calendar with events	✓ (visual)	✓ (wall calendar)	✓ (phone)	✓	Day card only
+Time slots / scheduling	✓ (after school/evening)	✓ (hourly)	✓ (periods)	✓	4 dayparts only
+Stat grinding with feedback	✓ (Social Stats)	✓ (Skills)	✓ (Stats)	✓	Minigames only
+Relationship events triggered by time/place	✓	✓	✓	✓	Director templates
+Multiple endings per character	✓	✓	✓	✓	Endings module
+New Game+ / carryover	✓	✓	Partial	Partial	Campaign load only
+Modding / user content	Limited	✓ (SMAPI)	Limited	✗	Module system
+High-Impact Improvements
+4.1 Visual Calendar Wall
+// New dialog (Calendar button in hub or header)
+// - Month view with color-coded dots: events, birthdays, holidays, deadlines
+// - Click day → see scheduled scenes, character availability
+// - Drag to create player plans (study, work, date)
+// - Syncs with world.calendar + timedEvents + director
+// - "Jump to day" (debug/cheat) in dev mode
+Reference: Persona 5 calendar. Stardew wall calendar. Long Live The Queen weekly planner.
+
+4.2 Time-Slot Scheduler (Player Agency)
+// Current: 4 dayparts, auto-advance on scene end
+// Add: weekly planner (Mon-Sun × Morning/Afternoon/Evening/Night)
+// - Player assigns: Class, Work, Study, Social, Rest, Explore
+// - Conflicts resolved by engine (energy, money, stat gains)
+// - NPCs have visible schedules (learned via phone/social)
+// - "Free time" → hub opens with contextual options
+Reference: Persona 5 time management. Academagia / Magical Diary detailed scheduling. Kudos 2 life sim planner.
+
+4.3 Stat Grinding with Visible Progression
+// Current: minigames → tier → engine applies stat delta
+// Add:
+// - Stat screen: radar chart / bars with "next level" threshold
+// - Per-stat activities with diminishing returns (visual)
+// - "Study group" / "Tutor" social activities for stats
+// - Equipment / clothing bonuses visible on sprite
+// - Milestone rewards (unlock outfit, location, scene)
+Reference: Persona 5 social stats (Knowledge, Guts, Proficiency, Kindness, Charm). Stardew skill trees.
+
+4.4 Relationship Event Trigger Visualization
+// In Journal / Status: show "Next event for [Character]"
+// - Condition: "After 3 dates, rank 2, evening, at Cafe"
+// - Progress bar: 2/3 dates • Rank 1→2 • Time: Evening • Place: Known
+// - Player can work toward it intentionally
+// - "Hint" button spends in-game resource (money/favor)
+Reference: Persona 5 confidant availability hints. Stardew heart events wiki (but in-game).
+
+4.5 New Game+ / Legacy System
+// On ending: offer "New Game+"
+// - Carryover: stats, money, unlocked CG, gallery, relationship memory (NPCs remember)
+// - New dialogue variants referencing previous playthrough
+// - Unlock: new characters, routes, difficulty, cheat menu
+// - Achievement / trophy system (local)
+Reference: Persona 5 Royal NG+. DDLC+ side stories. Hades heat/gauge system.
+
+5. Design System & Technical Debt
+CSS Architecture
+Current: Single ui-showcase.css + play.css + inline styles in HTML. Issues:
+
+No design tokens file (colors, spacing, radii in :root only)
+No component library (buttons, cards, dialogs duplicated)
+No dark/light theme (only dark)
+No CSS custom properties for component variants
+Suggested:
+
+/* tokens.css - single source of truth */
+:root {
+  --color-bg: #111;
+  --color-surface: #211c18;
+  --color-surface-elevated: #2a211d;
+  --color-primary: #a65f3f;    /* copper */
+  --color-primary-hover: #cc8560;
+  --color-accent: #c09a55;     /* brass */
+  --color-text: #f3ead9;       /* ivory */
+  --color-text-muted: #cbbbaa;
+  --color-border: #e6cda05e;
+  --color-success: #6b8f5e;
+  --color-error: #8f4a3e;
+  --color-warning: #a88a45;
+  
+  --font-sans: 'VN Source Sans 3', system-ui, sans-serif;
+  --font-serif: 'VN Source Sans 3', Georgia, serif; /* unified */
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 32px;
+  --radius-sm: 6px; --radius-md: 12px; --radius-lg: 18px; --radius-full: 999px;
+  --shadow-sm: 0 2px 8px #0008; --shadow-md: 0 8px 24px #000a; --shadow-lg: 0 16px 48px #000c;
+  
+  --transition-fast: 120ms var(--ease-out);
+  --transition-med: 200ms var(--ease-out);
+  --transition-slow: 350ms var(--ease-out);
+}
+
+/* components.css - reusable patterns */
+.btn { /* base button */ }
+.btn--primary { /* copper */ }
+.btn--ghost { /* transparent + brass border */ }
+.btn--danger { /* error color */ }
+.card { /* surface + border + radius + shadow */ }
+.dialog { /* backdrop + panel + header + body */ }
+.input { /* text, select, textarea */ }
+.badge { /* tone tags, status pills */ }
+JavaScript Architecture
+Current: Vanilla ES modules, functional style, dense one-liners. Strengths: No build step, fast, readable for small team. Risks:
+
+play.mjs = 1100+ lines, multiple responsibilities
+No state management (signals/stores) — props drilling
+No component abstraction — DOM manipulation inline
+Hard to test UI logic in isolation
+Suggested (incremental):
+
+// 1. Extract state store (signals pattern, 50 lines)
+export const store = {
+  current: signal(null),
+  busy: signal(false),
+  lines: signal([]),
+  cursor: signal(0),
+  // ...
+};
+
+// 2. Components as functions returning {element, update, destroy}
+function DialogueBox({store}) { /* ... */ }
+function Hub({store, actions}) { /* ... */ }
+function ChoiceList({actions, store}) { /* ... */ }
+
+// 3. play.mjs becomes wiring: mount components, subscribe to store
+// 4. Test components with JSDOM + store mutations
+6. Feature Ideas from Peer Games
+From Persona 5 (Social Sim Gold Standard)
+Confidant arcana system → map to relationshipDimensions + arcTracks
+Hold-up / negotiation → minigame variant for "persuasion" scenes
+Third-eye / insight → highlight interactive objects in hub
+Safe room / save point metaphor → "Sanctuary" location type with full heal + save
+From Stardew Valley (Cozy Sandbox)
+Festival calendar → worldEvents with community participation
+Bundle / collection system → items.inventory + story.quests for "complete the set"
+Farm layout editor → player home customization (equipment slots = furniture)
+Relationship decay → social.bonds with daily -1 if not interacted
+From Baldur's Gate 3 (Modern RPG Dialogue)
+Reaction shots (camera cuts to listener) → stage direction camera: characterId
+Group dialogue (multiple speakers per beat) → pages with multiple speakers
+Skill check UI (dice roll visualization) → minigame variant for stat checks
+Thought / internal monologue → kind: 'thought' in dialogue lines
+From Disco Elysium (Narrative Innovation)
+Skill voices as UI elements → sidebar with active "voices" commenting on choices
+Thought cabinet → internalization mechanic (unlock passive bonuses via reflection)
+Fail-forward → failed checks open new branches, not dead ends
+Time as resource → every action advances clock visibly
+From Hades (Roguelike Narrative)
+Mirror of Night → permanent upgrade screen between runs (New Game+)
+Codex / Boon info → in-game wiki for lore, items, characters
+Heat / Pact of Punishment → difficulty modifiers with rewards
+Relationship gifts → nectar/ambrosia → items with trust effects
+From VA-11 Hall-A / Coffee Talk (Bartender Sims)
+Drink mixing minigame → recipe discovery + customer preference
+Phone/news feed → world building without leaving counter
+End-of-day summary → stats, tips, character moments
+From Monster Prom (Multiplayer Dating Sim)
+Competitive stats → visible rival stats
+Event roulette → random encounter deck
+Secret endings → hidden flags + specific conditions
+7. Prioritized Roadmap
+Phase 1: Polish & Accessibility (2-3 weeks)
+Task	Effort	Impact
+Quick save/load slots with thumbnails	M	High
+NVL/ADV text mode toggle	S	High
+Accessibility: TTS, high contrast, dyslexia font	M	High
+Sprite cross-fade transitions	S	Medium
+Config: text speed, auto delay, click-to-continue	S	Medium
+Phase 2: Player-Facing Systems (4-6 weeks)
+Task	Effort	Impact
+Visual relationship screen (confidant-style)	M	High
+Map/fast travel overlay	M	High
+Phone UI overhaul (full screen)	M	Medium
+Quest/objective tracker sidebar	M	High
+Visual calendar wall	M	High
+Phase 3: Authoring Power Tools (6-8 weeks)
+Task	Effort	Impact
+Visual scene graph (Twine-like)	L	Very High
+Integrated playtest panel	M	High
+Timeline editor for stage directions	L	Medium
+Localization pipeline	M	High (market)
+Asset pipeline (sprite slicer, cropper)	M	Medium
+Phase 4: Sandbox Depth (Ongoing)
+Task	Effort	Impact
+Weekly time-slot scheduler	L	High
+Stat progression UI (radar/bars)	M	Medium
+Relationship event hints	M	High
+New Game+ / legacy system	M	High
+Modding API (user packs)	L	Medium
+8. "Venus University" Specific Ideas
+Since Campus is the showcase world and "Venus" is the AI writing system:
+
+Venus University as a Living Campus
+Dynamic NPC schedules — students move between classes, library, cafe, dorms, parties
+Rumor network — gossip spreads via social.gossip module, visible in phone/news feed
+Club system — join clubs (activities) → unlock scenes, stats, characters
+Exam periods — calendar events that gate time, stress mechanic (sobriety → stress)
+Roommate / dorm life — shared space scenes, passive dialogue
+Part-time jobs → world.economy + activities with shift scheduling
+Seasonal festivals → worldEvents with campus-wide participation
+Venus AI Integration in UI
+"Ask Venus" button in creator/studio — contextual AI help ("How do I make a branching date scene?")
+Live preview of AI writing — as you edit proposal, see sample dialogue in side panel
+Style transfer — "Rewrite this scene in Persona 5 style / Disco Elysium style / Fanfic style"
+Consistency check — "Does this character's dialogue match their voice profile?"
+9. Quick Wins (Do This Week)
+Add keyboard shortcuts help — ? key shows overlay: Space=continue, M=map, P=phone, S=save, L=load, H=history, J=journal, Esc=menu
+Tooltip on hub activities — show yields, time cost, character presence on hover
+Choice tone badges — show tone (grounded/soap/melodrama) as colored pill on choice buttons
+Background blur during dialogs — backdrop-filter: blur(8px) on dialog::backdrop (already there, increase)
+Scene transition animation — fade to black (200ms) on location change, not instant swap
+Auto-hide UI — Tab hides header/nav/prompt, shows only dialogue + sprites (screenshot mode)
+Click-to-skip per line — not just whole scene; click during typewriter = instant show line
+Choice preview on hover — show result text as tooltip (optional, preferences)
+10. Architecture Decision: Keep or Migrate?
+Keep vanilla ES modules if:
+
+Team stays small (<5)
+No build step is a core value
+Performance is excellent (it is)
+You enjoy the density
+Migrate to a framework (Solid, Preact, Vue) if:
+
+Component count grows >50
+You want devtools (React DevTools equivalent)
+Team expands or onboards juniors
+You need SSR/SEO (not relevant for desktop app)
+Testing becomes painful
+Middle path: Adopt signals (@preact/signals or tiny custom) + component functions without JSX. Keeps no-build, adds structure.

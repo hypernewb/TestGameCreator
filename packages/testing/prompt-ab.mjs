@@ -4,6 +4,15 @@ import {SUB_TURNS} from '../ai/service.mjs';
 import {linesFor} from '../../public/turn-presentation.mjs';
 export const CRITERIA={continuity:'follows the last exchange and stays on the player’s topic; transitions have a visible reason',warmth:'shows personal attention and stage-appropriate affection through specific words or behavior, without forcing intimacy',voice:'each character sounds like their profile and unlike anyone else',responsiveness:'answers the reader\'s action specifically instead of a generic beat',prose:'natural, sparse prose; dialogue meant to be said; no purple or robotic phrasing, no repeated gestures',rhythm:'short, speakable lines and varied beats; the scene breathes — no walls of text, no interrogation loop, no mannerism repeated',initiative:'characters have their own moods and agenda and move the moment on, with subtext shown through action',consistency:'no contradictions with the context, no invented history, nobody appears who is not in the cast',agency:'does not decide the reader\'s feelings, words or moves beyond the action they typed',fun:'you would want to type the next line'};
 export const sceneText=(lines,pack)=>(lines||[]).map(l=>l.speaker?`${pack.actors.find(a=>a.id===l.speaker)?.name||l.speaker}: ${l.text}`:l.text).join('\n');
+// --explain-prompt accounting: per-block token estimates (chars/4) so prompt-slimming work is measured, not guessed.
+const HEADER=/^[A-Z][A-Z '-]{2,}$/;
+export function blockTokens(context,pack,scenePrompt){
+ const blocks={};for(const m of scenePrompt(context,pack)){
+  const add=(name,text)=>{if(text.trim())blocks[name]=(blocks[name]||0)+Math.ceil(text.length/4);};
+  if(m.role==='system')m.content.split('\n\n').forEach((b,i)=>add(`system#${i+1}`,b));
+  else ('\n'+m.content).split(/\n(?=[A-Z][A-Z '-]{2,}\n)/).forEach((b,i)=>add(i&&HEADER.test(b.split('\n')[0])?b.split('\n')[0]:'(head)',b));
+ }return blocks;
+}
 export const judgeResponseFormat={type:'json_schema',json_schema:{name:'prompt_comparison',strict:true,schema:{type:'object',additionalProperties:false,required:['A','B','winner','why'],properties:{...Object.fromEntries(['A','B'].map(k=>[k,{type:'object',additionalProperties:false,required:Object.keys(CRITERIA),properties:Object.fromEntries(Object.keys(CRITERIA).map(c=>[c,{type:'number',minimum:1,maximum:10}]))}])),winner:{type:'string',enum:['A','B','tie']},why:{type:'string'}}}}};
 // Draft-filter helper retained for callers; evaluation runs GameService rather than using this approximation.
 export function composeLines(lines,context,pack){const out=dropStock(dropRepeats(guardSceneLines(lines,context.speakers||[],pack),context.spokenBefore||[],context.playerAction));return pack.modules?.['social.intimacy']?out:dropAdvances(out,context.playerAction);}

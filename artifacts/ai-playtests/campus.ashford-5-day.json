@@ -1,0 +1,1322 @@
+{
+  "generatedAt": "2026-10-01T23:57:46.449Z",
+  "pack": {
+    "id": "campus.ashford",
+    "title": "Ashford"
+  },
+  "model": "qwen/qwen3.8-27b",
+  "contextWindow": 8192,
+  "requestedDays": 5,
+  "tickTargetReached": true,
+  "qualityGates": {
+    "pass": false,
+    "failures": [
+      "deadTurns 6 exceeds 10% of 54 turns"
+    ]
+  },
+  "reachedTarget": false,
+  "incompleteReason": "",
+  "metrics": {
+    "turns": 54,
+    "refusals": 1,
+    "startTick": 0,
+    "endTick": 60,
+    "ticksPlayed": 60,
+    "typed": 32,
+    "authoredChoices": 6,
+    "fallbacks": 0,
+    "clarifications": 0,
+    "deadTurns": 6,
+    "maxConsecutiveSameDecision": 1,
+    "maxConsecutiveSpeak": 0,
+    "commandCounts": {
+      "core.scene": 38,
+      "core.move": 3,
+      "social.readThread": 2,
+      "story.startOfferedScene": 2,
+      "story.choose": 6,
+      "REFUSED": 1,
+      "social.askDate": 1,
+      "core.endScene": 1
+    },
+    "nearDuplicates": [],
+    "calendarConflicts": 0,
+    "averageSeconds": 7.32
+  },
+  "modelUsage": {
+    "requests": {
+      "tester": 54,
+      "game": 52,
+      "critique": 1,
+      "total": 107
+    },
+    "responses": 107,
+    "tokens": 326394
+  },
+  "ending": null,
+  "fun": {
+    "turns": 53,
+    "timing": "measured",
+    "minutes": 6.5,
+    "choices": 8,
+    "typed": 31,
+    "typedLive": 28,
+    "deadTurns": 4,
+    "longestDeadStreak": 1,
+    "freshTurns": 12,
+    "firstChoice": {
+      "turn": 7,
+      "minutes": 0.5,
+      "via": "story.startOfferedScene"
+    },
+    "firstSpark": {
+      "turn": 4,
+      "minutes": 0.4,
+      "via": "social.romancePointsChanged"
+    },
+    "firstDiscovery": {
+      "turn": 4,
+      "minutes": 0.4,
+      "via": "social.actDiscovered"
+    },
+    "firstPayoff": {
+      "turn": 12,
+      "minutes": 0.9,
+      "via": "social.romanceRankChanged"
+    },
+    "firstDrama": {
+      "turn": 8,
+      "minutes": 0.5,
+      "via": "story.incident"
+    },
+    "firstCg": null,
+    "deadByCommand": {
+      "social.readThread": 2,
+      "core.scene": 2
+    },
+    "maxQuietDayparts": 0,
+    "inputLost": 3,
+    "longestBeatGap": 2.087666666666667,
+    "trailingDrought": 0,
+    "zeroBeatWindows": 0,
+    "choicesPer10": 12.3,
+    "deadRatio": 0.08,
+    "freshRatio": 0.23,
+    "typedEffective": 0.9,
+    "storylets": {
+      "seen": 7,
+      "total": 112
+    },
+    "storyletIds": [
+      "director.hand.abigail",
+      "director.bad-day.jana",
+      "director.spark.monique.nova",
+      "director.late-text.nova.jana",
+      "director.invite.nova",
+      "director.rumor.jana.nova",
+      "director.bad-day.monique"
+    ],
+    "repeatedProse": 0,
+    "nearDuplicates": [],
+    "ending": null,
+    "spotlight": {
+      "counts": [
+        {
+          "id": "nova",
+          "n": 6
+        },
+        {
+          "id": "jana",
+          "n": 5
+        },
+        {
+          "id": "monique",
+          "n": 4
+        },
+        {
+          "id": "abigail",
+          "n": 3
+        }
+      ],
+      "spread": 2
+    }
+  },
+  "funGates": [
+    {
+      "id": "first-choice",
+      "value": 0.5,
+      "need": "≤ 2 min",
+      "pass": true,
+      "status": "pass"
+    },
+    {
+      "id": "first-discovery",
+      "value": 0.4,
+      "need": "≤ 5 min to a liked/disliked reason",
+      "pass": true,
+      "status": "pass"
+    },
+    {
+      "id": "first-payoff",
+      "value": 0.9,
+      "need": "≤ 15 min",
+      "pass": true,
+      "status": "pass"
+    },
+    {
+      "id": "dead-turns",
+      "value": 0.08,
+      "need": "≤ 10%",
+      "pass": true,
+      "status": "pass"
+    },
+    {
+      "id": "typed-effective",
+      "value": 0.9,
+      "need": "≥ 50% of typed turns change state",
+      "pass": true,
+      "status": "pass"
+    },
+    {
+      "id": "run-length",
+      "value": null,
+      "need": "30–45 min to an ending",
+      "pass": null,
+      "status": "incomplete"
+    },
+    {
+      "id": "drama",
+      "value": 1,
+      "need": "a complication or witness fires",
+      "pass": true,
+      "status": "pass"
+    },
+    {
+      "id": "world-quiet",
+      "value": 0,
+      "need": "≤ 1 quiet daypart in a row",
+      "pass": true,
+      "status": "pass"
+    },
+    {
+      "id": "repeated-prose",
+      "value": 0,
+      "need": "≤ 10% of narrated turns",
+      "pass": true,
+      "status": "pass"
+    },
+    {
+      "id": "input-lost",
+      "value": 3,
+      "need": "0 lost inputs",
+      "pass": false,
+      "status": "fail"
+    }
+  ],
+  "unmetIntents": [],
+  "transcript": [
+    {
+      "turn": 1,
+      "clock": "Day 1 Monday Morning",
+      "decision": "Jana, you're up early — I was just about to make coffee. Want to join me?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Jana sets the small ceramic mug she was holding onto the kitchen table, her fingers lingering on the rim for a second before she lets go.\nJana: Up early? I have been awake since the sun touched the bay. It is hard to sleep when the light is already there, you know?\nJana: And yes, I will join you. I was just about to make some myself, but I am not a great coffee person. You are?\nShe pushes the mismatched mug slightly to the side of the table, clearing a small space, and watches the steam rise from the pot as she waits.\nJana: It is good to have a reason to be up. The apartment is very quiet in the mornings. A little too quiet, maybe.\nJana: Go ahead, start the water. I will just sit here and watch you do it.",
+      "results": [
+        "Jana, you're up early — I was just about to make coffee. Want to join me?"
+      ],
+      "from": 0,
+      "to": 0,
+      "seconds": 9.61,
+      "requestId": "17c1f8da-e711-41e8-8fb3-ca653952f9c3",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 2,
+      "clock": "Day 1 Monday Morning",
+      "decision": "I'm decent at it, but I mostly just drink it to keep the morning from feeling too quiet. Do you want the good beans or the ones that taste a bit like regret?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "The apartment is quiet except for the hum of the refrigerator and the soft click of the kettle heating on the stove.\nYou reach for the two bags of coffee beans on the counter, the paper crinkling slightly under your fingers as you weigh them.\nThe smell of roasted coffee fills the small kitchen, mixing with the faint scent of surfboard wax from the windowsill.\nYou set the bag down and wait, the silence stretching just a little longer than before.",
+      "results": [
+        "I'm decent at it, but I mostly just drink it to keep the morning from feeling too quiet. Do you want the good beans or the ones that taste a bit like regret?",
+        "The activity comes to a close.",
+        "A new opportunity appears.",
+        "New message from Nova."
+      ],
+      "from": 0,
+      "to": 4,
+      "seconds": 6,
+      "requestId": "92d22840-02b2-4c02-a29c-10fcbdf56ae1",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 3,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "Go to Campbell's",
+      "kind": "action",
+      "command": "core.move",
+      "narrative": "Travelled to Campbell's.\nNew message from Kaylee.\nBalance: $72.\nThe café Wi-Fi drops; you reset the router behind the counter, and a grateful regular presses $12 into your hand.\nNew message from Nova.\nA new opportunity appears.\nNew message from Jana.\nThe coffee shop at the campus gate. Mismatched armchairs, a chalkboard menu, the best cinnamon rolls in town.\nMonique is here.",
+      "results": [
+        "Travelled to Campbell's.",
+        "New message from Kaylee.",
+        "Balance: $72.",
+        "The café Wi-Fi drops; you reset the router behind the counter, and a grateful regular presses $12 into your hand.",
+        "New message from Nova.",
+        "A new opportunity appears.",
+        "New message from Jana."
+      ],
+      "from": 4,
+      "to": 8,
+      "seconds": 0.07,
+      "requestId": "e17b00a5-58f2-411b-a3f1-3a22057756e7",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 4,
+      "clock": "Day 1 Monday Evening",
+      "decision": "Talk to Monique",
+      "kind": "action",
+      "command": "core.scene",
+      "narrative": "Monique sets her latte on the table between you, the ceramic clinking against the wood. She keeps her hands on the mug, fingers wrapped around the warmth, and looks up with a steady gaze that doesn't quite settle.\nMonique: You're early. I was expecting you ten minutes ago.\nMonique: I appreciate the punctuality. It's rare.\nMonique: But I need to know something before we start. Are you actually here to work, or did you just want a place to sit?\nMonique: Because I have a deadline at four, and I don't have time for small talk.\nMonique: So. What's the plan?",
+      "results": [
+        "Talk to Monique",
+        "You talk to Monique: Talk to Monique"
+      ],
+      "from": 8,
+      "to": 8,
+      "seconds": 7.55,
+      "requestId": "c94e1993-c697-4027-860e-57a691f22b4c",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 5,
+      "clock": "Day 1 Monday Evening",
+      "decision": "I'm here to work, and I'm here for the conversation. I don't want to rush you, but I'd love to hear what's on your mind.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Campbell's sits quiet under the morning light, the bay breeze pressing cold against the glass.\nA student in a gray hoodie hunches over a laptop in the corner, fingers moving rapidly across the keys.\nThe smell of roasted beans and warm sugar hangs heavy in the air, mixing with the damp chill from the door.\nThe chalkboard menu lists the day's specials in faded white dust, untouched by the morning rush.\nA small, folded piece of paper rests on the counter near the register, tucked under a ceramic mug.",
+      "results": [
+        "I'm here to work, and I'm here for the conversation. I don't want to rush you, but I'd love to hear what's on your mind.",
+        "The activity comes to a close.",
+        "A new opportunity appears.",
+        "Bright and cold off the water.",
+        "New message from Abigail."
+      ],
+      "from": 8,
+      "to": 12,
+      "seconds": 5.53,
+      "requestId": "a9ae80d9-9b8b-4d45-b471-204796cb6111",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 6,
+      "clock": "Day 2 Tuesday Morning",
+      "decision": "Read messages from Jana",
+      "kind": "action",
+      "command": "social.readThread",
+      "narrative": "You read Jana's messages.\nJana: I'm doing a thing today and I want you there for it — no pressure, but I'll be looking for you.",
+      "results": [
+        "You read Jana's messages.\nJana: I'm doing a thing today and I want you there for it — no pressure, but I'll be looking for you."
+      ],
+      "from": 12,
+      "to": 12,
+      "seconds": 0.12,
+      "requestId": "a0f1a6ad-9684-4071-af4f-c406fce75eef",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 7,
+      "clock": "Day 2 Tuesday Morning",
+      "decision": "Two Hands, One Problem",
+      "kind": "action",
+      "command": "story.startOfferedScene",
+      "narrative": "Abigail messages mid-spiral about something small that has swollen into something enormous — a shelf that won't sit level, a form that won't submit, a thing that needs two hands and one more person. By the time you arrive she is apologizing for asking and already halfway to solving it badly, alone, the way she always does. The ask underneath the ask is obvious: nobody has ever shown her it's allowed to be shared.",
+      "results": [
+        "Abigail messages mid-spiral about something small that has swollen into something enormous — a shelf that won't sit level, a form that won't submit, a thing that needs two hands and one more person. By the time you arrive she is apologizing for asking and already halfway to solving it badly, alone, the way she always does. The ask underneath the ask is obvious: nobody has ever shown her it's allowed to be shared.",
+        "Two Hands, One Problem begins."
+      ],
+      "from": 12,
+      "to": 12,
+      "seconds": 0.51,
+      "requestId": "bf9e6e33-e425-464a-8103-07b1cb703383",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 8,
+      "clock": "Day 2 Tuesday Morning",
+      "decision": "I take the hard half without being asked.",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "Abigail goes still for a second, then hands it over like it costs her something — and it does. You work shoulder to shoulder and it's done in half the time, and she stops apologizing somewhere in the middle, which was the real result.\nAttraction with Abigail changed.\nAbigail: Chemistry 6 → 8 (how the moment went)\nAbigail: Trust 15 → 17\nJana turns up, and it has clearly been a bad day.",
+      "results": [
+        "Attraction with Abigail changed.",
+        "Abigail: Chemistry 6 → 8 (how the moment went)",
+        "Abigail: Trust 15 → 17",
+        "Abigail goes still for a second, then hands it over like it costs her something — and it does. You work shoulder to shoulder and it's done in half the time, and she stops apologizing somewhere in the middle, which was the real result.",
+        "Something is about to happen.",
+        "Jana turns up, and it has clearly been a bad day."
+      ],
+      "from": 12,
+      "to": 16,
+      "seconds": 0.04,
+      "requestId": "6ef33ee3-fea1-4c80-be32-35fd07738114",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 9,
+      "clock": "Day 2 Tuesday Afternoon",
+      "decision": "I don't take it personally. I wait.",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "You stay steady and say you're around when she wants to talk, and you mean it. Ten minutes later your phone buzzes with an apology that means it too, and that evening Jana finds you and spills the whole day out — the parts she snapped about, and the parts underneath.\nAttraction with Jana changed.\nJana: Chemistry 10 → 12 (how the moment went)\nJana: Trust 30 → 32",
+      "results": [
+        "Attraction with Jana changed.",
+        "Jana: Chemistry 10 → 12 (how the moment went)",
+        "Jana: Trust 30 → 32",
+        "You stay steady and say you're around when she wants to talk, and you mean it. Ten minutes later your phone buzzes with an apology that means it too, and that evening Jana finds you and spills the whole day out — the parts she snapped about, and the parts underneath."
+      ],
+      "from": 16,
+      "to": 16,
+      "seconds": 0.03,
+      "requestId": "e0598a08-024e-4b3f-92f5-4e29c8790fcc",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 10,
+      "clock": "Day 2 Tuesday Afternoon",
+      "decision": "Hey, I'm here. I saw your message about the thing you're doing today. I'm free for the rest of the afternoon if you want to tell me what it is, or if you just need a coffee and a distraction, I'm not going anywhere.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "The bell above the door chimes, a bright, brassy note cutting through the low hum of the espresso machine.\nYou step into the amber light of Campbell's, the air thick with the scent of roasted beans and warm sugar. The mismatched armchairs are empty, save for one near the window where a stack of newspapers sits unopened.\nMonique is behind the counter, her sleeves rolled up to her elbows, carefully wiping a smudge off the glass case. She doesn't look up immediately, her movements precise and rhythmic, the cloth moving in small circles.\nA small, hand-written note rests on the counter, tucked under a ceramic mug. It reads: 'Table 4. I saved the good seat.'",
+      "results": [
+        "Hey, I'm here. I saw your message about the thing you're doing today. I'm free for the rest of the afternoon if you want to tell me what it is, or if you just need a coffee and a distraction, I'm not going anywhere.",
+        "The activity comes to a close.",
+        "New message from Monique.",
+        "A new opportunity appears.",
+        "New message from Nova."
+      ],
+      "from": 16,
+      "to": 20,
+      "seconds": 7.27,
+      "requestId": "92f2e9dd-5863-408a-a4b3-3cb4ca451ace",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 11,
+      "clock": "Day 2 Tuesday Evening",
+      "decision": "Talk to Monique",
+      "kind": "action",
+      "command": "core.scene",
+      "narrative": "Monique: You're early. Again.\nMonique sets her iced coffee on the table, the condensation beading on the glass, and slides a small notebook out of her bag.\nMonique: I appreciate the punctuality. It’s rare, and I don’t waste it.\nMonique: So. You said you wanted to talk. I’m listening, but I have a case study to review before nine.\nMonique: What’s the one thing you need from me right now that you haven’t asked for yet?",
+      "results": [
+        "Talk to Monique",
+        "You talk to Monique: Talk to Monique"
+      ],
+      "from": 20,
+      "to": 20,
+      "seconds": 5.67,
+      "requestId": "4e59d60d-c68d-4d33-96c9-0f1600cf136d",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 12,
+      "clock": "Day 2 Tuesday Evening",
+      "decision": "Honestly? I need you to tell me what 'competence' actually looks like to you. I keep hearing it as a buzzword, but I want to know if it's about speed, accuracy, or something else entirely. I'm trying to stop guessing what you value so I can actually be useful instead of just... present.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Monique’s pen stops moving. She sets it down on the table, the click sharp in the quiet of the coffee shop, and looks at you with a stillness that feels heavier than usual.\nMonique: That is the first honest thing you have said to me all week.\nMonique: Competence is not speed. Speed is just noise if the output is wrong. It is not accuracy, either. Accuracy is the floor, not the ceiling.\nMonique: It is reliability. It is knowing that when I say I need a draft by four, you will have it there at four, and it will be ready to use, not just ready to read.\nMonique: So tell me. If I asked you to handle a task I have been avoiding for three days, what would you do first before you even started the work?\nMonique: And do not give me the answer that sounds like a textbook. Give me the answer that shows you actually think.",
+      "results": [
+        "Honestly? I need you to tell me what 'competence' actually looks like to you. I keep hearing it as a buzzword, but I want to know if it's about speed, accuracy, or something else entirely. I'm trying to stop guessing what you value so I can actually be useful instead of just... present."
+      ],
+      "from": 20,
+      "to": 20,
+      "seconds": 8.85,
+      "requestId": "593d8ca2-cb08-4023-9e01-6f10274a6de0",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 13,
+      "clock": "Day 2 Tuesday Evening",
+      "decision": "What is it you love about punctuality?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Monique’s pen hovers over the notebook, the tip tapping a rhythmic, silent code against the paper. She does not look up immediately, her eyes tracing the lines of her notes with a focused intensity.\nMonique: I love that it removes the variable of chaos.\nShe finally lifts her gaze, holding yours with a steady, unblinking stare. The condensation on her iced coffee has pooled into a dark ring on the wooden table.\nMonique: Most people treat time as a suggestion. A fluid thing that bends to their mood. When you are punctual, you are telling me that your word is a fixed point. It is a contract.\nMonique closes the notebook with a soft thud, tucking it away into her bag. She leans back in the armchair, crossing her arms, her posture shifting from defensive to something more open, though still guarded.\nMonique: It means I don’t have to manage you. I don’t have to wonder if you’ll show up, or if you’ll be distracted, or if you’ll need me to hold your hand through the basics. I can just... work.\nMonique: So. You asked about competence. I gave you the definition. Now you owe me the answer. What is your first step?\nShe tilts her head slightly, her dark eyes narrowing just a fraction, waiting for the specific, non-textbook answer she requested. The coffee shop hums around them, the smell of cinnamon and roasted beans thick in the air.",
+      "results": [
+        "What is it you love about punctuality?"
+      ],
+      "from": 20,
+      "to": 20,
+      "seconds": 11.57,
+      "requestId": "f8490bff-51a8-44fd-82dd-1fb24e4fedc6",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 14,
+      "clock": "Day 2 Tuesday Evening",
+      "decision": "What is it you love about good pens?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Monique pauses, her hand hovering over the closed notebook. She does not answer immediately, her eyes drifting to the pen resting on the table, then back to you with a slight, unreadable tilt of her head.\nMonique: You are deflecting.\nShe picks up the pen, turning it slowly between her fingers, the metal cap catching the low light of the shop. Her expression remains neutral, but her jaw tightens just a fraction.\nMonique: I asked for your first step. Not a commentary on my stationery.\nMonique sets the pen down with a deliberate click, aligning it perfectly parallel to the edge of the table. She leans forward slightly, her elbows resting on the armrests of the chair, her gaze steady and unyielding.\nMonique: I have a case study due at nine. I have a reputation to maintain. And I have a question that you are avoiding.\nShe reaches into her bag and pulls out her phone, the screen glowing briefly before she sets it face down on the table, a silent timer ticking over the wood.\nMonique: And this time, make it count.",
+      "results": [
+        "What is it you love about good pens?"
+      ],
+      "from": 20,
+      "to": 24,
+      "seconds": 10.04,
+      "requestId": "3c78ee93-69ff-4aed-9923-6d4e719ff346",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 15,
+      "clock": "Day 3 Wednesday Morning",
+      "decision": "Let it land. Flirt back.",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "It lands. Nova laughs low, holds your eyes a beat too long, and suddenly the two of you have plans neither of you has named yet — and a witness somewhere who will name them for you.\nAttraction with Nova changed.\nNova: Chemistry 8 → 10 (how the moment went)",
+      "results": [
+        "Attraction with Nova changed.",
+        "Nova: Chemistry 8 → 10 (how the moment went)",
+        "It lands. Nova laughs low, holds your eyes a beat too long, and suddenly the two of you have plans neither of you has named yet — and a witness somewhere who will name them for you."
+      ],
+      "from": 24,
+      "to": 24,
+      "seconds": 0.05,
+      "requestId": "08ea1855-7fa4-41eb-9a6b-7e7cacbf91d0",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 16,
+      "clock": "Day 3 Wednesday Morning",
+      "decision": "Talk to Nova",
+      "kind": "action",
+      "command": "core.scene",
+      "narrative": "Nova taps her pen against the rim of a cold cider, her eyes flicking up from the notebook to the door, then back to you with a sharp, assessing look.\nNova: You’re actually here. I was starting to think you’d ghosted me for the whole week, which would be a new personal record for me, honestly.\nNova: I’m bored out of my mind. The film society meeting was just three guys arguing about lens flares like it was a religion. I needed air, or a fight, or both.\nNova: So, since you’re sitting there looking like you have somewhere better to be, what’s the plan? Are we just going to sit in this smoky little hole, or are you going to drag me out before I start editing my own hair?",
+      "results": [
+        "Talk to Nova",
+        "You talk to Nova: Talk to Nova"
+      ],
+      "from": 24,
+      "to": 24,
+      "seconds": 5.74,
+      "requestId": "e91237b2-1969-4d86-bcb3-86b6155580e4",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 17,
+      "clock": "Day 3 Wednesday Morning",
+      "decision": "What is it you love about old horror films?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Nova stops tapping her pen, the silence stretching just long enough to be noticeable before she leans back in the mismatched armchair, crossing her arms over her chest.\nNova: Oh, you want the real answer? Fine. It’s not the gore, it’s the dread. Modern stuff is all jump scares and loud noises, but the old stuff? It’s about the feeling that you’re already dead and you just haven’t realized it yet. There’s a elegance to it.\nNova: A tragedy.\nNova: And nobody has to explain why the monster is cool. It just is. It’s pure, unadulterated nightmare fuel without the marketing department trying to sell you a t-shirt.\nNova: But enough about my weird obsession. You asked, so you get a direct answer. But now I’m curious about you. What’s the last thing that actually scared you? Not a movie. I mean, like, a real moment where your stomach dropped?\nNova: Don't say 'spiders' or 'the dark.' That’s boring. Give me something human.",
+      "results": [
+        "What is it you love about old horror films?"
+      ],
+      "from": 24,
+      "to": 24,
+      "seconds": 7.88,
+      "requestId": "b65588f7-8a43-493e-8e3a-f50701aff532",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 18,
+      "clock": "Day 3 Wednesday Morning",
+      "decision": "What is it you love about vinyl?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Nova sets the notebook face down on the table, the pen rolling to a stop against the edge of her cider glass.\nNova: Vinyl? It’s the only thing that doesn’t let you skip the bad parts. You have to wait for the B-side. You have to sit in the silence between tracks and let the static do its thing.\nNova: It’s analog. It’s messy. It’s got a soul that a digital file just doesn’t have, no matter how much bitrate you crank up.\nNova: But you’re asking me this because you’re trying to figure out if I’m a person or just a collection of aesthetic choices, right? Classic. I’m flattered, really.\nNova: Look, I’m done being the interview subject for the day. I’m getting bored, and this chair is killing my back. I’m heading to the record shop on Broad. They have a crate of 70s horror soundtracks that’s been sitting there for weeks.\nNova: If you want to come, you can. If you don’t, I’ll assume you’re going to go sit in the library and pretend you’re working. Your call, but I’m leaving in five.",
+      "results": [
+        "What is it you love about vinyl?"
+      ],
+      "from": 24,
+      "to": 24,
+      "seconds": 9.3,
+      "requestId": "eddb5043-a442-4ed1-b79b-914563c971ba",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 19,
+      "clock": "Day 3 Wednesday Morning",
+      "decision": "What is it you love about cider?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Nova lifts the glass, swirling the amber liquid so the condensation runs down her fingers, and takes a slow, deliberate sip.\nNova: Cider? You’re asking me about cider. In a coffee shop. On a Wednesday. I’m starting to think you’re trying to break me.\nShe sets the glass down with a heavy thud, leaning forward until her elbows rest on the table, her eyes bright and challenging.\nNova: It’s not the taste, obviously. It’s the chaos. It’s unfiltered. It’s got that weird, fermented tang that feels like a secret. Like you’re drinking something that shouldn’t be legal in a library.\nHer grin softens, just slightly, as she watches you, the teasing edge of her voice dropping a register.\nNova: But fine. I’ll give you the real answer. It’s because it’s cheap, it’s cold, and it tastes like autumn in a way that doesn’t require a degree to understand. It’s honest.\nShe stands up, grabbing her notebook and the pen, tucking them into her plaid skirt pocket with a decisive snap.\nNova: Anyway, I’m done philosophizing. My thesis film is due in spring and I have eleven seconds of usable footage. Eleven. One is my thumb. I need to find a new angle, or a new camera, or a new life. The record shop is the only option left.",
+      "results": [
+        "What is it you love about cider?"
+      ],
+      "from": 24,
+      "to": 24,
+      "seconds": 10.37,
+      "requestId": "56f4ca61-e4a2-4418-aa3e-35e3014d7acc",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 20,
+      "clock": "Day 3 Wednesday Morning",
+      "decision": "I like that you have to wait for the B-side. It feels like a commitment to the whole experience, not just the highlights. Like... I'd rather sit in the silence between tracks than skip to the next thing.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Nova freezes mid-step, one hand still gripping the strap of her bag, the other hovering near the doorframe.\nThe pen in her pocket jiggles as she shifts her weight, her blue eyes locking onto yours with a sharp, sudden intensity that cuts through the morning noise of the coffee shop.\nNova: Wait. Did you just... did you just quote my own metaphor back at me with a little twist? That’s either the most annoying thing you’ve ever said to me, or the most accurate.\nShe steps back into the chair, not sitting, but leaning against the back of it, crossing her arms. The playful smirk is still there, but it’s thinner now, guarded. She looks away for a second, toward the chalkboard menu, then back to you.\nNova: Everyone thinks I am the confident one. I am the loud one. That is a different department.\nNova points a finger at you, not quite a threat, more like a challenge. Her voice drops, losing the performative edge she usually wears like armor.\nNova: Okay, your line. And if you say anything nice I will scream.\nShe waits, her chin resting on her crossed arms, watching you with an intensity that makes the small coffee shop feel suddenly very quiet. The cinnamon rolls on the counter seem to fade into the background.\nNova: I’m serious. Don’t give me the 'you’re funny' or the 'you’re cool' speech. I don’t need a fan club, I need a witness. So, what’s the silence like for you? What do you actually hear when you’re not skipping?",
+      "results": [
+        "I like that you have to wait for the B-side. It feels like a commitment to the whole experience, not just the highlights. Like... I'd rather sit in the silence between tracks than skip to the next thing."
+      ],
+      "from": 24,
+      "to": 28,
+      "seconds": 10.54,
+      "requestId": "cca8da1f-8d0a-47b8-9920-1e4e15db1eb4",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 21,
+      "clock": "Day 3 Wednesday Afternoon",
+      "decision": "Script session with Nova",
+      "kind": "action",
+      "command": "core.scene",
+      "narrative": "Nova taps a pen against the edge of the table, her eyes flicking up from the napkin to your face, a small, slightly crooked smile playing on her lips.\nNova: Okay, so. The villain's monologue. It's not just about being evil, it's about being right. And no one believes them. That's the bit I'm stuck on.\nNova: You're doing that thing where you look like you're judging my handwriting. It's fine. It's artistic anarchy. Or it's just bad. Hard to tell the difference when you're this loud.\nNova: I mean, you listened to me talk about my dad and the vinyl. That's... not nothing. Most people just nod and check their phones. You actually sat there. So, yeah. I'm trying to make this film matter. Not just be another punk poster in a window.\nNova: So. Read me the line. 'I didn't break the world, I just showed you the cracks.' Go on. Don't be shy, I promise I won't laugh. Much.",
+      "results": [
+        "Script session with Nova",
+        "Your Charm rose to Likable.",
+        "Nova: Trust 21 → 21",
+        "Nova reads you scenes from her short film and casts you as the villain, then rewrites your lines on a napkin."
+      ],
+      "from": 28,
+      "to": 28,
+      "seconds": 9.93,
+      "requestId": "28159a57-0ecd-46e6-8a52-a3aaab6f5701",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 22,
+      "clock": "Day 3 Wednesday Afternoon",
+      "decision": "What is it you love about being teased back?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Nova stops tapping her pen, the tip hovering just above the napkin. She leans back in the mismatched armchair, stretching her legs out under the table, and looks at you with a mix of surprise and a slightly guarded grin.\nNova: It’s not the teasing itself. It’s that you don’t treat me like a fragile little porcelain doll. You throw a stone, and I throw one back, and we both know we’re just playing.\nNova: It’s... honest. When you tease me, you’re admitting you see the actual person, not just the loud, stupid punk girl in the plaid skirt. You’re saying, 'I know you’re trying to be tough, but I know you’re soft underneath.' And I can’t do anything but match you.\nNova: It’s the only way to keep up.\nShe glances toward the window for a split second, her eyes flicking past the steam rising from her untouched latte, before snapping her gaze back to you. There’s a faint, almost imperceptible flush creeping up her neck.\nNova: Besides, if I let you win, you’d never shut up about it. And I have a reputation to maintain, even if it’s just to you.\nNova: So. That’s the answer. No speeches, no destiny. Just... don’t let me win. That’s the rule.\nNova picks up her latte, takes a slow sip, and sets it down with a deliberate\nNova clink.\nNova: . She doesn’t look away, but her shoulders have dropped a fraction of an inch, the tension from the script discussion bleeding out of her frame.",
+      "results": [
+        "What is it you love about being teased back?"
+      ],
+      "from": 28,
+      "to": 28,
+      "seconds": 11.44,
+      "requestId": "6af52578-3897-4eae-b2d0-6fc01bbaafc2",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 23,
+      "clock": "Day 3 Wednesday Afternoon",
+      "decision": "Why can't you stand authority?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Nova: Because they think the rules are the point. They’re not. The rules are just a leash with a pretty bow on it.\nNova pushes her chair back, the legs scraping briefly against the tile floor, and stands up, stretching her arms overhead until her spine pops audibly.\nNova: I mean, look at this place. Chalkboard menu. Mismatched chairs. It’s a disaster. I love it. Because nobody told me how to sit down.\nNova: And yeah, I saw the look you gave Monique earlier. Don’t worry, I’m not going to tell her. I’m a professional. I keep secrets. Mostly.\nNova: But seriously. Standing still is for statues. I’m done being a statue. I need air. Real air, not this recycled coffee-shop oxygen.\nShe grabs her bag, slinging it over her shoulder with a casual thud, and heads toward the door, pausing just long enough to glance back over her shoulder with a half-lidded, challenging stare.\nNova: Come on. Or don’t. I’ll just tell everyone you’re a coward. It’s a very good story, actually. Very cinematic.",
+      "results": [
+        "Why can't you stand authority?"
+      ],
+      "from": 28,
+      "to": 28,
+      "seconds": 10.84,
+      "requestId": "c0767924-ba2d-440d-a087-c851c44c91f9",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 24,
+      "clock": "Day 3 Wednesday Afternoon",
+      "decision": "How did that come about?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Nova: It came about because you didn't flinch when I said it. Most people get that little... twitch. Like I'm a stray dog that might bite. You just looked at me like it was a fact. Like 'gravity' or 'rain.' And that's... annoying. In a good way.\nNova: I mean, Monique saw it too. That look you gave her. It wasn't just about the coffee. It was about the whole... performance. You saw the cracks in the villain, and you saw them in me. And you didn't try to fix them. You just... noted them.\nNova: So yeah. That's how it came about. One honest look. And now I'm stuck with you. Which is fine. I like being stuck. It's less lonely than being free.\nNova: Anyway. I'm going to stand by the window and watch the pigeons argue. You can come stand there too, or you can go back to judging my handwriting. Your call.\nNova turns, her bag still slung over one shoulder, and moves to the window seat, pulling her phone out to check the time before setting it face down on the table.",
+      "results": [
+        "How did that come about?"
+      ],
+      "from": 28,
+      "to": 28,
+      "seconds": 9.89,
+      "requestId": "0e93a273-0be9-48b4-b642-09f4a9289e9b",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 25,
+      "clock": "Day 3 Wednesday Afternoon",
+      "decision": "What are you up to later?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Nova leans against the window frame, her back to the room, watching a pigeon peck at a crumb on the sill. She doesn't turn around, but her reflection in the glass shows her eyes are fixed on the door, not the bird.\nNova: Later? I'm going to go home, stare at a wall, and probably edit that damn villain's monologue until it makes sense. Or doesn't. It's a coin flip.\nNova: But. Since you're asking, and since you're the only person in this godforsaken coffee shop who didn't look at me like I was a broken appliance when I talked about my dad... maybe I'm not just going to stare at the wall.\nNova: There's a place near the harbor. Old place. They play vinyl records that are actually old. Not that digital garbage that sounds like it's being eaten by a robot. I go there to listen. Really listen. It's quieter than I expected. For a loud person.\nNova: I'm not asking you to come. I'm just saying it's there. And it's not a statue. It's just... a room with good sound. And bad chairs. Like this one, but better.\nShe finally turns, leaning her hip against the window, one hand in her pocket, the other holding her phone loosely. Her expression is open, unguarded, waiting.\nNova: So. What do you say? Or do I have to drag you out by your ears? I'm good at that. I've dragged worse.",
+      "results": [
+        "What are you up to later?"
+      ],
+      "from": 28,
+      "to": 28,
+      "seconds": 10.88,
+      "requestId": "7b356c8b-5233-4f4b-98b1-3dfd881b5d47",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 26,
+      "clock": "Day 3 Wednesday Afternoon",
+      "decision": "How are things going?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Nova’s thumb stops its rhythmic drag across the condensation on her latte glass. She doesn't look up immediately, letting the silence stretch just long enough to feel deliberate before she finally lifts her chin, her blue eyes sharp and direct.\nNova: Going? Fine. Boring. Predictable. Like watching paint dry, except the paint is expensive and smells like burnt sugar.\nNova: I’m trying to figure out if the villain is actually right, or if she’s just a mess who thinks she’s a mastermind. It’s a subtle difference. A very important one.\nNova: You know how you said you liked waiting for the B-side? That patience? I’m trying to apply that to a three-act structure. It’s not working.\nNova: And before you ask, no, I’m not going to Monique’s. She’s got a project. I’ve got a plot hole. We’re both stuck in our little boxes.\nNova: You look like you’re about to say something profound. Or something stupid. I can’t tell which, and it’s annoying me.",
+      "results": [
+        "How are things going?"
+      ],
+      "from": 28,
+      "to": 28,
+      "seconds": 18.97,
+      "requestId": "92f6a5f1-c2e2-464c-8938-7500ca2a0281",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 27,
+      "clock": "Day 3 Wednesday Afternoon",
+      "decision": "I'm not going to stare at a wall with you, but I can help you find the right words. What's the one line that's still feeling wrong?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Nova drops her pen into her bag, the click of the cap snapping shut sounding louder than it should.\nShe pulls a crumpled napkin from the table, smoothing it out with one hand while the other traces the edge of her latte glass, leaving a faint, wet circle on the wood.\nNova: The last line. 'I am the consequence, not the cause.' It’s too clean. It sounds like a poster in a dorm room. I need it to sound like a mistake she made on purpose.\nShe tears the napkin in half, the fibers fraying under her thumb, and tucks the pieces into her pocket. Her eyes flick toward the door, then back to you, a quick, sharp glance that lingers a beat too long.\nNova: You said you’d help. So don’t just sit there looking like you’re solving a math problem. Tell me where the crack is. I can’t see it because I’m too close to the glass.\nNova: And before you get all philosophical about it, remember: I’m not asking for a fix. I’m asking for a bruise. Something that bleeds a little on the page.\nNova leans forward, elbows on the table, her chin resting on her interlaced fingers. The steam from her latte curls up between them, obscuring her face for a second before she exhales, her breath visible in the cool air.\nNova: Go on. I’m listening. And I’m not going to laugh. Probably.",
+      "results": [
+        "I'm not going to stare at a wall with you, but I can help you find the right words. What's the one line that's still feeling wrong?"
+      ],
+      "from": 28,
+      "to": 28,
+      "seconds": 20.44,
+      "requestId": "aa09bb5f-4991-40dc-98dc-15d468a3b329",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 28,
+      "clock": "Day 3 Wednesday Afternoon",
+      "decision": "What if the consequence is actually a choice she made in the dark, not something that just happened to her? Like, 'I chose to be the wound.' It's rougher, but it makes her accountable for her own pain instead of just a victim of it.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Nova stares at the table for a long second, her thumb pressing a hard line into the wood grain before she looks up.\nNova: I chose to be the wound.\nNova: Yeah. That’s it. That’s the bruise. I’ve been writing 'I was hurt' for three weeks, but it’s 'I bit the hand that fed me because the food was bland.' It’s uglier. It’s better.\nShe rips the corner of the napkin off, crumples it into a tight ball, and drops it into her bag with a decisive thud.\nNova: You’re annoyingly good at this. It’s actually irritating. I was going to go home and stare at the wall, but now I have to go write this down before I lose the thread.\nNova: And before you get all smug about it, remember: I’m not thanking you. I’m just... acknowledging the data point. There’s a difference.\nShe stands up, slinging her bag over her shoulder, and glances back toward the door where Monique had been sitting earlier.\nNova: Also, Monique’s still over there. If you want to say something, now’s your chance. If you don’t, I’m walking. And I’m taking the cinnamon roll with me. It’s mine. I paid for it. Even if you didn’t see me pay.",
+      "results": [
+        "What if the consequence is actually a choice she made in the dark, not something that just happened to her? Like, 'I chose to be the wound.' It's rougher, but it makes her accountable for her own pain instead of just a victim of it."
+      ],
+      "from": 28,
+      "to": 28,
+      "seconds": 13.64,
+      "requestId": "0739a323-8bf7-4e37-9f68-8dd65150e639",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 29,
+      "clock": "Day 3 Wednesday Afternoon",
+      "decision": "You found it. That's the line that actually hits. I'm glad it worked out.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Nova pauses at the door, one hand still on the strap of her bag, her head tilting slightly as if listening to a sound only she can hear.\nHer gaze flicks briefly toward the empty chair where Monique sat, then snaps back to your face with a sharp, quick smile that doesn't quite reach her eyes.\nNova: Yeah. It’s annoying how fast you found the crack, actually. I was hoping to suffer a little longer. It’s good for the soul.\nShe shrugs, a quick, dismissive motion of her shoulders, and steps fully into the doorway, the afternoon light catching the red streaks in her hair. She doesn't move to leave, though.\nJust stands there, leaning against the frame, watching you with a look that is half-challenge, half-something softer and harder to place.\nNova: But hey. Don’t let it go to your head. I’m not doing this for you. I’m doing it because the alternative is staring at a wall, and I have standards. Even if they’re low. Especially if they’re low.\nNova: Also. I saw her. She’s got that look. The one where she’s trying to decide if you’re a threat or a project. I’m not telling you which. That’s your problem to solve. Or not. I’m leaving.\nShe pushes off the doorframe, her platform boots clicking against the tile floor with a deliberate rhythm.\nShe glances back one last time, her expression unreadable, before turning and walking out into the cool afternoon air, the door swinging shut behind her with a soft, final click.",
+      "results": [
+        "You found it. That's the line that actually hits. I'm glad it worked out."
+      ],
+      "from": 28,
+      "to": 32,
+      "seconds": 11.48,
+      "requestId": "d7648112-978c-4d59-957c-ef932e743a30",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 30,
+      "clock": "Day 3 Wednesday Evening",
+      "decision": "Talk to Monique",
+      "kind": "action",
+      "command": "core.scene",
+      "narrative": "Monique taps her pen against the table, a rhythmic, sharp click that stops when she looks up. Her eyes are bright, focused, but there is a slight tension in her jaw.\nMonique: You asked what competence looks like. I didn't answer.\nMonique: It isn't speed. Speed is just noise until it's accurate. It isn't accuracy alone, either. That's just... correct.\nMonique: Competence is knowing exactly what you can deliver, and then delivering it without asking for permission to be tired.\nMonique: I work two jobs. I don't have time for 'present.' I have time for people who know what they're doing before they open their mouths.\nMonique: So. What are you doing with your time this week? Be specific.",
+      "results": [
+        "Talk to Monique",
+        "You talk to Monique: Talk to Monique"
+      ],
+      "from": 32,
+      "to": 32,
+      "seconds": 7.75,
+      "requestId": "fe105264-36dd-48b4-8edc-85e5f0e8dbec",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 31,
+      "clock": "Day 3 Wednesday Evening",
+      "decision": "I appreciate you being honest about that. It's a lot clearer than most people's definitions. So, with that in mind, what does being taken seriously look like in your day-to-day? Is there something specific you need from a partner to feel like your work and your mind are respected?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "The morning light cuts through the dust motes dancing above the mismatched armchairs, illuminating the steam rising from the ceramic mug on the table.\nThe chalkboard menu behind the counter lists the day's specials in faded white chalk, the letters slightly smudged where a hand has brushed against them.\nA barista in the corner wipes down the espresso machine, the rhythmic hiss of steam punctuating the quiet hum of the room.\nOn the small wooden table, a single cinnamon roll sits on a paper napkin, its surface glistening with a thin layer of sugar that catches the light.\nThe air smells of roasted beans and warm pastry, a thick, comforting scent that settles into the fabric of the armchair.",
+      "results": [
+        "I appreciate you being honest about that. It's a lot clearer than most people's definitions. So, with that in mind, what does being taken seriously look like in your day-to-day? Is there something specific you need from a partner to feel like your work and your mind are respected?",
+        "The activity comes to a close.",
+        "A new opportunity appears.",
+        "New message from Abigail."
+      ],
+      "from": 32,
+      "to": 36,
+      "seconds": 6.95,
+      "requestId": "6abdb1a9-c5e7-49b4-b8ae-e6d27ef08f64",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 32,
+      "clock": "Day 4 Thursday Morning",
+      "decision": "Go to Prescott Building",
+      "kind": "action",
+      "command": "core.move",
+      "narrative": "Travelled to Prescott Building.\nA new opportunity appears.\nNew message from Monique.\nThe new glass building: library stacks, study rooms and the screening room the film society borrows.\nMonique and Abigail are here.",
+      "results": [
+        "Travelled to Prescott Building.",
+        "A new opportunity appears.",
+        "New message from Monique."
+      ],
+      "from": 36,
+      "to": 40,
+      "seconds": 0.34,
+      "requestId": "c41cebf9-fbd2-4113-9905-436691f371aa",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 33,
+      "clock": "Day 4 Thursday Afternoon",
+      "decision": "Talk to Monique",
+      "kind": "action",
+      "command": "core.scene",
+      "narrative": "Monique uncaps a black fountain pen, the click sharp in the quiet study room, and slides a single sheet of paper toward the center of the table.\nMonique: You're early. Again. I noted it.\nMonique: I'm not here to chat about the weather. I'm here because I have a deadline in four hours and I need to know if you can handle a task without me hovering.\nMonique: Look at this case study. Find the one error in the financial projection. If you can do it in ten minutes, we're done. If you can't, we're done.\nMonique: Clock's ticking. Don't make me wait.",
+      "results": [
+        "Talk to Monique",
+        "You talk to Monique: Talk to Monique"
+      ],
+      "from": 40,
+      "to": 40,
+      "seconds": 6.61,
+      "requestId": "a789b0f5-9817-40e7-86c2-6f0077a5ed8b",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 34,
+      "clock": "Day 4 Thursday Afternoon",
+      "decision": "What is it you love about being taken seriously?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Monique’s pen hovers over the paper, the nib not touching the ink. She looks up, her expression unreadable, then down at her watch.\nMonique: Love is the wrong word. It’s efficiency. When someone is taken seriously, the friction drops. I don’t have to translate. I don’t have to explain why a decimal point matters. You just... see it.\nShe taps the pen against the table, a sharp, rhythmic click. Her eyes flick to the door, then back to you, lingering a beat too long.\nMonique: It’s rare. Most people want to be liked. I want to be understood. There’s a difference. And you’re the only one in this building who hasn’t tried to smooth my edges to make me comfortable.\nShe pulls the sheet of paper closer, her fingers tracing the edge of the case study. Her voice drops, quieter now, almost to herself.\nMonique: So. The error. You have nine minutes left. Don’t make me regret the fact that I’m actually looking forward to this.",
+      "results": [
+        "What is it you love about being taken seriously?"
+      ],
+      "from": 40,
+      "to": 40,
+      "seconds": 8.91,
+      "requestId": "4cddc706-0f81-440c-b4e8-135f713bab39",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 35,
+      "clock": "Day 4 Thursday Afternoon",
+      "decision": "Why can't you stand bragging?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Monique’s pen stops moving. She sets it down, the cap clicking shut with a finality that cuts the air. Her gaze drops to the case study, then snaps back up, sharper than before.\nMonique: Because it’s noise. Bragging is the sound someone makes when they need you to do their thinking for them. It tells me they haven’t done the work, they’ve just finished the performance.\nShe leans back, the chair creaking slightly, and crosses her arms. The motion is tight, controlled, but her eyes flick toward the door for a split second before returning to you.\nMonique: I don’t have time for performances. I have a deadline. And I have a feeling that what you’re trying to tell me is that you’re not here to perform either.\nMonique picks up the pen again, uncaps it, and points the nib at the paper. Her expression is unreadable, but her jaw is set.\nMonique: So stop asking me why I can’t stand it. Show me you don’t do it. Find the error. Now.",
+      "results": [
+        "Why can't you stand bragging?"
+      ],
+      "from": 40,
+      "to": 40,
+      "seconds": 8.9,
+      "requestId": "6eb3e9b0-37e3-4ca5-8c57-9856691c1c84",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 36,
+      "clock": "Day 4 Thursday Afternoon",
+      "decision": "Why can't you stand sloppiness?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Monique uncaps her pen, the click sharp in the quiet room, and taps the nib against the table once, hard. Her eyes stay fixed on the paper, not on you.\nMonique: Sloppiness is a choice. It’s the sound of someone deciding their time is more valuable than the result. I don’t have the budget for that.\nShe leans forward, elbows on the desk, and traces a line of numbers with her finger, stopping at the discrepancy. Her gaze flicks to the door, then back to your face, lingering a beat too long.\nMonique: You’re asking a lot of questions for someone who hasn’t found the error yet. Is that a strategy, or just noise?\nMonique pushes the paper slightly closer to the edge of the table, her hand hovering over it, ready to slide it back if you don’t act. Her expression is tight, but her voice drops, quieter now.\nMonique: I saw what happened with Nova. I don’t care about the drama. I care that you were there. That’s… efficient. In a way.\nShe caps the pen with a decisive click and leans back, crossing her arms. The movement is sharp, controlled, but her eyes remain on you, waiting.\nMonique: So. The error. You have eight minutes left. Don’t make me waste them on your questions.",
+      "results": [
+        "Why can't you stand sloppiness?"
+      ],
+      "from": 40,
+      "to": 40,
+      "seconds": 18.16,
+      "requestId": "93fedc03-0255-49dc-82a3-c897253ee7bf",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 37,
+      "clock": "Day 4 Thursday Afternoon",
+      "decision": "You keep framing it as efficiency and budget, but I think there's a fear underneath that if you let someone see the messy, uncertain parts of your work, they'll think you're a fraud. Am I close?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "The day has finally gone quiet when your phone lights up with Jana's name — and the message is not about homework. It sits there glowing, more honest than anything she'd say in daylight, the cursor blinking like a dare.",
+      "results": [
+        "You keep framing it as efficiency and budget, but I think there's a fear underneath that if you let someone see the messy, uncertain parts of your work, they'll think you're a fraud. Am I close?",
+        "The activity comes to a close.",
+        "Something is about to happen.",
+        "New message from Jana.",
+        "The day has finally gone quiet when your phone lights up with Jana's name — and the message is not about homework. It sits there glowing, more honest than anything she'd say in daylight, the cursor blinking like a dare."
+      ],
+      "from": 40,
+      "to": 44,
+      "seconds": 1.86,
+      "requestId": "3a4b0e6a-eb96-443b-9eb0-f40d506a4ab7",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 38,
+      "clock": "Thursday Evening",
+      "decision": "I'm here, and I'm not going anywhere until I hear what's on your mind.",
+      "kind": "input",
+      "command": "REFUSED",
+      "refused": true,
+      "narrative": "No character is present to answer this reply",
+      "results": [],
+      "from": 44,
+      "to": 44,
+      "seconds": 4.202,
+      "fallback": false,
+      "failureReason": "No character is present to answer this reply"
+    },
+    {
+      "turn": 39,
+      "clock": "Day 4 Thursday Evening",
+      "decision": "Tell her I'm awake and thinking too.",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "It lands. The reply comes back in seconds, warmer than it should be, and the two of you type until the screen is the only light left and neither of you has mentioned sleep in an hour. Tomorrow this will have a shape. Tonight it just is.\nAttraction with Jana changed.\nJana: Chemistry 12 → 14 (how the moment went)",
+      "results": [
+        "Attraction with Jana changed.",
+        "Jana: Chemistry 12 → 14 (how the moment went)",
+        "It lands. The reply comes back in seconds, warmer than it should be, and the two of you type until the screen is the only light left and neither of you has mentioned sleep in an hour. Tomorrow this will have a shape. Tonight it just is."
+      ],
+      "from": 44,
+      "to": 44,
+      "seconds": 0.14,
+      "requestId": "a1ab70d6-2347-4a07-a08b-79c4784472e2",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 40,
+      "clock": "Day 4 Thursday Evening",
+      "decision": "Read messages from Monique",
+      "kind": "action",
+      "command": "social.readThread",
+      "narrative": "You read Monique's messages.\nMonique: Campbell's in an hour? I have a gap in my schedule.\nMonique: Checking in. Let me know if you need anything.\nMonique: Before this time tomorrow — come find me. I'm not asking twice.\nMonique: I'm doing a thing today and I want you there for it — no pressure, but I'll be looking for you.",
+      "results": [
+        "You read Monique's messages.\nMonique: Campbell's in an hour? I have a gap in my schedule.\nMonique: Checking in. Let me know if you need anything.\nMonique: Before this time tomorrow — come find me. I'm not asking twice.\nMonique: I'm doing a thing today and I want you there for it — no pressure, but I'll be looking for you."
+      ],
+      "from": 44,
+      "to": 44,
+      "seconds": 0.46,
+      "requestId": "b93c6814-6760-4978-981e-40f11fb6fce2",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 41,
+      "clock": "Day 4 Thursday Evening",
+      "decision": "Go to Campbell's",
+      "kind": "action",
+      "command": "core.move",
+      "narrative": "Travelled to Campbell's.\nBalance: $84.\nThe café Wi-Fi drops; you reset the router behind the counter, and a grateful regular presses $12 into your hand.\nNew message from Jana.\nNew message from Monique.\nA new opportunity appears.\nBright and cold off the water.\nThe coffee shop at the campus gate. Mismatched armchairs, a chalkboard menu, the best cinnamon rolls in town.\nNobody else is here.",
+      "results": [
+        "Travelled to Campbell's.",
+        "Balance: $84.",
+        "The café Wi-Fi drops; you reset the router behind the counter, and a grateful regular presses $12 into your hand.",
+        "New message from Jana.",
+        "New message from Monique.",
+        "A new opportunity appears.",
+        "Bright and cold off the water."
+      ],
+      "from": 44,
+      "to": 48,
+      "seconds": 0.42,
+      "requestId": "21a85444-9cc7-4304-8963-f51e7929fc8d",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 42,
+      "clock": "Day 5 Friday Morning",
+      "decision": "Come Find Me Today",
+      "kind": "action",
+      "command": "story.startOfferedScene",
+      "narrative": "Your phone buzzes with Nova's name, and what she sends is less an invitation than a decision she has already made: she is doing something today, and she wants you in the room for it. She doesn't explain why it's you and not anyone else. By the time you get there you understand anyway — this is the part of the day she didn't want to do alone, and she picked you before she picked anyone.",
+      "results": [
+        "Your phone buzzes with Nova's name, and what she sends is less an invitation than a decision she has already made: she is doing something today, and she wants you in the room for it. She doesn't explain why it's you and not anyone else. By the time you get there you understand anyway — this is the part of the day she didn't want to do alone, and she picked you before she picked anyone.",
+        "Come Find Me Today begins."
+      ],
+      "from": 48,
+      "to": 48,
+      "seconds": 0.5,
+      "requestId": "d7f256fb-bae0-4ce8-8f2f-b92b542b8d2f",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 43,
+      "clock": "Day 5 Friday Morning",
+      "decision": "I ask what this really means to her.",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "Nova blinks, then actually answers — the real version, not the easy one. She talks longer than she meant to and never once checks the time, and something between you gets named without being named.\nAttraction with Nova changed.\nNova: Chemistry 24 → 26 (how the moment went)\nNova: Trust 21 → 22",
+      "results": [
+        "Attraction with Nova changed.",
+        "Nova: Chemistry 24 → 26 (how the moment went)",
+        "Nova: Trust 21 → 22",
+        "Nova blinks, then actually answers — the real version, not the easy one. She talks longer than she meant to and never once checks the time, and something between you gets named without being named.",
+        "Kaylee and Nova are here together, deep in conversation.",
+        "A new opportunity appears.",
+        "New message from Jana."
+      ],
+      "from": 48,
+      "to": 52,
+      "seconds": 0.16,
+      "requestId": "14b85e1f-1263-45cb-aef0-63c14d6f937f",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 44,
+      "clock": "Day 5 Friday Afternoon",
+      "decision": "So, what is the thing you were doing today that you wanted me there for? I'm listening.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Nova tugs at the hem of her plaid skirt, her eyes flicking to the door before snapping back to you. She spins a pen between her fingers, the metal clicking against the table.\nNova: Okay, so. I need you to tell me if this is true, because if it is, I’m going to have to re-evaluate my entire worldview, and I don’t have the energy for that right now.\nNova: Jana. You and Jana. The rumor is that you’ve been... I don’t know, orbiting each other? Like a binary star system?\nNova: And I’m just supposed to sit here and pretend I didn’t hear it from three different people who all swear they saw you laughing at something she said?\nNova: I’m not mad. I’m just... curious. And a little bit annoyed. Mostly annoyed. But also curious. It’s a whole thing.\nNova: So? Is it true? Or am I just the idiot who believed the first person who told me you two were 'vibing'?",
+      "results": [
+        "So, what is the thing you were doing today that you wanted me there for? I'm listening.",
+        "The activity comes to a close.",
+        "Something is about to happen.",
+        "Nova comes over, clearly wanting to ask you something."
+      ],
+      "from": 52,
+      "to": 56,
+      "seconds": 9.52,
+      "requestId": "8e0e3f42-97b2-4a0a-a528-797b3ac1457e",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 45,
+      "clock": "Day 5 Friday Evening",
+      "decision": "I answer straight and don't flinch.",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "You give it to Nova whole, uncut, and let it stand. She takes the answer as given — and respects that you didn't dress it up more than the answer itself. Whatever the rumor does next, she is on your side of it.\nAttraction with Nova changed.\nNova: Chemistry 26 → 28 (how the moment went)\nNova: Trust 22 → 24",
+      "results": [
+        "Attraction with Nova changed.",
+        "Nova: Chemistry 26 → 28 (how the moment went)",
+        "Nova: Trust 22 → 24",
+        "You give it to Nova whole, uncut, and let it stand. She takes the answer as given — and respects that you didn't dress it up more than the answer itself. Whatever the rumor does next, she is on your side of it."
+      ],
+      "from": 56,
+      "to": 56,
+      "seconds": 0.2,
+      "requestId": "c120bdca-94cd-4f73-9c91-d2aacbc5eb14",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 46,
+      "clock": "Day 5 Friday Evening",
+      "decision": "Case prep with Monique",
+      "kind": "action",
+      "command": "core.scene",
+      "narrative": "Monique slides a single sheet of paper across the table, her finger tapping the bottom line once, sharply, before withdrawing.\nMonique: You asked if it was speed or accuracy. It’s neither. It’s the gap between the two.\nMonique: Speed without accuracy is noise. Accuracy without speed is a corpse. I need you to tell me which one you’re hiding behind right now.\nMonique: I don’t pay for presence. I pay for the fix. So, what’s the fix?\nMonique: Take your time. But don’t take up space while you do it.",
+      "results": [
+        "Case prep with Monique",
+        "Your Wit rose to Quick.",
+        "Monique: Trust 17 → 19",
+        "Monique pitches her business plan across a café table and needs someone to argue with. Hard."
+      ],
+      "from": 56,
+      "to": 56,
+      "seconds": 6.46,
+      "requestId": "7d8f94b1-5eed-49ca-8a14-a14c8ff0b826",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 47,
+      "clock": "Day 5 Friday Evening",
+      "decision": "How did that come about?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Monique’s pen hovers over the sheet, the tip tapping a silent rhythm against the paper before she caps it with a sharp click.\nMonique: It came about because I stopped pretending that guessing is a strategy.\nMonique: I’ve seen people try to charm their way through a deadline. It doesn’t work. It just delays the inevitable.\nMonique: So I asked for the fix. And you asked why. That’s the first honest thing you’ve said all week.\nMonique: Now. Since we’re being direct. When you say you want to be useful, what does that actually look like to you?\nMonique: Don’t give me a definition. Give me an example.",
+      "results": [
+        "How did that come about?"
+      ],
+      "from": 56,
+      "to": 56,
+      "seconds": 9.58,
+      "requestId": "425efa26-b92a-466e-ba2a-52fc28b526dc",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 48,
+      "clock": "Day 5 Friday Evening",
+      "decision": "What are you up to later?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Monique’s pen stops its silent tapping. She looks up, her gaze sharp but softening by a fraction as she meets your eyes, then looks away to the clock on the wall.\nMonique: Later is a vague concept. I have a shift at the bookstore until nine, and a case brief to finish before midnight.\nMonique: But you asked. And you’re still here, which means you’re not just passing through.\nMonique: If you’re going to be useful, you can sit with me while I finish. No talking. Just... presence that doesn't require maintenance.\nMonique: Or you can leave. I won't stop you. But I’d prefer the quiet company.\nShe pushes the single sheet of paper slightly closer to the center of the table, making room for your cup without asking.",
+      "results": [
+        "What are you up to later?"
+      ],
+      "from": 56,
+      "to": 56,
+      "seconds": 8.9,
+      "requestId": "25e9d4d7-b11e-478b-9f19-63c9081618a0",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 49,
+      "clock": "Day 5 Friday Evening",
+      "decision": "I'm not going anywhere. I'm right here. Tell me what you need from me for the next hour.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Monique’s shoulders drop a fraction, the tension in her jaw easing as she uncaps her pen and turns the page of her notebook to a blank section.\nMonique: Good. That is the only answer I needed.\nMonique: I need you to read this paragraph. Not the summary, the actual text. Tell me where it loses the argument.\nMonique: Don't fix it. Just find the break.\nMonique: And keep your eyes on the page. I can hear you breathing, and it’s distracting.\nShe slides the notebook across the table, the leather cover worn smooth at the corners, and waits, her gaze fixed on the screen of her laptop but her attention clearly on you.",
+      "results": [
+        "I'm not going anywhere. I'm right here. Tell me what you need from me for the next hour."
+      ],
+      "from": 56,
+      "to": 56,
+      "seconds": 15.54,
+      "requestId": "14a372b7-a6cc-4624-b4f0-b52b2b86e4ba",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 50,
+      "clock": "Day 5 Friday Evening",
+      "decision": "Okay, I'm reading. Give me a second.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Monique’s pen stops moving over the open notebook. She does not look up immediately, her eyes tracking the last line of the page before she lifts her gaze to meet yours.\nMonique: Don't take a second. Take the whole hour.\nMonique: I asked you to stop guessing because guessing is inefficient. It wastes time I don't have.\nMonique: Competence isn't speed. Speed is just noise. It's not accuracy, either. Accuracy is a baseline.\nMonique: It's knowing what I need before I have to articulate it. It's anticipating the gap.\nMonique: So read. And when you see the hole in my argument, tell me. Don't wait for me to ask.",
+      "results": [
+        "Okay, I'm reading. Give me a second.",
+        "You talk to Monique: Okay, I'm reading. Give me a second."
+      ],
+      "from": 56,
+      "to": 56,
+      "seconds": 8.98,
+      "requestId": "4f59f780-3b6a-44b0-98b9-0918f3ffbe5f",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 51,
+      "clock": "Day 5 Friday Evening",
+      "decision": "Ask Monique on a date",
+      "kind": "action",
+      "command": "social.askDate",
+      "narrative": "Monique closes her notebook with a soft, decisive click. She slides it into her bag, the leather zipper catching the light for a brief second before she tucks it away.\nMonique: You’re still here.\nShe stands, smoothing the front of her blouse with one hand, her posture rigid and precise. She checks her watch, the small silver face glinting under the shop’s warm lamps.\nMonique: I have a reservation. Ten minutes early. I don’t like waiting, and I don’t like being kept.\nMonique picks up her bag, slinging it over her shoulder with practiced ease. She pauses, looking at you with a gaze that is steady but unreadable, her green eyes searching for something specific.\nMonique: If you’re going to come, don’t be late. And don’t bring up the case file unless I ask.\nShe turns toward the door, her heels clicking against the tile floor, her stride confident and unhurried. She does not look back, but she slows her pace slightly, waiting for you to follow.",
+      "results": [
+        "Your relationship with Monique is now dating.",
+        "Monique agrees to a date.",
+        "Monique is easier to want around you than she was.",
+        "Monique booked. Of course she booked. A small place past the harbour, a table by the window, and she is already there when you arrive, early by exactly ten minutes."
+      ],
+      "from": 56,
+      "to": 56,
+      "seconds": 8.93,
+      "requestId": "0367e144-9e6d-4986-baa7-f25a584e62ef",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 52,
+      "clock": "Day 5 Friday Evening",
+      "decision": "You're right. I was trying to be charming instead of being useful. I'm sorry. I'm here now, and I'm ready to work. What's the next thing you need me to do?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Monique halts mid-step, her hand still resting on the doorframe. She turns her head slowly, her expression unreadable, her green eyes narrowing slightly as she processes the shift in your tone.\nMonique: Useful.\nMonique: That is a new word for you. I had assumed you were still trying to be charming.\nMonique: I don't need you to work right now. I need you to be on time. That is the only task I am assigning you at this moment.\nShe pushes the door open, the bell above it chiming a single, clear note in the cool evening air. She steps out onto the sidewalk, not waiting to see if you follow, but her pace is measured, allowing you to catch up without running.\nMonique: If you are late, I will be in the car. The outcome is the same.\nMonique: And for the record, I did not ask for an apology. I asked for clarity. You gave me a performance. I will accept it, but I will not forget it.\nShe walks a few steps down the street, her heels striking the pavement with a steady, rhythmic click. She does not look back, but she slows slightly, creating a gap that is not quite a wait, but an invitation to keep up.",
+      "results": [
+        "You're right. I was trying to be charming instead of being useful. I'm sorry. I'm here now, and I'm ready to work. What's the next thing you need me to do?"
+      ],
+      "from": 56,
+      "to": 56,
+      "seconds": 16.02,
+      "requestId": "bf5a28a6-9e4d-440b-9979-5e059dbcddf2",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 53,
+      "clock": "Day 5 Friday Evening",
+      "decision": "I'm here. I'm not going anywhere. What do you need?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Monique stops walking. She does not turn around immediately, but her stride shortens, her heels clicking a final, sharp rhythm against the pavement before she goes still.\nMonique: You are not going anywhere.\nShe turns slowly, her green eyes fixed on you with a sharp, assessing intensity. She adjusts the strap of her bag on her shoulder, her movements precise and controlled.\nMonique: That is a statement, not a plan. A statement is easy. A plan requires logistics.\nShe pulls a small, black notebook from her bag, flipping it open to a blank page. She uncaps a pen, the click of the cap loud in the quiet street air.\nMonique: I need you to be at the restaurant at 7:15. Not 7:00. Not 7:30. 7:15. I have a reservation for 7:30, and I do not sit in empty chairs waiting for someone to remember they exist.\nShe writes something down, her handwriting neat and angular. She tears the page out and holds it out to you, her expression neutral.\nMonique: Take it. If you lose it, you are late. If you are late, I am in the car.\nShe slides the paper toward you, her fingers brushing the edge of the table as she sets her pen down. She watches your hand, waiting for you to take the slip of paper.",
+      "results": [
+        "I'm here. I'm not going anywhere. What do you need?"
+      ],
+      "from": 56,
+      "to": 56,
+      "seconds": 10.91,
+      "requestId": "8edf73cd-8898-41d0-b348-57ce95b805a3",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 54,
+      "clock": "Day 5 Friday Evening",
+      "decision": "End conversation",
+      "kind": "action",
+      "command": "core.endScene",
+      "narrative": "Monique turns up, and it has clearly been a bad day.",
+      "results": [
+        "You end the conversation.",
+        "The moment passes, for now.",
+        "Something is about to happen.",
+        "Monique turns up, and it has clearly been a bad day."
+      ],
+      "from": 56,
+      "to": 60,
+      "seconds": 0.57,
+      "requestId": "be29417c-343d-4832-b0ff-a83a43b9c54f",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    }
+  ],
+  "review": {
+    "strengths": [
+      "Monique's character voice is distinct and consistent, utilizing specific verbal tics (pen clicking, efficiency metaphors) across turns 33-53.",
+      "The 'Come Find Me' scene (turns 42-45) effectively creates a relationship milestone with Nova, providing clear feedback on Chemistry and Trust.",
+      "The refusal handling in turn 38 is mechanically sound, correctly identifying that no character was present to answer the player's input."
+    ],
+    "issues": [
+      {
+        "severity": "medium",
+        "layer": "engine",
+        "evidence": "Turn 38: I'm here, and I'm not going anywhere until I hear what's on your mind. — No character is present to answer this reply",
+        "cause": "The game refused this attempted action; review whether the boundary and its feedback were appropriate.",
+        "concreteFix": "Check the action preconditions and give the player a clear explanation or an available alternative."
+      },
+      {
+        "severity": "high",
+        "layer": "content",
+        "evidence": "Turn 31 (Day 3 Wednesday Evening) describes 'morning light' and 'steam rising from a ceramic mug' in a scene explicitly labeled Evening. Turn 41 (Day 4 Thursday Evening) describes 'Bright and cold off the water' in a scene labeled Evening.",
+        "cause": "Generic scene descriptions are not synced with the current time-of-day or daypart, leading to atmospheric contradictions.",
+        "concreteFix": "Implement a time-aware description filter that swaps 'morning light' for 'dusk/night lighting' and adjusts environmental cues (e.g., 'bright' to 'dim') based on the active daypart."
+      },
+      {
+        "severity": "high",
+        "layer": "content",
+        "evidence": "Turn 42 (Day 5 Friday Morning) begins a scene with 'Nova', but the player's intent (inferred from turn 40 'Come find me' message from Monique) and the subsequent dialogue in turn 44 (Nova asking about rumors) suggests a potential character mix-up or unclear route lead if Monique was the intended target for the 'Come Find Me' prompt.",
+        "cause": "Unclear route leads where the 'Come Find Me' prompt does not clearly specify which character is initiating the scene, leading to potential player confusion or unintended character interactions.",
+        "concreteFix": "Ensure 'Come Find Me' prompts explicitly name the character in the UI or the scene opening text to avoid ambiguity about who is initiating the interaction."
+      },
+      {
+        "severity": "medium",
+        "layer": "content",
+        "evidence": "Turns 33, 34, 35, and 36 all feature Monique 'uncapping' or 'tapping' her pen in the exact same way ('click sharp', 'tapping the nib'), creating repetitive physical actions.",
+        "cause": "Repetitive character mannerisms in consecutive turns reduce the organic feel of the dialogue and make the character feel scripted.",
+        "concreteFix": "Vary Monique's physical actions (e.g., adjusting glasses, checking a watch, folding hands) to break the pattern of pen-based mannerisms."
+      },
+      {
+        "severity": "medium",
+        "layer": "model-prompt",
+        "evidence": "Turn 37 describes the player's phone lighting up and the cursor blinking 'like a dare', which is a narrative interpretation of the player's device state rather than an objective observation.",
+        "cause": "The model is narrating the player's internal perspective or device state in a way that feels like an invented player reaction or overly poetic UI description.",
+        "concreteFix": "Restrict the model from describing the player's device state or internal metaphors; focus on the character's reaction to the message or the next action."
+      },
+      {
+        "severity": "low",
+        "layer": "engine",
+        "evidence": "Turns 33-36 and 46-53 show the clock remaining static (e.g., TIME 40->40, TIME 56->56) for multiple turns within a single daypart.",
+        "cause": "While technically correct for 'free' turns inside an open scene, the lack of any time progression or environmental change during long dialogue sequences can make the scene feel static.",
+        "concreteFix": "Introduce subtle environmental changes or time markers (e.g., 'the light shifts', 'the clock ticks over') during long free-turn sequences to maintain a sense of progression."
+      }
+    ],
+    "prioritizedFixes": [
+      "Sync scene descriptions with the current daypart to prevent atmospheric contradictions (e.g., morning light in the evening).",
+      "Clarify 'Come Find Me' prompts to explicitly name the initiating character to avoid route confusion.",
+      "Diversify Monique's physical mannerisms to reduce repetitive pen-tapping/clicking in consecutive turns.",
+      "Restrict the model from narrating the player's device state or internal metaphors to maintain objective agency.",
+      "Add subtle environmental or time markers during long free-turn sequences to prevent the scene from feeling static."
+    ]
+  }
+}

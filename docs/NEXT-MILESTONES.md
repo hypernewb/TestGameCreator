@@ -8,25 +8,81 @@ Rules that hold for every milestone:
 - Fun comes first and optimisation comes later (owner call 2026-09-30). Keep one model call per normal turn, but don't cut features for context size or call count until the fun gate passes.
 - The owner plays on a cloud model (for example the Gemini free tier). Dev and bot runs use the local `qwen/qwen3.8-27b`.
 
-## Order
+## Current direction (owner clarification 2026-10-04)
+
+This section supersedes the 2026-10-03 polish-only framing and every older execution order below. Build the **reusable creator/editor capable of authoring essentially the whole kind of social/romance experience Venus University offers**: character setup, rules, events and player-facing screens. Functional capability is required; all core systems must be visually configurable, with code optional for extensions. Local Venus evidence informs the architecture/capability map without copying identity/assets or assuming exact mechanic parity.
+
+Confirmed: social/romance template **default** plus explicit blank project; existing prompt/card startup with editable **1–8 NPCs (player excluded) and 1–8 locations**; creator-owned stages, unlocks, boundaries and events; AI improvisation and typed consequences subject to engine validation; automatic memory plus inspect/correct and optional authored facts/secrets/knowers/promises. First usable milestone is the social/romance creator. A tiny generic sample proves author/play/debug/revise/save/reopen without code edits, not a full game. Functional completeness and perceived fun/believability are separate gates.
+
+**Assessment:** owner permission was granted after allowance uncertainty was disclosed. [T-098](research/creator-gap-assessment-2026-10-04.md) completes the systematic engine/control/workflow assessment, with 26 capability rows, source/test/revision evidence, rationale and unknowns. It does not authorize implementation or automatically accept any candidate. [Active board](briefs/BOARD.md#current-priority-2026-10-04) governs task status.
+
+**Holds:** Creator UI = editor; Game UI = player presentation; UI Wizard edits reusable Game UI. Game UI visual redesign and editor chrome redesign remain paused. Weekly specific-over-general rules take priority, but Stage2 remains frozen/unmerged pending independent review/full checks. Installer, full mechanics migration and calendar-picked-date scheduling remain deferred. Preserve all dirty work/sessions. Adventure is LATER: narrative engine-resolved combat first, structured turn-based later; isekai social portability may be tested without RPG completion gates. Historical campus fun/module/model policies below do not authorize calls or set creator completion.
+
+## Creator milestones (2026-10-04)
+
+Planning proposals only; exact acceptance, dependencies, trade-offs and four next-task proposals are in [T-098](research/creator-gap-assessment-2026-10-04.md#dependency-ordered-roadmap-and-completion-gates). No workers dispatched.
+
+| Gate | Required result | Completion evidence |
+|---|---|---|
+| **G0 Draft trust** | Independently review frozen weekly work; settle remaining raw-buffer/loss/recovery contract. | Exact candidate review/suite and authorized disposition; delayed Save cannot discard newer edits or switch projects; pending invalid data stays recoverable; chosen loss/recovery semantics tested. Candidate guards alone do not close refresh/startup recovery. |
+| **G1 First usable creator** | Default social/romance template, explicit blank, existing startup composition and tiny complete loop. | No code/JSON in mandatory path: create/edit characters/places/stage/unlock/boundary/event → Check → play/debug → revise → Save → close/reopen/replay. Generic placeholder sample, mocks; disclosed optional gaps. This does not close G2–G5. |
+| **G2 Core visual rules** | Expose existing social rules, nested gates, weekly routines and authored event constraints. | All enabled core social/romance settings editable visually; source references/pickers/diagnostics preserve advanced fields; legal/illegal branches and typed consequences agree after persistence/transfer. Reuse existing schemas/debugger. |
+| **G3 Correctable continuity** | Automatic memory, authored facts/secrets/knowers/promises and diagnostics over existing stores. | Source and visibility inspection; correction precedence survives reopen/replay/reassertion; private fact stays isolated; kept/missed promise selects authored follow-up. No new competing truth store. |
+| **G4 Reusable output/workflow** | Functional Wizard selection binding, media/transfer and existing player usability/author debugging. | Generic live Game UI reflects selected compatible controls/committed state; custom/legacy retained; keyboard/text/history/save/load checks; revision-bound reports/replay; independent recipient imports project/media. Functional integration needs separate scoped authorization; redesign remains paused. |
+| **G5 Capability + experience evidence** | Independent no-code capability coverage, then separately authorized provider/human evaluation. | Every core requirement accounted for; tiny loop and transfer proven; later grounded voice, meaningful recurrence/memory/pacing judged from examples and traces. Mock passes or arbitrary percentages do not prove fun. |
+
+Next proposed batch: **P1** independent Stage2 review (check existing reviewer ownership); **P2** remaining draft-preservation design decision; **P3** template/blank composition contract; **P4** visual stage-unlock + promise-condition slice specification. Sequence shared Studio/server ownership, reuse existing tools and do not launch implementation from this list. These outrank new mechanics/art/combat/installer because they make existing authoring work dependable and useful.
+
+## Current direction (owner clarification 2026-10-03)
+
+**Historical record:** superseded by the 2026-10-04 direction and T-098 assessment above. The pending-permission statements below describe that earlier docs-only task, not the current authorization/status.
+
+This section governs current priority and supersedes the older order and conditional backlog below. The product is the **reusable game creator/editor**. Its end goal for now is to let a creator ship a social/romance game with **Venus University's level of polish**. Venus University is a quality benchmark, not permission to copy its visual identity or assume identical mechanics. Polished player-facing output remains a real later goal.
+
+- **Creator UI (editor):** author and edit content and rules, play and debug, revise, save and reopen a project without editing code. Editor-first does not authorize redesigning editor chrome.
+- **Game UI:** the player-facing presentation of a created game. Its existing visual redesign is paused.
+- **UI Wizard:** edits reusable Game UI for creator-generated games; it is not the Creator UI. Prior wizard/Game UI implementation plans do not override the pause.
+- **Tiny playable sample:** a testing vehicle for creator capabilities and the complete author/play/debug/revise/save/reopen loop, not a separate full game project. Campus evidence remains useful; campus fun is not the product's completion criterion.
+
+**Now:** planning and an evidence-backed assessment of creator gaps before the next implementation batch. A proper systematic gap assessment has **not been completed**; its separate permission request is still pending. Existing portability, campus and UI reports are partial evidence, not that assessment. This documentation update neither performs nor authorizes it, creates implementation tickets, or dispatches work.
+
+**Holds:** existing weekly Stage2 source is frozen and unmerged, pending independent review and full checks. EXE installer and full mechanics migration are deferred. The future creator-proof sample and later output polish remain goals, subject to planning and separate authorization. Preserve completed work and historical evidence; current task/review status is in [BOARD.md](briefs/BOARD.md#current-priority-2026-10-03).
+
+## Prior order (2026-10-01/02; retained for history)
 
 Re-planned 2026-10-01 (owner interview). **v1 done = campus is fun** on a cloud model, for the owner and a few friends. Felt pains: typing doesn't change the world, and characters feel flat. Work is delegated through `docs/briefs/` (see `AGENTS.md`, `docs/roles/`).
 
-1. **O2, intimate-first:** physical and intimate typed actions become state (consent, limits, gates; state wins over prose). Move/buy/plans come after.
-2. **C1. Character depth (new):** a distinct voice per heroine, NPC initiative (texts first, suggests plans, teases, jealousy, wants of her own), and visible progression of chemistry and desire, so day 5 doesn't feel like day 1.
-3. **Fun gate** on campus (cloud model).
-4. **F1. Friends-ready:** easy install, bring-your-own API key, first-run setup.
-5. Then O1 firsts, O3 clock and O0 routes, when play shows they're needed. Creator/M2 leftovers, M4 leftovers and P1–P4 are parked until v1.
-5. `after-hours` stays a test fixture only. Tests move to campus, then the pack is deleted in a reviewed change.
+Owner decision 2026-10-02: finish Waves 5 and 6, then make sure every mechanic coded for campus ports to the game creator. No new campus-only mechanics until that is done. (Historical baseline: int-6. Reconciled 2026-10-02: int-4 through int-8 and 3483d4b have landed; uncommitted work and verification limits are listed in docs/briefs/BOARD.md.)
+
+1. **Close Wave 5/6 verification.** T-044/T-047 landed in int-4; T-048/T-062/engine T-069 recap/T-065 landed in int-7. The earlier owner prompt update and STAGING re-enable landed in 3483d4b. Review T-043's historical measurement and unfinished T-056 bot validation, then establish current full-suite and fun-gate results. T-077 is a separate uncommitted conversation experiment; historical process termination is not a diagnosed assertion regression.
+2. **Creator portability review (next after Wave 6).** T-073 audit is written; T-071/T-072 landed, while T-075 daily-need and T-076 guard patches await review. T-009b Suggest auto-fill can resume after T-080 restored its exact missing design input. For every campus mechanic (route repair, likes clues, endings, recap, planner/clock, typed actions, director, secrecy and agreement, jealousy, anniversaries, weekly wants, outreach), check three things: (a) is it a pack option or Studio control rather than hardcoded campus ids, names or strings; (b) does a pack with no campus data still validate and run; (c) is there a test on a non-campus fixture. Output: a portability table plus one fix ticket per hardcoded item.
+3. **Creator-proof (parked by owner 2026-10-02).** When resumed, build a small second world from a template using only Studio, with no code edits, and play a bot run on it. Every blocker goes onto the creator backlog (T-009b Suggest auto-fill, creator leftovers). This is the real test of items 2 and 3 together.
+4. **Measure and play:** establish a current campus fun gate; apply the same gate to the second world when creator-proof resumes. If dead turns <=10%, input lost 0 and spotlight spread <x2, the owner plays 1-2 h on a cloud model.
+5. **Audit gaps** (only if the gate or play shows the need): director breather policy and recap-note wiring (O5, needs an owner interview); fun-command usage output; campus clues Studio activation and the deduction check (O6); unit conversion and opening hours (O3); stale-plan deadline.
+6. **F1 friends-ready:** setup, retries and install doctor shipped; remaining is a packaged installer and update path.
+7. Parked: O1 firsts, rest of O3, O4 invented places/items, P1-P4.
+8. `after-hours` is retired (fixtures in `tests/fixtures`). Engine T-070 deleted the pack, templates and four background SVGs in cafb57d/int-8. T-074 covers remaining references and tracked-WAL cleanup; its patch is uncommitted. UI prototype work once using T-070 is now T-079.
+
+### Status 2026-10-02 (what the last waves changed)
+| Milestone | Now |
+|---|---|
+| C1 character depth | Shipped: voice and lore, authored outreach, plans and teasing, earned desire, jealousy (tone only), weekly wants. Open: human check that it feels alive. Anniversaries are creator-only on campus. |
+| O0 routes never close | Shipped (T-053): route repair thread after rejection, dealbreaker, breakup, rival win; Studio control. Endings reachable (T-054). Open: the fun-gate run. |
+| O2 typed actions | Shipped: gated typed touch, mixed actions, in-story refusals and input-delivery guards. Open: full move/buy/invite/extend/wait coverage and refusal-alternative acceptance. T-048 decline is landed; acceptance still belongs in the full typed-flow gate. |
+| O3 clock | Shipped: planner slots, targeted waits, time cost labels, pack `tickMinutes` with Studio control. Open: unit conversion, durations, opening hours. |
+| O5 director | Audit (T-052): thin-slice items 1/3/4 shipped, 2/5 shipped with gaps. Day recap shipped (T-051); Engine T-069 modes + popup landed (UI button work is T-078; T-064 is prompt slimming). Open: breather policy, recap-note wiring. |
+| O6 likes | Opt-in clues, journal grouping (T-050); campus clue content in T-062. Open: deduction gate. |
+| M4 | Studio secrecy/agreement forms shipped (T-055). Open: bot validation on campus (T-056) and fun-gate play. |
+| F1 | First-run presets and probes (T-044), bounded cloud retries and usage log (T-045), install doctor (T-046). Open: packaged installer. |
 
 ## Game tier (what's left)
 
 | Milestone | Remaining | Done when |
 |---|---|---|
-| **M0. First playable (campus)** | Everything is built. Only the human gate is left. | The owner plays campus on a cloud model and would rather keep going than switch to Venus, and the [fun gate](#fun-gate) proxies hold. |
+| **M0. First playable (campus)** | Everything is built. Current automated verification and the human gate remain; shipped mechanics do not establish fun. | The owner plays campus on a cloud model and would rather keep going than switch to Venus, and the [fun gate](#fun-gate) proxies hold. |
 | **M5. Activity depth** | Steps 1–7 of [M5-ACTIVITY-PLAN.md](M5-ACTIVITY-PLAN.md) are done, social-link unlocks (`minRank`) included. | Every campus activity has a minigame. A mishap reliably produces a director beat. Getting handsy in front of a coworker has a consequence. |
 | **M2 leftovers** | The looks anchor, touch pacing for guarded heroines, lore consistency across drafted scenes. The Open-play creator additions below. | Done alongside the milestone that needs them. |
-| **M4. Secrecy and agreements** | The engine is shipped (uncommitted, see COMPLETED). **Still open:** Studio authoring forms, persona-bot validation on campus, fun-gate play. | Getting caught, negotiating an opening and ripple drama play out on campus, and the gate holds. |
+| **M4. Secrecy and agreements** | The engine is shipped; COMPLETED retains its original historical status. **Still open:** persona-bot validation on campus (T-056), fun-gate play. Studio authoring forms shipped (T-055). | Getting caught, negotiating an opening and ripple drama play out on campus, and the gate holds. |
 
 ## Open-play tier (2026-09-30)
 
@@ -38,8 +94,8 @@ Design: [GAME-DESIGN.md § Freedom model](GAME-DESIGN.md#freedom-model-2026-09-3
 | **O1. Free-typed firsts** | The talk, date, kiss and first-night rungs become free-typed scenes with 2–3 checkpoints held by the engine, scored best/light/miss from act tags. On the first night the check-in is required and Stop is always there. `authored` stays a creator option (per world and per rung). Plan: [FIRSTS-PLAN.md](FIRSTS-PLAN.md). | `world-assembly` `first()`/`night()`, `beat-library` `RUNGS`/`TONES`/`NIGHT`, `story.scenes` triggers, `social.acts`, `intimacy` gates, the M4 confrontation brief pattern | The owner plays the kiss and first night typed and they don't feel on-rails. No path skips the check-in. Authored worlds play the same as today. Replay is identical. |
 | **O2. Typed actions happen** | The scene reply gets world operations: `move`, `buy`, `invite`, `extend`, `wait`. Act tags get a `ref` field (memory, like, place, callback) that sizes up the act, and unmatched acts get a wider clamp. A `refusal` object (reason, alternatives as buttons, a retry count that switches to an in-story redirect) replaces the fixed error strings. | `scene-acts`, `acts.mjs`, `service.mjs` intent path, `providers.mjs` reply format | "Take her to the roof", "buy her a necklace" and "karaoke Saturday" each change state. No player-facing system error strings are left. |
 | **O3. Clock** | A tick becomes a fixed number of minutes. Every activity gets a duration and every place gets opening hours. All `*Ticks` fields are converted, and the UI shows the clock and costs like "Gym · 1h". Extending a scene costs minutes. | `daypart`, `calendar`, `public/calendar.mjs`, every module with `*Ticks` | The player can always see what an option costs in time. Validation rejects packs that mix units. |
-| **O4. Inventions and threads** | A registry of invented places and items in state, with provenance, clamped to bands set per world. A `story.threads` module for goals, promises and NPC hooks, built on plans (kept or broken), with a cap on open threads. | `plans`, `economy`, `inventory`, `facts` review | An invented place can be revisited and an invented item kept. A promise comes due and changes something. |
-| **O5. Game-master director** | A move list in code (complicate, consequence, agenda, world event, reveal, tempt, callback, deadline), each with limits on its effects. About 40% templates and 60% moves. A stance set per world. Mid-scene complications as a one-line brief. NPC agendas (seeded plus invented). A `dm` line type: asides, explaining a "no", and a recap at the end of each day. | `story.director`, `director-library`, `romance-network`, O4 threads | A bot run never goes quiet. Complications land inside live typed scenes. The recap names what changed. |
+| **O4. Inventions and threads** | A registry of invented places and items in state, with provenance, clamped to bands set per world. `story.threads` for goals, promises and NPC hooks, built on plans (kept or broken), with a cap on open threads. **Thread state is now part of O5** (see [design/director-dm.md](design/director-dm.md)); this row keeps only invented place/item provenance. | `plans`, `economy`, `inventory`, `facts` review | An invented place can be revisited and an invented item kept. A promise comes due and changes something. |
+| **O5. Game-master director** | **Merged with O4 into [design/director-dm.md](design/director-dm.md).** Threads and the moves list are one system, not two milestones. Ship the thin slice first (`director.mjs` only): never arm/tease an offer; capped ignored-beat escalation reading `story.scenes.history`; history-fed callback line; spotlight weight; forced tone-1 breather reusing existing content. Then the full version: threads with clocks, moves list, per-character stance, NPC agendas, non-romance library shapes over a widened role pool, and the day recap. | `story.director`, `director-library`, `role-slots`, `romance-network` | Thin slice: no tease is ever followed by an ignorable card; a dismissed beat produces exactly one capped consequence with a repair path. Full: a bot run never goes quiet, complications land inside live typed scenes, and the recap names what changed. Falsify with `trailingDrought` / `zeroBeatWindows` / `maxQuietDayparts` over 3 seeded 15-day runs before promoting any of it. |
 | **O6. Likes puzzles** | Hints only, never exact answers. Each character's likes list is open or closed, set by the creator. Clues come from acts that land, friends' gossip, the recap, and surprise discoveries. | `dating` preferences, journal, `gossip` | The player can name 2+ likes per love interest from hints alone (fun gate). |
 
 Creator (M2) additions, done alongside the milestone that needs each one: the freedom dial, the firsts mode, checkpoint cues, per-world bands, open or closed likes, agenda seeds, and the game-master stance.

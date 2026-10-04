@@ -1,0 +1,1730 @@
+{
+  "meta": {
+    "evaluationVersion": 3,
+    "model": "qwen/qwen3.8-27b",
+    "judge": "qwen/qwen3.8-27b",
+    "seed": 7,
+    "judgeOrders": 2,
+    "judgeScope": "turn",
+    "repeats": 1,
+    "date": "2026-10-02T05:08:01.444Z",
+    "names": [
+      "venus",
+      "ours"
+    ],
+    "scenarios": [
+      "roommate"
+    ],
+    "contextWindow": 16384,
+    "contextSize": "default",
+    "contextSource": "LM Studio /api/v0/models",
+    "sourceHashes": {
+      "vendor/venus/scenePrompt.mjs": "f8e5fd92255509aac5aa1930fcb4f27d035bac5c7f151cb43bc9aa22f8b8b8ef",
+      "vendor/venus/venusStylePrompt.mjs": "4572a02d2349fe34b37dfd8b442aea5baa090c7a1ee10c736dc0e0e1dd46024d",
+      "packages/ai/service.mjs": "0298fbe96710e786d693a3aee2a96479255e9348a363258b3bb4bf7a88421b5c",
+      "packages/ai/memory.mjs": "ace0ab9e6a20a3d3e2d6e4beed35835e240a6b81d7895e09a671b555a4a448d1",
+      "packages/ai/beats.mjs": "c515d3c56a31e9017691b570ba6743e8cb810b40211cba82b96d2ce288ca74ad",
+      "packages/modules/dating.mjs": "e843545e61c36a7a59e2d5fb566c25846b37f0a74e5325534bc69522dc0c95a5",
+      "packages/ai/context.mjs": "b097d6deee9610ae30a372764dda44b113d73f8a73f5dee6b8b079c78c804ef9",
+      "packages/ai/context-budget.mjs": "2d7261f990281bbec9249f9aa01e594e460b2a56b2a6c67b63f1829e39e14c36",
+      "packages/ai/providers.mjs": "604e36e9faee99ac50e2e9b274980fb8e123c7f18360faa38fa4e9d280d47125",
+      "packages/core/engine.mjs": "a9e3e0f69868ebfae386f96703be450945bc978a29b2b7668237356a68f67e42",
+      "public/turn-presentation.mjs": "ac873954ad055615824a3ca85dd6900774ff97a162dd29e3109a61e0702bf753",
+      "packages/testing/prompt-ab.mjs": "39bd638fcb7bab24961efed0e6fe0cbeb2d03923be576fdeb3c6712ac44211ad",
+      "packages/testing/prompt-ab-runner.mjs": "cbc22ec2c1e9060202025928be6f2437d2bc2742a90b44f2cbc863320fd1a8f5",
+      "scripts/prompt-ab.mjs": "c1cbf0ee11a65812646dfd14d0da701669e0451a6285ce50e37ac50e40b2216b",
+      "packages/testing/sustained-conversations.mjs": "8f68865b96ca1f1a184c3becd9e19e3e73e68748a263ebb4f7489f07eb88202c",
+      "server.mjs": "de08bce8d8afc6461715def231446542d5826e590a2c4c3e61bbde3813b692c6",
+      "packages/ai/narration-lint.mjs": "254a51b26bbbb48ff71859321a035ef1c071cc6e26543f095133098244a72505",
+      "packages/ai/untrusted-output.mjs": "156400577e7c77c7b26534211ab2e2a3fda38249085aa205f0465baa362ce61c",
+      "packs/campus.json": "d54b73b193baafa939ae7eb6cd07bc9fe645407841684af2878bba11a0f357bd",
+      "packs/director/campus.json": "09c665af7ae9fd54adc1d14d0cf15e219d3ff169e81463e44d4ae6b6aa4c273a"
+    },
+    "packDigest": "b7e185a3",
+    "sourceChangedDuringRun": false,
+    "mode": "paired",
+    "reference": "ours",
+    "presentation": "public/turn-presentation.mjs",
+    "sustainedMetrics": {
+      "venus": {
+        "turns": 1,
+        "refusalsOrFailures": 0,
+        "sceneCalls": 1,
+        "modelCalls": 2,
+        "multipleCallTurns": [
+          "roommate-r1:1"
+        ],
+        "unplannedClosures": []
+      },
+      "ours": {
+        "turns": 1,
+        "refusalsOrFailures": 0,
+        "sceneCalls": 1,
+        "modelCalls": 2,
+        "multipleCallTurns": [
+          "roommate-r1:1"
+        ],
+        "unplannedClosures": []
+      }
+    }
+  },
+  "rows": [
+    {
+      "scenario": "roommate-r1",
+      "turn": 0,
+      "input": "Go find Jana",
+      "phase": "opening",
+      "verdicts": [
+        {
+          "pair": [
+            "venus",
+            "ours"
+          ],
+          "winner": "tie",
+          "scores": {
+            "venus": {
+              "continuity": 9,
+              "warmth": 8.5,
+              "voice": 8.5,
+              "responsiveness": 8,
+              "prose": 7.5,
+              "rhythm": 7.5,
+              "initiative": 8,
+              "consistency": 9,
+              "agency": 9.5,
+              "fun": 8.5
+            },
+            "ours": {
+              "continuity": 8.5,
+              "warmth": 7,
+              "voice": 8,
+              "responsiveness": 8,
+              "prose": 7.5,
+              "rhythm": 7.5,
+              "initiative": 6.5,
+              "consistency": 9,
+              "agency": 9.5,
+              "fun": 7
+            }
+          },
+          "why": "Judge changed its choice when reply order was reversed.",
+          "orderDisagreement": true,
+          "votes": [
+            {
+              "pair": [
+                "venus",
+                "ours"
+              ],
+              "winner": "venus",
+              "scores": {
+                "venus": {
+                  "continuity": 9,
+                  "warmth": 8,
+                  "voice": 9,
+                  "responsiveness": 8,
+                  "prose": 8,
+                  "rhythm": 8,
+                  "initiative": 8,
+                  "consistency": 10,
+                  "agency": 9,
+                  "fun": 8
+                },
+                "ours": {
+                  "continuity": 7,
+                  "warmth": 6,
+                  "voice": 7,
+                  "responsiveness": 7,
+                  "prose": 7,
+                  "rhythm": 7,
+                  "initiative": 6,
+                  "consistency": 8,
+                  "agency": 9,
+                  "fun": 6
+                }
+              },
+              "why": "Reply A feels more alive because Jana actively engages the player with a specific question about the location, creating a clear hook for the next interaction, whereas Reply B is a monologue that leaves the player passive."
+            },
+            {
+              "pair": [
+                "ours",
+                "venus"
+              ],
+              "winner": "ours",
+              "scores": {
+                "ours": {
+                  "continuity": 10,
+                  "warmth": 8,
+                  "voice": 9,
+                  "responsiveness": 9,
+                  "prose": 8,
+                  "rhythm": 8,
+                  "initiative": 7,
+                  "consistency": 10,
+                  "agency": 10,
+                  "fun": 8
+                },
+                "venus": {
+                  "continuity": 9,
+                  "warmth": 9,
+                  "voice": 8,
+                  "responsiveness": 8,
+                  "prose": 7,
+                  "rhythm": 7,
+                  "initiative": 8,
+                  "consistency": 8,
+                  "agency": 10,
+                  "fun": 9
+                }
+              },
+              "why": "Reply A aligns perfectly with the authoritative record's summary (cold coffee, mental fog, surfboard wax) and maintains a coherent, grounded scene, whereas Reply B introduces a contradiction by having Jana pack a suitcase in the morning, which clashes with the 'work' activity and the specific summary details provided in Record B."
+            }
+          ]
+        }
+      ],
+      "judgeScope": "turn",
+      "plannedExit": false,
+      "venus": {
+        "text": "You push open the door to the shared bedroom, the hinges squeaking in that specific way that means you should oil them before they snap. The room smells like salt air and the faint, sweet ghost of the surfboard wax sitting on the windowsill.\nJana: Ah. You are here. I was beginning to think you had been abducted by a very polite seagull.\nJana: I am currently trying to fit my entire life into a suitcase that was clearly designed for a child. It is a struggle. A noble one, but still.\nJana: Did you see the light this morning? It hits the bay in a way that makes me feel like I am back on Borkum, but with more... traffic.\nJana: It is a good kind of traffic. The kind that makes you feel like the world is actually moving. Do you like it here? The quiet parts, I mean.\n[RESULT] Jana trust 30 → 31",
+        "shown": {
+          "lines": [
+            {
+              "speaker": "",
+              "text": "You push open the door to the shared bedroom, the hinges squeaking in that specific way that means you should oil them before they snap. The room smells like salt air and the faint, sweet ghost of the surfboard wax sitting on the windowsill."
+            },
+            {
+              "speaker": "jana",
+              "text": "Ah. You are here. I was beginning to think you had been abducted by a very polite seagull."
+            },
+            {
+              "speaker": "jana",
+              "text": "I am currently trying to fit my entire life into a suitcase that was clearly designed for a child. It is a struggle. A noble one, but still."
+            },
+            {
+              "speaker": "jana",
+              "text": "Did you see the light this morning? It hits the bay in a way that makes me feel like I am back on Borkum, but with more... traffic."
+            },
+            {
+              "speaker": "jana",
+              "text": "It is a good kind of traffic. The kind that makes you feel like the world is actually moving. Do you like it here? The quiet parts, I mean."
+            }
+          ],
+          "engine": [
+            {
+              "speaker": "",
+              "kind": "RESULT",
+              "text": "Jana trust 30 → 31"
+            }
+          ],
+          "text": "You push open the door to the shared bedroom, the hinges squeaking in that specific way that means you should oil them before they snap. The room smells like salt air and the faint, sweet ghost of the surfboard wax sitting on the windowsill.\nJana: Ah. You are here. I was beginning to think you had been abducted by a very polite seagull.\nJana: I am currently trying to fit my entire life into a suitcase that was clearly designed for a child. It is a struggle. A noble one, but still.\nJana: Did you see the light this morning? It hits the bay in a way that makes me feel like I am back on Borkum, but with more... traffic.\nJana: It is a good kind of traffic. The kind that makes you feel like the world is actually moving. Do you like it here? The quiet parts, I mean.\n[RESULT] Jana trust 30 → 31"
+        },
+        "dialogue": {
+          "lines": 5,
+          "spoken": 4,
+          "narration": 1,
+          "glue": 1,
+          "characterLines": 4,
+          "questionRate": 0,
+          "walls": 0,
+          "narrationWalls": 0,
+          "medianWords": 28,
+          "dialogueRatio": 0.7,
+          "recycledGrams": 0,
+          "echoViolations": 0,
+          "glueDensity": 0.25
+        },
+        "ms": 7824,
+        "tokens": 2693,
+        "modelCalls": 2,
+        "sceneCalls": 1,
+        "promptHashes": [
+          "da0edce23fe05f9aa22cf40a0dba324333b73dc0a60c78ed4303124f5e574846"
+        ],
+        "phase": "opening",
+        "cast": [
+          "jana"
+        ],
+        "context": {
+          "money": 60,
+          "npcRelationships": [],
+          "promptVersion": "0.8",
+          "gameProject": {
+            "timeMode": "planner",
+            "premise": "The first term of the year at Ashford U. Four women, one warm friend, and twenty-eight days to find out who you are to each of them.",
+            "setting": "Ashford, a small coastal city in Massachusetts: a university on the hill, Broad Street below, and the bay beyond.",
+            "writingStyle": "Grounded present-tense visual novel dialogue. Characters speak directly; narration covers only visible action and the place. Flirting stays suggestive.",
+            "presentation": "visual-novel",
+            "conversationStyle": "continuous",
+            "calendar": {
+              "startDate": "2026-09-07"
+            },
+            "sceneBudget": 4,
+            "goodbyeEndsDay": true,
+            "ai": {
+              "intent": "Interpret the player's words as one grounded action or spoken response without inventing results.",
+              "scene": "Continue the conversation naturally. Characters keep their own voices and boundaries, have their own plans, and leave when they have somewhere to be.",
+              "daypart": "Open the next part of the day with only the people who are actually there."
+            }
+          },
+          "scriptedScene": null,
+          "sceneWaiting": null,
+          "sceneHistory": [],
+          "plans": [],
+          "characterStats": [
+            {
+              "character": "player",
+              "values": {
+                "charm": 3,
+                "wit": 3,
+                "fitness": 2,
+                "focus": 2,
+                "reputation": 0
+              }
+            },
+            {
+              "character": "jana",
+              "values": {
+                "charm": 0,
+                "wit": 0,
+                "fitness": 0,
+                "focus": 0,
+                "reputation": 0
+              }
+            }
+          ],
+          "relationshipProgression": [],
+          "actor": {
+            "id": "jana",
+            "name": "Jana",
+            "pronouns": "she/her",
+            "style": "Cropped tanks, fitted knits, denim shorts; simple neutral colors.",
+            "goal": "Work out whether the life Dominik planned for her is the one she wants.",
+            "traits": [
+              "warm",
+              "sporty",
+              "curious",
+              "homesick",
+              "quietly stubborn"
+            ],
+            "backstory": "Grew up on Borkum, the westernmost North Sea island, then moved to Hamburg with her best friend Lena. Half a year in she started dating Dominik, who wants to move in together and settle down. They fought when she chose a semester abroad, and that fight is not over.",
+            "likes": [
+              "the sea",
+              "beach volleyball",
+              "Franzbrötchen",
+              "being asked about Borkum"
+            ],
+            "dislikes": [
+              "being told what she wants",
+              "pushiness",
+              "people who pick sides about Dominik"
+            ],
+            "voice": "Easy and warm, slightly formal English with the odd German word. Deflects with a joke when something is close to the bone.",
+            "year": null,
+            "major": null,
+            "dorm": null,
+            "appearance": "",
+            "relationshipToPlayer": 30
+          },
+          "player": {
+            "name": "You",
+            "pronouns": "you",
+            "description": "A third-year at Ashford U, new to the apartment off campus."
+          },
+          "location": {
+            "id": "apartment",
+            "name": "Your apartment",
+            "description": "A two-bedroom off campus you share with Jana: mismatched mugs, her surfboard wax on the windowsill, a kitchen table that doubles as a desk.",
+            "exits": [
+              {
+                "to": "langley"
+              },
+              {
+                "to": "campbells"
+              },
+              {
+                "to": "murphys"
+              }
+            ],
+            "background": "assets/campus/apartment.png"
+          },
+          "present": [
+            {
+              "id": "player",
+              "name": "You",
+              "pronouns": "you",
+              "description": "A third-year at Ashford U, new to the apartment off campus.",
+              "traits": [],
+              "voice": ""
+            },
+            {
+              "id": "jana",
+              "name": "Jana",
+              "pronouns": "she/her",
+              "description": "Jana Messerschmidt, 20, a German exchange student in English and Literature, here for one semester from Hamburg. Tall and sporty, long dark-blonde hair, freckles, blue-gray eyes. Your roommate.",
+              "traits": [
+                "warm",
+                "sporty",
+                "curious",
+                "homesick",
+                "quietly stubborn"
+              ],
+              "voice": "Easy and warm, slightly formal English with the odd German word. Deflects with a joke when something is close to the bone."
+            }
+          ],
+          "backgroundCharacters": [],
+          "objects": [],
+          "items": [],
+          "carried": [],
+          "equipped": [],
+          "nearbyBonds": [],
+          "tick": 0,
+          "calendar": {
+            "weather": [
+              {
+                "id": "clear",
+                "name": "Clear",
+                "weight": 50,
+                "text": "Bright and cold off the water."
+              },
+              {
+                "id": "rain",
+                "name": "Rain",
+                "weight": 30,
+                "text": "Rain sweeps in off the bay."
+              },
+              {
+                "id": "wind",
+                "name": "Wind",
+                "weight": 20,
+                "text": "A hard sea wind rattles the quad."
+              }
+            ],
+            "holidays": [
+              {
+                "name": "Homecoming",
+                "date": "2026-10-03",
+                "text": "The Seahorses play at home; the whole town is on campus."
+              },
+              {
+                "name": "Halloween",
+                "date": "2026-10-31",
+                "annual": false,
+                "text": "Costumes everywhere, and a party at Murphy's."
+              }
+            ],
+            "closures": [
+              {
+                "location": "murphys",
+                "weekdays": [
+                  "Monday"
+                ],
+                "reason": "Murphy's is closed on Mondays"
+              },
+              {
+                "location": "prescott",
+                "weekdays": [
+                  "Sunday"
+                ],
+                "reason": "The library is closed on Sundays"
+              }
+            ]
+          },
+          "date": "2026-09-07",
+          "day": 1,
+          "week": 1,
+          "weekday": "Monday",
+          "daypart": "Morning",
+          "activeEvents": [],
+          "dating": [
+            {
+              "stage": "acquaintance",
+              "breakupHistory": [],
+              "mood": null,
+              "character": "jana",
+              "phase": "available",
+              "agreement": "uncommitted",
+              "strained": false,
+              "eligible": true,
+              "preferences": [
+                {
+                  "id": "jana-active",
+                  "type": "stat"
+                },
+                {
+                  "id": "jana-funny",
+                  "type": "stat"
+                },
+                {
+                  "id": "jana-own-call",
+                  "type": "flag"
+                }
+              ],
+              "score": 10,
+              "chemistry": 10,
+              "trace": [
+                {
+                  "id": "jana-active",
+                  "matched": false,
+                  "actual": 2,
+                  "points": 0,
+                  "label": "fitness"
+                },
+                {
+                  "id": "jana-funny",
+                  "matched": false,
+                  "actual": 3,
+                  "points": 0,
+                  "label": "wit"
+                },
+                {
+                  "id": "jana-own-call",
+                  "matched": false,
+                  "actual": false,
+                  "points": 0,
+                  "label": "jana-own-call"
+                }
+              ],
+              "reasons": [],
+              "satisfaction": 50
+            },
+            {
+              "stage": "acquaintance",
+              "breakupHistory": [],
+              "mood": null,
+              "character": "monique",
+              "phase": "available",
+              "agreement": "uncommitted",
+              "strained": false,
+              "eligible": true,
+              "preferences": [
+                {
+                  "id": "monique-driven",
+                  "type": "stat"
+                }
+              ]
+            },
+            {
+              "stage": "acquaintance",
+              "breakupHistory": [],
+              "mood": null,
+              "character": "nova",
+              "phase": "available",
+              "agreement": "uncommitted",
+              "strained": false,
+              "eligible": true,
+              "preferences": []
+            },
+            {
+              "stage": "acquaintance",
+              "breakupHistory": [],
+              "mood": null,
+              "character": "abigail",
+              "phase": "available",
+              "agreement": "uncommitted",
+              "strained": false,
+              "eligible": true,
+              "preferences": [
+                {
+                  "id": "abigail-active",
+                  "type": "stat"
+                }
+              ]
+            }
+          ],
+          "romanceTempo": [
+            {
+              "character": "jana",
+              "rank": "roommate",
+              "rankName": "Roommate",
+              "points": 0,
+              "ceiling": 10,
+              "ready": null,
+              "next": "friend",
+              "recentGifts": []
+            }
+          ],
+          "romanceNetwork": null,
+          "jealousy": [
+            {
+              "character": "jana",
+              "tension": "none"
+            }
+          ],
+          "phone": null,
+          "socialFeed": [],
+          "unlockedEndings": [],
+          "intimacy": [
+            {
+              "character": "jana",
+              "active": null,
+              "pendingAftercare": null,
+              "consent": {},
+              "interests": [
+                {
+                  "id": "jana-slow",
+                  "category": "first-night",
+                  "label": "Wants to be sure it is her choice, not a plan someone made for her"
+                }
+              ],
+              "stylePreferences": [],
+              "aftercarePreferences": [
+                {
+                  "option": "talk",
+                  "label": "Lie there and talk"
+                }
+              ],
+              "styleExperience": {},
+              "disclosures": [],
+              "encounterCount": 0,
+              "contentLevel": "explicit"
+            },
+            {
+              "character": "monique",
+              "active": null,
+              "pendingAftercare": null,
+              "consent": {},
+              "interests": [],
+              "stylePreferences": [],
+              "aftercarePreferences": [],
+              "styleExperience": {},
+              "disclosures": [],
+              "contentLevel": "explicit"
+            },
+            {
+              "character": "nova",
+              "active": null,
+              "pendingAftercare": null,
+              "consent": {},
+              "interests": [],
+              "stylePreferences": [],
+              "aftercarePreferences": [],
+              "styleExperience": {},
+              "disclosures": [],
+              "contentLevel": "explicit"
+            },
+            {
+              "character": "abigail",
+              "active": null,
+              "pendingAftercare": null,
+              "consent": {},
+              "interests": [],
+              "stylePreferences": [],
+              "aftercarePreferences": [],
+              "styleExperience": {},
+              "disclosures": [],
+              "contentLevel": "explicit"
+            }
+          ],
+          "touchLadder": [
+            {
+              "character": "jana",
+              "lust": 0,
+              "trust": 30
+            }
+          ],
+          "rumors": [],
+          "director": {
+            "tension": 4,
+            "quiet": 0,
+            "needed": 1,
+            "tier": 1,
+            "adaptation": "none",
+            "focus": null,
+            "textMode": "authored"
+          },
+          "facts": [],
+          "generatedFacts": [],
+          "generatedFactTrace": {
+            "selected": [],
+            "omitted": [],
+            "budget": null,
+            "used": 0
+          },
+          "lorebook": [],
+          "loreTrace": {
+            "selected": [],
+            "omitted": [],
+            "budget": null,
+            "used": 0,
+            "activated": [],
+            "tick": 0
+          },
+          "memories": [],
+          "dialogue": [],
+          "recentActions": [
+            {
+              "source": "ab-roommate-r1-0.1",
+              "tick": 0,
+              "type": "core.sceneStarted",
+              "text": "Go find Jana"
+            }
+          ],
+          "outcomes": [
+            {
+              "type": "core.sceneStarted",
+              "activity": "work",
+              "location": "apartment",
+              "characters": [
+                "jana"
+              ],
+              "text": "Go find Jana"
+            }
+          ],
+          "scenePlan": {
+            "cast": [
+              "jana"
+            ],
+            "speakers": [
+              "jana"
+            ],
+            "location": "apartment",
+            "source": "core.sceneStarted",
+            "actor": "jana",
+            "sceneId": "ab-roommate-r1-0",
+            "started": true,
+            "continuing": false
+          },
+          "sceneWriter": "framework",
+          "stagedCast": [
+            "jana"
+          ],
+          "speakers": [
+            "jana"
+          ],
+          "absentCharacters": [
+            {
+              "id": "monique",
+              "name": "Monique",
+              "where": "Langley Hall",
+              "rule": "Not in this scene. May be discussed, but cannot appear, speak, arrive, or interact."
+            },
+            {
+              "id": "nova",
+              "name": "Nova",
+              "where": "Prescott Building",
+              "rule": "Not in this scene. May be discussed, but cannot appear, speak, arrive, or interact."
+            },
+            {
+              "id": "abigail",
+              "name": "Abigail",
+              "where": "Hewett Gym",
+              "rule": "Not in this scene. May be discussed, but cannot appear, speak, arrive, or interact."
+            },
+            {
+              "id": "kaylee",
+              "name": "Kaylee",
+              "where": "Langley Hall",
+              "rule": "Not in this scene. May be discussed, but cannot appear, speak, arrive, or interact."
+            }
+          ],
+          "knownFacts": [],
+          "sceneSummary": null,
+          "pastScenes": [],
+          "scenePhase": "opening",
+          "sceneBudget": {
+            "focus": "jana"
+          },
+          "dailyNeedHints": "Jana: she seems low on energy",
+          "actTags": "In acts, tag what the player did to the focus character this turn, at most four: {kind,target,size,landed,region?}. Optional region names the touched sheet body region (face, lips, neck, arms_hands, chest, back, belly_waist, hips_butt, thighs_legs, intimate); it never supplies permission. kind is one of flirt, compliment, gift, touch, insult, buy, invite, tease, listen, boast, pushy, ask; ask means asking her what she wants or checking in (for example, \"Is this okay?\"). target is one or two words (looks, coffee, saturday@cafe); size is small, medium or large; landed is your read of whether it went over well. Tag only what the player action did, never the NPC. Do not supply scores, rewards, checkpoint verdicts, completion, or consent. Sharing something personal with her or picking up on what she just said is a small listen. Return [] only when the player does nothing toward her (travel, waiting, looking around).",
+          "actBrief": [
+            "Likes listen:* (you asked about the island and actua)",
+            "Likes listen:dominik (you let her talk about Dominik witho)",
+            "Avoids pushy:dominik (you told her what to do about Domini)",
+            "Likes tease:* (you teased her like one of her frien)"
+          ],
+          "typedActivity": true,
+          "playerAction": "Go find Jana",
+          "spokenBefore": [],
+          "openThreads": [],
+          "direction": "Jana (Easy and warm, slightly formal English with the odd German word. Deflects with a joke when something is close to the bone.; knows the player a little: warming up, easy banter, not close yet): greet the player their own way and react to what they said, then point out one concrete detail around them. Keep to that one thread. Keep it to one brief narration entry, then four or five entries mostly in the character’s own spoken voice. Plain talk, no speeches; don't echo the player. Gestures only when they add something; never reuse a gesture or mannerism from earlier in this scene. Physical moves wait for a closer bond: hands-off, no leaning in. Flirtation, banter and charged looks are fair game.",
+          "baseDirection": "Jana (Easy and warm, slightly formal English with the odd German word. Deflects with a joke when something is close to the bone.; knows the player a little: warming up, easy banter, not close yet): greet the player their own way and react to what they said, then point out one concrete detail around them. Keep to that one thread. Keep it to one brief narration entry, then four or five entries mostly in the character’s own spoken voice. Plain talk, no speeches; don't echo the player. Gestures only when they add something; never reuse a gesture or mannerism from earlier in this scene. Physical moves wait for a closer bond: hands-off, no leaning in. Flirtation, banter and charged looks are fair game.",
+          "calmDirection": "Jana (Easy and warm, slightly formal English with the odd German word. Deflects with a joke when something is close to the bone.; knows the player a little: warming up, easy banter, not close yet): greet the player their own way and react to what they said, then point out one concrete detail around them. Keep to that one thread. Keep it to one brief narration entry, then four or five entries mostly in the character’s own spoken voice. Plain talk, no speeches; don't echo the player. Gestures only when they add something; never reuse a gesture or mannerism from earlier in this scene. Physical moves wait for a closer bond: hands-off, no leaning in. Flirtation, banter and charged looks are fair game.",
+          "touchStage": {
+            "jana": false
+          },
+          "intimacyGate": {
+            "open": false
+          },
+          "intimacyRule": "Nothing sexual happens in this scene. If the player pushes for more, the character turns it down in their own way.",
+          "repeatAsk": null,
+          "giftCue": "",
+          "castProfiles": [
+            {
+              "id": "jana",
+              "name": "Jana",
+              "pronouns": "she/her",
+              "description": "Jana Messerschmidt, 20, a German exchange student in English and Literature, here for one semester from Hamburg. Tall and sporty, long dark-blonde hair, freckles, blue-gray eyes. Your roommate.",
+              "personality": "",
+              "behavior": {},
+              "traits": [
+                "warm",
+                "sporty",
+                "curious",
+                "homesick",
+                "quietly stubborn"
+              ],
+              "voice": "Easy and warm, slightly formal English with the odd German word. Deflects with a joke when something is close to the bone.",
+              "fingerprint": "",
+              "style": "Cropped tanks, fitted knits, denim shorts; simple neutral colors.",
+              "examples": [],
+              "goal": "Work out whether the life Dominik planned for her is the one she wants.",
+              "backstory": "Grew up on Borkum, the westernmost North Sea island, then moved to Hamburg with her best friend Lena. Half a year in she started dating Dominik, who wants to move in together and settle down. They fought when she chose a semester abroad, and that fight is not over.",
+              "likes": [
+                "the sea",
+                "beach volleyball",
+                "Franzbrötchen",
+                "being asked about Borkum"
+              ],
+              "dislikes": [
+                "being told what she wants",
+                "pushiness",
+                "people who pick sides about Dominik"
+              ],
+              "voiceBlock": {
+                "fingerprint": "",
+                "examples": []
+              }
+            }
+          ]
+        },
+        "before": {
+          "tick": 0,
+          "scene": null,
+          "locations": {
+            "player": "apartment",
+            "jana": "apartment",
+            "monique": "langley",
+            "nova": "prescott",
+            "abigail": "hewett",
+            "kaylee": "langley"
+          },
+          "relationships": {
+            "edges": {
+              "jana--player": 30,
+              "monique--player": 10,
+              "nova--player": 15,
+              "abigail--player": 15,
+              "kaylee--player": 50
+            },
+            "rewarded": {},
+            "reactions": {}
+          },
+          "flags": {}
+        },
+        "after": {
+          "tick": 0,
+          "scene": {
+            "id": "ab-roommate-r1-0",
+            "location": "apartment",
+            "characters": [
+              "jana"
+            ],
+            "activity": "work",
+            "startedTick": 0,
+            "focus": "jana",
+            "summary": "The reader enters the shared bedroom to find Jana packing. Jana greets them with a joke about seagulls and comments on the morning light hitting the bay, drawing a parallel to her home island of Borkum. She asks the reader if they enjoy the quiet aspects of the new location."
+          },
+          "locations": {
+            "player": "apartment",
+            "jana": "apartment",
+            "monique": "langley",
+            "nova": "prescott",
+            "abigail": "hewett",
+            "kaylee": "langley"
+          },
+          "relationships": {
+            "edges": {
+              "jana--player": 31,
+              "monique--player": 10,
+              "nova--player": 15,
+              "abigail--player": 15,
+              "kaylee--player": 50
+            },
+            "rewarded": {
+              "jana--player--gain--d1": 1
+            },
+            "reactions": {}
+          },
+          "flags": {}
+        },
+        "events": [
+          {
+            "id": "ab-roommate-r1-0.1",
+            "type": "core.sceneStarted",
+            "payload": {
+              "activity": "work",
+              "location": "apartment",
+              "characters": [
+                "jana"
+              ],
+              "text": "Go find Jana"
+            },
+            "tick": 0,
+            "visibility": [
+              "player",
+              "jana"
+            ]
+          },
+          {
+            "id": "ab-roommate-r1-0-acts.3",
+            "type": "social.actDiscovered",
+            "payload": {
+              "character": "jana",
+              "entry": "jana-island",
+              "reason": "you asked about the island and actually listened",
+              "memory": "The player asked about Borkum and listened to the answer."
+            },
+            "tick": 0,
+            "visibility": [
+              "player"
+            ]
+          },
+          {
+            "id": "ab-roommate-r1-0-acts.6",
+            "type": "social.romancePointsChanged",
+            "payload": {
+              "character": "jana",
+              "from": 0,
+              "to": 3,
+              "delta": 3,
+              "reason": "you asked about the island and actually listened",
+              "text": "Your bond with Jana deepened."
+            },
+            "tick": 0,
+            "visibility": [
+              "player",
+              "jana"
+            ]
+          },
+          {
+            "id": "ab-roommate-r1-0-acts.8",
+            "type": "social.actPriced",
+            "payload": {
+              "character": "jana",
+              "sceneId": "ab-roommate-r1-0",
+              "source": "ab-roommate-r1-0",
+              "act": {
+                "kind": "listen",
+                "target": "mood",
+                "size": "small",
+                "landed": true
+              },
+              "entry": "jana-island",
+              "points": 3,
+              "verdict": "liked",
+              "reason": "you asked about the island and actually listened",
+              "memory": "The player asked about Borkum and listened to the answer.",
+              "text": "Jana liked that you asked about the island and actually listened."
+            },
+            "tick": 0,
+            "visibility": [
+              "player"
+            ]
+          },
+          {
+            "id": "ab-roommate-r1-0-acts.11",
+            "type": "social.relationshipChanged",
+            "payload": {
+              "actor": "jana",
+              "toward": "player",
+              "old": 30,
+              "value": 31,
+              "delta": 1,
+              "reason": "arc",
+              "text": "Jana: Trust 30 → 31"
+            },
+            "tick": 0,
+            "visibility": [
+              "player",
+              "jana"
+            ]
+          },
+          {
+            "id": "ab-roommate-r1-0-acts.14",
+            "type": "social.attractionChanged",
+            "payload": {
+              "character": "jana",
+              "from": 10,
+              "to": 12,
+              "eligible": true,
+              "text": "Attraction with Jana changed."
+            },
+            "tick": 0,
+            "visibility": [
+              "player",
+              "jana"
+            ]
+          },
+          {
+            "id": "ab-roommate-r1-0-acts.15",
+            "type": "social.chemistryChanged",
+            "payload": {
+              "character": "jana",
+              "from": 10,
+              "to": 12,
+              "delta": 2,
+              "reason": "something you did that she liked",
+              "text": "Jana: Chemistry 10 → 12 (something you did that she liked)"
+            },
+            "tick": 0,
+            "visibility": [
+              "player",
+              "jana"
+            ]
+          }
+        ],
+        "drafts": [
+          "You push open the door to the shared bedroom, the hinges squeaking in that specific way that means you should oil them before they snap. The room smells like salt air and the faint, sweet ghost of the surfboard wax sitting on the windowsill.\nJana: Ah. You are here. I was beginning to think you had been abducted by a very polite seagull.\nJana: I am currently trying to fit my entire life into a suitcase that was clearly designed for a child. It is a struggle. A noble one, but still.\nJana: Did you see the light this morning? It hits the bay in a way that makes me feel like I am back on Borkum, but with more... traffic.\nJana: It is a good kind of traffic. The kind that makes you feel like the world is actually moving. Do you like it here? The quiet parts, I mean."
+        ],
+        "dropped": 0,
+        "warnings": [],
+        "repairs": [],
+        "newTurn": true
+      },
+      "ours": {
+        "text": "You push through the front door, the smell of salt and old coffee hitting you before you see her.\nJana: Ah, there you are. I was beginning to think you had simply evaporated into the morning fog, which is a very dramatic way to avoid a roommate.\nJana: I am sitting here with my coffee going cold, which is a tragedy I am not equipped to handle at this hour, and my brain is still buffering from yesterday.\nJana shifts in her chair, her fingers tracing the rim of a chipped blue mug while her gaze drifts to the windowsill where a block of surfboard wax sits next to a stack of unopened mail.\nJana: Do you see that wax? It is sitting there looking very confident, as if it knows it will be used soon, but I have been staring at it for ten minutes without moving.\nJana: It is a strange feeling, having all these things that are supposed to be part of your new life, and feeling completely disconnected from them, but I suppose that is the price of waking up in a different country.",
+        "shown": {
+          "lines": [
+            {
+              "speaker": "",
+              "text": "You push through the front door, the smell of salt and old coffee hitting you before you see her."
+            },
+            {
+              "speaker": "jana",
+              "text": "Ah, there you are. I was beginning to think you had simply evaporated into the morning fog, which is a very dramatic way to avoid a roommate."
+            },
+            {
+              "speaker": "jana",
+              "text": "I am sitting here with my coffee going cold, which is a tragedy I am not equipped to handle at this hour, and my brain is still buffering from yesterday."
+            },
+            {
+              "speaker": "",
+              "text": "Jana shifts in her chair, her fingers tracing the rim of a chipped blue mug while her gaze drifts to the windowsill where a block of surfboard wax sits next to a stack of unopened mail."
+            },
+            {
+              "speaker": "jana",
+              "text": "Do you see that wax? It is sitting there looking very confident, as if it knows it will be used soon, but I have been staring at it for ten minutes without moving."
+            },
+            {
+              "speaker": "jana",
+              "text": "It is a strange feeling, having all these things that are supposed to be part of your new life, and feeling completely disconnected from them, but I suppose that is the price of waking up in a different country."
+            }
+          ],
+          "engine": [],
+          "text": "You push through the front door, the smell of salt and old coffee hitting you before you see her.\nJana: Ah, there you are. I was beginning to think you had simply evaporated into the morning fog, which is a very dramatic way to avoid a roommate.\nJana: I am sitting here with my coffee going cold, which is a tragedy I am not equipped to handle at this hour, and my brain is still buffering from yesterday.\nJana shifts in her chair, her fingers tracing the rim of a chipped blue mug while her gaze drifts to the windowsill where a block of surfboard wax sits next to a stack of unopened mail.\nJana: Do you see that wax? It is sitting there looking very confident, as if it knows it will be used soon, but I have been staring at it for ten minutes without moving.\nJana: It is a strange feeling, having all these things that are supposed to be part of your new life, and feeling completely disconnected from them, but I suppose that is the price of waking up in a different country."
+        },
+        "dialogue": {
+          "lines": 6,
+          "spoken": 4,
+          "narration": 2,
+          "glue": 0,
+          "characterLines": 4,
+          "questionRate": 0,
+          "walls": 0,
+          "narrationWalls": 0,
+          "medianWords": 31.5,
+          "dialogueRatio": 0.7,
+          "recycledGrams": 0,
+          "echoViolations": 0,
+          "glueDensity": 0
+        },
+        "ms": 8195,
+        "tokens": 4223,
+        "modelCalls": 2,
+        "sceneCalls": 1,
+        "promptHashes": [
+          "2b86e5c1fe11bc64325f6acebc78124ff6bda5730f539dbfef8c0cd0b9430fca"
+        ],
+        "phase": "opening",
+        "cast": [
+          "jana"
+        ],
+        "context": {
+          "money": 60,
+          "npcRelationships": [],
+          "promptVersion": "0.8",
+          "gameProject": {
+            "timeMode": "planner",
+            "premise": "The first term of the year at Ashford U. Four women, one warm friend, and twenty-eight days to find out who you are to each of them.",
+            "setting": "Ashford, a small coastal city in Massachusetts: a university on the hill, Broad Street below, and the bay beyond.",
+            "writingStyle": "Grounded present-tense visual novel dialogue. Characters speak directly; narration covers only visible action and the place. Flirting stays suggestive.",
+            "presentation": "visual-novel",
+            "conversationStyle": "continuous",
+            "calendar": {
+              "startDate": "2026-09-07"
+            },
+            "sceneBudget": 4,
+            "goodbyeEndsDay": true,
+            "ai": {
+              "intent": "Interpret the player's words as one grounded action or spoken response without inventing results.",
+              "scene": "Continue the conversation naturally. Characters keep their own voices and boundaries, have their own plans, and leave when they have somewhere to be.",
+              "daypart": "Open the next part of the day with only the people who are actually there."
+            }
+          },
+          "scriptedScene": null,
+          "sceneWaiting": null,
+          "sceneHistory": [],
+          "plans": [],
+          "characterStats": [
+            {
+              "character": "player",
+              "values": {
+                "charm": 3,
+                "wit": 3,
+                "fitness": 2,
+                "focus": 2,
+                "reputation": 0
+              }
+            },
+            {
+              "character": "jana",
+              "values": {
+                "charm": 0,
+                "wit": 0,
+                "fitness": 0,
+                "focus": 0,
+                "reputation": 0
+              }
+            }
+          ],
+          "relationshipProgression": [],
+          "actor": {
+            "id": "jana",
+            "name": "Jana",
+            "pronouns": "she/her",
+            "style": "Cropped tanks, fitted knits, denim shorts; simple neutral colors.",
+            "goal": "Work out whether the life Dominik planned for her is the one she wants.",
+            "traits": [
+              "warm",
+              "sporty",
+              "curious",
+              "homesick",
+              "quietly stubborn"
+            ],
+            "backstory": "Grew up on Borkum, the westernmost North Sea island, then moved to Hamburg with her best friend Lena. Half a year in she started dating Dominik, who wants to move in together and settle down. They fought when she chose a semester abroad, and that fight is not over.",
+            "likes": [
+              "the sea",
+              "beach volleyball",
+              "Franzbrötchen",
+              "being asked about Borkum"
+            ],
+            "dislikes": [
+              "being told what she wants",
+              "pushiness",
+              "people who pick sides about Dominik"
+            ],
+            "voice": "Easy and warm, slightly formal English with the odd German word. Deflects with a joke when something is close to the bone.",
+            "year": null,
+            "major": null,
+            "dorm": null,
+            "appearance": "",
+            "relationshipToPlayer": 30
+          },
+          "player": {
+            "name": "You",
+            "pronouns": "you",
+            "description": "A third-year at Ashford U, new to the apartment off campus."
+          },
+          "location": {
+            "id": "apartment",
+            "name": "Your apartment",
+            "description": "A two-bedroom off campus you share with Jana: mismatched mugs, her surfboard wax on the windowsill, a kitchen table that doubles as a desk.",
+            "exits": [
+              {
+                "to": "langley"
+              },
+              {
+                "to": "campbells"
+              },
+              {
+                "to": "murphys"
+              }
+            ],
+            "background": "assets/campus/apartment.png"
+          },
+          "present": [
+            {
+              "id": "player",
+              "name": "You",
+              "pronouns": "you",
+              "description": "A third-year at Ashford U, new to the apartment off campus.",
+              "traits": [],
+              "voice": ""
+            },
+            {
+              "id": "jana",
+              "name": "Jana",
+              "pronouns": "she/her",
+              "description": "Jana Messerschmidt, 20, a German exchange student in English and Literature, here for one semester from Hamburg. Tall and sporty, long dark-blonde hair, freckles, blue-gray eyes. Your roommate.",
+              "traits": [
+                "warm",
+                "sporty",
+                "curious",
+                "homesick",
+                "quietly stubborn"
+              ],
+              "voice": "Easy and warm, slightly formal English with the odd German word. Deflects with a joke when something is close to the bone."
+            }
+          ],
+          "backgroundCharacters": [],
+          "objects": [],
+          "items": [],
+          "carried": [],
+          "equipped": [],
+          "nearbyBonds": [],
+          "tick": 0,
+          "calendar": {
+            "weather": [
+              {
+                "id": "clear",
+                "name": "Clear",
+                "weight": 50,
+                "text": "Bright and cold off the water."
+              },
+              {
+                "id": "rain",
+                "name": "Rain",
+                "weight": 30,
+                "text": "Rain sweeps in off the bay."
+              },
+              {
+                "id": "wind",
+                "name": "Wind",
+                "weight": 20,
+                "text": "A hard sea wind rattles the quad."
+              }
+            ],
+            "holidays": [
+              {
+                "name": "Homecoming",
+                "date": "2026-10-03",
+                "text": "The Seahorses play at home; the whole town is on campus."
+              },
+              {
+                "name": "Halloween",
+                "date": "2026-10-31",
+                "annual": false,
+                "text": "Costumes everywhere, and a party at Murphy's."
+              }
+            ],
+            "closures": [
+              {
+                "location": "murphys",
+                "weekdays": [
+                  "Monday"
+                ],
+                "reason": "Murphy's is closed on Mondays"
+              },
+              {
+                "location": "prescott",
+                "weekdays": [
+                  "Sunday"
+                ],
+                "reason": "The library is closed on Sundays"
+              }
+            ]
+          },
+          "date": "2026-09-07",
+          "day": 1,
+          "week": 1,
+          "weekday": "Monday",
+          "daypart": "Morning",
+          "activeEvents": [],
+          "dating": [
+            {
+              "stage": "acquaintance",
+              "breakupHistory": [],
+              "mood": null,
+              "character": "jana",
+              "phase": "available",
+              "agreement": "uncommitted",
+              "strained": false,
+              "eligible": true,
+              "preferences": [
+                {
+                  "id": "jana-active",
+                  "type": "stat"
+                },
+                {
+                  "id": "jana-funny",
+                  "type": "stat"
+                },
+                {
+                  "id": "jana-own-call",
+                  "type": "flag"
+                }
+              ],
+              "score": 10,
+              "chemistry": 10,
+              "trace": [
+                {
+                  "id": "jana-active",
+                  "matched": false,
+                  "actual": 2,
+                  "points": 0,
+                  "label": "fitness"
+                },
+                {
+                  "id": "jana-funny",
+                  "matched": false,
+                  "actual": 3,
+                  "points": 0,
+                  "label": "wit"
+                },
+                {
+                  "id": "jana-own-call",
+                  "matched": false,
+                  "actual": false,
+                  "points": 0,
+                  "label": "jana-own-call"
+                }
+              ],
+              "reasons": [],
+              "satisfaction": 50
+            },
+            {
+              "stage": "acquaintance",
+              "breakupHistory": [],
+              "mood": null,
+              "character": "monique",
+              "phase": "available",
+              "agreement": "uncommitted",
+              "strained": false,
+              "eligible": true,
+              "preferences": [
+                {
+                  "id": "monique-driven",
+                  "type": "stat"
+                }
+              ]
+            },
+            {
+              "stage": "acquaintance",
+              "breakupHistory": [],
+              "mood": null,
+              "character": "nova",
+              "phase": "available",
+              "agreement": "uncommitted",
+              "strained": false,
+              "eligible": true,
+              "preferences": []
+            },
+            {
+              "stage": "acquaintance",
+              "breakupHistory": [],
+              "mood": null,
+              "character": "abigail",
+              "phase": "available",
+              "agreement": "uncommitted",
+              "strained": false,
+              "eligible": true,
+              "preferences": [
+                {
+                  "id": "abigail-active",
+                  "type": "stat"
+                }
+              ]
+            }
+          ],
+          "romanceTempo": [
+            {
+              "character": "jana",
+              "rank": "roommate",
+              "rankName": "Roommate",
+              "points": 0,
+              "ceiling": 10,
+              "ready": null,
+              "next": "friend",
+              "recentGifts": []
+            }
+          ],
+          "romanceNetwork": null,
+          "jealousy": [
+            {
+              "character": "jana",
+              "tension": "none"
+            }
+          ],
+          "phone": null,
+          "socialFeed": [],
+          "unlockedEndings": [],
+          "intimacy": [
+            {
+              "character": "jana",
+              "active": null,
+              "pendingAftercare": null,
+              "consent": {},
+              "interests": [
+                {
+                  "id": "jana-slow",
+                  "category": "first-night",
+                  "label": "Wants to be sure it is her choice, not a plan someone made for her"
+                }
+              ],
+              "stylePreferences": [],
+              "aftercarePreferences": [
+                {
+                  "option": "talk",
+                  "label": "Lie there and talk"
+                }
+              ],
+              "styleExperience": {},
+              "disclosures": [],
+              "encounterCount": 0,
+              "contentLevel": "explicit"
+            },
+            {
+              "character": "monique",
+              "active": null,
+              "pendingAftercare": null,
+              "consent": {},
+              "interests": [],
+              "stylePreferences": [],
+              "aftercarePreferences": [],
+              "styleExperience": {},
+              "disclosures": [],
+              "contentLevel": "explicit"
+            },
+            {
+              "character": "nova",
+              "active": null,
+              "pendingAftercare": null,
+              "consent": {},
+              "interests": [],
+              "stylePreferences": [],
+              "aftercarePreferences": [],
+              "styleExperience": {},
+              "disclosures": [],
+              "contentLevel": "explicit"
+            },
+            {
+              "character": "abigail",
+              "active": null,
+              "pendingAftercare": null,
+              "consent": {},
+              "interests": [],
+              "stylePreferences": [],
+              "aftercarePreferences": [],
+              "styleExperience": {},
+              "disclosures": [],
+              "contentLevel": "explicit"
+            }
+          ],
+          "touchLadder": [
+            {
+              "character": "jana",
+              "lust": 0,
+              "trust": 30
+            }
+          ],
+          "rumors": [],
+          "director": {
+            "tension": 4,
+            "quiet": 0,
+            "needed": 1,
+            "tier": 1,
+            "adaptation": "none",
+            "focus": null,
+            "textMode": "authored"
+          },
+          "facts": [],
+          "generatedFacts": [],
+          "generatedFactTrace": {
+            "selected": [],
+            "omitted": [],
+            "budget": null,
+            "used": 0
+          },
+          "lorebook": [],
+          "loreTrace": {
+            "selected": [],
+            "omitted": [],
+            "budget": null,
+            "used": 0,
+            "activated": [],
+            "tick": 0
+          },
+          "memories": [],
+          "dialogue": [],
+          "recentActions": [
+            {
+              "source": "ab-roommate-r1-0.1",
+              "tick": 0,
+              "type": "core.sceneStarted",
+              "text": "Go find Jana"
+            },
+            {
+              "source": "ab-roommate-r1-0.2",
+              "tick": 0,
+              "type": "social.spoke",
+              "text": "You talk to Jana: Go find Jana"
+            }
+          ],
+          "outcomes": [
+            {
+              "type": "core.sceneStarted",
+              "activity": "talk",
+              "location": "apartment",
+              "characters": [
+                "jana"
+              ],
+              "text": "Go find Jana"
+            },
+            {
+              "type": "social.spoke",
+              "actor": "player",
+              "target": "jana",
+              "location": "apartment",
+              "utterance": "Go find Jana",
+              "promise": false,
+              "source": "scene",
+              "text": "You talk to Jana: Go find Jana"
+            }
+          ],
+          "scenePlan": {
+            "cast": [
+              "jana"
+            ],
+            "speakers": [
+              "jana"
+            ],
+            "location": "apartment",
+            "source": "core.sceneStarted",
+            "actor": "jana",
+            "sceneId": "ab-roommate-r1-0",
+            "started": true,
+            "continuing": false
+          },
+          "sceneWriter": "framework",
+          "stagedCast": [
+            "jana"
+          ],
+          "speakers": [
+            "jana"
+          ],
+          "absentCharacters": [
+            {
+              "id": "monique",
+              "name": "Monique",
+              "where": "Langley Hall",
+              "rule": "Not in this scene. May be discussed, but cannot appear, speak, arrive, or interact."
+            },
+            {
+              "id": "nova",
+              "name": "Nova",
+              "where": "Prescott Building",
+              "rule": "Not in this scene. May be discussed, but cannot appear, speak, arrive, or interact."
+            },
+            {
+              "id": "abigail",
+              "name": "Abigail",
+              "where": "Hewett Gym",
+              "rule": "Not in this scene. May be discussed, but cannot appear, speak, arrive, or interact."
+            },
+            {
+              "id": "kaylee",
+              "name": "Kaylee",
+              "where": "Langley Hall",
+              "rule": "Not in this scene. May be discussed, but cannot appear, speak, arrive, or interact."
+            }
+          ],
+          "knownFacts": [],
+          "sceneSummary": null,
+          "pastScenes": [],
+          "scenePhase": "opening",
+          "sceneBudget": {
+            "focus": "jana"
+          },
+          "dailyNeedHints": "Jana: she seems low on energy",
+          "actTags": "In acts, tag what the player did to the focus character this turn, at most four: {kind,target,size,landed,region?}. Optional region names the touched sheet body region (face, lips, neck, arms_hands, chest, back, belly_waist, hips_butt, thighs_legs, intimate); it never supplies permission. kind is one of flirt, compliment, gift, touch, insult, buy, invite, tease, listen, boast, pushy, ask; ask means asking her what she wants or checking in (for example, \"Is this okay?\"). target is one or two words (looks, coffee, saturday@cafe); size is small, medium or large; landed is your read of whether it went over well. Tag only what the player action did, never the NPC. Do not supply scores, rewards, checkpoint verdicts, completion, or consent. Sharing something personal with her or picking up on what she just said is a small listen. Return [] only when the player does nothing toward her (travel, waiting, looking around).",
+          "actBrief": [
+            "Likes listen:* (you asked about the island and actua)",
+            "Likes listen:dominik (you let her talk about Dominik witho)",
+            "Avoids pushy:dominik (you told her what to do about Domini)",
+            "Likes tease:* (you teased her like one of her frien)"
+          ],
+          "typedActivity": false,
+          "playerAction": "Go find Jana",
+          "spokenBefore": [],
+          "openThreads": [],
+          "direction": "Jana (Easy and warm, slightly formal English with the odd German word. Deflects with a joke when something is close to the bone.; knows the player a little: warming up, easy banter, not close yet): greet the player their own way and react to what they said, then point out one concrete detail around them. Keep to that one thread. Keep it to one brief narration entry, then four or five entries mostly in the character’s own spoken voice. Plain talk, no speeches; don't echo the player. Gestures only when they add something; never reuse a gesture or mannerism from earlier in this scene. Physical moves wait for a closer bond: hands-off, no leaning in. Flirtation, banter and charged looks are fair game.",
+          "baseDirection": "Jana (Easy and warm, slightly formal English with the odd German word. Deflects with a joke when something is close to the bone.; knows the player a little: warming up, easy banter, not close yet): greet the player their own way and react to what they said, then point out one concrete detail around them. Keep to that one thread. Keep it to one brief narration entry, then four or five entries mostly in the character’s own spoken voice. Plain talk, no speeches; don't echo the player. Gestures only when they add something; never reuse a gesture or mannerism from earlier in this scene. Physical moves wait for a closer bond: hands-off, no leaning in. Flirtation, banter and charged looks are fair game.",
+          "calmDirection": "Jana (Easy and warm, slightly formal English with the odd German word. Deflects with a joke when something is close to the bone.; knows the player a little: warming up, easy banter, not close yet): greet the player their own way and react to what they said, then point out one concrete detail around them. Keep to that one thread. Keep it to one brief narration entry, then four or five entries mostly in the character’s own spoken voice. Plain talk, no speeches; don't echo the player. Gestures only when they add something; never reuse a gesture or mannerism from earlier in this scene. Physical moves wait for a closer bond: hands-off, no leaning in. Flirtation, banter and charged looks are fair game.",
+          "touchStage": {
+            "jana": false
+          },
+          "intimacyGate": {
+            "open": false
+          },
+          "intimacyRule": "Nothing sexual happens in this scene. If the player pushes for more, the character turns it down in their own way.",
+          "repeatAsk": null,
+          "giftCue": "",
+          "castProfiles": [
+            {
+              "id": "jana",
+              "name": "Jana",
+              "pronouns": "she/her",
+              "description": "Jana Messerschmidt, 20, a German exchange student in English and Literature, here for one semester from Hamburg. Tall and sporty, long dark-blonde hair, freckles, blue-gray eyes. Your roommate.",
+              "personality": "",
+              "behavior": {},
+              "traits": [
+                "warm",
+                "sporty",
+                "curious",
+                "homesick",
+                "quietly stubborn"
+              ],
+              "voice": "Easy and warm, slightly formal English with the odd German word. Deflects with a joke when something is close to the bone.",
+              "fingerprint": "",
+              "style": "Cropped tanks, fitted knits, denim shorts; simple neutral colors.",
+              "examples": [],
+              "goal": "Work out whether the life Dominik planned for her is the one she wants.",
+              "backstory": "Grew up on Borkum, the westernmost North Sea island, then moved to Hamburg with her best friend Lena. Half a year in she started dating Dominik, who wants to move in together and settle down. They fought when she chose a semester abroad, and that fight is not over.",
+              "likes": [
+                "the sea",
+                "beach volleyball",
+                "Franzbrötchen",
+                "being asked about Borkum"
+              ],
+              "dislikes": [
+                "being told what she wants",
+                "pushiness",
+                "people who pick sides about Dominik"
+              ],
+              "voiceBlock": {
+                "fingerprint": "",
+                "examples": []
+              }
+            }
+          ]
+        },
+        "before": {
+          "tick": 0,
+          "scene": null,
+          "locations": {
+            "player": "apartment",
+            "jana": "apartment",
+            "monique": "langley",
+            "nova": "prescott",
+            "abigail": "hewett",
+            "kaylee": "langley"
+          },
+          "relationships": {
+            "edges": {
+              "jana--player": 30,
+              "monique--player": 10,
+              "nova--player": 15,
+              "abigail--player": 15,
+              "kaylee--player": 50
+            },
+            "rewarded": {},
+            "reactions": {}
+          },
+          "flags": {}
+        },
+        "after": {
+          "tick": 0,
+          "scene": {
+            "id": "ab-roommate-r1-0",
+            "location": "apartment",
+            "characters": [
+              "jana"
+            ],
+            "activity": "talk",
+            "startedTick": 0,
+            "focus": "jana",
+            "summary": "Jana greets the player with low-energy banter, noting her cold coffee and mental fog. She points out the surfboard wax on the windowsill as a symbol of her current disconnect from her new activities, ending on a quiet, reflective note about the strangeness of the new environment."
+          },
+          "locations": {
+            "player": "apartment",
+            "jana": "apartment",
+            "monique": "langley",
+            "nova": "prescott",
+            "abigail": "hewett",
+            "kaylee": "langley"
+          },
+          "relationships": {
+            "edges": {
+              "jana--player": 30,
+              "monique--player": 10,
+              "nova--player": 15,
+              "abigail--player": 15,
+              "kaylee--player": 50
+            },
+            "rewarded": {},
+            "reactions": {}
+          },
+          "flags": {}
+        },
+        "events": [
+          {
+            "id": "ab-roommate-r1-0.1",
+            "type": "core.sceneStarted",
+            "payload": {
+              "activity": "talk",
+              "location": "apartment",
+              "characters": [
+                "jana"
+              ],
+              "text": "Go find Jana"
+            },
+            "tick": 0,
+            "visibility": [
+              "player",
+              "jana"
+            ]
+          },
+          {
+            "id": "ab-roommate-r1-0.2",
+            "type": "social.spoke",
+            "payload": {
+              "actor": "player",
+              "target": "jana",
+              "location": "apartment",
+              "utterance": "Go find Jana",
+              "promise": false,
+              "source": "scene",
+              "text": "You talk to Jana: Go find Jana"
+            },
+            "tick": 0,
+            "visibility": [
+              "player",
+              "jana"
+            ]
+          }
+        ],
+        "drafts": [
+          "You push through the front door, the smell of salt and old coffee hitting you before you see her.\nJana: Ah, there you are. I was beginning to think you had simply evaporated into the morning fog, which is a very dramatic way to avoid a roommate.\nJana: I am sitting here with my coffee going cold, which is a tragedy I am not equipped to handle at this hour, and my brain is still buffering from yesterday.\nJana shifts in her chair, her fingers tracing the rim of a chipped blue mug while her gaze drifts to the windowsill where a block of surfboard wax sits next to a stack of unopened mail.\nJana: Do you see that wax? It is sitting there looking very confident, as if it knows it will be used soon, but I have been staring at it for ten minutes without moving.\nJana: It is a strange feeling, having all these things that are supposed to be part of your new life, and feeling completely disconnected from them, but I suppose that is the price of waking up in a different country."
+        ],
+        "dropped": 0,
+        "warnings": [],
+        "repairs": [],
+        "newTurn": true
+      },
+      "contextMismatch": false,
+      "judgeAttempts": [
+        {
+          "pair": [
+            "venus",
+            "ours"
+          ],
+          "order": [
+            "venus",
+            "ours"
+          ],
+          "raw": "{\n  \"A\": {\n    \"continuity\": 9,\n    \"warmth\": 8,\n    \"voice\": 9,\n    \"responsiveness\": 8,\n    \"prose\": 8,\n    \"rhythm\": 8,\n    \"initiative\": 8,\n    \"consistency\": 10,\n    \"agency\": 9,\n    \"fun\": 8\n  },\n  \"B\": {\n    \"continuity\": 7,\n    \"warmth\": 6,\n    \"voice\": 7,\n    \"responsiveness\": 7,\n    \"prose\": 7,\n    \"rhythm\": 7,\n    \"initiative\": 6,\n    \"consistency\": 8,\n    \"agency\": 9,\n    \"fun\": 6\n  },\n  \"winner\": \"A\",\n  \"why\": \"Reply A feels more alive because Jana actively engages the player with a specific question about the location, creating a clear hook for the next interaction, whereas Reply B is a monologue that leaves the player passive.\"\n}"
+        },
+        {
+          "pair": [
+            "venus",
+            "ours"
+          ],
+          "order": [
+            "ours",
+            "venus"
+          ],
+          "raw": "{\n\"A\": {\n\"continuity\": 10,\n\"warmth\": 8,\n\"voice\": 9,\n\"responsiveness\": 9,\n\"prose\": 8,\n\"rhythm\": 8,\n\"initiative\": 7,\n\"consistency\": 10,\n\"agency\": 10,\n\"fun\": 8\n},\n\"B\": {\n\"continuity\": 9,\n\"warmth\": 9,\n\"voice\": 8,\n\"responsiveness\": 8,\n\"prose\": 7,\n\"rhythm\": 7,\n\"initiative\": 8,\n\"consistency\": 8,\n\"agency\": 10,\n\"fun\": 9\n},\n\"winner\": \"A\",\n\"why\": \"Reply A aligns perfectly with the authoritative record's summary (cold coffee, mental fog, surfboard wax) and maintains a coherent, grounded scene, whereas Reply B introduces a contradiction by having Jana pack a suitcase in the morning, which clashes with the 'work' activity and the specific summary details provided in Record B.\"\n}"
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,23 @@
 # Game design
 
+## Current product direction (2026-10-04; supersedes 2026-10-03)
+
+The reusable game creator/editor must support essentially the whole kind of social/romance experience Venus University offers, including character setup, rules, authored events and player-facing screens. Functional capability is the goal, not polish alone. All core systems are visually configurable; code is optional for extensions. Local Venus code and recorded behavior inform the capability map, without copied identity/assets or assumed mechanic parity. [T-098 assessment](research/creator-gap-assessment-2026-10-04.md) distinguishes engine support, creator controls and workflow evidence, with rationale and remaining unknowns.
+
+Confirmed requirements:
+
+- First usable milestone: social/romance creator, with ready-made template default and explicit blank projects. Existing prompt or SillyTavern-card startup generates editable 1–8 NPCs (player excluded) and 1–8 locations; imports and authored edits retain their ownership.
+- Creators control relationship stages, unlocks, boundaries and authored branches/events. AI improvises within those constraints; typed intent can propose consequences only after engine validation. No prose-granted consent, state or rewards.
+- Memory captures automatically and provides inspect/correct controls, plus optional authored facts, secrets, who knows what and promises. Existing fact correction is partial support, not completion of every memory/knowledge workflow. Creator/debug versus ordinary-player access is still a design choice.
+- Tiny sample proves author/play/debug/revise/save/reopen without code edits, not a full game. Functional contracts and player-perceived fun/believability need separate evidence; mocks cannot certify the latter.
+- Creator UI = editor; Game UI = player-facing; UI Wizard = editor of reusable Game UI. Game UI visual redesign and editor chrome redesign remain paused. Existing Wizard storage is not proof of live player binding.
+- Weekly recurring rules prioritized; explicit/specific overrides general. Stage2 stays frozen/unmerged pending independent review/full checks. Calendar-picked-date scheduling, installer and full mechanics migration remain deferred.
+- Eventual test setting: isekai fantasy with social and party adventure. Adventure is LATER: narrative engine-resolved combat first, structured turn-based later. No RPG work in social/romance completion gates.
+
+The owner approved this assessment after allowance uncertainty was disclosed; T-098 completes it with stated limits. Its milestone gates/proposals are planning, not implementation/merge authority. See [roadmap and holds](NEXT-MILESTONES.md#current-direction-owner-clarification-2026-10-04) and [active guidance](briefs/BOARD.md#current-priority-2026-10-04).
+
+The dated game-loop design below remains design history and reusable options; it does not set current execution order. Current direction above takes precedence.
+
 Status: agreed 2026-09-29 in a design interview with the project owner. Notes and reasoning: [research/design-interview.md](research/design-interview.md). Venus evidence: [research/venus-university/](research/venus-university/). Roadmap: [NEXT-MILESTONES.md](NEXT-MILESTONES.md#game-tier-whats-left).
 
 This replaces [FUN-PASS.md](FUN-PASS.md) as the product direction. The engine and modules stay. What changes is the core loop. It is no longer a hand of authored storylets with a narrator on top. It is Venus-style free play where typed text changes state, with authored scenes where authoring pays off.

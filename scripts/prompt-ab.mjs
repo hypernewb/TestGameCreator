@@ -12,7 +12,7 @@ import {effectiveWindow,detectContextWindow,validateContextSize} from '../packag
 import {venusStyleMessages} from '../vendor/venus/venusStylePrompt.mjs';
 import {scenePromptMessages,calmContinuationMessages} from '../vendor/venus/scenePrompt.mjs';
 import {runPromptAB} from '../packages/testing/prompt-ab-runner.mjs';
-import {tally,summaryLine,reportMarkdown} from '../packages/testing/prompt-ab.mjs';
+import {tally,summaryLine,reportMarkdown,blockTokens} from '../packages/testing/prompt-ab.mjs';
 import {appendLedger} from '../packages/testing/ledger.mjs';
 import {SUSTAINED_SCENARIOS,repeatedScenarios,blindReview,sustainedMetrics} from '../packages/testing/sustained-conversations.mjs';
 const arg=(k,d)=>{const i=process.argv.indexOf('--'+k);return i<0?d:process.argv[i+1];};
@@ -44,6 +44,16 @@ const make=(scenePrompt,modelId=model,url=endpoint,wideContext=false)=>{const p=
 const ARMS={calm:()=>make(calmContinuationMessages),plain:()=>make((context,pack)=>scenePromptMessages({...context,sceneStyle:'plain'},pack)),venus:()=>make(venusStyleMessages),ours:()=>make(),hybrid:()=>make(),'context-wide':()=>{const p=make();p.wideContext=true;return p;}};
 const names=arg('variants','venus,hybrid').split(',');if(names.length<2||new Set(names).size!==names.length||names.some(n=>!ARMS[n]))throw Error('Choose at least two unique variants: plain,ours,venus,hybrid,calm,context-wide');
 if(names.includes('ours')&&names.includes('hybrid'))throw Error('ours already uses the hybrid prompt; compare plain,venus,ours to avoid duplicate arms');
+// --explain-prompt: per-block token estimates (chars/4) for every turn, so prompt-slimming work is measured, not guessed.
+const explain=process.argv.includes('--explain-prompt');
+const explainRows=(rows,pack)=>{
+ const perVariant={};
+ for(const n of names){const agg={};let turns=0;
+  for(const r of rows){const c=r[n].context;if(!c)continue;turns++;const b=blockTokens(c,pack,variants[n].scenePrompt||scenePromptMessages);for(const [k,v] of Object.entries(b))(agg[k]??=[]).push(v);}
+  perVariant[n]={agg,turns,total:Object.values(agg).flat().reduce((a,b)=>a+b,0)};
+ }
+ return perVariant;
+};
 const mode=arg('mode','paired'),reference=arg('reference',names.includes('ours')?'ours':names[0]);if(!['paired','trajectory'].includes(mode)||!names.includes(reference))throw Error('Choose mode paired or trajectory and a reference from the variants');
 const variants=Object.fromEntries(names.map(n=>[n,ARMS[n]()])),judgeProvider=make(null,judge,judgeEndpoint),dir=mkdtempSync(join(tmpdir(),'story-prompt-ab-'));
 const {store,service,packs,view}=createApp({dataPath:join(dir,'ab.sqlite'),scenarioDir:join(dir,'scenarios')});
@@ -58,4 +68,10 @@ if(names.length===2&&(judgeScope==='conversation'||process.argv.includes('--blin
 writeFileSync(out,reportMarkdown(rows,meta));writeFileSync(out.replace(/\.md$/,'')+'.json',JSON.stringify({meta,rows},null,2));
 appendLedger(join(import.meta.dirname,'..'),{kind:'ab',model,judge,seed,names,scenarios:selected,mode,judgeScope,summary:summaryLine(tally(rows,names)),report:out});
 console.log('summary: '+summaryLine(tally(rows,names))+'\nreport: '+out);
+if(explain){
+ const perVariant=explainRows(rows,packs['campus.ashford']),keys=[...new Set(names.flatMap(n=>Object.keys(perVariant[n].agg)))].sort((a,b)=>names.reduce((s,n)=>s+(perVariant[n].agg[b]||[]).reduce((x,y)=>x+y,0),0)-names.reduce((s,n)=>s+(perVariant[n].agg[a]||[]).reduce((x,y)=>x+y,0),0));
+ const avg=(n,k)=>{const a=perVariant[n].agg[k];return a?Math.round(a.reduce((x,y)=>x+y,0)/perVariant[n].turns):0;};
+ const table=['','## Prompt blocks (avg tokens per turn)','','| block | '+names.join(' | ')+' |','|---|'+names.map(()=>'---|').join(''),...keys.map(k=>'| '+k+' | '+names.map(n=>avg(n,k)).join(' | ')+' |'),'| **total** | '+names.map(n=>Math.round(perVariant[n].total/perVariant[n].turns)).join(' | ')+' |'].join('\n');
+ console.log(table);writeFileSync(out,readFileSync(out,'utf8')+table+'\n');
+}
 if(meta.sourceChangedDuringRun||rows.some(r=>r.judgeErrors?.length))process.exitCode=1;

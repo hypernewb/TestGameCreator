@@ -1,5 +1,11 @@
 # Story Framework · prototype 1.11
 
+## Current product goal (2026-10-04; supersedes 2026-10-03)
+
+Build a reusable game creator/editor capable of authoring essentially the whole kind of social/romance experience Venus University offers: characters, rules, events and player-facing screens. Core systems must be visually configurable; code is optional for extensions. Start from the default social/romance template or an explicit blank project; existing prompt/card startup generates editable 1–8 NPCs and 1–8 locations. Creators control stages, unlocks, boundaries and events; AI improvises within engine-validated rules. Automatic memory needs inspect/correct controls and optional authored facts, secrets, who knows what and promises. Venus informs the capability map through local evidence, without copying identity/assets or assuming identical mechanics.
+
+The first usable milestone is a social/romance creator. A tiny sample proves author/play/debug/revise/save/reopen without code edits; it is not a separate full game. Creator UI is the editor; Game UI is player presentation; UI Wizard edits reusable Game UI. Game UI visual redesign/editor chrome redesign remain paused. [T-098 assessment](docs/research/creator-gap-assessment-2026-10-04.md) maps implemented, partial, missing and unverified capabilities; its roadmap/proposals do not authorize implementation. Weekly specific-over-general rules take priority, with Stage2 frozen/unmerged pending independent review/full checks. Installer, full migration and calendar-picked dates remain deferred. Adventure is later (narrative engine-resolved combat first, structured turn-based later), outside current gates. See [roadmap](docs/NEXT-MILESTONES.md#current-direction-owner-clarification-2026-10-04) and [task guidance](docs/briefs/BOARD.md#current-priority-2026-10-04). Dated prototype/release notes below preserve history; the goals above are not claims that every capability has shipped.
+
 ## Play it
 
 1. Install **Node.js 24 or later** from <https://nodejs.org/en/download> — the Windows `.msi`, keep the default options. This is the only program you must install.
@@ -64,7 +70,7 @@ On Windows, extract the ZIP into a writable folder and double-click **Start-Desk
 
 Electron is a window around the same local game server and builder. It does not supply an AI model: start Bionic's OpenAI-compatible server and choose its endpoint and loaded model in **AI settings**. Use **Test connection** and **Test story scene** before playing.
 
-A modular, single-player AI narrative-game framework. Its primary product target is an adult eroge/dating sim with optional NSFW scenes, character-specific romance difficulty, consent-aware intimacy, casual and long-form routes, and persistent social consequences. Adult systems remain optional so the same engine can run non-adult and non-romance packs. The repository also includes playable fixtures, an offline demo writer, a configurable chat-completions adapter, and an experimental SillyTavern extension build.
+A modular, single-player AI narrative-game framework. Its primary product target is a reusable creator for an adult eroge/dating sim with optional NSFW scenes, character-specific romance difficulty, consent-aware intimacy, casual and long-form routes, and persistent social consequences. Adult systems remain optional so the same engine can run non-adult and non-romance packs. The repository also includes playable fixtures, an offline demo writer, a configurable chat-completions adapter, and an experimental SillyTavern extension build.
 
 ## Playtest with a local LLM (1.0)
 

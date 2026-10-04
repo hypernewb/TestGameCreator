@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 260" fill="none">
+  <!-- Asymmetric organic polygon shield -->
+  <path d="M 24 38 C 12 38 4 48 4 62 L 12 216 C 14 234 32 248 54 246 L 244 230 C 262 228 274 212 274 194 L 270 48 C 270 32 254 20 236 22 L 42 34 C 34 35 24 38 24 38 Z" fill="#241728" fill-opacity="0.94" stroke="#dcb5d1" stroke-width="2.5"/>
+  <!-- Highlight inner boundary -->
+  <path d="M 28 50 L 232 36 C 244 35 256 44 256 56 L 258 188 C 258 202 248 214 234 216 L 56 228 C 42 229 30 219 28 206 Z" fill="none" stroke="#684768" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <!-- Header badge area -->
+  <path d="M 40 46 L 160 38" stroke="#e8a8d0" stroke-width="2" stroke-linecap="round"/>
+</svg>

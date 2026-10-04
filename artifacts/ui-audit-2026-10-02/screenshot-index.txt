@@ -1,0 +1,22 @@
+Current repository captures, 2026-10-02. Disposable offline game server 4398; fresh VN Studio server 4399; fresh Edge profile. No user saves/settings.
+01-player-title: actual play launch list (initial browser viewport, approximately 1410x805).
+02-player-hub: morning day-card overlay, 1440x900 (filename retained; not the planner).
+03-player-scene: actual Ashford apartment narration, 1440x900.
+04-player-planner: actual daily planner with many equal-weight activities, 1440x900.
+05-player-phone-scene: actual scene, 390x844; right navigation clipped/overlapping clock.
+06-player-phone-planner: actual conversation choice list, 390x844 (filename retained; not daily planner).
+07-player-choices: actual conversation choices, 1440x900.
+08-creator-project: copied disposable Ashford project, 1440x900; Clock label [object Object].
+09-creator-characters: current Builder character form and long navigation, 1440x900.
+10-creator-phone: Builder at 390x844 emulation; layout expands to 470 CSS pixels.
+11-vn-studio-editor: current fresh Studio default choice hub, desktop canvas in 1440x900 browser.
+12-vn-studio-dialogue: Studio simulated dialogue, desktop canvas.
+13-vn-studio-history-placeholder: simulated History explicitly awaits engine integration.
+14-vn-studio-phone: Studio Phone device selected, canvas captured during resize (not actual phone viewport).
+15-vn-studio-save-properties: independent Save control and per-device anchor/button inspector, settled Phone canvas.
+16-vn-studio-long-dialogue: Long text actually rendered.
+17-vn-studio-error: Response failed selected on Dialogue; normal dialogue remains.
+18-vn-studio-choice-error: Response failed actually rendered in Choice hub; retry affordance present.
+19-world-creator-premise: separate creator wizard; cloud drafter unavailable in isolated offline audit, no call made.
+20-classic-entry: separate classic entry asks for model configuration; not configured.
+See docs/briefs/UI-AUDIT-2026-10-02.report.md for findings, proposed slices and limits.

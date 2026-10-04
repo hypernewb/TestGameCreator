@@ -18,7 +18,7 @@ case "${1:-}" in
 go) t=T-$2; d=$WT/$t; role=${4:-implementer}
   [ -d "$d" ] || git -C "$ROOT" worktree add -q "$d" -b "t-$2" || exit 1
   if [ "$3" = codex ]; then (cd "$d" && nohup "$(codex)" exec -s workspace-write --skip-git-repo-check "Read AGENTS.md, then docs/roles/$role.md, then docs/briefs/$t.md and do it. Use npm.cmd for tests. Write docs/briefs/$t.report.md. Do NOT commit. Reply only with the report." > "$WT/$t.log" 2>&1 &)
-  else (cd "$d" && nohup "$(oc)" run --standalone -m opencode/space-bunny-free "Read AGENTS.md, then docs/roles/$role.md, then docs/briefs/$t.md and do it. Run tests with: node --test tests/*.test.mjs. Write docs/briefs/$t.report.md in the same format the brief asks. Do NOT run git commit. Reply only with the report." > "$WT/$t.log" 2>&1 &); fi
+  else (cd "$d" && nohup "$(oc)" run --standalone -m "${MODEL:-opencode/space-bunny-free}" "Read AGENTS.md, then docs/roles/$role.md, then docs/briefs/$t.md and do it. Run tests with: node --test tests/*.test.mjs. Write docs/briefs/$t.report.md in the same format the brief asks. Do NOT run git commit. Reply only with the report." > "$WT/$t.log" 2>&1 &); fi
   echo "dispatched $t ($3, $role)";;
 status) for d in "$WT"/T-* "$WT"/int-*; do [ -d "$d/.git" ] || [ -f "$d/.git" ] || continue; t=$(basename "$d")
   r=no; [ -f "$d/docs/briefs/$t.report.md" ] && r=yes; n=$(changed "$d" | wc -l)

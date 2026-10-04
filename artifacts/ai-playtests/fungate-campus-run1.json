@@ -1,0 +1,1566 @@
+{
+  "generatedAt": "2026-10-02T09:17:49.066Z",
+  "pack": {
+    "id": "campus.ashford",
+    "title": "Ashford"
+  },
+  "model": "qwen/qwen3.8-27b",
+  "contextWindow": 8192,
+  "requestedDays": 5,
+  "tickTargetReached": true,
+  "qualityGates": {
+    "pass": false,
+    "failures": [
+      "deadTurns 9 exceeds 10% of 66 turns"
+    ]
+  },
+  "reachedTarget": false,
+  "incompleteReason": "",
+  "metrics": {
+    "turns": 66,
+    "refusals": 1,
+    "startTick": 0,
+    "endTick": 60,
+    "ticksPlayed": 60,
+    "typed": 40,
+    "authoredChoices": 8,
+    "fallbacks": 0,
+    "clarifications": 0,
+    "deadTurns": 9,
+    "maxConsecutiveSameDecision": 1,
+    "maxConsecutiveSpeak": 0,
+    "commandCounts": {
+      "core.scene": 43,
+      "story.choose": 8,
+      "story.startOfferedScene": 3,
+      "social.readThread": 2,
+      "social.acceptPhoneOffer": 1,
+      "core.endScene": 3,
+      "social.askDate": 1,
+      "social.replyMessage": 1,
+      "core.move": 3,
+      "REFUSED": 1
+    },
+    "nearDuplicates": [],
+    "calendarConflicts": 2,
+    "averageSeconds": 7.49
+  },
+  "modelUsage": {
+    "requests": {
+      "tester": 66,
+      "game": 63,
+      "critique": 1,
+      "total": 130
+    },
+    "responses": 130,
+    "tokens": 373895
+  },
+  "ending": null,
+  "fun": {
+    "turns": 65,
+    "timing": "measured",
+    "minutes": 8.1,
+    "choices": 11,
+    "typed": 39,
+    "typedLive": 33,
+    "deadTurns": 8,
+    "longestDeadStreak": 5,
+    "freshTurns": 15,
+    "firstChoice": {
+      "turn": 5,
+      "minutes": 0.9,
+      "via": "story.choose"
+    },
+    "firstSpark": {
+      "turn": 1,
+      "minutes": 0.2,
+      "via": "social.romancePointsChanged"
+    },
+    "firstDiscovery": {
+      "turn": 1,
+      "minutes": 0.2,
+      "via": "social.actDiscovered"
+    },
+    "firstPayoff": {
+      "turn": 2,
+      "minutes": 0.3,
+      "via": "social.romanceRankChanged"
+    },
+    "firstDrama": {
+      "turn": 4,
+      "minutes": 0.9,
+      "via": "story.incident"
+    },
+    "firstCg": null,
+    "deadByCommand": {
+      "social.readThread": 2,
+      "core.scene": 6
+    },
+    "maxQuietDayparts": 0,
+    "inputLost": 6,
+    "longestBeatGap": 2.6866666666666674,
+    "trailingDrought": 0,
+    "zeroBeatWindows": 0,
+    "choicesPer10": 13.6,
+    "deadRatio": 0.12,
+    "freshRatio": 0.23,
+    "typedEffective": 0.85,
+    "storylets": {
+      "seen": 8,
+      "total": 112
+    },
+    "storyletIds": [
+      "director.bad-day.jana",
+      "director.hand.nova",
+      "director.spark.jana.abigail",
+      "director.late-text.abigail.jana",
+      "director.invite.nova",
+      "director.rumor.jana.nova",
+      "director.bad-day.nova",
+      "director.hand.abigail"
+    ],
+    "repeatedProse": 0,
+    "nearDuplicates": [],
+    "ending": null,
+    "spotlight": {
+      "counts": [
+        {
+          "id": "jana",
+          "n": 6
+        },
+        {
+          "id": "abigail",
+          "n": 5
+        },
+        {
+          "id": "nova",
+          "n": 4
+        },
+        {
+          "id": "monique",
+          "n": 2
+        }
+      ],
+      "spread": 3
+    },
+    "modelUsage": [
+      {
+        "hour": "2026-10-02T09:00:00.000Z",
+        "calls": 63,
+        "promptTokens": 184433,
+        "completionTokens": 30691,
+        "retries": 0
+      }
+    ]
+  },
+  "funGates": [
+    {
+      "id": "first-choice",
+      "value": 0.9,
+      "need": "≤ 2 min",
+      "pass": true,
+      "status": "pass"
+    },
+    {
+      "id": "first-discovery",
+      "value": 0.2,
+      "need": "≤ 5 min to a liked/disliked reason",
+      "pass": true,
+      "status": "pass"
+    },
+    {
+      "id": "first-payoff",
+      "value": 0.3,
+      "need": "≤ 15 min",
+      "pass": true,
+      "status": "pass"
+    },
+    {
+      "id": "dead-turns",
+      "value": 0.12,
+      "need": "≤ 10%",
+      "pass": false,
+      "status": "fail"
+    },
+    {
+      "id": "typed-effective",
+      "value": 0.85,
+      "need": "≥ 50% of typed turns change state",
+      "pass": true,
+      "status": "pass"
+    },
+    {
+      "id": "run-length",
+      "value": null,
+      "need": "30–45 min to an ending",
+      "pass": null,
+      "status": "incomplete"
+    },
+    {
+      "id": "drama",
+      "value": 1,
+      "need": "a complication or witness fires",
+      "pass": true,
+      "status": "pass"
+    },
+    {
+      "id": "world-quiet",
+      "value": 0,
+      "need": "≤ 1 quiet daypart in a row",
+      "pass": true,
+      "status": "pass"
+    },
+    {
+      "id": "repeated-prose",
+      "value": 0,
+      "need": "≤ 10% of narrated turns",
+      "pass": true,
+      "status": "pass"
+    },
+    {
+      "id": "input-lost",
+      "value": 6,
+      "need": "0 lost inputs",
+      "pass": false,
+      "status": "fail"
+    }
+  ],
+  "unmetIntents": [],
+  "transcript": [
+    {
+      "turn": 1,
+      "clock": "Day 1 Monday Morning",
+      "decision": "Talk to Jana",
+      "kind": "action",
+      "command": "core.scene",
+      "narrative": "You shift your weight on the floor, looking toward the kitchen table where the morning light catches the dust motes.\nJana is already there, a half-eaten Franzbrötchen in one hand and a stack of library books in the other, her posture loose but her eyes bright with a specific, restless energy.\nJana: Guten Morgen. You are actually awake. I was starting to think the silence meant you had finally moved out, which would be a tragedy, but also... very freeing.\nJana: I have been sitting here for twenty minutes, just staring at this bread. It is delicious, but it feels like a trap. A delicious, buttery trap.\nJana: I need to feel the wind. Real wind, not the air conditioning that smells like old socks. So, tell me, where is the best place in this whole city to feel alive without getting arrested?",
+      "results": [
+        "Talk to Jana",
+        "You talk to Jana: Talk to Jana"
+      ],
+      "from": 0,
+      "to": 0,
+      "seconds": 9.97,
+      "requestId": "0266ea8f-ca3f-421e-a884-1fd3f9721cd8",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 2,
+      "clock": "Day 1 Monday Morning",
+      "decision": "What is it you love about the sea?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Jana stops chewing, the half-eaten Franzbrötchen hovering in her hand as she looks out the window toward the gray morning light.\nJana: It is not just the water, you know. It is the way it does not care about your plans. On Borkum, the sea just... exists. It is there, loud and cold and completely indifferent to whether you have a degree or a boyfriend or a mortgage.\nShe sets the bread down on the table with a soft thud, her fingers tracing the edge of a library book.\nJana: Here, everything feels so... scheduled. Like if I do not fill the minute, I am wasting it. But the sea? The sea is just time. You can stand there for an hour and it is still only an hour, but it feels like enough.\nJana: Do you ever feel like your life is a spreadsheet, or is that just my problem?",
+      "results": [
+        "What is it you love about the sea?"
+      ],
+      "from": 0,
+      "to": 0,
+      "seconds": 8.32,
+      "requestId": "54a9e71d-6451-4158-b80b-b4b5e837620a",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 3,
+      "clock": "Day 1 Monday Morning",
+      "decision": "What is it you love about beach volleyball?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "You ask about beach volleyball, and the question seems to snag on something in her chest. She pauses, the half-eaten Franzbrötchen dangling from her fingers as she looks at you with a sudden, sharp clarity.\nJana: Volleyball? Oh, you are asking about volleyball. I was not expecting that. It is... chaotic. It is the only place where the rules are just suggestions and the wind is the real referee.\nShe sets the bread down on the table, her free hand moving to tug at the hem of her oversized sweater, a nervous, grounding gesture.\nJana: On Borkum, we play on the dunes. The sand is deep, so you are always sinking, always falling. You cannot plan a serve. You just have to be there, in the moment, or you eat the sand. It is honest.\nHer blue-gray eyes hold yours for a beat longer than necessary, the playful deflection from earlier thinning out to reveal something quieter underneath.\nJana: It is the only time I feel like I am not performing. Not performing for a grade, not performing for a future. Just... playing. Is that a stupid thing to love? The mess of it?",
+      "results": [
+        "What is it you love about beach volleyball?"
+      ],
+      "from": 0,
+      "to": 0,
+      "seconds": 18.66,
+      "requestId": "7b1b5251-417a-4e9a-95a2-0558e22c8d77",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 4,
+      "clock": "Day 1 Monday Morning",
+      "decision": "What is it you love about Franzbrötchen?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "You ask about the Franzbrötchen, and the question lands with a soft, startled laugh that breaks the heavy air between you. She looks down at the pastry in her hand, then back at you.\nJana: Franzbrötchen? You are asking about the bread? I thought we were doing deep psychological dives, but fine. It is the perfect shape. It is two halves that are meant to be one, but they are still distinct. Like a relationship, actually.\nShe tears a piece off the crust, the sound sharp and crisp in the quiet apartment, and holds it up to the light. Her eyes are bright, the earlier tension dissolving into a lighter, more playful rhythm.\nJana: It is buttery and sweet, but it has this... flaky, almost salty edge. It is not just sweet. It is complicated. Which is exactly why I eat it. And why I am still here, in this city, with this bread, instead of back in Hamburg with a plan.\nShe leans forward, resting her chin on her hand, and gives you a look that is half-teasing, half-challenging. The library books are forgotten, the window ignored. It is just the two of you and the pastry.\nJana: So, tell me. Do you eat it for the butter, or for the fact that it is a bit of a mess? I am trying to figure out if you are a butter person or a mess person.",
+      "results": [
+        "What is it you love about Franzbrötchen?"
+      ],
+      "from": 0,
+      "to": 4,
+      "seconds": 19.28,
+      "requestId": "4c3a7a4f-9656-4edb-a5e7-66187483a7c9",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 5,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "I try to smooth it over now.",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "Jana accepts the peace offering flatly, the way you take a receipt, and the rest of the conversation stays polite and thin. The day stays heavy, the thing underneath stays unspoken, and you both pretend that's the same as fine.\nAttraction with Jana changed.\nJana: Chemistry 24 → 25 (how the moment went)",
+      "results": [
+        "Attraction with Jana changed.",
+        "Jana: Chemistry 24 → 25 (how the moment went)",
+        "Jana accepts the peace offering flatly, the way you take a receipt, and the rest of the conversation stays polite and thin. The day stays heavy, the thing underneath stays unspoken, and you both pretend that's the same as fine."
+      ],
+      "from": 4,
+      "to": 4,
+      "seconds": 0.03,
+      "requestId": "182bd7e6-14e6-4229-b41b-70f3771f4786",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 6,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "Movie night with Jana",
+      "kind": "action",
+      "command": "core.scene",
+      "narrative": "The pause after the credits roll feels heavier than the film itself, the silence in the apartment stretching out until the only sound is the hum of the refrigerator and the faint creak of the couch springs under your weight.\nJana: So, that was... interesting. I think. Honestly, I am not entirely sure if I was laughing at the right moments, but the subtitles were very helpful for my German ears, even if the plot was a bit... chaotic.\nJana shifts on the cushion, her long legs tucking under her as she reaches for the half-empty mug of tea on the armrest, her fingers brushing the ceramic rim with a quiet, deliberate touch.\nJana: You know, I have been thinking a lot about plans. Like, big ones. The kind where someone hands you a map and says, 'Here, follow this line to the happy ending.' It sounds efficient, ja? But sometimes I wonder if the map is just hiding the rest of the island.\nJana: Look at this kitchen table. It is supposed to be a desk, right? For serious work. But we use it for everything else. Mugs, wax, random papers. It is messy, but it is ours.\nJana: I am trying to figure out if I want a table that is always perfectly organized, or one where I can spill tea and still feel like I am in the right place.\nShe lets her gaze drift to the mismatched mugs on the windowsill.",
+      "results": [
+        "Movie night with Jana",
+        "Jana: Trust 36 → 36",
+        "Your Charm rose to Likable.",
+        "Her laptop, your couch, a German film she swears is a comedy."
+      ],
+      "from": 4,
+      "to": 4,
+      "seconds": 10.77,
+      "requestId": "3b40baf0-a2fb-4631-be49-186839fa56fd",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 7,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "You know, I've been thinking about that. The idea that the rules are just suggestions... it sounds a lot like how I feel about my own life lately. Do you ever feel like you're just waiting for the wind to change direction so you can finally move?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Jana’s hand stops halfway to her mug, the ceramic handle clicking softly against the table as she sets it down, her blue-gray eyes locking onto yours with a sudden, sharp intensity that makes the air feel thinner.\nJana: The wind? That is a very dramatic way to describe being stuck, ja? It sounds like you are waiting for a miracle instead of just... deciding.\nShe leans forward, elbows on her knees.\nJana: I do not wait for the wind. I build a sail. But I have to be honest with you, right now, in this quiet room. When I look at you, I do not feel like I am waiting for anything to change. I feel like I am already moving.\nJana: So tell me, since you are feeling so philosophical today. What is the one thing you have been avoiding doing because you are waiting for permission that no one is going to give you?",
+      "results": [
+        "You know, I've been thinking about that. The idea that the rules are just suggestions... it sounds a lot like how I feel about my own life lately. Do you ever feel like you're just waiting for the wind to change direction so you can finally move?"
+      ],
+      "from": 4,
+      "to": 4,
+      "seconds": 8.68,
+      "requestId": "c25ec3bf-39fc-41a4-9719-afe89f82a5ad",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 8,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "You're right. I don't want to wait for the wind. I want to decide. So, tell me: what is one thing you could do right now, today, that would make you feel less stuck?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Jana’s breath hitches, a small, sharp sound that she quickly covers by running a hand through her hair, her fingers tangling in the dark-blonde strands as she stares at the table.\nJana: You are turning the question back on me? That is... very bold. I was not prepared for that, ja? I was expecting you to talk about your own mess.\nShe stands up abruptly, the couch springs creaking under her sudden movement, and walks to the window where the afternoon light catches the dust motes dancing in the air.\nJana: If I had to do something right now... I would go to the beach. Not to swim, just to stand there and let the cold air hit my face until I feel solid again.\nJana: But that is not the answer you want, is it? You want the scary thing. The thing I am afraid of.\nJana: I would call Lena. Not to talk about plans, just to hear her voice and remember that I am not just a character in someone else's story. It feels small, but it is mine.",
+      "results": [
+        "You're right. I don't want to wait for the wind. I want to decide. So, tell me: what is one thing you could do right now, today, that would make you feel less stuck?"
+      ],
+      "from": 4,
+      "to": 4,
+      "seconds": 9.07,
+      "requestId": "29f19fbc-cd67-4298-b8c8-449c7dcab6d4",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 9,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "Why can't you stand being told what she wants?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Jana turns back from the window, her silhouette framed by the afternoon light, and picks up a stray pen from the table, twirling it between her fingers with a nervous, rhythmic click.\nJana: Because when someone tells me what I want, it stops being mine. It becomes a test I have to pass, or a cage I have to fit into.\nShe stops twirling the pen, holding it still between her thumb and forefinger, her blue-gray eyes fixed on the floorboards for a long, heavy moment before lifting her gaze to yours.\nJana: Dominik wants a house. A job in the city. A life that looks like a brochure. And I love him, ja? But I do not know if that is my brochure or just his.\nJana: So when you ask me what I want, I am not asking for a map. I am asking if you will stand next to me while I look at the horizon, or if you are going to point at a building and say, 'There, that is where you belong.'\nJana sets the pen down on the table with a soft click, her hand lingering on the wood as if grounding herself.\nJana: I just want to know that if I choose the wrong thing, you will not be disappointed. That is all. That is the whole thing.",
+      "results": [
+        "Why can't you stand being told what she wants?"
+      ],
+      "from": 4,
+      "to": 4,
+      "seconds": 10.75,
+      "requestId": "a690e8f6-4919-428d-ae75-0bf3bf7c826f",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 10,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "Why can't you stand pushiness?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Jana sets the pen down on the table with a soft click, her fingers lingering on the wood as if grounding herself.\nShe runs a hand through her hair, fingers tangling in the dark-blonde strands, her blue-gray eyes fixed on the floorboards for a long, heavy moment.\nJana lifts her gaze to yours.\nShe leans forward slightly, her voice dropping to a quieter, more intimate register, the tension in her shoulders easing just a fraction.\nJana: That is all.",
+      "results": [
+        "Why can't you stand pushiness?"
+      ],
+      "from": 4,
+      "to": 4,
+      "seconds": 17.57,
+      "requestId": "d45a6927-3913-4ed8-87bc-af0496103032",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 11,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "You have a very strong opinion about what you don't like. Do you have a strong opinion about what you do like?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Jana snorts, a short, sharp sound that cracks her composure, and she drops the pen onto the table with a decisive clack.\nShe crosses her arms over her chest, leaning her shoulder against the kitchen counter, her posture shifting from defensive to something more grounded and self-assured.\nJana: That is a very clever way to dodge the answer, ja? You are asking me about my likes to see if I am as complicated as you are.\nJana: I like the sea. Not the polite, postcard version of it, but the cold, wet, unpredictable North Sea. It does not care about my plans or my brochures. It just is.\nShe uncrosses her arms, tapping her fingers lightly against her own bicep, her blue-gray eyes holding yours with a playful, challenging glint.\nJana: So, since you are so interested in my strong opinions, tell me. What is the one thing you like so much that you would defend it with your life? Or are you all 'dislikes' and no 'likes'?",
+      "results": [
+        "You have a very strong opinion about what you don't like. Do you have a strong opinion about what you do like?"
+      ],
+      "from": 4,
+      "to": 4,
+      "seconds": 17.14,
+      "requestId": "bad9576d-cce4-492e-864e-21215325c421",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 12,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "You're not dodging. I'm just trying to see the other side of you. If you have to define yourself by what you reject, that feels exhausting. What is one thing you actually love doing that makes you forget to be defensive?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Jana’s shoulders drop an inch, the tension in her jaw unclenching as she pushes off the counter and steps closer, her hand hovering near the surfboard wax on the windowsill without quite touching it.\nJana: You are not dodging? Good. I was starting to think you were just collecting my dislikes like rare stamps.\nShe picks up a small, crumpled receipt from the table, turning it over in her fingers before dropping it back down with a soft thud.\nJana: I love standing in the cold water until my toes go numb. It is not a hobby, it is a... reset. When the water is that cold, I cannot think about brochures or plans. I can only feel the cold.\nJana: It makes me feel real. Not like a character in a story, but like a person who is actually here, breathing hard and shivering.\nHer blue-gray eyes flick to the receipt on the table, then back to your face, a small, self-deprecating smile tugging at the corner of her mouth.\nJana: So, if you want to see the other side of me, you do not need to ask more questions. You just need to let me be a bit messy. Like this table. Like this receipt.",
+      "results": [
+        "You're not dodging. I'm just trying to see the other side of you. If you have to define yourself by what you reject, that feels exhausting. What is one thing you actually love doing that makes you forget to be defensive?"
+      ],
+      "from": 4,
+      "to": 4,
+      "seconds": 10.61,
+      "requestId": "7bedc6e5-4ed6-4c15-8e12-a828c18aad60",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 13,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "I'm not collecting stamps, Jana. I'm just trying to see the person behind the walls. You mentioned surfing earlier; does that make you feel free? Or is it just another way to escape?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Jana’s hand, which had been resting on the crumpled receipt, lifts slightly off the table, her fingers curling into a loose fist before releasing the tension.\nHer blue-gray eyes hold yours for a long, steady beat, the playful glint from earlier fading into something more direct and vulnerable.\nJana: You are asking if I am running away. That is a very specific way to describe standing in the cold, ja? It is not running. It is stopping. There is a difference, I think, though I am not always sure which one I am doing.\nShe picks up the surfboard wax from the windowsill, turning the small, waxy block over in her palm, her thumb rubbing a faint circle into its surface as she speaks.\nJana: When I surf, I am not thinking about Dominik, or Lena, or whether I am the right kind of person for a house with a garden. I am just... water and balance. It is hard to feel lost when you are trying not to fall off the board, you know?\nJana: It is a very simple kind of freedom.\nJana: But you are right that it can be an escape. I have been using it to avoid the quiet. And the quiet is where the questions live. So, if you want to see the person behind the walls, you do not need to ask me to go into the water.\nJana: You just need to sit here with me while I figure out if I want to build a house or a boat.\nJana: Tell me, since you are so good at seeing through my defenses. What does it look like to you, when I am not escaping? What do you see when I am just... here?",
+      "results": [
+        "I'm not collecting stamps, Jana. I'm just trying to see the person behind the walls. You mentioned surfing earlier; does that make you feel free? Or is it just another way to escape?"
+      ],
+      "from": 4,
+      "to": 4,
+      "seconds": 9.29,
+      "requestId": "eec81471-5980-46d5-805a-657e7acb67a4",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 14,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "I'm sorry. That was a leading question, and I shouldn't have framed it that way. I just... I see a lot of strength in you, and I don't want you to feel like you have to justify your joy to me. What is it, actually? What do you love doing?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Jana’s fingers tighten slightly around the surfboard wax, the small block shifting in her palm as she looks down at the table.\nJana: You do not need to apologize. I was just... thinking too much about how it sounds, not how it feels. That is my fault, ja?\nShe sets the wax down on the windowsill, next to the mismatched mugs, and leans her shoulder against the counter, her posture relaxing into a more casual slouch.\nJana: I love the sound of the waves on Borkum. Not the big, crashing ones, but the quiet, rhythmic hush when the tide is going out. It is like the sea is breathing, and I can just listen.\nJana: And honestly? I love that you are here, asking these questions. It is... nice. To not have to perform strength all the time.\nJana picks up one of the mismatched mugs, turning it over in her hands, her blue-gray eyes flicking up to meet yours with a small, genuine smile.\nJana: So, since you are so good at seeing the real me, tell me. What do you do when you need to stop thinking? Do you have a quiet place, or a quiet sound?",
+      "results": [
+        "I'm sorry. That was a leading question, and I shouldn't have framed it that way. I just... I see a lot of strength in you, and I don't want you to feel like you have to justify your joy to me. What is it, actually? What do you love doing?"
+      ],
+      "from": 4,
+      "to": 4,
+      "seconds": 18.84,
+      "requestId": "74d5335e-b95d-4a32-ae0b-261e048296cb",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 15,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "I'm listening. Tell me what it is.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Jana’s hand hovers over the mug for a second, her fingers curling around the handle as if she is weighing the weight of the silence before she speaks.\nJana: You are very good at making me feel like I am holding a secret I have not told yet. It is a bit... intimidating, ja?\nShe takes a slow sip of her tea, her eyes drifting to the window where the afternoon light is starting to fade, her posture relaxing slightly against the counter.\nJana: I think I want to go to the beach.\nJana: And I am tired of deciding things that are not mine to decide.\nJana: So, since you are listening so well, do you want to come? Or are you going to stay here and analyze my need for cold air from a safe distance?",
+      "results": [
+        "I'm listening. Tell me what it is."
+      ],
+      "from": 4,
+      "to": 4,
+      "seconds": 8.91,
+      "requestId": "bd05a22c-3705-40f9-a444-df836fb91af5",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 16,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "Jana, you don't have to perform for me. If the answer is boring, or if you just want to sit in the quiet, that is perfectly fine. I am not going anywhere.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "The tension in the room shifts, the air feeling less like a test and more like a shared breath, as Jana’s shoulders drop and she looks at you with a softness that catches her off guard.\nJana: You are not going anywhere? That is... a very dangerous thing to say, ja? It makes me feel like I have to be interesting to justify your staying.\nJana: But I think I like the idea of the boring answer. I think I like the idea that you are not waiting for the fireworks to start so you can applaud.\nShe reaches for her jacket from the back of the chair, the fabric rustling softly, and slips her arms in with a deliberate, unhurried motion.\nJana: So. The beach. Or the quiet. I am still deciding, and I am not in a hurry. But if you are staying, I suppose you will have to walk with me to the door.\nJana: Unless you want to sit in the dark and think about brochures by yourself. That is also a valid choice, I suppose.",
+      "results": [
+        "Jana, you don't have to perform for me. If the answer is boring, or if you just want to sit in the quiet, that is perfectly fine. I am not going anywhere."
+      ],
+      "from": 4,
+      "to": 4,
+      "seconds": 9.68,
+      "requestId": "e769504b-e72c-4d87-9aa9-58f579a0e554",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 17,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "I meant it. I am not going anywhere. And you do not have to be interesting. You just have to be here, with me, in this quiet. That is enough.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Jana’s hand stops on the jacket zipper, her fingers lingering on the metal pull as she looks at you, a small, uncertain smile tugging at the corner of her mouth.\nJana: You are very good at making me feel like I am the boring one, ja? It is a new feeling. I am not sure I like it yet.\nJana: I mean, you say 'quiet' like it is a destination. Like we are going to sit on a bench and watch the clouds and I have to be the one to make the clouds interesting. That is a lot of pressure for a Tuesday afternoon.\nShe tucks the jacket sleeve into her pocket, her thumb rubbing a small, repetitive circle on the fabric, her blue-gray eyes flicking away for a second before returning to yours with a playful, challenging glint.\nJana: But fine. If we are just going to be... present. I suppose I can handle that. I am quite good at sitting still, actually. Better than most.\nJana: So, since you are not going anywhere. Do you have a plan for how boring we are going to be? Or are we just going to stand here and wait for the silence to get loud enough?",
+      "results": [
+        "I meant it. I am not going anywhere. And you do not have to be interesting. You just have to be here, with me, in this quiet. That is enough."
+      ],
+      "from": 4,
+      "to": 4,
+      "seconds": 18.82,
+      "requestId": "722b2379-eb63-4ce7-957a-40f00d9f9617",
+      "fallback": false,
+      "failureReason": "",
+      "flags": [
+        "mentions Tuesday but it is Monday"
+      ]
+    },
+    {
+      "turn": 18,
+      "clock": "Day 1 Monday Afternoon",
+      "decision": "I am glad you like it. Even if it is just a feeling you are not sure about yet. I am happy to be the boring one, if it means you feel safe enough to stay in the quiet with me.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Jana’s hand tightens on the zipper of her jacket, the metal teeth catching the fading afternoon light as she pauses.\nJana: Boring. You really know how to strip the romance out of a sentence, ja? It is almost impressive, in a very dry, academic way.\nShe exhales a short, quiet laugh, the tension in her shoulders easing as she finally zips the jacket up to her chin, the fabric rustling softly against her neck.\nJana: But I think I prefer it. A boring person is easier to trust than a dramatic one. I have been dealing with enough drama this semester that I am ready for a nap.\nJana: So, if I am allowed to be safe... I think I will take the beach. Just for a walk. To see if the air feels different when I am not expecting it to save me.\nJana: And you? Are you coming, or are you going to stay here and guard the quiet like it is a museum exhibit? I can work with either, but I would prefer not to walk alone in the dark.",
+      "results": [
+        "I am glad you like it. Even if it is just a feeling you are not sure about yet. I am happy to be the boring one, if it means you feel safe enough to stay in the quiet with me."
+      ],
+      "from": 4,
+      "to": 8,
+      "seconds": 10.78,
+      "requestId": "20ea334f-1119-4ca2-a9e6-fa72f5e0677c",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 19,
+      "clock": "Day 1 Monday Evening",
+      "decision": "Two Hands, One Problem",
+      "kind": "action",
+      "command": "story.startOfferedScene",
+      "narrative": "Nova messages mid-spiral about something small that has swollen into something enormous — a shelf that won't sit level, a form that won't submit, a thing that needs two hands and one more person. By the time you arrive she is apologizing for asking and already halfway to solving it badly, alone, the way she always does. The ask underneath the ask is obvious: nobody has ever shown her it's allowed to be shared.",
+      "results": [
+        "Nova messages mid-spiral about something small that has swollen into something enormous — a shelf that won't sit level, a form that won't submit, a thing that needs two hands and one more person. By the time you arrive she is apologizing for asking and already halfway to solving it badly, alone, the way she always does. The ask underneath the ask is obvious: nobody has ever shown her it's allowed to be shared.",
+        "Two Hands, One Problem begins."
+      ],
+      "from": 8,
+      "to": 8,
+      "seconds": 0.21,
+      "requestId": "8cd028e0-9851-4bcd-bb39-0489bd3ac60b",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 20,
+      "clock": "Day 1 Monday Evening",
+      "decision": "I take the hard half without being asked.",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "Nova goes still for a second, then hands it over like it costs her something — and it does. You work shoulder to shoulder and it's done in half the time, and she stops apologizing somewhere in the middle, which was the real result.\nAttraction with Nova changed.\nNova: Chemistry 8 → 10 (how the moment went)\nNova: Trust 15 → 17\nAbigail comes over, looking for you.",
+      "results": [
+        "Attraction with Nova changed.",
+        "Nova: Chemistry 8 → 10 (how the moment went)",
+        "Nova: Trust 15 → 17",
+        "Nova goes still for a second, then hands it over like it costs her something — and it does. You work shoulder to shoulder and it's done in half the time, and she stops apologizing somewhere in the middle, which was the real result.",
+        "Something is about to happen.",
+        "You and Jana reached Friend. You and Jana talked properly. Jana looks noticeably warmer toward you. Jana: Her shoulders loosened when the conversation drifted toward salt air. Jana: She kept talking when your questions stayed with the place she grew up. You spent the day with Jana.",
+        "A hard sea wind rattles the quad.",
+        "Abigail comes over, looking for you."
+      ],
+      "from": 8,
+      "to": 12,
+      "seconds": 0.08,
+      "requestId": "bd8079a5-04c3-469c-8e9d-e7d89126aca7",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 21,
+      "clock": "Day 2 Tuesday Morning",
+      "decision": "Let it land. Flirt back.",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "It lands. Abigail laughs low, holds your eyes a beat too long, and suddenly the two of you have plans neither of you has named yet — and a witness somewhere who will name them for you.\nAttraction with Abigail changed.\nAbigail: Chemistry 6 → 8 (how the moment went)",
+      "results": [
+        "Attraction with Abigail changed.",
+        "Abigail: Chemistry 6 → 8 (how the moment went)",
+        "It lands. Abigail laughs low, holds your eyes a beat too long, and suddenly the two of you have plans neither of you has named yet — and a witness somewhere who will name them for you."
+      ],
+      "from": 12,
+      "to": 12,
+      "seconds": 0.09,
+      "requestId": "e769dbfb-b6a9-4186-ad8e-16067cc1ade0",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 22,
+      "clock": "Day 2 Tuesday Morning",
+      "decision": "Talk to Jana",
+      "kind": "action",
+      "command": "core.scene",
+      "narrative": "You settle into the chair across from Jana, the morning light catching the dust motes dancing above the kitchen table.\nShe is pacing a small, tight circle between the fridge and the window, her surfboard wax still on the sill, her fingers drumming a restless rhythm against her thigh.\nJana: I keep thinking about what you said. About how I don't have to be interesting. It is... very strange, actually. Most people want me to be the girl from the island, or the girl with the boyfriend. You just want me to be here.\nJana stops pacing and leans a hip against the counter, crossing her arms over her chest as if to hold herself together. Her blue-gray eyes flicker toward you, then away, a flush creeping up her neck.\nJana: Dominik has a plan. A very good plan. House, job, stability. It is safe. But when I look at that plan, I feel like I am looking at a map of a city I have never visited.\nJana: I want to know if I actually want to live there, or if I am just following the route because someone else drew it.\nJana: And then there is this. This quiet thing we have. It is not a plan. It is just... sitting. And I find that I want to sit more. Is that allowed? Or am I becoming a person who needs too much quiet?\nShe uncrosses her arms, tucking a strand of dark-blonde hair behind her ear. She waits, her gaze fixed on you, searching for a reaction that isn't a judgment.\nJana: You said I am not going anywhere. I believe you. But I need to know if I am staying because I want to, or because it is easier than leaving. Can you help me figure that out? Without making it a big thing?",
+      "results": [
+        "Talk to Jana",
+        "You talk to Jana: Talk to Jana"
+      ],
+      "from": 12,
+      "to": 12,
+      "seconds": 10.78,
+      "requestId": "17d71564-3312-46e4-bbf2-b57977462dc9",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 23,
+      "clock": "Day 2 Tuesday Morning",
+      "decision": "You are not boring. You are just... quiet. And quiet is a good place to be when you are tired of performing. I do not want you to be interesting. I want you to be here, where the light is soft and the air smells like salt and old paper. That is enough for me.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Jana stops pacing by the window, her fingers drumming a restless rhythm against the frame as she turns to face you.\nJana: You make it sound so simple, don't you? Like I can just... pause the whole thing. But Dominik doesn't do pauses. He does plans. And I am tired of being a line item in someone else's schedule.\nShe runs a hand through her hair, tucking a strand behind her ear, her blue-gray eyes searching yours with a flicker of something raw.\nJana: I keep thinking about Borkum. The wind there, it doesn't care about your five-year plan. It just pushes you back. And I realized I haven't felt that push in a long time. I feel... scheduled.\nJana: So tell me, honestly. If I walked into that sea tomorrow and just swam until my fingers went blue, what would you say? Would you say it was a phase, or would you say it was me?",
+      "results": [
+        "You are not boring. You are just... quiet. And quiet is a good place to be when you are tired of performing. I do not want you to be interesting. I want you to be here, where the light is soft and the air smells like salt and old paper. That is enough for me.",
+        "You talk to Jana: You are not boring. You are just... quiet. And quiet is a good place to be when you are tired of performing. I do not want you to be interesting. I want you to be here, where the light is soft and the air smells like salt and old paper. That is enough for me.",
+        "Jana: Trust 37 → 38"
+      ],
+      "from": 12,
+      "to": 12,
+      "seconds": 9.38,
+      "requestId": "46c47098-770b-4179-83d0-b0214925275c",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 24,
+      "clock": "Day 2 Tuesday Morning",
+      "decision": "How did that come about?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Jana lets out a short, breathy laugh, the sound escaping before she can catch it. She leans back against the window frame, crossing her arms loosely over her chest, her gaze dropping to the floorboards for a split second before snapping back to your face.\nJana: It came about because you stopped trying to fix me. Most people hear 'I'm tired' and start handing out solutions. You just... stayed. And that is terrifying, honestly.\nJana: It makes me want to keep talking, not because I need advice, but because the silence is safe.\nShe uncrosses her arms, her fingers brushing against the sleeve of her sweater as she shifts her weight, a subtle, restless energy humming through her posture.\nJana: So, to answer you: it is not a phase. It is me, waking up. And I am glad you are here to see it, even if it makes you look a little less like a roommate and more like... a complication. But a good one, I think.\nJana: Speaking of complications, do you remember that moment with Abigail? The way she looked at you when you were helping me with the books? I saw it. And I will admit, my stomach did a little flip that I cannot quite explain. So, be careful.\nJana: You are winning, and I am not sure I am ready to lose.",
+      "results": [
+        "How did that come about?"
+      ],
+      "from": 12,
+      "to": 12,
+      "seconds": 8.92,
+      "requestId": "66d7e718-dc3d-4d84-bd01-f08c82db2765",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 25,
+      "clock": "Day 2 Tuesday Morning",
+      "decision": "What are you up to later?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "You ask what she is up to later.\nJana: Later? I was actually thinking about going to the library. It is quiet there, and I have a paper due that I have been ignoring for three days. It feels like a good place to hide from the rest of the day.\nJana picks up a stray pen from the kitchen table and starts clicking it rhythmically against her thumb, her eyes drifting toward the window where the morning light is fading.\nJana: But honestly? I am not sure I want to be alone with my thoughts just yet. They are a bit... loud today. Like a radio stuck between stations.\nJana: So, if you are not busy, maybe you could come with me? Just to sit. I promise I will not make you read my terrible drafts. Unless you want to. That would be a nice distraction.\nShe stops clicking the pen, holding it still in her hand, and looks at you with a small, tentative smile that seems to cost her a little effort.\nJana: It is just a suggestion. I am not good at making demands. I am still working on that whole 'independent person' thing.",
+      "results": [
+        "What are you up to later?"
+      ],
+      "from": 12,
+      "to": 12,
+      "seconds": 8.87,
+      "requestId": "5dae8836-aff9-4753-9d56-0937adb39740",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 26,
+      "clock": "Day 2 Tuesday Morning",
+      "decision": "The library sounds perfect. I'm heading there in a bit to finish a project. Want to come? We can work side by side, or you can just hide from the world while I pretend to be productive. Either way, I'd like to see you there.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "The Prescott Building lobby is quiet, the glass walls reflecting the late afternoon sun in long, warm streaks across the polished floor.\nYou stand near the entrance, watching the light shift as clouds pass overhead, the air still carrying the faint scent of the bay from the open doors.\nIn the distance, the library stacks loom behind the glass, a promise of silence and paper waiting just beyond the threshold.",
+      "results": [
+        "You go to Langley Hall.",
+        "You go to Prescott Building.",
+        "The library sounds perfect. I'm heading there in a bit to finish a project. Want to come? We can work side by side, or you can just hide from the world while I pretend to be productive. Either way, I'd like to see you there.",
+        "New message from Kaylee.",
+        "The activity comes to a close.",
+        "Monique and Abigail are here together, deep in conversation."
+      ],
+      "from": 12,
+      "to": 16,
+      "seconds": 5.31,
+      "requestId": "bf31bdc9-3008-4198-9cff-b09bd98d8aef",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 27,
+      "clock": "Day 2 Tuesday Afternoon",
+      "decision": "Hey guys, I'm heading to the library stacks to finish up a project. I saw you two deep in conversation, so I didn't want to interrupt, but I'll be around here for a while if you want to join me or just chat.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "The Prescott Building hums with the low, white noise of climate control, a stark contrast to the coastal air outside.\nYou navigate the glass corridors, the floor tiles cool and polished under your feet, reflecting the overhead fluorescent lights.\nThe library stacks open up, a dense forest of metal shelving and leather-bound spines, smelling faintly of dust and vanilla.\nYou find a quiet study nook near the window, the glass cool against the back of your hand as you settle in.\nA single page of your project lies open on the desk, the ink still slightly wet, waiting for your attention.",
+      "results": [
+        "Hey guys, I'm heading to the library stacks to finish up a project. I saw you two deep in conversation, so I didn't want to interrupt, but I'll be around here for a while if you want to join me or just chat.",
+        "The activity comes to a close.",
+        "New message from Monique.",
+        "A new opportunity appears.",
+        "New message from Jana."
+      ],
+      "from": 16,
+      "to": 20,
+      "seconds": 6.67,
+      "requestId": "b4a8b0ee-0894-4236-9baf-9c7ea7594736",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 28,
+      "clock": "Day 2 Tuesday Evening",
+      "decision": "Read messages from Jana",
+      "kind": "action",
+      "command": "social.readThread",
+      "narrative": "You read Jana's messages.\nJana: I'm doing a thing today and I want you there for it — no pressure, but I'll be looking for you.",
+      "results": [
+        "You read Jana's messages.\nJana: I'm doing a thing today and I want you there for it — no pressure, but I'll be looking for you."
+      ],
+      "from": 20,
+      "to": 20,
+      "seconds": 0.33,
+      "requestId": "600cceb6-0349-4235-ba4f-04bf2e6b7f2c",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 29,
+      "clock": "Day 2 Tuesday Evening",
+      "decision": "Read messages from Kaylee",
+      "kind": "action",
+      "command": "social.readThread",
+      "narrative": "You read Kaylee's messages.\nKaylee: Hiii roomie-of-my-buddy!! Langley at lunch, I'll introduce you to EVERYONE",
+      "results": [
+        "You read Kaylee's messages.\nKaylee: Hiii roomie-of-my-buddy!! Langley at lunch, I'll introduce you to EVERYONE"
+      ],
+      "from": 20,
+      "to": 20,
+      "seconds": 0.34,
+      "requestId": "edca455c-658b-4727-acc5-67867c75eaa7",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 30,
+      "clock": "Day 2 Tuesday Evening",
+      "decision": "Accept Nova's invitation",
+      "kind": "action",
+      "command": "social.acceptPhoneOffer",
+      "narrative": "You go to Campbell's.\nYou go to Murphy's.\nYou accept Nova's invitation.",
+      "results": [
+        "You go to Campbell's.",
+        "You go to Murphy's.",
+        "You accept Nova's invitation."
+      ],
+      "from": 20,
+      "to": 20,
+      "seconds": 0.33,
+      "requestId": "4bdf2700-3979-4210-b31c-b06d284162e3",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 31,
+      "clock": "Day 2 Tuesday Evening",
+      "decision": "What is it you love about old horror films?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "You ask about old horror films, and Nova’s grin falters for a split second before she settles back into her usual rhythm, tapping a fingernail against the sticky table.\nNova: Okay, so, picture this: it’s 1968, and the budget for the monster is basically a guy in a bad suit and a lot of fog.\nNova picks up her cider, swirls it, and watches the liquid catch the dim light of the pub.\nNova: The scariest part isn’t what’s on screen, it’s what they don’t show you. The silence does the heavy lifting, and the audience fills in the gaps with their own worst fears.\nNova: Modern stuff is just... noise. Jump scares and CGI blobs. It’s lazy. Old horror trusts you to be scared of the dark, not just the thing in it.\nNova: I mean, I’m not saying I’m a purist or whatever, but there’s a craft to it that just got lost somewhere around 2005.\nShe sets the glass down with a soft clink, her eyes holding yours a beat longer than usual, waiting to see if you get it.",
+      "results": [
+        "What is it you love about old horror films?"
+      ],
+      "from": 20,
+      "to": 20,
+      "seconds": 7.96,
+      "requestId": "39a69c3c-cb88-4ab6-811a-a9dd62755004",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 32,
+      "clock": "Day 2 Tuesday Evening",
+      "decision": "What is it you love about vinyl?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Nova’s grin softens into something a little more genuine as she leans back, her fingers drumming a slow rhythm on the table.\nNova: Honestly? It’s the imperfection. You can’t hide a bad take on a record, and the crackle is just the sound of time actually happening.\nNova: It forces you to sit still and listen to the whole thing, start to finish, without skipping a single second. That kind of commitment is rare these days, if you ask me.\nShe picks up her cider, takes a small sip, and watches the condensation drip down the glass.\nNova: So, what’s the last album you actually listened to all the way through? I need to know if you have any taste or if you’re just vibing with playlists.",
+      "results": [
+        "What is it you love about vinyl?"
+      ],
+      "from": 20,
+      "to": 20,
+      "seconds": 5.85,
+      "requestId": "3a4f7565-7333-46ba-886c-cd34618aba22",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 33,
+      "clock": "Day 2 Tuesday Evening",
+      "decision": "What is it you love about cider?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Nova’s eyes light up, and she grabs the bottle from the table, pouring a fresh splash into her glass with a decisive clink.\nNova: Cider? It’s basically liquid confidence. It’s got that sharp, dry bite that wakes you up, but it’s sweet enough to keep you from feeling like a total pretentious snob.\nNova: It’s the perfect drink for a Tuesday night when you’re trying to figure out if you’re a genius or just a mess, and honestly, I’m leaning toward the mess right now.\nShe takes a long, satisfied sip, her gaze drifting to the pint of beer sitting untouched in front of you.\nNova: So, you’re sticking with the pint? Bold choice. I respect the commitment to the mundane, but I’m worried you’re just hiding from the hard questions.\nNova: Tell me, what’s the one thing you’re terrified of saying out loud in this pub?",
+      "results": [
+        "What is it you love about cider?"
+      ],
+      "from": 20,
+      "to": 20,
+      "seconds": 7.15,
+      "requestId": "d9a101f3-d772-47ed-a39a-f121004b3e8e",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 34,
+      "clock": "Day 2 Tuesday Evening",
+      "decision": "What is it you love about being teased back?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "You ask what she loves about being teased back, and Nova’s shoulder drops slightly, her fingers pausing mid-drum on the sticky table.\nNova: Honestly? It’s the proof that you’re not just a prop in my movie.\nNova: When I throw a joke out there, I’m basically throwing a grenade with the pin pulled, and if you just sit there nodding, it’s kind of a waste of good shrapnel.\nShe picks up the bottle of cider, swirls the liquid in the glass, and watches the foam settle.\nNova: But if you hit me back, even if it’s clumsy, it means you’re actually in the scene with me, not just watching from the audience.\nNova: It’s less about the words and more about the fact that you’re willing to risk looking a little stupid for the sake of the bit.\nNova: So, are you going to keep playing it safe with that pint, or are you going to give me something to work with?",
+      "results": [
+        "What is it you love about being teased back?"
+      ],
+      "from": 20,
+      "to": 20,
+      "seconds": 15.27,
+      "requestId": "d2c6bf51-c286-4542-a6ae-62cb5d1d45a5",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 35,
+      "clock": "Day 2 Tuesday Evening",
+      "decision": "Why can't you stand authority?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Nova’s grin tightens, the playful edge sliding off her face as she stares at her cider glass, her thumb rubbing a small circle on the wet condensation.\nNova: It’s not about standing it, it’s about the fact that they always think they’re the only ones who get to hold the script.\nNova: My parents had a very specific vision of what I was supposed to be, and every time I deviated, they treated it like a personal attack on their life choices.\nShe takes a sharp sip, her eyes flicking up to meet yours with a challenging, almost defensive intensity.\nNova: So, if you’re going to keep asking me why I’m this way, you’d better be ready to tell me why you’re sitting here drinking a pint instead of trying something new.\nNova: What’s the one rule you broke that actually made you feel alive?",
+      "results": [
+        "Why can't you stand authority?"
+      ],
+      "from": 20,
+      "to": 20,
+      "seconds": 8.43,
+      "requestId": "c1828d79-f4e8-4bb8-ae41-ec6ab7301fb3",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 36,
+      "clock": "Day 2 Tuesday Evening",
+      "decision": "Your parents sound like they really wanted to direct the whole movie. What was the first time you decided to grab the camera from them?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "You ask Nova about the first time she grabbed the camera from her parents, and the question hangs in the air for a split second before she blinks, her grin faltering just enough to show the uncertainty underneath.\nNova: Huh. I didn't expect you to actually ask that. Most people just want to know why I'm so weird about it.\nNova twists the stem of her cider glass, her eyes drifting toward the empty table where Jana and Abigail were sitting moments ago.\nNova: It was a stupid thing, honestly. I was like twelve, and they were filming some boring family dinner, and I just... took the lens cap off and pointed it at the window instead.\nNova: They were so mad. But I remember thinking, 'Wait, that's better.' And then I realized I'd been doing that my whole life. Taking their shot and making it mine.\nShe looks back at you.\nNova: So, yeah. That's the bit. I'm not trying to be difficult, I'm just... editing.",
+      "results": [
+        "Your parents sound like they really wanted to direct the whole movie. What was the first time you decided to grab the camera from them?",
+        "You talk to Nova: Your parents sound like they really wanted to direct the whole movie. What was the first time you decided to grab the camera from them?",
+        "Nova: Trust 17 → 18"
+      ],
+      "from": 20,
+      "to": 20,
+      "seconds": 10.61,
+      "requestId": "c33d165a-bddb-49cc-ba4b-c19060e591ee",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 37,
+      "clock": "Day 2 Tuesday Evening",
+      "decision": "How are things going?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "You ask how things are going, and the question lands softly, breaking the heavy silence that had settled over the table after her story.\nNova: Honestly? I'm still trying to figure out if I'm the villain in this movie or just the antagonist. It's a very specific shade of gray, and I'm not sure my color palette covers it.\nNova picks up her cider glass, swirling the liquid as she watches the foam settle.\nNova: But yeah, it's going. I mean, I'm here, I'm breathing, and I didn't throw a shoe at anyone, so statistically speaking, I'm having a better day than most of my classmates.\nNova: It's just... quiet. And I hate quiet. Quiet makes me think about the stuff I don't want to think about, like how I probably need to start cutting my thesis film before I lose my mind.\nNova: So, how about you? Are you just going to sit there looking like you're solving a math problem, or are you actually having a good time?",
+      "results": [
+        "How are things going?"
+      ],
+      "from": 20,
+      "to": 20,
+      "seconds": 13.13,
+      "requestId": "d2890c89-823c-4b9a-ad02-6560121b67d8",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 38,
+      "clock": "Day 2 Tuesday Evening",
+      "decision": "End conversation",
+      "kind": "action",
+      "command": "core.endScene",
+      "narrative": "You end the conversation.\nA new opportunity appears.\nJana and Nova look noticeably warmer toward you. Jana: Her shoulders loosened when the conversation drifted toward salt air. Jana: She kept talking when your questions stayed with the place she grew up. You spent the day with Jana and Nova. Something is about to happen.\nNew message from Abigail.",
+      "results": [
+        "You end the conversation.",
+        "A new opportunity appears.",
+        "Jana and Nova look noticeably warmer toward you. Jana: Her shoulders loosened when the conversation drifted toward salt air. Jana: She kept talking when your questions stayed with the place she grew up. You spent the day with Jana and Nova. Something is about to happen.",
+        "New message from Abigail."
+      ],
+      "from": 20,
+      "to": 24,
+      "seconds": 0.3,
+      "requestId": "a939efcc-7b87-4361-b4b5-6a4215bcaf2f",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 39,
+      "clock": "Day 3 Wednesday Morning",
+      "decision": "Jana, I'm here. I saw you were at your place, so I figured I'd come find you. What's on your mind this morning?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "You step into the kitchen, the door clicking shut behind you, and the quiet of the apartment settles around the two of you.\nJana: I was actually just staring at the ceiling, trying to figure out if I am a person who wants a big, loud life or a small, quiet one.\nJana pushes a half-eaten Franzbrötchen across the table, her fingers lingering on the crust for a second before she pulls her hand back.\nJana: Dominik has a plan. It is very... efficient. Like a train schedule. But I keep looking at the tracks and wondering if I actually want to get on that train, or if I just want to sit on the platform and watch the sea.\nJana: You told me I am not boring. That I am just quiet. And you know? That is the first time someone has said that without making me feel like I am broken for not being louder.\nJana: So. What do you think? Is quiet enough for a whole semester? Or do I need to start performing again?",
+      "results": [
+        "You go to Your apartment.",
+        "Jana, I'm here. I saw you were at your place, so I figured I'd come find you. What's on your mind this morning?"
+      ],
+      "from": 24,
+      "to": 24,
+      "seconds": 9.38,
+      "requestId": "0fbc8971-d14f-4b9e-b688-04aa489b9c04",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 40,
+      "clock": "Day 3 Wednesday Morning",
+      "decision": "Small and quiet sounds like a lot of peace. Do you think you’d be able to find that kind of calm here, or does it feel like you’re waiting for something else to happen first?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Jana’s fingers tighten slightly around the crust of the Franzbrötchen, her gaze drifting toward the window where the morning light catches the dust motes.\nJana: You are asking too many deep questions for a Tuesday morning, you know that? It is making my head spin a little bit.\nShe takes a small, deliberate bite of the pastry, chewing slowly as if buying time to think, her blue-gray eyes flicking to yours for a fraction of a second before looking away.\nJana: But... yes. I think I am waiting. Not for a big event, just for the noise in my head to stop long enough to hear what I actually want.\nJana: And you? Do you have a plan, or are you just vibing in the quiet like a cat on a windowsill?",
+      "results": [
+        "Small and quiet sounds like a lot of peace. Do you think you’d be able to find that kind of calm here, or does it feel like you’re waiting for something else to happen first?"
+      ],
+      "from": 24,
+      "to": 24,
+      "seconds": 6.31,
+      "requestId": "79cf6bdb-0bea-44c7-ac22-9832985945f4",
+      "fallback": false,
+      "failureReason": "",
+      "flags": [
+        "mentions Tuesday but it is Wednesday"
+      ]
+    },
+    {
+      "turn": 41,
+      "clock": "Day 3 Wednesday Morning",
+      "decision": "I'm not trying to make your head spin, just trying to understand what 'enough' looks like for you. Is that the question you're asking the ceiling?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Jana lets out a short, breathy laugh, shaking her head as she finally sets the remaining piece of Franzbrötchen down on the table.\nJana: You are really going to make me answer that, aren't you? It is a little rude to corner a girl over breakfast, but I suppose I can manage.\nJana: Enough is... the sound of the water hitting the shore. Not the crash, just the steady, rhythmic hush. That is the only thing that makes the noise in my head stop.\nShe taps a finger against the windowpane, her gaze drifting to the grey sky beyond the glass.\nJana: But look at this. We are stuck in a box with old paper and dust. It is nice, but it is not the sea. I think I need to go outside before I start to smell like a library book.\nJana: So, are you coming? Or are you going to stay here and keep asking me deep questions until I actually have an answer?",
+      "results": [
+        "I'm not trying to make your head spin, just trying to understand what 'enough' looks like for you. Is that the question you're asking the ceiling?"
+      ],
+      "from": 24,
+      "to": 24,
+      "seconds": 9.17,
+      "requestId": "647e5a8d-c56f-45d4-843a-ae4a5e3e785e",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 42,
+      "clock": "Day 3 Wednesday Morning",
+      "decision": "Ask Jana on a date",
+      "kind": "action",
+      "command": "social.askDate",
+      "narrative": "The door swings open, letting in a rush of salt air and the low, rhythmic crash of waves against the concrete. Jana stands on the harbour wall, the grey sky stretching out behind her, a crumpled paper bag held high in one hand like a victory flag.\nJana: Two cinnamon rolls. This is a date, I decided. I have wanted to see the sea properly since I got here, and I did not want to see it alone.\nThe wind immediately tangles her long dark-blonde hair, whipping strands across her face, but she doesn't seem to notice, her blue-gray eyes fixed on the horizon with a quiet intensity.\nJana: You made it. I was starting to think you would stay in the box and analyze the dust motes until sunset.\nShe turns back to you, the paper bag swinging slightly with the breeze.\nJana: So? Do you accept the invitation, or do I need to throw these pastries at the gulls?",
+      "results": [
+        "Your relationship with Jana is now dating.",
+        "Jana agrees to a date.",
+        "Jana is easier to want around you than she was.",
+        "Saturday. Jana takes you down to the harbour wall with two cinnamon rolls in a paper bag and her hair already coming loose in the wind."
+      ],
+      "from": 24,
+      "to": 24,
+      "seconds": 8.04,
+      "requestId": "d96ba89a-ae7f-431b-92b9-6d4078a170b3",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 43,
+      "clock": "Day 3 Wednesday Morning",
+      "decision": "What are you up to later?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "The question hangs in the salt air, light and easy, and Jana’s shoulders drop a fraction of an inch as if she had been holding them up for the walk over.\nJana: Later? I have a lecture on structuralism that I am absolutely going to zone out in, and then I have to decide if I am brave enough to go to the beach volleyball court.\nShe tears off a piece of the cinnamon roll, the sugar catching the grey light, and holds it out toward you with a playful, challenging tilt of her head.\nJana: But right now, later is right here. I wanted to see the water without my head being in the way of it, and you are the only person who made the box feel less like a box.\nShe takes a bite of her own pastry, chewing slowly while she watches the waves crash against the concrete below, her eyes soft and distant for a moment before she looks back at you.\nJana: So, do you have a plan for the rest of the day, or are we just going to stand here and let the gulls judge us?",
+      "results": [
+        "What are you up to later?"
+      ],
+      "from": 24,
+      "to": 24,
+      "seconds": 10.41,
+      "requestId": "9aa8c427-313e-496e-aff9-46fe38547fc2",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 44,
+      "clock": "Day 3 Wednesday Morning",
+      "decision": "End conversation",
+      "kind": "action",
+      "command": "core.endScene",
+      "narrative": "You end the conversation.\nThe moment passes, for now.\nNew message from Jana.\nA new opportunity appears.",
+      "results": [
+        "You end the conversation.",
+        "The moment passes, for now.",
+        "New message from Jana.",
+        "A new opportunity appears."
+      ],
+      "from": 24,
+      "to": 28,
+      "seconds": 0.33,
+      "requestId": "be022678-eff7-4041-8085-d2e55f3590cd",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 45,
+      "clock": "Day 3 Wednesday Afternoon",
+      "decision": "Text Jana: Sounds good. See you there.",
+      "kind": "action",
+      "command": "social.replyMessage",
+      "narrative": "The apartment is quiet, save for the hum of the refrigerator and the distant crash of waves against the seawall.\nYou set your phone face down on the wooden kitchen table, the screen glowing faintly before you turn it off.\nThe salt air from the open window mixes with the scent of the surfboard wax on the windowsill, a sharp, waxy smell that grounds you.\nYou take a slow breath, the tension in your shoulders easing as you settle into the chair, waiting for the afternoon to pass.\nA single leaf, brown and dry, drifts in through the gap in the window frame and lands on the table beside your mug.",
+      "results": [
+        "Sounds good. See you there.",
+        "Jana waits for you at Campbell's.",
+        "Jana: Trust 41 → 42"
+      ],
+      "from": 28,
+      "to": 28,
+      "seconds": 4.81,
+      "requestId": "581a559a-3156-45b6-8fba-f4eca14dee7e",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 46,
+      "clock": "Day 3 Wednesday Afternoon",
+      "decision": "Go to Campbell's",
+      "kind": "action",
+      "command": "core.move",
+      "narrative": "Travelled to Campbell's.\nBalance: $71.\nThe café Wi-Fi drops; you reset the router behind the counter, and a grateful regular presses $11 into your hand.\nNew message from Jana.\nNew message from Monique.\nSomething is about to happen.\nNew message from Jana.\nThe day has finally gone quiet when your phone lights up with Jana's name — and the message is not about homework. It sits there glowing, more honest than anything she'd say in daylight, the cursor blinking like a dare.\nThe coffee shop at the campus gate. Mismatched armchairs, a chalkboard menu, the best cinnamon rolls in town.\nMonique is here.\nBalance: $71.\nThe day has finally gone quiet when your phone lights up with Jana's name — and the message is not about homework. It sits there glowing, more honest than anything she'd say in daylight, the cursor blinking like a dare.",
+      "results": [
+        "Travelled to Campbell's.",
+        "Balance: $71.",
+        "The café Wi-Fi drops; you reset the router behind the counter, and a grateful regular presses $11 into your hand.",
+        "New message from Jana.",
+        "New message from Monique.",
+        "Something is about to happen.",
+        "New message from Jana.",
+        "The day has finally gone quiet when your phone lights up with Jana's name — and the message is not about homework. It sits there glowing, more honest than anything she'd say in daylight, the cursor blinking like a dare."
+      ],
+      "from": 28,
+      "to": 32,
+      "seconds": 0.29,
+      "requestId": "fd0f6289-c4f1-4972-94d0-ac33670344b4",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 47,
+      "clock": "Day 3 Wednesday Evening",
+      "decision": "Tell her I'm awake and thinking too.",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "It lands. The reply comes back in seconds, warmer than it should be, and the two of you type until the screen is the only light left and neither of you has mentioned sleep in an hour. Tomorrow this will have a shape. Tonight it just is.\nAttraction with Jana changed.\nJana: Chemistry 37 → 39 (how the moment went)",
+      "results": [
+        "Attraction with Jana changed.",
+        "Jana: Chemistry 37 → 39 (how the moment went)",
+        "It lands. The reply comes back in seconds, warmer than it should be, and the two of you type until the screen is the only light left and neither of you has mentioned sleep in an hour. Tomorrow this will have a shape. Tonight it just is."
+      ],
+      "from": 32,
+      "to": 32,
+      "seconds": 0.11,
+      "requestId": "1be1f918-3e22-4b7e-8be6-9454519d2df8",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 48,
+      "clock": "Day 3 Wednesday Evening",
+      "decision": "Hey Monique. I was just about to head out, but I'm happy to stay for a bit if you're around.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "You settle into the mismatched armchair opposite her, the warmth of the cinnamon roll still faint on your fingers, as Monique shifts in her seat, one hand tapping a rhythmic, impatient beat against the back of her chair.\nMonique: You said you were heading out. I was about to pack up my notes because I figured you’d be gone by now.\nMonique: So, what changed? Did you just decide to sit here and watch me work, or is there actually a reason you’re still in that chair?\nMonique slides a pen across the table, clicking the cap open and shut with a sharp, precise snap, her green eyes holding yours with an intensity that feels less like curiosity and more like an audit.\nMonique: I don’t have a lot of time to spare on small talk, so if you’re staying, you might as well tell me what’s on your mind.\nMonique: Or are we just going to sit here and let the silence do the talking? Because I have a deadline, and I’m not great at multitasking.",
+      "results": [
+        "Hey Monique. I was just about to head out, but I'm happy to stay for a bit if you're around.",
+        "You talk to Monique: Hey Monique. I was just about to head out, but I'm happy to stay for a bit if you're around.",
+        "Monique: Trust 10 → 11"
+      ],
+      "from": 32,
+      "to": 32,
+      "seconds": 9.04,
+      "requestId": "a1065590-647c-4880-8ca0-85a27cfea96f",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 49,
+      "clock": "Day 3 Wednesday Evening",
+      "decision": "What is it you love about competence?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "You lean back slightly, letting the question hang in the air for a moment before answering, your gaze steady on hers as she waits for a response that isn't just another deflection.\nMonique: It means you don't have to guess what I'm thinking, and I don't have to explain myself twice. Efficiency is the only respect I really understand.\nMonique’s tapping slows, her pen hovering just above the notebook page.\nMonique: That's... actually a fair point. I suppose that's why I kept you here instead of letting you drift off. You don't waste my time.\nMonique: I saw what happened with Abigail and Jana earlier. It was... noticeable. I hope you're not letting that distract you from your own goals.\nShe closes the notebook with a decisive snap, her eyes locking onto yours with a challenge that feels less like an accusation and more like a test of your resolve.\nMonique: So, what's your plan? Are you going to sit here and be charming, or are you going to tell me you're actually here to work?",
+      "results": [
+        "What is it you love about competence?"
+      ],
+      "from": 32,
+      "to": 32,
+      "seconds": 15.35,
+      "requestId": "fff8e5fa-7df5-4f29-a32a-6baf8a747e8d",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 50,
+      "clock": "Day 3 Wednesday Evening",
+      "decision": "End conversation",
+      "kind": "action",
+      "command": "core.endScene",
+      "narrative": "You end the conversation.\nA new opportunity appears.\nYou and Jana are officially dating. Jana and Monique look warmer toward you. Jana: Her shoulders loosened when the conversation drifted toward salt air. Jana: She kept talking when your questions stayed with the place she grew up. You spent the day with Jana and Monique. Something is about to happen.\nBright and cold off the water.\nNew message from Nova.",
+      "results": [
+        "You end the conversation.",
+        "A new opportunity appears.",
+        "You and Jana are officially dating. Jana and Monique look warmer toward you. Jana: Her shoulders loosened when the conversation drifted toward salt air. Jana: She kept talking when your questions stayed with the place she grew up. You spent the day with Jana and Monique. Something is about to happen.",
+        "Bright and cold off the water.",
+        "New message from Nova."
+      ],
+      "from": 32,
+      "to": 36,
+      "seconds": 0.55,
+      "requestId": "7eb5e12a-e13b-494c-ab05-d858f53e8c81",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 51,
+      "clock": "Day 4 Thursday Morning",
+      "decision": "Come Find Me Today",
+      "kind": "action",
+      "command": "story.startOfferedScene",
+      "narrative": "Your phone buzzes with Nova's name, and what she sends is less an invitation than a decision she has already made: she is doing something today, and she wants you in the room for it. She doesn't explain why it's you and not anyone else. By the time you get there you understand anyway — this is the part of the day she didn't want to do alone, and she picked you before she picked anyone.",
+      "results": [
+        "Your phone buzzes with Nova's name, and what she sends is less an invitation than a decision she has already made: she is doing something today, and she wants you in the room for it. She doesn't explain why it's you and not anyone else. By the time you get there you understand anyway — this is the part of the day she didn't want to do alone, and she picked you before she picked anyone.",
+        "Come Find Me Today begins."
+      ],
+      "from": 36,
+      "to": 36,
+      "seconds": 0.53,
+      "requestId": "1cc285da-91c0-4cc1-9bdb-e99ce39f62cc",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 52,
+      "clock": "Day 4 Thursday Morning",
+      "decision": "I ask what this really means to her.",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "Nova blinks, then actually answers — the real version, not the easy one. She talks longer than she meant to and never once checks the time, and something between you gets named without being named.\nAttraction with Nova changed.\nNova: Chemistry 12 → 14 (how the moment went)\nNova: Trust 19 → 20\nNova comes over, clearly wanting to ask you something.",
+      "results": [
+        "Attraction with Nova changed.",
+        "Nova: Chemistry 12 → 14 (how the moment went)",
+        "Nova: Trust 19 → 20",
+        "Nova blinks, then actually answers — the real version, not the easy one. She talks longer than she meant to and never once checks the time, and something between you gets named without being named.",
+        "New message from Jana.",
+        "Something is about to happen.",
+        "Nova comes over, clearly wanting to ask you something."
+      ],
+      "from": 36,
+      "to": 40,
+      "seconds": 0.18,
+      "requestId": "a7a7f35e-93ff-44e2-b811-3b170ba5c898",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 53,
+      "clock": "Day 4 Thursday Afternoon",
+      "decision": "I answer straight and don't flinch.",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "You give it to Nova whole, uncut, and let it stand. She takes the answer as given — and respects that you didn't dress it up more than the answer itself. Whatever the rumor does next, she is on your side of it.\nAttraction with Nova changed.\nNova: Chemistry 14 → 16 (how the moment went)\nNova: Trust 20 → 22",
+      "results": [
+        "Attraction with Nova changed.",
+        "A romantic possibility has opened with Nova.",
+        "Nova: Chemistry 14 → 16 (how the moment went)",
+        "Nova: Trust 20 → 22",
+        "You give it to Nova whole, uncut, and let it stand. She takes the answer as given — and respects that you didn't dress it up more than the answer itself. Whatever the rumor does next, she is on your side of it."
+      ],
+      "from": 40,
+      "to": 40,
+      "seconds": 0.2,
+      "requestId": "113b397f-3fb8-44c3-85c9-ce9e288aea62",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 54,
+      "clock": "Day 4 Thursday Afternoon",
+      "decision": "Nova, I'm here. What did you want to show me?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "You settle into the armchair opposite Nova, your presence filling the small space between the mismatched furniture and the chalkboard menu.\nNova: Yeah, okay, so, I know I look like I've been dragged through a hedge backward, but that's because I have been, metaphorically speaking, by my own incompetence and a very aggressive deadline.\nNova: I'm not here to talk about Jana or whatever weird little drama that was, I promise, I just needed to show you the final cut of the short before I lose my mind and throw this laptop into the bay.\nNova slides a battered laptop across the table, her fingers lingering on the edge for a second before pulling back, her blue eyes darting away from yours.\nNova: It's rough, like, really rough, the lighting in the third scene is absolute garbage because I couldn't afford a proper key light, but the story actually lands, I think, and that's the whole point, right?\nNova: So, you're gonna watch it, and you're gonna tell me the truth, and if you lie, I will know, because I can smell a lie from across the room, it's a superpower, very useful, very annoying for everyone else.",
+      "results": [
+        "Nova, I'm here. What did you want to show me?",
+        "You talk to Nova: Nova, I'm here. What did you want to show me?"
+      ],
+      "from": 40,
+      "to": 40,
+      "seconds": 11.94,
+      "requestId": "70bf0ee0-7cd9-4651-b8bd-6f7de42cead0",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 55,
+      "clock": "Day 4 Thursday Afternoon",
+      "decision": "You don't have to apologize for the deadline. It sounds like you've been running on fumes. Let's just focus on the work for now.",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Nova’s shoulders drop a fraction of an inch, the tension in her jaw easing as she stares at the open laptop screen rather than your face.\nShe tucks a stray lock of red-streaked hair behind her ear, her fingers drumming a restless, quiet rhythm on the table surface.\nNova: Running on fumes. Yeah, that tracks. I’ve been running on caffeine and spite for about three weeks now, so, you know, I guess I’m just glad you’re not going to make a big deal out of it.\nShe leans back in the mismatched armchair, crossing her arms over her chest. Her eyes flick to the cinnamon roll sitting untouched on the saucer, then back to the laptop, a small, tired smile touching the corners of her mouth.\nNova: Okay. That’s... actually really nice of you to say, for someone who I’m pretty sure thinks I’m a total disaster case. I was honestly bracing for a lecture about time management or something equally boring.\nNova reaches out and taps the trackpad, the screen glowing brighter in the dim coffee shop light. She takes a deep breath, exhaling sharply through her nose, and looks up at you with a direct, challenging gaze.\nNova: So, are we doing this? Because I’m about to hit play, and if I’m going to show you my absolute worst work, I need you to be ready to be brutally, honestly, devastatingly honest. No sugarcoating, I promise.",
+      "results": [
+        "You don't have to apologize for the deadline. It sounds like you've been running on fumes. Let's just focus on the work for now."
+      ],
+      "from": 40,
+      "to": 40,
+      "seconds": 11.69,
+      "requestId": "e60049eb-cf49-4cc0-b5a5-61d475e170c6",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 56,
+      "clock": "Day 4 Thursday Afternoon",
+      "decision": "You're doing great. I'm right here if you need a second set of eyes or a break to breathe. What's the first thing you want to tackle?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Nova’s hand hovers over the spacebar, her thumb twitching slightly before she pulls it back, the laptop screen casting a cool blue glow on her tired face.\nNova: Wait, hold up, because I was fully prepared for you to say something like 'let's break it down scene by scene' or 'have you considered a different angle,' and instead you're just... offering me a lifeline in the middle of my own disaster zone.\nShe lets out a short, sharp laugh that sounds more like a cough, rubbing a hand over her eyes to hide the exhaustion for a second before looking back at you.\nNova: Everyone thinks I am the confident one. I am the loud one. That is a different department. I'm actually terrified that this whole thing is just me screaming into the void with a camera, and nobody is going to hear it.\nNova points a finger at you.\nNova: Okay, your line. And if you say anything nice I will scream. I mean it. I have a very specific frequency of screaming that I have been practicing for this exact moment.",
+      "results": [
+        "You're doing great. I'm right here if you need a second set of eyes or a break to breathe. What's the first thing you want to tackle?"
+      ],
+      "from": 40,
+      "to": 44,
+      "seconds": 9.95,
+      "requestId": "18b0db68-c232-43df-916b-0198e73799f4",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 57,
+      "clock": "Day 4 Thursday Evening",
+      "decision": "Talk to Monique",
+      "kind": "action",
+      "command": "core.scene",
+      "narrative": "You settle into the mismatched armchair across from Monique, the warmth of the latte cup seeping into your palms as you acknowledge her presence.\nMonique: I wasn't sure if you'd actually stick around. Most people use the 'happy to stay' line as a polite exit strategy, so I was bracing for the door to open.\nShe taps a fountain pen against the table, the click sharp and rhythmic against the quiet hum of the coffee shop, her gaze fixed on the chalkboard menu rather than your face.\nMonique: Since you're here, and I assume you have a reason for wasting your evening in a coffee shop instead of a library, tell me what you're actually trying to figure out right now.\nMonique’s green eyes flick up from the menu to meet yours, holding the gaze for a second longer than comfortable before she turns her attention back to the pen in her hand.\nMonique: I don't have much patience for vague intentions, so keep it specific. What is it that you need to get done before the semester swallows you whole?",
+      "results": [
+        "Talk to Monique",
+        "You talk to Monique: Talk to Monique"
+      ],
+      "from": 44,
+      "to": 44,
+      "seconds": 6.5,
+      "requestId": "03cd5336-8416-4945-964b-5149a4c224ed",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 58,
+      "clock": "Day 4 Thursday Evening",
+      "decision": "What is it you love about punctuality?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "Monique’s pen stops its rhythmic tapping against the table, the sudden silence in the coffee shop highlighting the shift in her posture as she leans back slightly in the armchair.\nMonique: It’s not love, exactly. It’s respect for the fact that time is a finite resource, and wasting yours is a waste of mine.\nShe turns the pen over in her fingers, the metal cap catching the warm light from the lamp above, her expression unreadable but her eyes sharp.\nMonique: Most people think being on time is about politeness. I think it’s about control. If I can manage my schedule, I can manage the rest of my life.\nMonique: So, since you’re asking about my values, tell me: when you say you’re 'happy to stay,' do you mean you have nothing better to do, or you’re just waiting for me to finish?",
+      "results": [
+        "What is it you love about punctuality?"
+      ],
+      "from": 44,
+      "to": 44,
+      "seconds": 6.83,
+      "requestId": "1c0d5152-4160-4681-a0ae-bbd8e36e3ccb",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 59,
+      "clock": "Day 4 Thursday Evening",
+      "decision": "What is it you love about good pens?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "You ask about the pen, your voice steady and curious, shifting the focus from your own intentions to the object in her hand.\nMonique: It’s not about the ink, and it’s definitely not about the brand. It’s about the weight.\nMonique lifts the pen, letting the metal barrel catch the light as she turns it slowly between her fingers, a small, precise gesture.\nMonique: A good pen is a tool that doesn’t fight you. It glides. It’s the difference between struggling to get a point across and just... landing it.\nShe sets the pen down on the table, the click soft against the wood, and finally looks up.\nMonique: I like things that work. And I like people who don’t waste my time with things that don’t. So, are you a tool, or are you just another person struggling to get a point across?",
+      "results": [
+        "What is it you love about good pens?"
+      ],
+      "from": 44,
+      "to": 44,
+      "seconds": 7.16,
+      "requestId": "a62f8a53-c631-442d-aff9-dd42e3ce40a6",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 60,
+      "clock": "Day 4 Thursday Evening",
+      "decision": "What is it you love about being taken seriously?",
+      "kind": "input",
+      "command": "core.scene",
+      "narrative": "The question hangs in the air, sharp and direct, cutting through the ambient noise of the coffee shop. Monique’s hand, which had been resting on the table, freezes mid-motion, her fingers hovering just above the smooth surface of the wood.\nMonique: It’s not a feeling. It’s a transaction.\nShe picks up the fountain pen again, this time uncapping it with a deliberate, precise click that sounds louder in the sudden quiet between them.\nMonique: When someone takes me seriously, it means they’ve done the work to understand what I’m capable of. It’s efficient. It saves us both the time of me having to prove myself from scratch.\nMonique: So, since you’re asking about my values, tell me: are you serious about staying, or are you just waiting for me to finish my coffee?",
+      "results": [
+        "What is it you love about being taken seriously?"
+      ],
+      "from": 44,
+      "to": 48,
+      "seconds": 19.13,
+      "requestId": "b0075795-46f0-443f-bf70-52cd8fa53f62",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 61,
+      "clock": "Day 5 Friday Morning",
+      "decision": "Go to Langley Hall",
+      "kind": "action",
+      "command": "core.move",
+      "narrative": "Travelled to Langley Hall.\nA new opportunity appears.\nNew message from Monique.\nThe dining hall, the student union and the common rooms under one creaking roof. Noticeboards three flyers deep.\nNobody else is here.",
+      "results": [
+        "Travelled to Langley Hall.",
+        "A new opportunity appears.",
+        "New message from Monique."
+      ],
+      "from": 48,
+      "to": 52,
+      "seconds": 0.81,
+      "requestId": "2c4b0ee2-c059-4749-96d5-343bd246b5cf",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 62,
+      "clock": "Day 5 Friday Afternoon",
+      "decision": "Go to Hewett Gym",
+      "kind": "action",
+      "command": "core.move",
+      "narrative": "Travelled to Hewett Gym.\nSomething is about to happen.\nNova turns up, and it has clearly been a bad day.\nThe gym, the climbing wall, and the playing fields running down toward the water.\nNova is here.\nNova turns up, and it has clearly been a bad day.",
+      "results": [
+        "Travelled to Hewett Gym.",
+        "Something is about to happen.",
+        "Nova turns up, and it has clearly been a bad day."
+      ],
+      "from": 52,
+      "to": 56,
+      "seconds": 0.87,
+      "requestId": "040ff3c3-79e2-43ca-a36f-cfead352307c",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 63,
+      "clock": "Day 5 Friday Evening",
+      "decision": "I try to smooth it over now.",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "Nova accepts the peace offering flatly, the way you take a receipt, and the rest of the conversation stays polite and thin. The day stays heavy, the thing underneath stays unspoken, and you both pretend that's the same as fine.\nAttraction with Nova changed.\nNova: Chemistry 30 → 31 (how the moment went)",
+      "results": [
+        "Attraction with Nova changed.",
+        "Nova: Chemistry 30 → 31 (how the moment went)",
+        "Nova accepts the peace offering flatly, the way you take a receipt, and the rest of the conversation stays polite and thin. The day stays heavy, the thing underneath stays unspoken, and you both pretend that's the same as fine."
+      ],
+      "from": 56,
+      "to": 56,
+      "seconds": 0.24,
+      "requestId": "2fe9aa95-e66a-4928-bbcb-30108b271e15",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 64,
+      "clock": "Day 5 Friday Evening",
+      "decision": "Two Hands, One Problem",
+      "kind": "action",
+      "command": "story.startOfferedScene",
+      "narrative": "Abigail messages mid-spiral about something small that has swollen into something enormous — a shelf that won't sit level, a form that won't submit, a thing that needs two hands and one more person. By the time you arrive she is apologizing for asking and already halfway to solving it badly, alone, the way she always does. The ask underneath the ask is obvious: nobody has ever shown her it's allowed to be shared.",
+      "results": [
+        "Abigail messages mid-spiral about something small that has swollen into something enormous — a shelf that won't sit level, a form that won't submit, a thing that needs two hands and one more person. By the time you arrive she is apologizing for asking and already halfway to solving it badly, alone, the way she always does. The ask underneath the ask is obvious: nobody has ever shown her it's allowed to be shared.",
+        "Two Hands, One Problem begins."
+      ],
+      "from": 56,
+      "to": 56,
+      "seconds": 0.82,
+      "requestId": "d844116d-80ff-4789-a1b8-d8d09d486149",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    },
+    {
+      "turn": 65,
+      "clock": "Friday Evening",
+      "decision": "I stop apologizing for being here. I step in and take the heavy end of the shelf, saying, 'You don't have to fix this alone. I've got this part, you've got that part. Let's get it level together.'",
+      "kind": "input",
+      "command": "REFUSED",
+      "refused": true,
+      "narrative": "No character is present to answer this reply",
+      "results": [],
+      "from": 56,
+      "to": 56,
+      "seconds": 6.454,
+      "fallback": false,
+      "failureReason": "No character is present to answer this reply"
+    },
+    {
+      "turn": 66,
+      "clock": "Day 5 Friday Evening",
+      "decision": "I take the hard half without being asked.",
+      "kind": "action",
+      "command": "story.choose",
+      "narrative": "Abigail goes still for a second, then hands it over like it costs her something — and it does. You work shoulder to shoulder and it's done in half the time, and she stops apologizing somewhere in the middle, which was the real result.\nAttraction with Abigail changed.\nAbigail: Chemistry 8 → 10 (how the moment went)\nAbigail: Trust 15 → 17",
+      "results": [
+        "Attraction with Abigail changed.",
+        "Abigail: Chemistry 8 → 10 (how the moment went)",
+        "Abigail: Trust 15 → 17",
+        "Abigail goes still for a second, then hands it over like it costs her something — and it does. You work shoulder to shoulder and it's done in half the time, and she stops apologizing somewhere in the middle, which was the real result.",
+        "Your bond with Jana weakened.",
+        "New message from Jana.",
+        "A new opportunity appears.",
+        "Something is about to happen.",
+        "New message from Monique."
+      ],
+      "from": 56,
+      "to": 60,
+      "seconds": 0.24,
+      "requestId": "986160ed-afe9-4162-a2bd-fa07181b6bdd",
+      "fallback": false,
+      "failureReason": "",
+      "flags": []
+    }
+  ],
+  "review": {
+    "strengths": [
+      "Strong character differentiation: Monique's dialogue in turns 48-49 and 57-60 is distinct, sharp, and consistent with a 'competence/punctuality' persona, avoiding generic dating sim tropes.",
+      "Effective use of environmental storytelling: The setting details in turns 45, 46, and 54 (salt air, surfboard wax, mismatched armchairs) ground the player in the 'Ashford' locale without over-explaining.",
+      "Responsive relationship mechanics: The 'officially dating' status update in turn 50 correctly follows the accumulation of Trust/Chemistry points from earlier interactions, providing clear feedback on progression.",
+      "Consistent calendar continuity: The progression from Day 3 Wednesday to Day 4 Thursday to Day 5 Friday (turns 43-66) is logically consistent with the tick progression (24->60), with no detected weekday/calendar mismatches."
+    ],
+    "issues": [
+      {
+        "severity": "medium",
+        "layer": "engine",
+        "evidence": "Turn 65: I stop apologizing for being here. I step in and take the heavy end of the shelf, saying, 'You don't have to fix this alone. I've got this part, you've got that part. Let's get it level together.' — No character is present to answer this reply",
+        "cause": "The game refused this attempted action; review whether the boundary and its feedback were appropriate.",
+        "concreteFix": "Check the action preconditions and give the player a clear explanation or an available alternative."
+      },
+      {
+        "severity": "critical",
+        "layer": "engine",
+        "evidence": "Turn 65: PLAYER inputs a detailed action ('I stop apologizing... I step in...') but COMMAND is REFUSED with GAME response 'No character is present to answer this reply'. This occurs immediately after turn 64 started the scene 'Two Hands, One Problem' involving Abigail.",
+        "cause": "The engine failed to bind the active scene context (Abigail) to the player's input, treating the scene as if no NPC was present or the scene state was not correctly initialized for interaction.",
+        "concreteFix": "Audit the scene state machine to ensure that when `story.startOfferedScene` is called and a character is introduced, the `activeNpc` variable is set correctly before accepting `core.scene` or `story.choose` inputs. Add a fallback prompt if the NPC context is missing."
+      },
+      {
+        "severity": "high",
+        "layer": "content",
+        "evidence": "Turn 57: PLAYER says 'Talk to Monique'. GAME response: 'Monique: I wasn't sure if you'd actually stick around. Most people use the 'happy to stay' line as a polite exit strategy...'. This directly references the dialogue from turn 48 ('Hey Monique. I was just about to head out, but I'm happy to stay for a bit if you're around.').",
+        "cause": "The content generator is reusing specific dialogue lines from previous days (Day 3) in a new day (Day 4) without sufficient variation, creating a repetitive loop where Monique's reaction to staying is identical.",
+        "concreteFix": "Implement a dialogue history check that penalizes or blocks the reuse of specific unique lines (like the 'happy to stay' reference) within a 24-hour window or across different days unless explicitly part of a callback narrative arc."
+      },
+      {
+        "severity": "high",
+        "layer": "model-prompt",
+        "evidence": "Turn 45: GAME narrates 'You take a slow breath, the tension in your shoulders easing as you settle into the chair...'. Turn 48: GAME narrates 'You settle into the mismatched armchair opposite her...'. Turn 54: GAME narrates 'You settle into the armchair opposite Nova...'.",
+        "cause": "The model is violating the agency constraint by narrating the player's physical actions and internal states (tension easing, settling) rather than leaving these to the player's interpretation or explicit input. This is a repeated pattern of 'invented player reactions'.",
+        "concreteFix": "Update the system prompt to strictly forbid generating text that describes the player's physical actions, breathing, or emotional states. The game should only describe the NPC's reactions and the environment."
+      },
+      {
+        "severity": "medium",
+        "layer": "content",
+        "evidence": "Turn 43: 'Jana’s shoulders drop a fraction of an inch...'. Turn 55: 'Nova’s shoulders drop a fraction of an inch...'.",
+        "cause": "Verbatim or lightly paraphrased repeated narration. The specific physical reaction 'shoulders drop a fraction of an inch' is used for two different characters (Jana and Nova) in close proximity, indicating a lack of variation in the model's physical description vocabulary.",
+        "concreteFix": "Expand the model's description library for physical reactions to include more varied verbs and body parts (e.g., 'exhaled a long breath', 'slumped slightly', 'relaxed her jaw') to prevent repetitive phrasing."
+      },
+      {
+        "severity": "medium",
+        "layer": "ui",
+        "evidence": "Turn 62: 'Nova turns up, and it has clearly been a bad day.' appears twice in the GAME result block. Turn 66: 'New message from Jana.' and 'A new opportunity appears.' are listed as separate results but often feel like spam if not consolidated.",
+        "cause": "The UI is displaying redundant status updates or duplicate scene hooks. In turn 62, the same narrative hook is repeated, which is a content/UI rendering issue where the scene description is duplicated in the output stream.",
+        "concreteFix": "Deduplicate scene description strings in the output pipeline before rendering to the UI. Ensure that scene hooks are only displayed once per scene transition."
+      }
+    ],
+    "prioritizedFixes": [
+      "Fix the critical engine bug in Turn 65 where the active NPC context is lost, causing 'No character present' refusals during active scenes.",
+      "Enforce strict agency rules in the model prompt to stop narrating player actions (breathing, settling, tension) in Turns 45, 48, and 54.",
+      "Implement a dialogue anti-repetition filter to prevent Monique from repeating the 'happy to stay' reaction in Turn 57 that was already used in Turn 48.",
+      "Diversify the model's physical description vocabulary to stop the verbatim repetition of 'shoulders drop a fraction of an inch' in Turns 43 and 55.",
+      "Deduplicate scene description text in the UI output to prevent double-printing of hooks like 'Nova turns up...' in Turn 62."
+    ]
+  }
+}

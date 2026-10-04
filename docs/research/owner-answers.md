@@ -41,6 +41,20 @@ Big picture: every mechanic choice should become a per-world option in the game 
 
 ## Batch 9 (2026-10-01, T-021 character-sheet lists)
 - 2026-10-01 Traits (28), gift categories (12) and campus trait picks: approved as drafted; owner will tweak later in the creator.
+- 2026-10-01 Ignored beats: escalate ONCE at most, then the thread resolves or expires; a repair path must exist. Overrides the earlier "no persistent grievance" rule for director-dealt beats only — authored grudges stay out.
+- 2026-10-01 Pacing presets: stay internal. `toneCeiling` and `textMode` are the only creator dials (both already shipped; no work). Do not expose cassandra/randy/phoebe.
+- 2026-10-01 Non-romance beats: widen the role pool to all NPCs, not just `datingProfiles`. Creators define the shapes; the code library gains a few defaults.
+- 2026-10-01 Threads + moves list + per-character DM stance + day recap: one system, build together (not separate milestones).
+- 2026-10-01 Day recap: both a short visible UI element and an AI prompt input.
+- 2026-10-01 DM stance: per-character (each love interest has their own stance toward the player), not per-world and not derived from `toneCeiling`.
 - 2026-10-01 Gift scope: category tastes apply; explicit item tastes override.
 - 2026-10-01 Experience: 5 levels (none/first_encounter/occasional/recurring/extensive), null = unassigned; act firsts tracked separately.
 - 2026-10-01 Body map: 10 regions instead of 29 — face, lips, neck, arms_hands, chest, back, belly_waist, hips_butt, thighs_legs, intimate; sensitivity 0–3; limit ok/ask_first/never (never wins).
+
+## Batch 10 (2026-10-02, N.E.K.O. memory systems verdicts)
+- 2026-10-02 Filter-before-rank (retrieval scopes): parked. Owner wants evidence it affects the game today; deliberate spoiler leakage might even be a mechanic. Revisit when packs grow or a leak is observed.
+- 2026-10-02 Disputed-lore hard filter: interested, pending clarification that disputed entries leave the context entirely (the filter IS the context saver — the flag costs nothing). Verdict after that lands: build only if a real "wrong info keeps resurfacing" case shows up.
+- 2026-10-02 Component storage (addPoints/changeChemistry/changeSatisfaction audit trail): approved.
+- 2026-10-02 Dual-clock grievance: approved on ALL romance tracks (not dating-only). `effectiveTrust = trust - grievance`; grievance decays fast (half-life a few ticks), trust decay unchanged. Must stay a fast-decaying dial, not a persistent grudge (Batch 9 rule stands: escalate once for director-dealt beats, authored grudges out). Integrates with existing mood math (Trust + 3×Lust, hysteresis 2) — grievance feeds gating/mood reads, not the rank thresholds.
+- 2026-10-02 Ban-topic directives: parked. Worth building only if cheap and context-free; director-gate version adds no prompt context but is 1–2 days of work, so it waits.
+- 2026-10-02 Output anti-repetition: approved WITH a scope guard. Repetition across days/scenes can be authored hinting (character keeps mentioning the quad → wants you to visit → event), which must never be penalized. Lint applies only to freeform LLM narration within the same scene/daypart, warning-level (tune before blocking), authored beats exempt.

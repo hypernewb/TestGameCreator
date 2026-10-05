@@ -136,3 +136,15 @@ tests/_tmp_*.mjs
 test_output.txt
 test_results.json
 falsify-typed-run*.log
+
+# local worktrees, generated browser-test output and screenshots
+.worktrees/
+gui-test-screenshots/
+artifacts/content-packages/
+artifacts/creator-character-workflow/
+artifacts/creator-embedded-ui-wizard/
+artifacts/ui-art/
+artifacts/ui-live-bindings/
+artifacts/ui-live-layout/
+artifacts/ui-screen-fidelity/
+artifacts/ui-screen-mode/

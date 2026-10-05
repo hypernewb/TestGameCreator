@@ -35,3 +35,5 @@ dialog{padding:0;border:0;color:var(--ivory);background:transparent}dialog::back
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 [hidden]{display:none!important}
 @media(max-width:760px){.dialogue{bottom:17%;min-height:190px}.prompt-composer{left:3%;right:3%;bottom:2.5%;grid-template-columns:minmax(0,1fr) auto}.prompt-composer label{display:none}.prompt-composer button span{display:none}.settings-page{grid-template-columns:1fr}.font-upload,.font-preview{grid-column:1}.preferences-panel>form{padding:20px}.settings-tabs{overflow:auto}.character{height:70vh;bottom:17%;right:-10%}.state-preview{display:grid}.state-preview>div:last-child{justify-content:flex-start}.scene-status{top:20%}}
+/* Wizard 9-slice dialogue frame: the classic plate/edge decoration would cover the frame centre. */
+main.stage[data-screen=wizard] .dialogue[data-framed]::before,main.stage[data-screen=wizard] .dialogue[data-framed]::after,main.stage[data-screen=wizard] .dialogue[data-framed] .dialogue__edge{display:none}

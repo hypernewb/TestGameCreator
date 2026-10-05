@@ -7,14 +7,15 @@ import {deflateSync,crc32} from 'node:zlib';
 import vm from 'node:vm';
 import {createApp} from '../server.mjs';
 import {validateProjectMedia,validateImage} from '../packages/assets/project-media.mjs';
+import {authored} from './ui-live-layout-fixture.mjs';
 
 const name='scenario-media/00000000-0000-0000-0000-000000000001.png',url=(bytes,type='png')=>`data:image/${type};base64,${bytes.toString('base64')}`;
 const chunk=(type,data)=>{const out=Buffer.alloc(data.length+12);out.writeUInt32BE(data.length);out.write(type,4);data.copy(out,8);out.writeUInt32BE(crc32(out.subarray(4,-4)),out.length-4);return out;};
 const png=(w=1,h=1,alpha=true)=>{const header=Buffer.alloc(13);header.writeUInt32BE(w);header.writeUInt32BE(h,4);header[8]=8;header[9]=6;const raw=Buffer.alloc((1+w*4)*h);if(!alpha)for(let y=0;y<h;y++)for(let x=0;x<w;x++)raw[y*(1+w*4)+1+x*4+3]=255;return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',header),chunk('IDAT',deflateSync(raw)),chunk('IEND',Buffer.alloc(0))]);};
 const pack=()=>({schemaVersion:1,id:'test.media',version:'0.1.0',title:'Media fixture',playerId:'player',modules:{},locations:[{id:'dock',name:'Dock',description:'A dock.',exits:[]}],actors:[{id:'player',name:'Player',location:'dock'},{id:'ann',name:'Ann',location:'dock'}],gameProject:{premise:'Harbor.',setting:'Harbor.',calendar:{startDate:''},ai:{intent:'',scene:'',daypart:''}}});
 const fixture=async t=>{const dir=mkdtempSync(resolve(tmpdir(),'sf-rf01-test-')),app=createApp({dataPath:':memory:',scenarioDir:dir});await new Promise(r=>app.server.listen(0,'127.0.0.1',r));t.after(async()=>{await new Promise(r=>app.server.close(r));app.store.close();});const base=`http://127.0.0.1:${app.server.address().port}`,api=async(path,body)=>{const r=await fetch(base+path,{method:body===undefined?'GET':'POST',headers:body===undefined?{}:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});return {status:r.status,data:await r.json()};};return {dir,app,api};};
-function mediaContext(values){const context=vm.createContext({structuredClone,weeklySession:null,studioBusy:false,...values});vm.runInContext(sourceHelpers,context);return context;}
-const studioSource=readFileSync(new URL('../public/studio.mjs',import.meta.url),'utf8'),sourceHelpers=studioSource.slice(studioSource.indexOf('function hasWeekly('),studioSource.indexOf('function weeklyAccept('));
+function mediaContext(values){const context=vm.createContext({structuredClone,weeklySession:null,studioBusy:false,...values});vm.runInContext(uiArt,context);vm.runInContext(sourceHelpers,context);return context;}
+const studioSource=readFileSync(new URL('../public/studio.mjs',import.meta.url),'utf8'),sourceHelpers=studioSource.slice(studioSource.indexOf('function hasWeekly('),studioSource.indexOf('function weeklyAccept(')),uiArt=readFileSync(new URL('../public/ui-art.mjs',import.meta.url),'utf8').replace(/^export /gm,'');
 const files=(dir,key)=>readdirSync(resolve(dir,key)).map(file=>[file,readFileSync(resolve(dir,key,file)).toString('base64')]);
 
 test('missing background/portrait/pose uploads block validation and publish with reference errors; legacy drafts stay editable',async t=>{
@@ -61,4 +62,25 @@ test('Publish detects edits/replacement while validation awaits; unchanged snaps
 
 test('edits arriving during publish Save cannot change the validated payload or replace newer local edits',async()=>{
  const original={id:'draft-id',pack:pack()},element={},calls=[],errors=[],source=readFileSync(new URL('../public/studio.mjs',import.meta.url),'utf8'),start=source.indexOf("$('publish').onclick="),handler=source.slice(start,source.indexOf('\n',start));let entered,release;const ready=new Promise(r=>entered=r),context=mediaContext({$:()=>element,draft:structuredClone(original),structuredClone,api:async(path,body)=>{calls.push({path,body:structuredClone(body)});if(path==='/api/studio/save'){entered();await new Promise(r=>release=r);return structuredClone(body);}return path==='/api/studio/publish'?{title:'Published snapshot'}:{ok:true};},message:()=>{},fail:e=>errors.push(e.message),setTimeout:()=>{throw Error('Newer edits must prevent navigation');},location:{assign:()=>{}}});vm.runInContext(handler,context);const pending=element.onclick();await ready;context.draft.pack.locations[0].background=name;release();await pending;assert.deepEqual(errors,[]);assert.deepEqual(calls.map(c=>c.path),['/api/studio/validate','/api/studio/save','/api/studio/publish']);assert.deepEqual(calls[0].body.pack,original.pack);assert.deepEqual(calls[1].body,original);assert.equal(context.draft.pack.locations[0].background,name);
+});
+
+const uiPack=()=>{const p=pack(),raw=structuredClone(authored()),c=raw.config;c.appearance.dialogue.frame=name;c.buttons.shop.states.normal.art=name;p.gameProject.ui={version:1,selected:'wizard',options:[{id:'wizard',label:'Wizard',skin:{version:1,mode:'wizard',export:raw}}]};return p;};
+
+test('Wizard UI art in gameProject.ui validates, publishes and exports with the project',async t=>{
+ const f=await fixture(t),bytes=png(),uploaded=(await f.api('/api/studio/asset',{data:url(bytes)})).data.path,p=uiPack();
+ const missing=await f.api('/api/studio/validate',{pack:p});assert.equal(missing.status,400);assert.match(missing.data.error,/gameProject\.ui\.wizard\.appearance\.dialogue\.frame.*00000000/);
+ const evil=structuredClone(p);evil.gameProject.ui.options[0].skin.export.config.appearance.dialogue.frame='scenario-media/../../evil.png';const r=await f.api('/api/studio/validate',{pack:evil,media:{[name]:{mime:'image/png',data:png().toString('base64')}}});assert.equal(r.status,400);assert.match(r.data.error,/gameProject\.ui/);
+ p.gameProject.ui.options[0].skin.export.config.appearance.dialogue.frame=uploaded;p.gameProject.ui.options[0].skin.export.config.buttons.shop.states.normal.art=uploaded;assert.equal((await f.api('/api/studio/validate',{pack:p})).status,200);
+ const created=await f.api('/api/studio/create',{});assert.equal((await f.api('/api/studio/save',{id:created.data.id,pack:p})).status,200);assert.equal((await f.api('/api/studio/publish',{id:created.data.id})).status,200);
+ const back=await f.api('/api/studio/asset?path='+encodeURIComponent(uploaded));assert.equal(back.data.data,bytes.toString('base64'));
+});
+
+test('import handler remaps Wizard UI art to fresh uploads; export handler embeds it',async t=>{
+ const f=await fixture(t),created=(await f.api('/api/studio/create',{})).data,element={},calls=[],errors=[],start=studioSource.indexOf("$('import-project').onchange="),handler=studioSource.slice(start,studioSource.indexOf('\n',start)),context=mediaContext({$:()=>element,draft:created,api:async(path,body)=>{calls.push(path);const r=await f.api(path,body);if(r.status!==200)throw Error(r.data.error);return r.data;},render:()=>{},message:()=>{},refresh:async()=>{},fail:e=>errors.push(e.message)});vm.runInContext(handler,context);
+ const p=uiPack();
+ await element.onchange({target:{files:[{text:async()=>JSON.stringify({format:'story-framework-game-project',version:1,pack:p,media:{[name]:{mime:'image/png',data:png().toString('base64')}}})}],value:'chosen'}});
+ const config=context.draft.pack.gameProject.ui.options[0].skin.export.config,path=config.appearance.dialogue.frame;assert.notEqual(path,name);assert.equal(config.buttons.shop.states.normal.art,path);assert.equal(p.gameProject.ui.options[0].skin.export.config.appearance.dialogue.frame,name);
+ assert.equal((await f.api('/api/studio/validate',{pack:context.draft.pack})).status,200);
+ const blobs=[],element2={},calls2=[],start2=studioSource.indexOf("$('export-pack').onclick="),handler2=studioSource.slice(start2,studioSource.indexOf('\n',start2)),context2=mediaContext({$:()=>element2,draft:structuredClone(context.draft),api:async(path,body)=>{calls2.push(path);const r=await f.api(path,body);if(r.status!==200)throw Error(r.data.error);return r.data;},node:tag=>({click(){}}),message:()=>{},fail:e=>{throw e;},setTimeout:()=>{},Blob,URL:{createObjectURL:b=>{blobs.push(b);return 'blob:fixture';},revokeObjectURL(){}}});vm.runInContext(handler2,context2);
+ await element2.onclick();const data=JSON.parse(await blobs[0].text());assert.equal(data.pack.gameProject.ui.options[0].skin.export.config.appearance.dialogue.frame,path);assert.equal(data.media[path].data,png().toString('base64'));assert.ok(calls2.includes('/api/studio/validate'));
 });

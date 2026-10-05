@@ -1,0 +1,5 @@
+import {validateState,exportPackage} from '../vn_ui_studio/model.mjs';
+import {skin} from './ui-live-fixture.mjs';
+// Authored design: moved/resized/restacked stat, custom font/colours/shape/border, paper-skinned action with authored state colours.
+export const authored=()=>{const raw=skin(),c=raw.config;c.widgets.balance={...c.widgets.balance,x:5,y:50,w:30,h:20,z:42};c.widgets.shop={...c.widgets.shop,x:60,y:10,w:20,h:12,z:7};c.appearance.balance={...c.appearance.balance,shape:'ticket',font:'mono',fontSize:150,padding:12,border:3,background:'#102030',ink:'#ffcc00'};c.appearance.shop={...c.appearance.shop,font:'serif',fontSize:120};c.buttons.shop={...c.buttons.shop,skin:'paper',radius:9,padding:7,states:{...c.buttons.shop.states,normal:{...c.buttons.shop.states.normal,fill:'#336699',ink:'#fefefe',border:'#ff00aa'},disabled:{...c.buttons.shop.states.disabled,fill:'#444444',opacity:40}}};c.opacity=80;c.textSize=22;return wizard(raw);};
+export const wizard=raw=>exportPackage(validateState(raw.config));

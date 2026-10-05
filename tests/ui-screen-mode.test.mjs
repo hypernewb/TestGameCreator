@@ -1,0 +1,63 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {reviewWizardExport,applyUiReview,selectScreenMode,mountUiProject} from '../public/ui-project.mjs';
+import {validateProjectUi,screenMode,screenGaps} from '../public/ui-selection.mjs';
+import {createLiveUi} from '../public/ui-live.mjs';
+import {navActions} from '../public/ui-screen.mjs';
+import {resolveSkinLayout,validateSkinExport} from '../public/vn-skin.mjs';
+import {stageFrame,minControl} from '../public/ui-layout-style.mjs';
+import {validatePack} from '../packages/core/engine.mjs';
+import {registry} from '../packages/modules/index.mjs';
+import {createApp} from '../server.mjs';
+import {mkdtempSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {fixture,view} from './ui-live-fixture.mjs';
+import {authored,wizard} from './ui-live-layout-fixture.mjs';
+const bound=(raw=authored())=>applyUiReview(fixture(),reviewWizardExport(raw,{id:'live-layout'})),screen=(raw)=>selectScreenMode(bound(raw),'wizard'),pause=()=>new Promise(r=>setTimeout(r,0)),px=x=>Number.parseFloat(x);
+const noSettings=()=>{const raw=authored();for(const w of [raw.config.widgets,...Object.values(raw.config.layouts)])if(w.tool_settings)w.tool_settings={...w.tool_settings,visible:false};return wizard(raw);};
+class Element{constructor(tag,doc){this.tagName=tag.toUpperCase();this.ownerDocument=doc;this.children=[];this.style={};this.attributes={};this.className='';this.value='';this.hidden=false;this.disabled=false;this.clientWidth=1440;this.clientHeight=900;}
+ append(...xs){for(const x of xs){x.parentNode?.children&&(x.parentNode.children=x.parentNode.children.filter(y=>y!==x));x.parentNode=this;this.children.push(x);}}
+ insertBefore(x,ref){x.parentNode&&(x.parentNode.children=x.parentNode.children.filter(y=>y!==x));x.parentNode=this;const i=this.children.indexOf(ref);i<0?this.children.push(x):this.children.splice(i,0,x);}
+ get nextSibling(){const s=this.parentNode?.children;return s?s[s.indexOf(this)+1]||null:null;}
+ replaceChildren(...xs){for(const x of this.children)x.parentNode=null;this.children=[];this.append(...xs);}
+ setAttribute(k,v){this.attributes[k]=String(v);}removeAttribute(k){delete this.attributes[k];}
+ get isConnected(){return this===this.ownerDocument.root||!!this.parentNode?.isConnected;}
+ get textContent(){return this.text||this.children.map(x=>x.textContent).join(' ');}set textContent(x){this.text=String(x);}set innerHTML(x){throw Error('Unsafe HTML');}
+ remove(){if(this.parentNode)this.parentNode.children=this.parentNode.children.filter(x=>x!==this);this.parentNode=null;}
+ all(){return [this,...this.children.flatMap(x=>x.all())];}
+ querySelector(s){return this.all().slice(1).find(e=>s[0]==='#'?e.id===s.slice(1):e.className.split(' ').includes(s.slice(1)))||null;}
+ find(id){return this.querySelector('#'+id)||undefined;}}
+// The classic player chrome from play.html, as the nodes Wizard mode must re-place without recreating.
+function dom(opts={},w=1440,h=900){const doc={createElement:t=>new Element(t,doc),createElementNS:(ns,t)=>new Element(t,doc)};const root=doc.root=new Element('main',doc);root.className='stage';root.clientWidth=w;root.clientHeight=h;const el=(tag,cls,id,parent=root)=>{const e=new Element(tag,doc);e.className=cls;if(id)e.id=id;parent.append(e);return e;};
+ el('header','scene-header');el('nav','scene-nav');const d=el('section','dialogue');el('p','','line',d);el('section','choices','choices');el('section','choices hub','hub');el('section','first-controls','first-controls');const f=el('form','prompt-composer','prompt-composer');el('input','','player-prompt',f);el('div','scene-status','scene-status');
+ return {root,ui:createLiveUi(root,opts)};}
+const order=root=>root.children.map(x=>x.id||x.className);
+
+test('screen mode is a validated project choice: classic by default, Wizard only with a complete Wizard layout',()=>{const p=bound();assert.equal(screenMode(p.gameProject.ui),'classic');const w=selectScreenMode(p,'wizard');assert.equal(w.gameProject.ui.screen,'wizard');assert.equal(screenMode(w.gameProject.ui),'wizard');assert.equal(p.gameProject.ui.screen,undefined,'input pack untouched');assert.equal(selectScreenMode(w,'classic').gameProject.ui.screen,undefined);assert.throws(()=>validateProjectUi({...w.gameProject.ui,screen:'fancy'}),/screen must be classic or wizard/);assert.throws(()=>validateProjectUi({...w.gameProject.ui,selected:'legacy'}),/needs a Wizard layout/);assert.throws(()=>selectScreenMode(bound(noSettings()),'wizard'),/missing required controls: desktop Settings \(menu\) button/);assert.deepEqual(screenGaps(validateSkinExport(authored()).skin),[]);});
+
+test('engine validation refuses a pack whose Wizard screen lacks required controls (save, publish and world creation share it)',()=>{const p=screen();assert.doesNotThrow(()=>validatePack(p,registry));const bad=bound(noSettings());bad.gameProject.ui.screen='wizard';assert.throws(()=>validatePack(bad,registry),/missing required controls/);});
+
+test('Wizard screen places the classic chrome at authored rects, hides the classic menu and restores everything on classic',async()=>{const {root,ui}=dom(),p=screen(),data=view(p);const before=order(root);await ui.update(data);await pause();const frame=stageFrame(1440,900,'desktop'),lay=resolveSkinLayout(validateSkinExport(authored()).skin,{width:frame.w,height:frame.h,device:'desktop'});assert.equal(root.attributes['data-screen'],'wizard');
+ const header=root.querySelector('.scene-header'),dlg=root.querySelector('.dialogue'),host=root.find('game-ui-controls'),input=root.find('player-prompt');assert.equal(px(header.style.left),frame.x+lay.widgets.date.rect.x);assert.equal(px(header.style.top),frame.y+lay.widgets.date.rect.y);assert.equal(px(header.style.width),lay.widgets.date.rect.w);assert.equal(header.style.display,undefined,'never overrides [hidden]');assert.equal(root.querySelector('.scene-nav').style.display,'none');
+ assert.equal(px(dlg.style.left),frame.x+lay.widgets.dialogue.rect.x);assert.equal(px(dlg.style.width),lay.widgets.dialogue.rect.w);assert.equal(dlg.style.display,undefined);assert.equal(dlg.style.overflow,'visible');assert.equal(root.find('line').style.overflow,'auto','long text scrolls');
+ const c=lay.widgets.choices.rect;assert.equal(px(host.style.left),frame.x+c.x);assert.equal(px(host.style.top),frame.y+c.y);assert.equal(px(host.style.height),c.h);assert.equal(host.style.pointerEvents,'none','empty host never blocks the dialogue');assert.deepEqual(host.children.map(x=>x.id),['scene-status','first-controls','choices','hub','prompt-composer']);assert.ok(host.children.every(x=>x.style.pointerEvents==='auto'));assert.equal(root.find('choices').style.overflow,'auto');assert.equal(input.parentNode.id,'prompt-composer','same input node, so focus and handlers survive');
+ assert.ok(px(dlg.style.top)+px(dlg.style.height)<=frame.y+c.y+c.h-56,'dialogue never sits under the pinned input band');
+ const nav=root.find('game-ui-live').children.filter(x=>x.id?.startsWith('game-ui-tool_'));assert.deepEqual(nav.map(x=>x.attributes['data-action']),lay.bindings.navigation.filter(id=>navActions[id]).map(id=>navActions[id]));assert.ok(nav.some(x=>x.attributes['data-action']==='menu'));assert.ok(nav.every(x=>px(x.style.width)>=minControl&&px(x.style.height)>=minControl));assert.equal(root.find('game-ui-tool_planner'),undefined,'no dead controls');
+ await ui.update(view(p));await pause();assert.equal(root.find('choices').parentNode,host,'redraw does not re-append (keeps focus)');
+ await ui.update({...data,pack:selectScreenMode(p,'classic')});await pause();assert.deepEqual(order(root),before,'classic chrome back in its original order');assert.equal(root.attributes['data-screen'],undefined);assert.equal(root.find('game-ui-controls'),undefined);const set=e=>Object.values(e.style).filter(Boolean);assert.deepEqual(set(header),[],'inline styles restored');assert.deepEqual(set(root.querySelector('.scene-nav')),[]);assert.deepEqual(set(dlg),[]);assert.deepEqual(set(root.find('choices')),[]);});
+
+test('phone Wizard screen uses the phone rects and keeps the 34px minimum for the dock',async()=>{const {root,ui}=dom({},390,844);await ui.update(view(screen()));await pause();const f=stageFrame(390,844,'desktop'),lay=resolveSkinLayout(validateSkinExport(authored()).skin,{width:f.w,height:f.h,device:'phone'});assert.equal(root.find('game-ui-live').attributes['data-layout'],'wizard:phone');assert.equal(px(root.querySelector('.dialogue').style.left),f.x+lay.widgets.dialogue.rect.x);const menu=root.find('game-ui-tool_settings');assert.equal(menu.attributes['data-action'],'menu');assert.ok(px(menu.style.width)>=minControl&&px(menu.style.height)>=minControl);assert.ok(px(menu.style.left)+px(menu.style.width)<=f.x+f.w+1e-6);});
+
+test('a tampered Wizard screen without required controls shows a diagnostic and keeps the classic chrome',async()=>{const {root,ui}=dom(),data=view(screen()),c=data.pack.gameProject.ui.options.find(x=>x.id==='live-layout').skin.export.config;for(const w of [c.widgets,...Object.values(c.layouts)])if(w.tool_settings)w.tool_settings.visible=false;const before=order(root);await ui.update(data);await pause();const status=root.find('game-ui-live').children.find(x=>x.attributes.role==='status');assert.match(status.textContent,/Wizard screen is missing required controls: desktop Settings \(menu\) button/);assert.deepEqual(order(root),before);assert.equal(root.attributes['data-screen'],undefined);assert.equal(root.find('game-ui-controls'),undefined);assert.equal(root.find('game-ui-balance'),undefined,'refused like any invalid layout');});
+
+test('reset and unmount return the classic chrome',async()=>{for(const end of ['reset','unmount']){const {root,ui}=dom(),before=order(root);await ui.update(view(screen()));await pause();assert.equal(root.attributes['data-screen'],'wizard');ui[end]();assert.deepEqual(order(root).filter(x=>x!=='game-ui-live'),before.filter(x=>x!=='game-ui-live'));assert.equal(root.find('game-ui-controls'),undefined);}});
+
+test('Studio offers the screen choice, keeps it on the pack and refuses a Wizard screen that lacks required controls',()=>{const mount=p=>{const doc={createElement:t=>new Element(t,doc),createElementNS:(ns,t)=>new Element(t,doc)};doc.root=new Element('section',doc);let current=p;const status=[];mountUiProject(doc.root,{getPack:()=>current,onChange:next=>current=next,onStatus:x=>status.push(x)});return {root:doc.root,status,get pack(){return current;}};};
+ const c=mount(bound()),select=c.root.find('ui-screen-select');assert.deepEqual(select.children.map(x=>x.value),['classic','wizard']);assert.equal(select.value,'classic');select.value='wizard';select.onchange();assert.equal(c.pack.gameProject.ui.screen,'wizard');assert.match(c.status.at(-1).message||String(c.status.at(-1)),/Complete Wizard screen/);select.value='classic';select.onchange();assert.equal(c.pack.gameProject.ui.screen,undefined);
+ const bad=mount(bound(noSettings())),s2=bad.root.find('ui-screen-select');s2.value='wizard';s2.onchange();assert.equal(bad.pack.gameProject.ui.screen,undefined,'refused, pack unchanged');assert.equal(s2.value,'classic','select reverts');assert.match(JSON.stringify(bad.status.at(-1)),/missing required controls/);});
+
+test('server refuses to save or publish an incomplete Wizard screen and round-trips a complete one',async()=>{const dir=mkdtempSync(join(tmpdir(),'sf-screen-mode-')),app=createApp({dataPath:':memory:',scenarioDir:dir});await new Promise(r=>app.server.listen(0,'127.0.0.1',r));const call=async(path,body)=>{const r=await fetch('http://127.0.0.1:'+app.server.address().port+path,body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return {status:r.status,data:await r.json()};};
+ try{const created=(await call('/api/studio/create',{})).data,bad=bound(noSettings());bad.gameProject.ui.screen='wizard';const refused=await call('/api/studio/save',{id:created.id,pack:bad});assert.notEqual(refused.status,200);assert.match(JSON.stringify(refused.data),/missing required controls/);
+  assert.equal((await call('/api/studio/save',{id:created.id,pack:screen()})).status,200);const opened=(await call('/api/studio/get?id='+created.id)).data;assert.equal(opened.pack.gameProject.ui.screen,'wizard');const published=await call('/api/studio/publish',{id:created.id});assert.equal(published.status,200,JSON.stringify(published.data));const started=(await call('/api/new',{packId:published.data.id})).data;assert.equal(screenMode(started.pack.gameProject.ui),'wizard');}
+ finally{await new Promise(r=>app.server.close(r));app.store.close();rmSync(dir,{recursive:true,force:true});}});

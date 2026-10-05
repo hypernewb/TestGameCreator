@@ -59,6 +59,12 @@ function refreshStartup(d,errors=[]){
 }
 
 // Paths are arrays of own-property names; reset removes only the explicitly named edit marker.
+export function restoreStartup(snapshot){
+ if(!snapshot||!snapshot.pack||!snapshot.requested||!snapshot.candidates||!['characters','locations'].every(k=>Array.isArray(snapshot.candidates[k])&&snapshot.candidates[k].length<=8)||![snapshot.requested.npcTotal,snapshot.requested.locationTotal].every(n=>Number.isInteger(n)&&n>=1&&n<=8))throw Error('Invalid startup recovery snapshot');
+ const d=clone(snapshot);if(!Array.isArray(d.pack.actors)||!Array.isArray(d.pack.locations)||!d.pack.actors.some(a=>a.id===d.pack.playerId))throw Error('Invalid startup recovery scaffold');
+ if((d.dirtyPaths||[]).some(e=>!['characters','locations'].includes(e.kind)||!Array.isArray(e.path)||e.path.some(k=>typeof k!=='string'||['__proto__','constructor','prototype'].includes(k))))throw Error('Invalid startup recovery edit paths');
+ delete d.regeneration;delete d.staleResult;d.revision=0;return refreshStartup(d,generationErrors(d));
+}
 export function editStartup(draft,{kind,id,path,value,reset=false,expectedRevision}={}){
  revision(draft,expectedRevision);if(!['characters','locations'].includes(kind)||!entry(draft,kind,id))throw Error('Unknown candidate');
  if(!Array.isArray(path)||!path.length||path.some(k=>typeof k!=='string'||!k||['__proto__','prototype','constructor'].includes(k))||path[0]==='id')throw Error('Invalid editable path');

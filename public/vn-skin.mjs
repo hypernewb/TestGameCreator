@@ -27,7 +27,8 @@ const componentShapes={date:'calendar',balance:'receipt',radar:'record',relation
 Object.assign(names,Object.fromEntries(Object.entries(utilityInfo).map(([id,[label]])=>['tool_'+id,label+' button'])));
 Object.assign(componentShapes,Object.fromEntries(Object.keys(utilityInfo).map(id=>['tool_'+id,'frameless'])));
 function appearanceDefaults(id){return {shape:'auto',font:'auto',fontSize:100,padding:['date','balance','shop','map','board','calendar'].includes(id)?6:10,border:1,background:'auto',ink:'auto',icon:'auto',texture:'auto',fit:true,frame:'',slice:20};}
-function validateFrame(value){if(value!=='')throw Error('Artwork requires a separately validated same-origin asset contract; embedded or imported paths are unsupported.');return value;}
+// Player art contract (ui-art.mjs): '' or an uploaded project media path only; Studio converts Wizard data URIs on import.
+function validateFrame(value){if(value!==''&&!(typeof value==='string'&&/^scenario-media\/[a-f0-9-]{36}\.(png|jpg|webp)$/.test(value)))throw Error('Artwork must be uploaded project media (scenario-media PNG, JPEG or WebP); embedded, external or path-traversal art is refused.');return value;}
 function validateAppearance(a){
   if(!a||typeof a!=='object')throw Error('Invalid component appearance.');const out={};
   for(const [field,values] of Object.entries(appearanceOptions)){if(!values.includes(a[field]))throw Error('Invalid component '+field+'.');out[field]=a[field];}

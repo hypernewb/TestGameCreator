@@ -1,8 +1,9 @@
 import {inflateSync} from 'node:zlib';
 import {assert} from '../core/engine.mjs';
+import {uiMediaReferences} from '../../public/ui-art.mjs';
 
 export const projectMediaPath=path=>typeof path==='string'&&/^scenario-media\/[a-f0-9-]{36}\.(png|jpg|webp)$/.test(path);
-export function mediaReferences(pack){return [...(pack?.locations||[]).filter(l=>l.background).map((l,i)=>({ref:`locations.${l.id||i}.background`,path:l.background})),...(pack?.actors||[]).flatMap((a,i)=>[...(a.portrait?[{ref:`actors.${a.id||i}.portrait`,path:a.portrait}]:[]),...(a.poses||[]).map((p,j)=>({ref:`actors.${a.id||i}.poses.${p.id||j}.image`,path:p.image}))])];}
+export function mediaReferences(pack){return [...(pack?.locations||[]).filter(l=>l.background).map((l,i)=>({ref:`locations.${l.id||i}.background`,path:l.background})),...(pack?.actors||[]).flatMap((a,i)=>[...(a.portrait?[{ref:`actors.${a.id||i}.portrait`,path:a.portrait}]:[]),...(a.poses||[]).map((p,j)=>({ref:`actors.${a.id||i}.poses.${p.id||j}.image`,path:p.image}))]),...uiMediaReferences(pack)];}
 const dimensions=(w,h)=>assert(w>0&&h>0&&w<=8192&&h<=8192&&w*h<=40000000,'Image dimensions exceed the existing preparation limits');
 function pngStructure(bytes){
  let pos=8,header=null,ended=false,data=[],palette=false,afterData=false;

@@ -1,3 +1,5 @@
+import {academics} from './academics.mjs';
+import {jobs} from './jobs.mjs';
 import {conversation,relationships,schedule,quests} from './social.mjs';
 import {inventory} from './inventory.mjs';
 import {abilities} from './abilities.mjs';
@@ -37,8 +39,10 @@ import {anniversary} from './anniversary.mjs';
 import {jealousy} from './jealousy.mjs';
 import {wants} from './wants.mjs';
 import {recap} from './recap.mjs';
-export const registry=Object.fromEntries([conversation,relationships,schedule,quests,inventory,abilities,objects,daypart,worldEvents,scenes,facts,equipment,bonds,npcSocial,economy,stats,progression,dating,romanceNetwork,intimacy,gossip,romanceTempo,phone,feed,endings,timedEvents,director,moments,calendarWorld,acts,arc,sobriety,secrecy,minigames,firsts,touchLadder,dailyNeed,outreach,anniversary,jealousy,wants,recap].map(m=>[m.id,m]));
+export const registry=Object.fromEntries([academics,jobs,conversation,relationships,schedule,quests,inventory,abilities,objects,daypart,worldEvents,scenes,facts,equipment,bonds,npcSocial,economy,stats,progression,dating,romanceNetwork,intimacy,gossip,romanceTempo,phone,feed,endings,timedEvents,director,moments,calendarWorld,acts,arc,sobriety,secrecy,minigames,firsts,touchLadder,dailyNeed,outreach,anniversary,jealousy,wants,recap].map(m=>[m.id,m]));
 const descriptions={
+ 'world.academics':['Courses and grades','Configurable course timetables, attendance, authored exam questions, projects, grades and GPA.'],
+ 'world.jobs':['Jobs and shifts','Configurable openings, requirements, weekly rosters, wages, raises, sick notes and missed-shift settlement.'],
   'story.recap':['Day recap','When a day closes the engine writes a few plain lines about what changed - rungs reached, who warmed or cooled, promises kept or broken, what she let slip - with no numbers and no model call, shown as a morning card and kept in the journal.'],
   'social.wants':['Her own wants','Each heroine carries one or two wants of her own this week, brings them up herself, and is pleased when the player helps: a matching act or a kept plan retires the want for Like, inside the normal daily cap.'],
   'social.daily-need':['Hidden daily need','Picks a quiet daily want per character and rewards reading it from interpreted acts.'],

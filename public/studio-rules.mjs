@@ -4,6 +4,8 @@ const generations=new Map();
 const session=id=>{if(!sessions.has(id))sessions.set(id,new Map());return sessions.get(id);};
 export function assertRulesReady(id){if(session(id).size)throw Error('Apply or cancel the pending visual rule forms before Check, Save, Playtest, export or replacing the project.');}
 export const ruleBufferSignature=id=>JSON.stringify([...session(id)]);
+export const captureRuleBuffers=id=>structuredClone([...session(id)]);
+export function restoreRuleBuffers(id,entries=[]){if(!Array.isArray(entries)||entries.some(x=>!Array.isArray(x)||x.length!==2||typeof x[0]!=='string'||!x[1]||typeof x[1]!=='object'))throw Error('Invalid visual-rule recovery buffers.');sessions.set(id,new Map(structuredClone(entries)));generations.delete(id);}
 export function mountRules(parent,{getPack,getId,onChange,onStatus,document:doc=globalThis.document}){
  const p=getPack(),sid=getId(),pending=session(sid),make=(tag,text)=>{const e=doc.createElement(tag);if(text!==undefined)e.textContent=text;return e;},button=(parent,label,fn)=>{const e=make('button',label);e.type='button';e.onclick=fn;parent.append(e);return e;},npcs=p.actors.filter(a=>a.id!==p.playerId).map(a=>[a.id,a.name]),stages=(p.relationshipStates||[]).map(s=>[s.id,s.name]),plans=rulePlans(p).filter(x=>x.effect.id).map(x=>[x.effect.id,x.effect.id+' — '+x.effect.plan]),segments=ruleSegments(p);
  const generation=Symbol();generations.set(sid,generation);const active=()=>getId()===sid&&generations.get(sid)===generation,retired=()=>onStatus('This rule form is no longer active. Reopen the current control.');

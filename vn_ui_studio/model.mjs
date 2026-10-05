@@ -15,7 +15,7 @@ Object.assign(names,Object.fromEntries(Object.entries(utilityInfo).map(([id,[lab
 Object.assign(componentShapes,Object.fromEntries(Object.keys(utilityInfo).map(id=>['tool_'+id,'frameless'])));
 export function appearanceDefaults(id){return {shape:'auto',font:'auto',fontSize:100,padding:['date','balance','shop','map','board','calendar'].includes(id)?6:10,border:1,background:'auto',ink:'auto',icon:'auto',texture:'auto',fit:true,frame:'',slice:20};}
 export function validateFrame(value){
-  if(value==='')return value;
+  if(value===''||typeof value==='string'&&/^scenario-media\/[a-f0-9-]{36}\.(png|jpg|webp)$/.test(value))return value;
   if(typeof value!=='string'||value.length>240000||!/^data:image\/(?:png|svg\+xml);base64,[A-Za-z0-9+/]+={0,2}$/.test(value))throw Error('Use a PNG or SVG frame smaller than 175 KB.');
   const bytes=typeof Buffer!=='undefined'?Buffer.from(value.split(',')[1],'base64'):Uint8Array.from(atob(value.split(',')[1]),c=>c.charCodeAt(0));
   if(value.startsWith('data:image/png;')){if(![137,80,78,71,13,10,26,10].every((n,i)=>bytes[i]===n))throw Error('Invalid PNG frame.');}

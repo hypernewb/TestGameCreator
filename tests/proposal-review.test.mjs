@@ -1,3 +1,4 @@
+import vm from 'node:vm';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -54,5 +55,5 @@ test('Studio wires the review panel and card buttons to server routes that exist
  const ui=readFileSync(new URL('../public/studio.mjs',import.meta.url),'utf8'),html=readFileSync(new URL('../public/studio.html',import.meta.url),'utf8'),server=readFileSync(new URL('../server.mjs',import.meta.url),'utf8');
  assert.match(html,/id="load-proposal"/);assert.match(ui,/\$\('load-proposal'\)\.onchange/);
  for(const route of ['/api/studio/proposal/review','/api/studio/proposal/regenerate','/api/studio/proposal/apply','/api/studio/import-card','/api/studio/export-card']){assert.ok(ui.includes(route),route);assert.ok(server.includes(route.replace(/\/(review|regenerate|apply)$/,'/'))||server.includes(route),route);}
- assert.match(ui,/cardsEditor\(\);proposalEditor\(\);/);assert.match(ui,/\(draft\.pack\[key\]\|\|=\[\]\)\.entries\(\)/,'rows tolerate a pack without that list');
+ assert.match(ui,/cardsEditor\(\);proposalEditor\(\);/);const sections=[],context={draft:{pack:{}},section:()=>{const e={children:[],append(...xs){this.children.push(...xs);}};sections.push(e);return e;},node:()=>({append(){}}),structuredClone,render:()=>{},message:()=>{}};vm.runInNewContext(ui.split('\n').find(x=>x.startsWith('function rows('))+"\nrows('Playable starts','','startOptions',{id:'first'},()=>{});rows('Locations','','locations',{},()=>{});",context);assert.equal(context.draft.pack.startOptions,undefined,'render preserves an absent optional start list');assert.deepEqual(Array.from(context.draft.pack.locations),[],'rows tolerate missing ordinary lists');sections[0].children.at(-1).onclick();assert.equal(context.draft.pack.startOptions[0].id,'first','Add explicitly authors the optional list');
 });

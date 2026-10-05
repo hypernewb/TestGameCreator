@@ -245,7 +245,10 @@ test('world generation: each new game hides the finds in different authored spot
 });
 
 const placed=(tick,flags={})=>{const s=createWorld(pack,registry,'hand');Object.assign(s.flags,flags);s.modules['story.scenes'].pending=null;s.tick=tick;const h=tick%12;s.actors.juno.location=h<6?'market':'bar';s.actors.theo.location=h<8?'canal':'bar';return s;};
-const handsAt=s=>[...new Set(pack.locations.flatMap(l=>{const t=structuredClone(s);t.actors.player.location=l.id;return actions(t,pack,registry).filter(a=>a.type==='story.startOfferedScene'&&a.enabled!==false&&a.args.scene.startsWith('hand-')).map(a=>a.args.scene);}))];
+const handsAt=s=>[...new Set(pack.locations.flatMap(l=>{const t=structuredClone(s);t.actors.player.location=l.id;return actions(t,pack,registry,['story.startOfferedScene']).filter(a=>a.type==='story.startOfferedScene'&&a.enabled!==false&&a.args.scene.startsWith('hand-')).map(a=>a.args.scene);}))];
+test('focused hand previews match full action enumeration at opening and late-route boundaries',()=>{
+ for(const [tick,flags] of [[13,{}],[69,{'juno-kissed':true,'juno-flirt':true,'juno-charged':true}],[210,{'theo-kissed':true,'theo-opened':true,'theo-close':true,'theo-charged':true}]]){const s=placed(tick,flags),full=[...new Set(pack.locations.flatMap(l=>{const t=structuredClone(s);t.actors.player.location=l.id;return actions(t,pack,registry).filter(a=>a.type==='story.startOfferedScene'&&a.enabled!==false&&a.args.scene.startsWith('hand-')).map(a=>a.args.scene);}))];assert.deepEqual(handsAt(s),full);}
+});
 
 test('F2: every daypart of the run holds 2-4 hand offers, whichever route you are on',()=>{
  // Hand windows only change at ticks 24/36/48/60/211 (days 2-5 and 17); days 7-16 repeat day 6, so sample the boundaries.

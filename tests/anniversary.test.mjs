@@ -24,13 +24,18 @@ const step=(s,p,type,args={})=>run(s,p,type,args).state;
 const her=(s)=>s.modules['social.anniversary'].characters.her;
 const like=(s)=>s.modules['social.dating'].characters.her.chemistry;
 const day=(s,p)=>calendarFor(s.tick,p).day;
-const tillDay=(s,p,n)=>{let guard=0;while(day(s,p)<n&&guard++<4000)s=step(s,p,'core.wait');assert.equal(day(s,p),n,`never reached day ${n}`);return s;};
-// core.wait advances a fixed slot each call, so days() steps whole days from wherever the world sits.
+const tillDay=(s,p,n)=>{let guard=0;while(day(s,p)<n&&guard++<4000)s=step(s,p,'core.wait',s.scene?.characters?.length?{}:{until:'Morning'});assert.equal(day(s,p),n,`never reached day ${n}`);return s;};
+// Wait to each next morning through the real engine; retain every day boundary and its penalty.
 const days=(s,p,n)=>{const from=day(s,p);for(let i=from;i<from+n;i++)s=tillDay(s,p,i+1);return s;};
 const date=(s,p)=>step(s,p,'social.askDate',{character:'her'});
 const mark=(s,p)=>step(s,p,'social.acknowledgeAnniversary',{character:'her'});
 const speak=(s,p)=>step(s,p,'social.speak',{target:'her',text:'I thought about earlier.'});
 const move=(s,p,to)=>step(s,p,'core.move',{to});
+test('daily waits match single-tick waits across two marks and their closing penalties',()=>{
+ const p=pack(true,{interval:7}),dated=date(createWorld(p,mods,'wait-parity'),p);for(const initial of [dated,speak(dated,p)]){const target=day(initial,p)+15;let slow=initial;
+ while(day(slow,p)<target)slow=step(slow,p,'core.wait');const fast=tillDay(initial,p,target);
+ assert.equal(fast.tick,slow.tick);assert.deepEqual(fast.modules,slow.modules);assert.deepEqual(fast.actors,slow.actors);assert.deepEqual(fast.flags,slow.flags);assert.equal(like(fast),like(initial)-2);}
+});
 
 test('anniversarySettings is mechanics and edits invalidate existing worlds',()=>{
   const p=pack(),s=createWorld(p,mods),before=mechanicsDigest(p);
@@ -136,9 +141,9 @@ test('marking it together pays Like once per mark',()=>{
   assert.equal(like(s)-before,2);
   assert.deepEqual(anniversary.actions(s,p),[],'the offer is spent');
   assert.throws(()=>mark(s,p),/already marked/);
-  s=days(s,p,28);
+  const after=like(s);s=days(s,p,28);
   assert.equal(her(s).mark,2,'the next mark arrives');
-  assert.equal(like(s),like(s),'no reward without marking it');
+  assert.equal(like(s),after,'no reward without marking it');
 });
 
 test('marking needs her there, and the pack decides the numbers',()=>{

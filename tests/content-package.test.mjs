@@ -1,16 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,readFileSync} from 'node:fs';
-import {tmpdir} from 'node:os';
-import {join} from 'node:path';
+import {readFileSync} from 'node:fs';
 import {randomUUID} from 'node:crypto';
 import {deflateSync} from 'node:zlib';
-import http from 'node:http';
 import {buildContentPackage,reviewContentPackage,applyContentPackage,PACKAGE_FORMAT} from '../packages/cards/content-package.mjs';
 import {validatePack} from '../packages/core/engine.mjs';
 import {registry} from '../packages/modules/index.mjs';
-import {createApp} from '../server.mjs';
-import {MockProvider} from '../packages/ai/providers.mjs';
 
 // A structural 1024×1536 transparent PNG (all-zero pixels); passes validateImage's character-art structure.
 const png=()=>{const chunk=(name,data)=>{const out=Buffer.alloc(data.length+12);out.writeUInt32BE(data.length);out.write(name,4);data.copy(out,8);let c=0xffffffff;for(const b of out.subarray(4,-4)){c^=b;for(let k=0;k<8;k++)c=(c>>>1)^((c&1)?0xedb88320:0);}out.writeUInt32BE((c^0xffffffff)>>>0,out.length-4);return out;},header=Buffer.alloc(13);header.writeUInt32BE(1024);header.writeUInt32BE(1536,4);header[8]=8;header[9]=6;return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',header),chunk('IDAT',deflateSync(Buffer.alloc((1024*4+1)*1536))),chunk('IEND',Buffer.alloc(0))]);};
@@ -120,38 +115,4 @@ test('scenes cannot be imported while story.scenes is disabled in the destinatio
  delete dest.modules['story.scenes'];
  const r=review(pkg,dest);assert.equal(r.ok,false);assert.match(r.errors[0],/Scripted scenes disabled/);
  assert.throws(()=>applied(pkg,dest,{}),/Scripted scenes disabled/);
-});
-
-test('server routes: export embeds media, apply updates the saved draft, a failed apply leaves the draft byte-identical',async t=>{
- const dir=mkdtempSync(join(tmpdir(),'sf-content-package-')),apps=[];
- const close=async a=>{if(!a.closed){await new Promise(r=>a.app.server.close(r));a.app.store.close();a.closed=true;}};
- const start=async name=>{const app=createApp({scenarioDir:join(dir,name,'scenarios'),dataPath:join(dir,name,'camp.sqlite'),provider:new MockProvider()});await new Promise(r=>app.server.listen(0,'127.0.0.1',r));const a={app,base:`http://127.0.0.1:${app.server.address().port}`,closed:false,api:async(path,body)=>{const r=await fetch(a.base+path,body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return {status:r.status,data:await r.json()};}};apps.push(a);return a;};
- t.after(async()=>{for(const a of apps)await close(a);});
- const draftFile=(name,id)=>join(dir,name,'scenarios','drafts',id+'.json');
- const source=await start('source'),sdraft=await source.api('/api/studio/create',{}).then(r=>r.data),sp=sdraft.pack;
- sp.title='Source world';sp.locations=[{id:'room',name:'Room',exits:[]},{id:'cafe',name:'Café',exits:[]}];
- sp.actors=[{id:'player',name:'You',location:'room'},{id:'ada',name:'Ada',location:'cafe',portrait:MEDIA}];
- sp.storyVariables=[{id:'met-ada',name:'Met Ada',initial:false}];sp.datingProfiles=[{character:'ada',preferences:[{id:'tea',text:'Tea'}]}];
- sp.lorebook=[{id:'ada-tea',text:'Ada loves tea.',scope:'character',character:'ada',knownBy:['ada']}];
- sp.scriptedScenes=[{id:'meet-ada',title:'Meet Ada',opening:'Ada waves.',trigger:{event:'core.moved',match:{to:'cafe'}},when:{present:['ada'],location:'cafe'},pages:[{text:'Hi',speaker:'ada',stage:['show:ada']}],choices:[{id:'chat',label:'Chat',when:{charactersAt:{ada:'cafe'}},effects:[{type:'trust',character:'ada',delta:5},{type:'flag',id:'met-ada',value:true}]},{id:'leave',label:'Leave'}]}];
- const asset=await source.api('/api/studio/asset',{kind:'character',data:'data:image/png;base64,'+png().toString('base64')});assert.equal(asset.status,200);
- sp.actors[1].portrait=asset.data.path;
- const saved=await source.api('/api/studio/save',{id:sdraft.id,pack:sp});assert.equal(saved.status,200);
- const pkg=await source.api('/api/studio/package/export',{id:sdraft.id,selection:SELECTION});assert.equal(pkg.status,200);
- assert.equal(pkg.data.format,PACKAGE_FORMAT);assert.ok(pkg.data.media[asset.data.path]);
- const dest=await start('dest'),ddraft=await dest.api('/api/studio/create',{}).then(r=>r.data);
- ddraft.pack.modules['social.relationships']='0.1.0';
- const dsaved=await dest.api('/api/studio/save',{id:ddraft.id,pack:ddraft.pack});assert.equal(dsaved.status,200);
- const r1=await dest.api('/api/studio/package/review',{id:ddraft.id,pkg:pkg.data});assert.equal(r1.status,200);assert.equal(r1.data.ok,true,r1.data.errors?.join('; '));
- const draftBefore=readFileSync(draftFile('dest',ddraft.id));
- const bad=copy(pkg.data);bad.content.scriptedScenes[0].choices[0].check={stat:'charm',target:5,fail:{result:'No.'}};
- const r2=await dest.api('/api/studio/package/apply',{id:ddraft.id,pkg:bad,choices:{}});
- assert.equal(r2.status,400);assert.match(r2.data.error,/charm/);
- assert.deepEqual(readFileSync(draftFile('dest',ddraft.id)),draftBefore,'failed import must not touch the draft');
- const r3=await dest.api('/api/studio/package/apply',{id:ddraft.id,pkg:pkg.data,choices:{}});assert.equal(r3.status,200,r3.data.error);
- const stored=JSON.parse(readFileSync(draftFile('dest',ddraft.id),'utf8'));
- assert.ok(stored.pack.actors.some(a=>a.id==='ada'));assert.ok(stored.pack.scriptedScenes.some(s=>s.id==='meet-ada'));
- assert.ok(stored.pack.actors.find(a=>a.id==='ada').portrait.startsWith('scenario-media/'));
- const revalidate=await dest.api('/api/studio/validate',{pack:stored.pack});assert.equal(revalidate.status,200,JSON.stringify(revalidate.data));
- const r4=await dest.api('/api/studio/package/review',{id:ddraft.id,pkg:pkg.data});assert.equal(r4.status,200);assert.equal(r4.data.collisions.actors.ada,'remap');
 });

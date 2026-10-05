@@ -221,7 +221,7 @@ test('Venus model listing excludes explicitly unsupported models',async()=>{
  assert.deepEqual(modelIdsOf({data:[{id:'plain'},{id:'no-schema',supported_parameters:['tools']},{id:'structured',supported_parameters:['response_format']}]}),['plain','structured']);
 });
 test('transient model HTTP failure retries without changing the chosen action',async()=>{
- let calls=0;const provider=new CompatibleProvider({endpoint:'http://127.0.0.1:1234/v1/chat/completions',model:'stub',fetchImpl:async()=>++calls===1?{ok:false,status:503,text:async()=>'<html><title>busy</title></html>'}:{ok:true,json:async()=>({choices:[{message:{content:'{"index":0,"question":""}'},finish_reason:'stop'}]})}});
+ let calls=0;const provider=new CompatibleProvider({endpoint:'http://127.0.0.1:1234/v1/chat/completions',model:'stub',sleep:async()=>{},fetchImpl:async()=>++calls===1?{ok:false,status:503,text:async()=>'<html><title>busy</title></html>'}:{ok:true,json:async()=>({choices:[{message:{content:'{"index":0,"question":""}'},finish_reason:'stop'}]})}});
  const action=await provider.interpret('wait',{},[{type:'core.wait',args:{},enabled:true}]);assert.equal(action.type,'core.wait');assert.equal(calls,2);
 });
 test('free-form sleep and meeting stage a scene and persist travel and time',async()=>{

@@ -1,5 +1,6 @@
 import {calendarFor} from '../../public/calendar.mjs';
 import {scheduleDestination} from './engine.mjs';
+import {memoryEditIndex,effectiveImpressions,effectiveSceneMemories} from '../ai/memory.mjs';
 
 // Venus-style character overview: a pure read of committed state, never a source of truth.
 export const STAT_EVENTS=['social.relationshipChanged','social.bondChanged','social.chemistryChanged','social.satisfactionChanged'];
@@ -20,10 +21,10 @@ export function characterProgress(s,p,{test=false}={}){
   const availability=s.scene?.characters?.includes(id)?'With you now':at===here?'Here':showLocations?`At ${place(at).name}`:'Away';
   const stats=raw?{Trust:t,...Object.fromEntries((p.relationshipDimensions||[]).filter(()=>bonds).map(x=>[x.name,bonds[`${id}--${x.id}--${me}`]??0])),...(d?{Chemistry:d.chemistry,Satisfaction:d.satisfaction}:{})}:null;
   const recent=s.events.filter(e=>STAT_EVENTS.includes(e.type)&&who(e)===id).slice(-5).map(e=>relationshipReaction(e,a.name)).reverse();
-  const memories=[...talk.filter(m=>m.knownBy?.includes(id)&&m.knownBy.includes(me)&&!m.promise).map(m=>({tick:m.tick,text:m.text})),...(story?.memories||[]).filter(m=>m.character===id).map(m=>({tick:m.tick,text:m.text}))].sort((x,y)=>x.tick-y.tick).slice(-5).map(m=>m.text);
+  const memories=[...talk.filter(m=>m.knownBy?.includes(id)&&m.knownBy.includes(me)&&!m.promise).map(m=>({tick:m.tick,text:m.text})),...effectiveSceneMemories(s).filter(m=>m.character===id).map(m=>({tick:m.tick,text:m.text}))].sort((x,y)=>x.tick-y.tick).slice(-5).map(m=>m.text);
   const promises=[...talk.filter(m=>m.promise&&m.knownBy?.includes(id)).map(m=>({text:m.text,status:'made'})),...(story?.plans||[]).filter(x=>x.character===id).map(x=>({text:x.plan,status:x.status}))].slice(-5);
   const known=new Set(d?.knownPreferences||[]),ik=new Set(intimacy[id]?.knownInterests||[]),ip=(p.intimacyProfiles||[]).find(x=>x.character===id);
-  const ledger=Object.values(s.turns).flatMap(x=>x.ledger||[]).filter(x=>x.charKey===id&&x.type!=='neutral'&&x.desc).map(x=>`${x.type==='liked'?'Likes':'Dislikes'} ${x.desc}`);
+  const impressionEdits=memoryEditIndex(s,'impression'),ledger=Object.values(s.turns).flatMap(x=>effectiveImpressions(x,impressionEdits)).filter(x=>x.charKey===id&&x.type!=='neutral'&&x.desc).map(x=>`${x.type==='liked'?'Likes':'Dislikes'} ${x.desc}`);
   const preferences=[...new Set([...(profile?.preferences||[]).filter(x=>x.visibility==='public'||known.has(x.id)).map(x=>x.label||x.id),...[...(ip?.interests||[]),...(ip?.stylePreferences||[]),...(ip?.aftercarePreferences||[])].filter(x=>ik.has(x.id)).map(x=>x.label||x.id),...ledger])].slice(-8);
   const rank=tempo?.ranks?.[tempoState?.rank||0],nextRank=tempo?.ranks?.[(tempoState?.rank||0)+1],trustScene=(p.scriptedScenes||[]).filter(scene=>scene.when?.trust?.[id]>t).toSorted((x,y)=>x.when.trust[id]-y.when.trust[id])[0],hearts=tempo?Math.min(tempo.ranks.length,Math.max(1,(tempoState?.rank||0)+1)):d?({available:0,crush:1,dating:2,exclusive:3,rejected:0,broken:0}[d.phase]??0):Math.min(5,Math.floor(t/20)),heartMax=tempo?.ranks?.length||(d?3:5),teaser=nextRank?`Next: ${nextRank.name}${nextRank.scene?` — ${p.scriptedScenes?.find(x=>x.id===nextRank.scene)?.title||'a new scene'}`:''}`:trustScene?`Next: ${trustScene.title} — keep spending time together`:tempo?'Route complete':'Keep interacting to see where this relationship goes.';
   return {id,name:a.name,portrait:a.portrait||null,description:a.description||'',pronouns:a.pronouns||'',location:at===here||showLocations?place(at):null,availability,next,stage:rank?.name||(d?cap(d.phase||'available'):band(t)),progress:{hearts,max:heartMax,teaser},stats,recent,memories,promises,preferences};});

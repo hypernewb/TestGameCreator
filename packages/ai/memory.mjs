@@ -128,3 +128,14 @@ export function relevance(text,query,names=[]){
 export function stripPlaceholders(text,player='you',character='they'){
  return String(text).replace(/\{\{\s*user\s*\}\}/gi,player).replace(/\{\{\s*char\s*\}\}/gi,character);
 }
+
+// Creator corrections to NPC impressions and scene memories live in an overlay journal (state.memoryEdits): turns and
+// module state stay as recorded so replay/import still match. The last edit per record wins; retired rows drop out.
+export const impressionId=(turnId,i)=>`impression:${turnId}:${i}`,sceneMemoryId=i=>`scene-memory:${i}`;
+export function memoryEditIndex(state,kind){const m=new Map();for(const e of state.memoryEdits||[])if(e.kind===kind)m.set(e.recordId,e);return m;}
+/** A turn's ledger rows with corrections applied; each row keeps its stable id and original text. */
+export function effectiveImpressions(turn,edits){return (turn.ledger||[]).flatMap((m,i)=>{const id=impressionId(turn.id,i),e=edits.get(id);return e?.action==='retire'?[]:[{...m,id,...(e?.action==='correct'?{desc:e.text,original:m.desc,edited:true}:{})}];});}
+/** Scene memories with corrections applied; retired memories are omitted, history keeps the original wording. */
+export function effectiveSceneMemories(state){const edits=memoryEditIndex(state,'scene memory');return (state.modules['story.scenes']?.memories||[]).flatMap((m,i)=>{const id=sceneMemoryId(i),e=edits.get(id);return e?.action==='retire'?[]:[{...m,id,...(e?.action==='correct'?{text:e.text,original:m.text,edited:true}:{})}];});}
+/** Maps an old `story.memoryRecorded` line to its corrected text, or null when retired, so history can't re-assert it. */
+export function sceneMemoryLines(state){const edits=memoryEditIndex(state,'scene memory'),out=new Map();if(!edits.size)return out;(state.modules['story.scenes']?.memories||[]).forEach((m,i)=>{const e=edits.get(sceneMemoryId(i));if(e)out.set(`${m.tick}|${m.character}|${m.text}`,e.action==='retire'?null:e.text);});return out;}

@@ -1,6 +1,6 @@
 import {assert,execute} from '../core/engine.mjs';
 import {contextFor} from './context.mjs';
-import {playerStatements,capturedStatements} from './memory.mjs';
+import {playerStatements,capturedStatements,effectiveSceneMemories} from './memory.mjs';
 import {effectiveGeneratedFacts,factKnownTo} from '../modules/facts.mjs';
 import {scenePromptMessages} from '../../vendor/venus/scenePrompt.mjs';
 import {prepareSceneRequest} from './service.mjs';
@@ -26,7 +26,7 @@ export function inspectContext(s,p,actorId=p.playerId,query=''){
  const statements={included:kept.map(({source,kind,text})=>({source,kind,text,reason:'within memory caps'})),
   excludedByCap:every.filter(m=>!keptSources.has(m.source)).map(({source,kind,text})=>({source,kind,text,reason:'cap: keeps the last 40 lasting and 4 recent statements'})),
   excludedPrivate:capturedStatements(s,p,p.playerId).filter(m=>!heard.has(m.id)).map(({id,source,said})=>({id,source,text:said,reason:'private: actor did not hear this'}))};
- const sceneMems=s.modules['story.scenes']?.memories||[],visibleMems=sceneMems.filter(m=>canSee(m.knownBy));
+ const sceneMems=effectiveSceneMemories(s),visibleMems=sceneMems.filter(m=>canSee(m.knownBy));
  const sceneMemories={included:visibleMems.slice(-8).map(m=>row(`scene:${m.scene}`,m.text,'last 8 scene memories')),
   excludedByCap:visibleMems.slice(0,-8).map(m=>row(`scene:${m.scene}`,m.text,'cap: keeps the last 8 scene memories')),
   excludedPrivate:sceneMems.filter(m=>!canSee(m.knownBy)).map(m=>row(`scene:${m.scene}`,m.text,'private: actor does not know this'))};

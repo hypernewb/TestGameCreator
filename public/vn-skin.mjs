@@ -106,14 +106,14 @@ export function validateSkinExport(raw){
   return {ok:true,skin:{format:'vn-ui-studio',version:1,units,config,css:''},warnings,error:null};
  }catch(e){return {ok:false,skin:null,warnings:[],error:e instanceof Error?e.message:'Invalid skin export.'};}
 }
-export function resolveSkinLayout(skin,{width,height,device}={}){
+export function resolveSkinLayout(skin,{width,height,device,includeUnbound=false}={}){
  const invalid=error=>({ok:false,device:null,widgets:{},bindings:{},styles:null,warnings:[],error});
  const r=validateSkinExport(skin);if(!r.ok)return invalid(r.error);
  if(!Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0)return invalid('Invalid stage dimensions.');
  if(device===undefined)return invalid('device-required: Studio defines no viewport breakpoints.');
  if(!options.device.includes(device))return invalid('Unsupported device.');
  const s=r.skin.config,ws=device===s.device?s.widgets:s.layouts[device],widgets={},bindings={};
- for(const id of [...new Set([...coreIds,...Object.keys(s.liveBindings||{})])]){const w=ws[id];if(!w.visible||(id.startsWith('tool_')&&(!ws.utilities.visible||!s.utilities[id.slice(5)].visible)))continue;widgets[id]={rect:anchorBox(fitBox(w,width,height,0,0,s.appearance[id].fit),width,height,s.constraints[device][id]),z:w.z,appearance:clone(s.appearance[id]),...(s.buttons[id]?{button:clone(s.buttons[id])}:{}),...(id.startsWith('tool_')?{utility:clone(s.utilities[id.slice(5)])}:{})};}
+ for(const id of [...new Set([...(includeUnbound?Object.keys(defaults):coreIds),...Object.keys(s.liveBindings||{})])]){const w=ws[id];if(!w.visible||(id.startsWith('tool_')&&(!ws.utilities.visible||!s.utilities[id.slice(5)].visible)))continue;widgets[id]={rect:anchorBox(fitBox(w,width,height,0,0,s.appearance[id].fit),width,height,s.constraints[device][id]),z:w.z,appearance:clone(s.appearance[id]),...(s.buttons[id]?{button:clone(s.buttons[id])}:{}),...(id.startsWith('tool_')?{utility:clone(s.utilities[id.slice(5)])}:{})};}
  for(const [binding,id] of [['dialogue','dialogue'],['input','choices'],['clock/location','date'],['feedback','dialogue']])if(widgets[id])bindings[binding]=id;
  bindings.navigation=coreIds.filter(id=>widgets[id]&&(id.startsWith('tool_')||['map','calendar'].includes(id)));
  return {ok:true,device,widgets,bindings,styles:{theme:s.theme,layout:s.layout,interaction:s.interaction,choice:s.choice,aiBar:s.aiBar,navigation:s.navigation,accent:s.accent,textSize:s.textSize,opacity:s.opacity,radius:s.radius,reducedMotion:s.reducedMotion,sample:s.sample},warnings:r.warnings,error:null};

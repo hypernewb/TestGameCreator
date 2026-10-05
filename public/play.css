@@ -1,4 +1,6 @@
 /* Runtime additions on top of ui-showcase.css: title screen, long choice lists, up to three characters. */
+.stage[data-screen=wizard] .dialogue::before,.stage[data-screen=wizard] .dialogue::after{display:none}
+.stage[data-screen=wizard] .place-mark{flex:1;min-width:0}.stage[data-screen=wizard] .place-mark div{flex:1;min-width:0}.stage[data-screen=wizard] .time-mark{flex-shrink:0}
 .scene-nav,.scene-nav:hover{right:0;max-width:calc(4em + 112px)}
 .dialogue{right:max(7%,calc(4em + 124px));padding-right:calc(3em + 90px)}
 .dialogue p{max-height:50vh;overflow:auto}

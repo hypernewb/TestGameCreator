@@ -5,7 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {createWorld,execute} from '../packages/core/engine.mjs';
 import {registry} from '../packages/modules/index.mjs';
 import {Store} from '../packages/persistence/store.mjs';
-import {GameService} from '../packages/ai/service.mjs';
+import {GameService,callNames,namedIn} from '../packages/ai/service.mjs';
 import {scenePromptMessages} from '../vendor/venus/scenePrompt.mjs';
 
 // Venus rebase (2026-09-30): every typed turn is a model scene with the people present; systems feed the prompt instead of replacing it.
@@ -34,6 +34,21 @@ test('"them" with nobody here still asks who you mean',async()=>{
 test('"go find Brin" walks to where she is and opens the scene with her',async()=>{
  const provider=probe(['brin']),{store,service}=serve(load('neutral'),'find',provider);
  try{const r=await service.act('find',{id:'t',expectedRevision:0,input:'Go find Brin'});assert.equal(r.state.actors.player.location,'workshop');assert.deepEqual(r.state.scene.characters,['brin']);assert.equal(provider.contexts.length,1);}finally{store.close();}
+});
+
+// Creator casts use full names ("Selma Aydın"); players type the first name, lowercase, without accents.
+test('first-name lines reach a full-named character, here or elsewhere, even when the model returns no cast',async()=>{
+ for(const [here,input] of [[false,'Go talk to brin'],[false,'talk to brin'],[true,'Go talk to brin'],[true,'talk to brin'],[true,'brin, how are you?']]){
+  const p=load('neutral'),b=p.actors.find(a=>a.id==='brin');b.name='Brin Aydın';if(here)b.location=p.actors.find(a=>a.id===p.playerId).location;
+  const provider=probe([]),{store,service}=serve(p,'fn',provider);
+  try{const r=await service.act('fn',{id:'t',expectedRevision:0,input});assert.deepEqual(r.state.scene.characters,['brin'],input);assert.equal(r.state.actors.player.location,b.location,input);assert.deepEqual(provider.contexts[0].stagedCast,['brin'],input);}finally{store.close();}
+ }
+});
+
+test('callNames: full name always, first name only when no one else shares it; accents fold',()=>{
+ const p=load('neutral');p.actors.find(a=>a.id==='ada').name='Brin Ödegaard';p.actors.find(a=>a.id==='brin').name='Brin Aydın';
+ assert.deepEqual(callNames(p,p.actors.find(a=>a.id==='brin')),['brin aydin']);
+ assert.deepEqual(namedIn(p,'talk to brin aydin'),['brin']);assert.deepEqual(namedIn(p,'talk to brin'),[]);assert.deepEqual(namedIn(p,'Brin Ödegaard!'),['ada']);
 });
 
 test('a solo scene tells the model who else is around, as bystanders',()=>{

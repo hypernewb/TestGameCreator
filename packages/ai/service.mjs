@@ -43,6 +43,12 @@ export function rulesText(world,pack,turn){if(soloActivity(turn)){const first=e=
 // An authored activity named anywhere in the line runs, and the whole line becomes its scene text, so
 // "I greet Juno while I get to work" works the shift and the narration still covers the greeting.
 const phraseRe=p=>new RegExp('(?<![\\p{L}])'+p.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?![\\p{L}])','u');
+// Names as players type them: lowercase, no accents ("Aydın" is "aydin").
+const fold=s=>String(s||'').normalize('NFD').replace(/\p{M}/gu,'').replace(/ı/g,'i').toLowerCase().trim();
+// A player calls someone by full name or by first name alone, unless another character shares that first name: "talk to selma" names Selma Aydın.
+export const callNames=(pack,a)=>{const full=fold(a.name),first=full.split(/\s+/)[0],shared=pack.actors.some(b=>b.id!==a.id&&b.id!==pack.playerId&&fold(b.name).split(/\s+/)[0]===first);return [...new Set([full,...first&&!shared?[first]:[]])];};
+export const namedIn=(pack,input)=>{const w=' '+fold(input).split(/[^\p{L}\p{N}_-]+/u).join(' ')+' ';return pack.actors.filter(a=>a.id!==pack.playerId&&callNames(pack,a).some(n=>w.includes(' '+n+' '))).map(a=>a.id);};
+const nameAlt=(pack,id)=>'(?:'+callNames(pack,pack.actors.find(a=>a.id===id)).map(n=>n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')';
 // "Ask Brin what he does on rest days" is speech, not a rest action: a line led by a speech verb only acts when it
 // adds an explicit "…and go/take …" clause. Splitting a conversation into new scenes loses its transcript.
 const isSpeech=input=>/^\s*(?:i\s+)?(?:ask|tell|say|reply|answer|whisper|shout|explain|admit|confess|promise|thank|remind|warn|compliment|apologi[sz]e|talk to|chat with)\b/i.test(input)&&!/\b(?:and|then)\s+(?:go|leave|exit|head|walk|travel|return|move|run|follow|take|grab|pick up|give|drop|sleep|rest|visit|meet)\b/i.test(input);
@@ -94,7 +100,7 @@ function parseMixedActions(input,world,pack,available,proposal){
       if(hit.length===1)components.push({type:hit[0].type,args:hit[0].args});
     }else if(pack.modules['items.inventory']&&named&&/\b(?:give|hand)\b/.test(say)){
       const here=pack.actors.filter(a=>a.id!==pack.playerId&&world.actors[a.id]?.location===world.actors[pack.playerId].location).map(a=>a.id);
-      const target=pack.actors.find(a=>cast.includes(a.id)&&say.includes(a.name.toLowerCase()))?.id||(cast.length===1?cast[0]:null)||(here.length===1?here[0]:null);
+      const target=pack.actors.find(a=>cast.includes(a.id)&&namedIn(pack,say).includes(a.id))?.id||(cast.length===1?cast[0]:null)||(here.length===1?here[0]:null);
       if(target)components.push({type:'items.give',args:{item:named.id,target}});
     }else if(pack.modules['social.conversation']&&invite)components.push({type:'social.invite',args:invite});
     else if(/\b(?:go|leave|exit|travel|head to|move to|walk to|run to)\b/.test(say)){
@@ -200,7 +206,7 @@ export class GameService {
       // Whole words only, and never on a speech line: "Ask what she is reading" is not the reading activity, "missing" is not "sing".
       const soloRequested=!speech&&/\b(read|study|sketch|draw|write|paint|practice|exercise|work|cook|clean|tidy|organize|organise|watch|observe|relax|shower|bathe|eat|drink)\b/i.test(done);
       const actionWords=!speech&&(soloRequested||/\b(go|leave|exit|travel|sleep|rest|visit|head to|move to|take|grab|pick up|give|drop|place|equip|unequip|search|inspect|use)\b/i.test(done)||/^\s*(?:go\s+)?meet\b/i.test(done));
-      const mentions=pack.actors.filter(a=>a.id!==pack.playerId&&(' '+request.input.toLowerCase().split(/[^\p{L}\p{N}_-]+/u).join(' ')+' ').includes(' '+a.name.toLowerCase()+' ')).map(a=>a.id);
+      const mentions=namedIn(pack,request.input);
       const currentLocation=world.actors[pack.playerId].location;
       const liveCast=(world.scene?.location===currentLocation?world.scene.characters:[]).filter(id=>world.actors[id]?.location===currentLocation);
       const activityRequested=!speech&&(pack.activities||[]).some(a=>[a.name,...a.phrases||[]].some(p=>p&&phraseRe(p).test(done.toLowerCase()))&&!strayActivity(world,pack,a,request.input));
@@ -211,9 +217,9 @@ export class GameService {
       const pronoun=!mentions.length&&!lastNamed.some(id=>world.actors[id]?.location!==currentLocation)&&/\b(her|him|them|they|she|he)\b/i.test(request.input),pronounCast=!pronoun?[]:liveCast.length?liveCast:here.length===1||!said?here:[];
       // Talking *about* someone elsewhere ("I'm nervous about the meeting with Ada") discusses them; it does not summon them.
       // The person named right after the verb ("Ask Brin …") is still addressed even when absent, so that fails honestly.
-      const addressee=speech?mentions.find(id=>new RegExp(`^\\s*(?:i\\s+)?\\S+(?:\\s+(?:to|with))?\\s+${pack.actors.find(a=>a.id===id).name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`,'i').test(request.input)):null;
+      const addressee=speech?mentions.find(id=>new RegExp(`^\\s*(?:i\\s+)?\\S+(?:\\s+(?:to|with))?\\s+${nameAlt(pack,id)}\\b`,'i').test(fold(request.input))):null;
       // Mid-conversation an absent name is only summoned when called out ("Brin!", "Hey Brin, …"); "I was with Brin" is news.
-      const vocative=id=>{const n=pack.actors.find(a=>a.id===id).name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');return new RegExp(`^\\s*(?:(?:hey|hi|hello|yo|oi)[,!]?\\s+${n}\\b|${n}\\s*(?:[,!?:]|$))`,'i').test(request.input);};
+      const vocative=id=>{const n=nameAlt(pack,id);return new RegExp(`^\\s*(?:(?:hey|hi|hello|yo|oi)[,!]?\\s+${n}\\b|${n}\\s*(?:[,!?:]|$))`,'i').test(fold(request.input));};
       const addressed=speech?mentions.filter(id=>id===addressee||world.actors[id]?.location===currentLocation):liveCast.length&&!actionWords?mentions.filter(id=>world.actors[id]?.location===currentLocation||vocative(id)):mentions;
       const previous=Object.values(world.turns).at(-1),previousTarget=previous?.command.type==='social.speak'?previous.command.args.target:null;
       if(!proposal&&!activityRequested&&!actionWords&&!previousTarget&&!mentions.length&&/\b(her|him|them)\b/i.test(request.input)&&liveCast.length!==1&&!(!liveCast.length&&pronounCast.length)&&!(liveCast.length>1&&/\b(them|they)\b/i.test(request.input)&&!/\b(her|him)\b/i.test(request.input)))return await this.refuse(id,request,'target','',liveCast.length||here.length?'Who do you mean? '+(liveCast.length?liveCast:here).map(id=>world.actors[id].name).join(' or '):'Who do you mean? Nobody else is here.');
@@ -228,9 +234,12 @@ export class GameService {
         const movementRequested=!speech&&!futurePlan(request.input)&&/\b(go|leave|exit|travel|meet|visit|head|move|walk|run|return|follow|sleep|rest|find|look for|track down|catch up with|join)\b/i.test(done),namedLocation=movementRequested?resolveSceneLocation(pack,request.input):null;
         if(namedLocation)verdict.location=namedLocation;
         // "Go find Abigail" names a person, not a place: go where she is now instead of letting the engine turn you away.
-        const sought=movementRequested&&!namedLocation&&mentions.find(id=>world.actors[id]?.location!==currentLocation&&!(verdict.mentionedOnly||[]).includes(id));if(sought){verdict.location=world.actors[sought].location;verdict.characters=[...new Set([sought,...verdict.characters.filter(id=>world.actors[id]?.location===verdict.location)])];if(!verdict.activityId)verdict.activity='meet';}
+        // "Talk to Selma" when she is elsewhere seeks her out too.
+        const sought=(movementRequested||!futurePlan(request.input)&&/^\s*(?:i\s+)?(?:go\s+)?(?:talk|speak|chat)\s+(?:to|with)\b/i.test(done))&&!namedLocation&&mentions.find(id=>world.actors[id]?.location!==currentLocation&&!(verdict.mentionedOnly||[]).includes(id));if(sought){verdict.location=world.actors[sought].location;verdict.characters=[...new Set([sought,...verdict.characters.filter(id=>world.actors[id]?.location===verdict.location)])];if(!verdict.activityId)verdict.activity='meet';}
+        // "Go talk to Brin" while Brin is already here: no trip, but she is who the scene is with.
+        else if(movementRequested&&!namedLocation&&!/\b(leave|exit|away from)\b/i.test(request.input)&&mentions.some(id=>world.actors[id]?.location===currentLocation&&!(verdict.mentionedOnly||[]).includes(id))){verdict.location=currentLocation;verdict.characters=[...new Set([...mentions.filter(id=>world.actors[id]?.location===currentLocation&&!(verdict.mentionedOnly||[]).includes(id)),...verdict.characters.filter(id=>world.actors[id]?.location===currentLocation)])];if(!verdict.activityId&&!['talk','meet','continue'].includes(verdict.activity))verdict.activity='talk';}
         else if(pronounCast.length&&!namedLocation)verdict.location=currentLocation;
-        if(!movementRequested&&!activityRequested&&!soloRequested){verdict.location=currentLocation;verdict.characters=addressed.length?addressed:liveCast.length?liveCast:pronounCast;verdict.activity=verdict.characters.length?'talk':'explore';verdict.activityId='';}
+        if(!sought&&!movementRequested&&!activityRequested&&!soloRequested){verdict.location=currentLocation;verdict.characters=addressed.length?addressed:liveCast.length?liveCast:pronounCast;verdict.activity=verdict.characters.length?'talk':'explore';verdict.activityId='';}
         const rule=(pack.activities||[]).find(a=>a.id===verdict.activityId),location=rule?.location||verdict.location||(verdict.activity==='rest'?pack.daypart?.introLocation||pack.startOptions?.[0]?.playerLocation||null:verdict.activity==='meet'&&verdict.characters.length?world.actors[verdict.characters[0]].location:null)||(mentions.some(id=>world.actors[id]?.location===currentLocation)?currentLocation:null);
         // Mid-conversation, movement that names no place ("I'll get out of your hair", "head out") is the scene's goodbye: the model plays it, nobody is asked where to go.
         if(movementRequested&&!location&&liveCast.length&&!rule){proposal={type:'core.scene',args:{text:request.input.trim(),location:currentLocation,characters:liveCast,activity:liveCast.length===world.scene.characters.length?'continue':'talk'}};}

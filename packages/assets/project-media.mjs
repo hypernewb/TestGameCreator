@@ -3,7 +3,7 @@ import {assert} from '../core/engine.mjs';
 import {uiMediaReferences} from '../../public/ui-art.mjs';
 
 export const projectMediaPath=path=>typeof path==='string'&&/^scenario-media\/[a-f0-9-]{36}\.(png|jpg|webp)$/.test(path);
-export function mediaReferences(pack){return [...(pack?.locations||[]).filter(l=>l.background).map((l,i)=>({ref:`locations.${l.id||i}.background`,path:l.background})),...(pack?.actors||[]).flatMap((a,i)=>[...(a.portrait?[{ref:`actors.${a.id||i}.portrait`,path:a.portrait}]:[]),...(a.poses||[]).map((p,j)=>({ref:`actors.${a.id||i}.poses.${p.id||j}.image`,path:p.image}))]),...uiMediaReferences(pack)];}
+export function mediaReferences(pack){return [...(pack?.locations||[]).filter(l=>l.background).map((l,i)=>({ref:`locations.${l.id||i}.background`,path:l.background})),...(pack?.actors||[]).flatMap((a,i)=>[...(a.portrait?[{ref:`actors.${a.id||i}.portrait`,path:a.portrait}]:[]),...(a.idleAnimation?[{ref:`actors.${a.id||i}.idleAnimation`,path:a.idleAnimation}]:[]),...(a.idleStill?[{ref:`actors.${a.id||i}.idleStill`,path:a.idleStill}]:[]),...(a.poses||[]).map((p,j)=>({ref:`actors.${a.id||i}.poses.${p.id||j}.image`,path:p.image}))]),...uiMediaReferences(pack)];}
 const dimensions=(w,h)=>assert(w>0&&h>0&&w<=8192&&h<=8192&&w*h<=40000000,'Image dimensions exceed the existing preparation limits');
 function pngStructure(bytes){
  let pos=8,header=null,ended=false,data=[],palette=false,afterData=false;
@@ -45,7 +45,7 @@ export function imageInfo(bytes,type){
 }
 export function validateImage(data,kind){
  assert(typeof data==='string'&&data.length<=4900000,'Image is too large (maximum 3.5 MB)');const match=data.match(/^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)$/);assert(match,'Use a PNG, JPEG, or WebP image');const type=match[1],bytes=Buffer.from(match[2],'base64');assert(bytes.length>0&&bytes.length<=3500000,'Image is too large (maximum 3.5 MB)');const signature=type==='png'?bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])):type==='jpeg'?bytes[0]===255&&bytes[1]===216&&bytes.at(-2)===255&&bytes.at(-1)===217:bytes.toString('ascii',0,4)==='RIFF'&&bytes.toString('ascii',8,12)==='WEBP';assert(signature,'Image content does not match its file type');({png:pngStructure,jpeg:jpegStructure,webp:webpStructure})[type](bytes);const info=imageInfo(bytes,type);
- if(kind==='background')assert(type==='jpeg'&&info?.width===1920&&info?.height===1080,'Backgrounds must be prepared as 1920 × 1080 landscape images (16:9).');else if(kind==='character')assert(type==='png'&&info?.width===1024&&info?.height===1536&&info.alpha,'Character art must be a transparent PNG on a 1024 × 1536 canvas.');else assert(!kind,'Unknown image type');return {bytes,type,info};
+ if(kind==='background')assert(type==='jpeg'&&info?.width===1920&&info?.height===1080,'Backgrounds must be prepared as 1920 × 1080 landscape images (16:9).');else if(kind==='character')assert(type==='png'&&info?.width===1024&&info?.height===1536&&info.alpha,'Character art must be a transparent PNG on a 1024 × 1536 canvas.');else if(kind==='animation')assert(type==='webp','Idle animations must be WebP images.');else assert(!kind,'Unknown image type');return {bytes,type,info};
 }
 export function validateProjectMedia(pack,{read,media}={}){
  const refs=mediaReferences(pack).filter(r=>typeof r.path==='string'&&r.path.startsWith('scenario-media/')),checked=new Map();assert(media===undefined||media&&typeof media==='object'&&!Array.isArray(media),'Project media must be an object');

@@ -25,3 +25,8 @@ test('idle life CSS exists, is foot-anchored, livelier while speaking, and honor
  assert.match(css,/@keyframes vn-breathe\{0%,100%\{transform:translateY\(0\) scaleY\(1\)\}50%\{transform:translateY\(-\.4%\) scaleY\(1\.01\)\}\}/);
  assert.match(css,/@media\(prefers-reduced-motion:reduce\)\{body\.visual-novel \.stage-character img,body\.visual-novel \.stage-character\.vn-enter\{animation:none\}\}/);
 });
+
+test('animated WebP idle animation is chosen per actor, suppressed under reduced motion, with static fallbacks',()=>{
+ assert.match(vn,/const idle=prefs\.reducedMotion\?actor\.idleStill\|\|actor\.portrait:actor\.idleAnimation\|\|actor\.idleStill\|\|actor\.portrait/,'reduced motion shows the still, otherwise the animated WebP plays');
+ assert.match(vn,/img\.onerror=\(\)=>\{img\.onerror=null;const next=chain\[chain\.indexOf\(img\.getAttribute\('src'\)\)\+1\];if\(next\)img\.src=next;\}/,'a broken animation falls back statically instead of leaving an empty figure');
+});

@@ -15,7 +15,7 @@ export function assemble(spec){
  const firsts=parts.flatMap(x=>x.firsts);
  const cast=[{id:'player',name:'You',pronouns:'you',location:w.locations?.[0]?.id,...spec.player,identityTags:['adult']},...parts.map(x=>x.actor),...(spec.friends||[]).map(f=>({...f,identityTags:['adult']}))];
  for(const a of cast)assert(Number.isInteger(a.age)&&a.age>=18,`${a.id}: every character is an adult with an age`);
- const modules=Object.fromEntries(MODULES.filter(m=>m!=='character.sobriety'||w.sobriety).filter(m=>m!=='social.phone'||w.phoneContacts?.length).map(m=>[m,VERSIONS[m]||'0.1.0']).concat(firsts.length?[['social.firsts','0.1.0']]:[]));
+ const modules=spec.modules||Object.fromEntries(MODULES.filter(m=>m!=='character.sobriety'||w.sobriety).filter(m=>m!=='social.phone'||w.phoneContacts?.length).map(m=>[m,VERSIONS[m]||'0.1.0']).concat(firsts.length?[['social.firsts','0.1.0']]:[]));
  const pack={schemaVersion:1,id:spec.id,version:spec.version||'0.1.0',title:text(spec.title,'title'),...(spec.subtitle?{subtitle:spec.subtitle}:{}),playerId:'player',
   calendar:w.calendar||{},romanceStats:w.romanceStats||{dailyGain:6},modules,gameProject:{presentation:'visual-novel',conversationStyle:'continuous',sceneBudget:4,...spec.project,ai:{...AI_GUIDANCE,...spec.project?.ai},premise:text(spec.project?.premise,'project.premise'),setting:text(spec.project?.setting,'project.setting')},run,
   locations:w.locations||[],actors:cast,initialRelationships:[...parts.map(x=>x.relationship),...(w.initialRelationships||[])],

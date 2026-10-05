@@ -54,13 +54,13 @@ export function structureFromProposal(p){
  const item=n=>!n?undefined:(itemBy.get(key(n))||addItem({name:n},`"${n}" was not in the shop list: added at ${shop.name}`)).id;
  const hs=list(p.heroines).slice(0,6);assert(hs.length,'needs at least one love interest');
  const heroines=hs.map(h=>{const id=idFor(h.name,taken);assert(Number.isInteger(h.age)&&h.age>=18,`${h.name||id}: every character is an adult with an integer age of 18 or more`);
-  assert(TEMPERAMENTS[h.temperament],`${h.name}: temperament must be one of ${Object.keys(TEMPERAMENTS)}`);assert(PACES[h.pace],`${h.name}: pace must be one of ${Object.keys(PACES)}`);assert(String(h.topic||'').trim(),`${h.name}: needs a topic`);
+  assert(TEMPERAMENTS[h.temperament],`${h.name}: temperament must be one of ${Object.keys(TEMPERAMENTS)}`);assert(PACES[h.pace],`${h.name}: pace must be one of ${Object.keys(PACES)}`);assert(String(h.topic||'').trim(),`${h.name||'A love interest'}: needs a topic (or remove this blank love interest)`);
   const hh=place(h.home,home),hang=list(h.hangouts).map(n=>place(n,places[1]||home)),stops=[hh,hang[0]||places[1]||hh,hang[1]||hang[0]||hh];
   byName.set(key(h.name),{heroine:id});
   return {id,temperament:h.temperament,pace:h.pace,topic:String(h.topic).trim(),...(h.looks?{looks:h.looks}:{}),...(h.quirk?{quirk:h.quirk}:{}),
    gifts:{...(h.loved?{loved:item(h.loved)}:{}),...(h.liked?{liked:[item(h.liked)]}:{}),...(h.disliked?{disliked:item(h.disliked)}:{})},...(h.buy?{buy:item(h.buy)}:{}),
    wants:list(h.wants).filter(w=>STATS.includes(w.stat)).slice(0,2).map(w=>({id:w.stat,stat:w.stat,min:WANT_MIN[w.level]||WANT_MIN.some})),activities:[],
-   actor:{name:String(h.name).trim(),age:h.age,pronouns:'she/her',location:hh.id,likes:list(h.likes).slice(0,4),dislikes:list(h.dislikes).slice(0,3)},_stops:stops.map(x=>x.id)};});
+   actor:{name:String(h.name).trim(),...(h.portrait?{portrait:h.portrait}:{}),age:h.age,pronouns:'she/her',location:hh.id,likes:list(h.likes).slice(0,4),dislikes:list(h.dislikes).slice(0,3)},_stops:stops.map(x=>x.id)};});
  const hero=n=>{const x=byName.get(key(n));return x?.heroine;};
  const activities=list(p.activities).slice(0,14).map(a=>{const at=place(a.at,home),w=hero(a.with),money=a.gives==='money',stat=STATS.includes(a.gives)?a.gives:money?null:'charm';
   const act={id:idFor(a.name,taken),name:String(a.name).trim(),description:a.about||'',location:at.id,duration:4,phrases:[String(a.name).trim().toLowerCase()],

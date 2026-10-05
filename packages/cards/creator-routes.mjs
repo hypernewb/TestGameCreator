@@ -14,7 +14,7 @@ const obj=(x,m)=>{assert(x&&typeof x==='object'&&!Array.isArray(x),m);return x;}
 // cards: every text path per card (from the picks alone), so the wizard can lay out scene cards whether or not they are drafted yet.
 const report=spec=>{const {pack,missing}=assemble(spec);return {missing,batches:batches(missing).map(b=>({id:b.id,count:b.paths.length})),cards:batches(assemble(structureOnly(spec)).missing),scenes:pack.scriptedScenes.length};};
 
-export function creatorRoutes({packs,store,registry,publishedDir,worldDir,drafter}){
+export function creatorRoutes({packs,store,registry,publishedDir,worldDir,drafter,validateMedia=()=>{},catalog={}}){
  mkdirSync(worldDir,{recursive:true});
  const ask=()=>{const c=drafter();assert(c,'Set OPENROUTER_API_KEY in .env to use the world drafter');return c;};
  const worldFile=id=>{assert(typeof id==='string'&&/^[a-z0-9-]{1,80}$/.test(id),'Invalid world id');return resolve(worldDir,id+'.json');};
@@ -26,6 +26,7 @@ export function creatorRoutes({packs,store,registry,publishedDir,worldDir,drafte
    const n=Math.max(1,Math.min(6,Number(body.heroines)||4)),r=await proposeWorld(premise,{complete:ask(),heroines:n,style:body.style,card});return {...r,...report(r.spec)};}
   // The owner edited the proposal: rebuild the structure from it (ids, exits, prices and yields are code's again).
   if(path==='/api/creator/structure'&&method==='POST'){const r=structureFromProposal(obj(body.proposal,'Proposal required'));return {...r,...report(r.spec)};}
+  if(path==='/api/creator/modules'&&method==='POST'){const spec=structuredClone(obj(body.spec,'World spec required')),modules=structuredClone(assemble(spec).pack.modules);if(body.id!==undefined){assert(catalog[body.id],'Unknown module');assert(typeof body.enabled==='boolean','Module enabled must be boolean');const enable=(id,seen=new Set())=>{if(seen.has(id))return;seen.add(id);assert(catalog[id],'Unknown dependency');for(const dep of catalog[id].requires||[])enable(dep,seen);modules[id]=catalog[id].version;},disable=(id,seen=new Set())=>{if(seen.has(id))return;seen.add(id);for(const [key,meta] of Object.entries(catalog))if(modules[key]&&(meta.requires||[]).includes(id))disable(key,seen);delete modules[id];};body.enabled?enable(body.id):disable(body.id);spec.modules=modules;validatePack(assemble(spec).pack,registry);}return {spec,modules};}
   if(path==='/api/creator/check'&&method==='POST')return report(obj(body.spec,'World spec required'));
   // batch: one card id (world, <id>:profile or <id>:<rung>), or batches: up to 6 drafted in parallel. redo=true blanks those cards first, so Redraft rewrites them from the picks.
   // A card whose call fails or returns junk just stays missing (errors lists why); the wizard retries what is left.
@@ -36,12 +37,12 @@ export function creatorRoutes({packs,store,registry,publishedDir,worldDir,drafte
    todo.forEach((b,i)=>{const x=acceptDraft(spec,b,raws[i]);spec=x.spec;filled.push(...x.filled);});return {spec,filled,errors,...report(spec)};}
   // Save: a finished world becomes a published pack + a fresh campaign; the spec and proposal are kept so the wizard can reopen it.
   if(path==='/api/creator/save'&&method==='POST'){const spec=obj(body.spec,'World spec required'),{pack,missing}=assemble(spec);assert(!missing.length,`${missing.length} text slots are still blank`);
-   pack.id=`${pack.id||'world'}-${randomUUID().slice(0,8)}`;validatePack(pack,registry);assert(!packs[pack.id],'Duplicate pack ID');
+   pack.id=`${pack.id||'world'}-${randomUUID().slice(0,8)}`;validateMedia(pack);validatePack(pack,registry);assert(!packs[pack.id],'Duplicate pack ID');
    writeFileSync(resolve(publishedDir,randomUUID()+'.json'),JSON.stringify(pack,null,1));packs[pack.id]=pack;
    writeFileSync(worldFile(pack.id),JSON.stringify({id:pack.id,title:pack.title,saved:new Date().toISOString(),spec,proposal:body.proposal||null},null,1));
    const s=createWorld(pack,registry,randomUUID(),randomInt(2**32-1));store.insert(s);return {packId:pack.id,campaignId:s.campaignId,title:pack.title};}
   // The enum picks the proposal form offers (code owns the numbers behind them).
-  if(path==='/api/creator/options'&&method==='GET')return {temperaments:Object.fromEntries(Object.entries(TEMPERAMENTS).map(([k,t])=>[k,t.about])),paces:Object.keys(PACES),placeKinds:PLACE_KINDS,prices:Object.keys(PRICES),stats:STATS,levels:Object.keys(WANT_MIN),tones:TONE_CEILINGS,drafter:!!drafter()};
+  if(path==='/api/creator/options'&&method==='GET')return {temperaments:Object.fromEntries(Object.entries(TEMPERAMENTS).map(([k,t])=>[k,t.about])),paces:Object.keys(PACES),placeKinds:PLACE_KINDS,prices:Object.keys(PRICES),stats:STATS,levels:Object.keys(WANT_MIN),tones:TONE_CEILINGS,modules:catalog,drafter:!!drafter()};
   if(path==='/api/creator/worlds'&&method==='GET')return {worlds:readdirSync(worldDir).filter(f=>f.endsWith('.json')).map(f=>{const w=JSON.parse(readFileSync(resolve(worldDir,f),'utf8'));return {id:w.id,title:w.title,saved:w.saved};}).sort((a,b)=>b.saved.localeCompare(a.saved))};
   if(path==='/api/creator/world'&&method==='GET'){const f=worldFile(body.id);assert(existsSync(f),'World not found');return JSON.parse(readFileSync(f,'utf8'));}
  };

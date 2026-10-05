@@ -58,3 +58,8 @@ test('M5 creator mapping: every drafted activity gets the widget of the stat it 
  for(const h of ['mara','zoe'])for(const r of ['skip','ok','good','great'])assert.ok(missing.includes(`heroines.${h}.actor.reactions.${r}`),`${h} ${r}`);
  assert.equal(gameOf(byName('Bar shift')),'rhythm');const q=proposal();q.activities=q.activities.filter(a=>a.gives!=='money');assert.equal(gameOf(assemble(structureFromProposal(q).spec).pack.activities.find(a=>a.name==='Odd job')),'rhythm');
 });
+
+test('a blank love interest names itself in the error and says how to fix it',()=>{
+ const p=proposal();p.heroines.push({name:'',age:21,temperament:'torn',pace:'steady',topic:'',wants:[]});
+ assert.throws(()=>structureFromProposal(p),/A love interest: needs a topic \(or remove this blank love interest\)/);
+});

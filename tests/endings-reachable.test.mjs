@@ -24,7 +24,7 @@ async function run(mode,character='jana',together=false){
  provider.generateScene=async context=>{calls++;return {lines:[{speaker:context.speakers?.includes(speaker)?speaker:'',text:'Thanks for asking. Let me tell you.'}],acts:tags};};store.insert(createWorld(pack,registry,id));const service=new GameService(store,{[pack.id]:pack},registry,provider);let s=store.load(id);
  const act=async(command,acts=[])=>{tags=acts;const r=await service.act(id,{id:String(++n),expectedRevision:s.revision,command});s=r.state;assert.equal(r.turn?.fallback,false,r.turn?.failureReason);};
  try{  while(!s.modules['story.endings'].selected&&n<600){
-   const offered=actions(s,pack,registry).filter(x=>x.enabled),day=Math.floor(s.tick/12),who=mode==='spread'?Object.keys(routes)[day%4]:character;
+   const offered=together&&s.scene?actions(s,pack,registry,['social.defineRelationship','social.askDate']).filter(x=>x.enabled):[],day=Math.floor(s.tick/12),who=mode==='spread'?Object.keys(routes)[day%4]:character;
    const goal=pack.endings.find(x=>x.character===character&&(together?x.priority===10:x.priority===20));
    if(mode==='route'&&s.modules['story.endings'].unlocked.includes(goal.id)){if(s.scene)await act({type:'core.endScene',args:{}});if(!s.modules['story.endings'].selected)await act({type:'story.chooseEnding',args:{ending:goal.id}});break;}
    if(s.scene){

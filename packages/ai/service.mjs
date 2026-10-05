@@ -169,7 +169,7 @@ export class GameService {
     const world=this.store.load(id),pack=this.packs[world.packId];assert(pack,'Pack unavailable');
     if(world.turns[request.id])return await this.finish(id,request.id,signal);
     assert(request.expectedRevision===world.revision,'Stale revision; refresh and try again');
-    const available=actions(world,pack,this.registry);let proposal=request.command,invite,activity,gear;
+    const available=actions(world,pack,this.registry,request.input===undefined&&request.command?[request.command.type]:undefined);let proposal=request.command,invite,activity,gear;
     if(request.input!==undefined){
       assert(typeof request.input==='string'&&request.input.trim().length>0&&request.input.length<=2000,'Input must be 1–2000 characters');
       const exact=request.input.trim().toLowerCase()==='look around'?{type:'core.inspect',args:{}}:available.find(a=>a.enabled&&a.label.toLowerCase()===request.input.trim().toLowerCase());

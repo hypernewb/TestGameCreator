@@ -11,7 +11,7 @@ export function changeStat(tx,character,stat,delta,reason){
  tx.set(['modules','character.stats','values',statKey(character,stat)],value);
  const visibility=definition.visibility==='public'?'public':[character,...(definition.visibility==='player'?[tx.pack.playerId]:[])],before=rankOf(definition,old),after=rankOf(definition,value),rankUp=after&&after!==before&&value>old;
  const who=character===tx.pack.playerId?'Your':`${tx.state.actors[character].name}'s`;
- tx.emit('character.statChanged',{character,stat,value,delta:value-old,...(after?{rank:after.name}:{}),...(rankUp?{rankUp:true}:{}),...(reason?{reason}:{}),text:rankUp?`${who} ${definition.name} rose to ${after.name}.`:after?`${definition.name} ${value>=old?'+':''}${value-old} · ${after.name}`:`${who} ${definition.name} is now ${value}.`},visibility);
+ tx.emit('character.statChanged',{character,stat,value,delta:value-old,...(after?{rank:after.name}:{}),...(rankUp?{rankUp:true}:{}),...(reason?{reason}:{}),text:rankUp?`${who} ${definition.name} grows: ${after.name} now.`:after?`${definition.name} ${value>=old?'+':''}${value-old} · ${after.name}`:`${who} ${definition.name} is now ${value}.`},visibility);
 }
 // Derived stats recompute from their source stats: value = Σ weight·source + flat, clamped to the stat's range.
 // They never change directly, so a stat change replays into its derivations deterministically.

@@ -50,7 +50,7 @@ test('brief exchanges have matching length instructions in both writers and keep
   const c=ctx(input,{sceneWriter}),p=exchangePolicy(c);assert.equal(p.quick,true);assert.equal(p.range,'2–3');c.direction=beatDirection(c,pack,'s1');
   const [sys,user]=scenePromptMessages(c,pack);assert.match(sys.content,/2–3 visual-novel entries/);assert.match(user.content,/2–3 visual-novel entries/);
   assert.doesNotMatch(sys.content,/5–7 visual-novel entries|6–9 visual-novel entries|at least four entries NPC dialogue|never a bare one-liner|End with a specific question or offer|INITIATIVE:/);
-  assert.match(sys.content,/one "You" narrator beat/);assert.match(sys.content,/Never add player intent, promises, consent, gestures or movement/);assert.match(sys.content,/This JSON contract takes priority/);
+  assert.match(sys.content,/one short narrator beat/);assert.match(sys.content,/Never add player intent, promises, consent, gestures or movement/);assert.match(sys.content,/This JSON contract takes priority/);
   assert.match(sys.content,/never announce plans to leave.*never walk out mid-beat/);
  }
 });

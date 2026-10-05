@@ -99,7 +99,7 @@ test('conversation cannot accept a classifier-invented destination or substitute
 });
 
 test('failed conversation attempt cannot generate a fictional arrival; unresolved pronoun does not commit',async()=>{
- const p=pack();let calls=0;const provider={name:'probe',async interpretScene(){return {characters:['brin'],location:'workshop',activity:'talk'};},async generateScene(c){calls++;assert.deepEqual(c.stagedCast,[]);assert.match(c.direction,/Brin is not at Hub[^]*nobody moves/);return {lines:[{speaker:'',text:'The hub is quiet.'}]};}};
+ const p=pack();let calls=0;const provider={name:'probe',async interpretScene(){return {characters:['brin'],location:'workshop',activity:'talk'};},async generateScene(c){calls++;assert.deepEqual(c.stagedCast,[]);assert.match(c.direction,/Brin isn't at Hub[^]*nobody moves/);return {lines:[{speaker:'',text:'The hub is quiet.'}]};}};
  const store=new Store();store.insert(createWorld(p,registry,'absent'));const service=new GameService(store,{[p.id]:p},registry,provider);
  try{let r=await service.act('absent',{id:'talk',expectedRevision:0,input:'Ask Brin how she is doing'});assert.equal(r.state.actors.player.location,'hub');assert.equal(r.state.scene,null);assert.equal(calls,1);r=await service.act('absent',{id:'pronoun',expectedRevision:1,input:'Flirt with her'});assert.ok(r.clarification);assert.equal(r.state.revision,1);assert.equal(calls,1);}finally{store.close();}
 });
@@ -109,7 +109,7 @@ test('naming an absent character redirects for free instead of taxing a failed m
  const r=execute(w,{id:'seek',type:'core.scene',args:{text:'Look for Brin here.',location:null,characters:['brin'],activity:'meet'},actorId:p.playerId,expectedRevision:w.revision},p,registry);
  const redirect=r.turn.events.find(e=>e.type==='world.meetingRedirect');
  assert.ok(redirect,'expected a meetingRedirect event');
- assert.match(redirect.payload.text,/Brin is not at Hub/);assert.match(redirect.payload.text,/at Workshop right now/);
+ assert.match(redirect.payload.text,/Brin isn't at Hub/);assert.match(redirect.payload.text,/at Workshop right now/);
  assert.equal(r.state.actors.player.location,w.actors.player.location);
  assert.equal(r.state.tick,w.tick);
  assert.equal(r.state.scene,null);

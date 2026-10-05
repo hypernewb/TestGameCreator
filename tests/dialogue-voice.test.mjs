@@ -35,11 +35,11 @@ test('unmarked stage directions filed under a speaker become narration',()=>{
 });
 
 test('role-play splitting leaves signs, plain narration and unattributable speech alone',()=>{
- assert.deepEqual(guard('The sign on the door reads "Closed". Rowan shrugs.',['rowan','mina']),[{speaker:'',text:'The sign on the door reads "Closed". Rowan shrugs.'}]);
+ assert.deepEqual(guard('The sign on the door reads "Closed". Rowan shrugs.',['rowan','mina']),[{speaker:'',text:'The sign on the door reads “Closed”. Rowan shrugs.'}]);
  assert.deepEqual(guard('You arrive at the rooftop.'),[{speaker:'',text:'You arrive at the rooftop.'}]);
- assert.deepEqual(guard('"Hey," he says.',['rowan','mina']),[{speaker:'',text:'"Hey," he says.'}]);
+ assert.deepEqual(guard('"Hey," he says.',['rowan','mina']),[{speaker:'',text:'“Hey,” he says.'}]);
  // An off-slate NPC named in the action is not silently turned into the only present speaker.
- assert.deepEqual(guard('*Mina waves from the street.* "Come down here!"'),[{speaker:'',text:'Mina waves from the street. "Come down here!"'}]);
+ assert.deepEqual(guard('*Mina waves from the street.* "Come down here!"'),[{speaker:'',text:'Mina waves from the street. “Come down here!”'}]);
 });
 
 test('the scene prompt carries a character rule, voiceBlock and example lines, and a speaker-ID example',()=>{

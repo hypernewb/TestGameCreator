@@ -9,7 +9,7 @@ export function changeMoney(tx,delta){
  const money=tx.state.modules['world.economy'];assert(money,'Economy is disabled');
  const next=money.balance+delta,minimum=-(tx.pack.economySettings?.debtLimit||0);assert(next>=minimum&&next<=100000000,'Insufficient funds or debt limit exceeded');
  tx.set(['modules','world.economy','balance'],next);
- tx.emit('world.moneyChanged',{delta,balance:next,text:`Balance: ${formatMoney(next)}.`},[tx.pack.playerId]);
+ tx.emit('world.moneyChanged',{delta,balance:next,text:delta<0?`Spent ${formatMoney(-delta)}; ${formatMoney(next)} left.`:delta>0?`Got ${formatMoney(delta)}; ${formatMoney(next)} now.`:`${formatMoney(next)} on hand.`},[tx.pack.playerId]);
 }
 
 export const economy={

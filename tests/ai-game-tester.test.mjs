@@ -55,3 +55,4 @@ test('the critique gets its own output cap and the play cap is restored after it
  await reviewRun(provider,{title:'Test'},history,runMetrics(history,0,0),4,[]);
  assert.deepEqual(seen,[CRITIQUE_TOKENS]);assert.ok(CRITIQUE_TOKENS>1800);assert.equal(provider.maxTokens,1800);
 });
+test('a "she\'ll be back Friday" arrival note is not a calendar slip',()=>{assert.deepEqual(calendarFlags('Mina isn\'t at the library. She\'ll be back Wednesday morning.','Monday'),[]);});

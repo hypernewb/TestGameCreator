@@ -103,5 +103,6 @@ test('the venus slip lines fit the budget, and a rule moved into a paragraph is 
   assert.ok(!folded[0].content.split('\n').some(l=>rules.includes(l)),'the rules are no longer lines of their own');
   assert.equal(cost(folded,rules),growth,'the text budget charges every one of them anyway');
   const blind=costByLine(folded,rules);
-  assert.ok(blind<=growth-estimateTokens(moved)+1,`a whole-line budget would under-count it by ${growth-blind} tokens`);
+  // +2: each side of both budgets rounds once, so unrelated prompt text can shift either by a token.
+  assert.ok(blind<=growth-estimateTokens(moved)+2,`a whole-line budget would under-count it by ${growth-blind} tokens`);
 });

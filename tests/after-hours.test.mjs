@@ -123,7 +123,7 @@ test('routines: Juno does the morning market run, Theo busks until evening, and 
  waitTo(h,12);assert.equal(h.state.actors.juno.location,'market');assert.equal(h.state.actors.theo.location,'canal');
  h.act('core.move',{to:'market'});assert.equal(h.state.modules['story.scenes'].pending,'juno-limes');assert.match(choice(h,'haggle').label,/^\[Wit · Sharp ✗\]/);
  h.act('story.choose',{scene:'juno-limes',choice:'carry'});doing(h,'market-run','market');assert.equal(stat(h,'wit'),4);h.act('core.endScene');
- const again=h.act('core.scene',{text:'again',location:'market',characters:['juno'],activity:'other',activityId:'market-run'});const redirected=ev(again,'world.meetingRedirect');assert.ok(redirected,'she has gone back to open the bar');assert.match(redirected.payload.text,/not at Hollis Street market/);assert.match(redirected.payload.text,/at The Velvet Room right now/);assert.equal(again.state.actors.player.location,'market');assert.equal(again.state.tick,h.state.tick, 'the redirect costs no ticks');
+ const again=h.act('core.scene',{text:'again',location:'market',characters:['juno'],activity:'other',activityId:'market-run'});const redirected=ev(again,'world.meetingRedirect');assert.ok(redirected,'she has gone back to open the bar');assert.match(redirected.payload.text,/isn.t at Hollis Street market/);assert.match(redirected.payload.text,/at The Velvet Room right now/);assert.equal(again.state.actors.player.location,'market');assert.equal(again.state.tick,h.state.tick, 'the redirect costs no ticks');
  waitTo(h,20);assert.equal(h.state.actors.juno.location,'bar');assert.equal(h.state.actors.theo.location,'bar');
 });
 
@@ -180,7 +180,7 @@ test('typed play: a phrase inside a longer sentence starts the shift, choices an
  const store=new Store();store.insert(createWorld(pack,registry,'typed'));const svc=new GameService(store,{[pack.id]:pack},registry,model);
  const say=input=>svc.act('typed',{id:`t${store.load('typed').revision}`,expectedRevision:store.load('typed').revision,input});
  try{let r=await say('I greet juno while I get to work');assert.equal(r.turn.command.args.activityId,'bar-shift');assert.equal(r.state.modules['world.economy'].balance,100,'the shift pays');
-  assert.match(r.turn.narrative,/^Four hours of orders/);assert.match(r.turn.narrative,/Charm rose/);assert.equal(r.state.modules['story.scenes'].pending,'first-night');
+  assert.match(r.turn.narrative,/^Four hours of orders/);assert.match(r.turn.narrative,/Charm grows/);assert.equal(r.state.modules['story.scenes'].pending,'first-night');
   const tick=r.state.tick;r=await say('wear my jacket');assert.equal(r.turn.command.type,'items.equip');assert.equal(r.turn.provider,'Game rules');assert.equal(r.state.tick,tick,'dressing is free');
   assert.equal(r.state.modules['items.equipment'].slots.outer,'leather-jacket');
   r=await say("I tell Juno I'll just get to work");assert.equal(r.turn.command.type,'story.choose');assert.equal(r.turn.command.args.choice,'just-work');

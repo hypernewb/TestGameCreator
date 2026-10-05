@@ -69,7 +69,7 @@ test('the shown turn adds the engine text around the drive reply, and the report
  const prev={turns:{a:{command:{type:'core.scene'},sceneLines:[{speaker:'',text:'old'}]}}};
  const state={modules:{},turns:{...prev.turns,b:{command:{type:'core.scene'},sceneLines:[{speaker:'jana',text:'See you tonight.'}]},c:{command:{type:'social.priceActs'},events:[{type:'social.relationshipChanged',payload:{actor:'jana',toward:'player',old:10,value:12}},{type:'social.relationshipChanged',payload:{actor:'jana',toward:'player',old:12,value:14}}]},d:{command:{type:'core.endScene'},events:[{type:'core.sceneEnded',payload:{reason:'budget',text:'You head to class.'}}]}}};
  const shown=shownTurn(prev,state,pack,[{text:'See you tonight.'},{text:'Jana remembers the lake.'}]);
- assert.equal(shown.text,'Jana: See you tonight.\n[RESULT] Jana trust 10 → 14\n[RESULT] Jana remembers the lake.\n[SCENE END] You head to class.');
+ assert.equal(shown.text,'Jana: See you tonight.\n[REACTION] Jana warmed to you.\n[RESULT] Jana remembers the lake.\n[SCENE END] You head to class.');
  assert.deepEqual(shownTurn(state,state,pack),{lines:[],engine:[],text:''});
  const rows=[{scenario:'s',turn:0,phase:'continuation',input:'bye',ours:{text:'Jana: See you tonight.',ms:1000,dropped:2},verdicts:[],shown},{scenario:'s',turn:1,phase:'engine',input:'go',verdicts:[],shown:{lines:[],engine:[],text:'A beat.'}}];
  const t=tally(rows,['ours']);assert.equal(t.dropped.ours,2);assert.match(summaryLine(t),/filtered lines ours 2 \| engine text on 1\/2 turns$/);

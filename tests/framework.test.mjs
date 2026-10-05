@@ -250,7 +250,7 @@ test('unavailable meeting stays put and the narrator is told why',async()=>{
   const r=await svc.act('test',{id:'scene-ai',expectedRevision:0,input:'Go meet Ada in the Meeting Room'});
   assert.notEqual(r.state.actors.player.location,'meeting');assert.equal(r.state.actors.ada.location,'hub');assert.ok(r.turn.events.some(e=>e.type==='world.meetingRedirect'));
   assert.equal(r.turn.fallback,false);assert.equal(seen[0].response_format.type,'json_schema');assert.equal(seen.length,2);
-  assert.match(JSON.stringify(seen[1].messages),/Ada is not at Meeting Room[^]*nobody moves/);
+  assert.match(JSON.stringify(seen[1].messages),/Ada isn't at Meeting Room[^]*nobody moves/);
  }finally{store.close();}
 });
 test('scene continuation keeps cast and location while ledger memory survives export',async()=>{
@@ -285,7 +285,7 @@ test('naming an absent character answers before travel; plain travel still follo
  assert.equal(result.state.actors.player.location,s.actors.player.location);assert.equal(result.state.actors.ada.location,'hub');assert.equal(result.state.scene,null);
  assert.equal(result.state.tick,s.tick);
  const redirect=result.turn.events.find(e=>e.type==='world.meetingRedirect');assert.ok(redirect);
- assert.match(redirect.payload.text,/Ada is not at Meeting Room/);assert.match(redirect.payload.text,/at Hub right now/);
+ assert.match(redirect.payload.text,/Ada isn't at Meeting Room/);assert.match(redirect.payload.text,/at Hub right now/);
  const roam=execute(result.state,{type:'core.scene',args:{text:'Go to the Meeting Room.',location:'meeting',characters:[],activity:'explore'},id:'roam',actorId:p.playerId,expectedRevision:result.state.revision},p,registry);
  assert.equal(roam.state.actors.player.location,'meeting');assert.equal(roam.turn.events.filter(e=>e.type==='core.moved').length,1);
  assert.equal(validateImport(exportCampaign(roam.state),p,registry).actors.ada.location,'hub');
@@ -465,7 +465,7 @@ test('a failed meeting reports when the character is next available',()=>{
  const ev=r.turn.events.find(e=>e.type==='world.meetingRedirect');
  assert.ok(ev,'a meeting attempt that cannot happen reports why');
  assert.equal(ev.payload.nextArrival,4);
- assert.match(ev.payload.text,/\bAda\b is not at/);
+ assert.match(ev.payload.text,/\bAda\b isn't at/);
 });
 test('repeated or generic talk stops paying trust; fresh talk still earns',()=>{
  const p=clone(neutral);let s=createWorld(p,registry,'trust-novelty');

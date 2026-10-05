@@ -26,7 +26,7 @@ const reviewFormat={type:'json_schema',json_schema:{name:'playtest_review',stric
 
 const WEEKDAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 // Plans and memories ("on Saturday", "next Tuesday", "see you Friday") are not clock slips: only a weekday used as if it were today counts.
-export function calendarFlags(narrative,weekday){const text=String(narrative||'').replace(/[^.!?]*\bscheduled\b[^.!?]*[.!?]?/g,' ').replace(/\b(on|next|last|this|by|until|till|since|every|from|before|after|for|come|see you)\s+(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b/gi,' ');return WEEKDAYS.filter(day=>day!==weekday&&new RegExp(`\\b${day}\\b`).test(text)).map(day=>`mentions ${day} but it is ${weekday}`);}
+export function calendarFlags(narrative,weekday){const text=String(narrative||'').replace(/[^.!?]*(?:\bscheduled\b|[’']ll be\b)[^.!?]*[.!?]?/g,' ').replace(/\b(on|next|last|this|by|until|till|since|every|from|before|after|for|come|see you)\s+(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b/gi,' ');return WEEKDAYS.filter(day=>day!==weekday&&new RegExp(`\\b${day}\\b`).test(text)).map(day=>`mentions ${day} but it is ${weekday}`);}
 
 // Compare model narratives over a sliding window with word-trigram Jaccard. Short authored template texts
 // (movement lines, location descriptions) are skipped so deterministic repeats do not flood the findings.

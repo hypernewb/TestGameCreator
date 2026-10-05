@@ -12,7 +12,7 @@ export function stripStateSyntax(text){if(typeof text!=='string')return text;if(
 export function enforceSpeakers(lines,speakers,pack){
  const slate=new Set(speakers),voices=pack.actors.filter(a=>a.id!==pack.playerId).map(a=>({id:a.id,names:[a.name,a.name.split(' ')[0]].map(n=>n.toLowerCase())}));
  const out=[];for(const line of lines){
-  if(line.speaker){if(slate.has(line.speaker))out.push(line);continue;}
+  if(line.speaker){if(slate.has(line.speaker))out.push(unlabel(line,pack));continue;}
   const m=/^\s*\**([^:*\n]{1,40}?)\**\s*:\s*(\S[\s\S]*)$/u.exec(line.text),who=m&&voices.find(v=>v.names.includes(m[1].trim().toLowerCase()));
   if(!who){out.push(line);continue;}if(slate.has(who.id))out.push({...line,speaker:who.id,text:m[2].trim()});
  }
@@ -56,7 +56,17 @@ export function splitRoleplay(lines,speakers,pack){
 // One choke point for every model-written scene line (previews, JSON and plain answers) before sanitation.
 // A model that closes and reopens its JSON inside a string leaves `"} {"` at the end of the text.
 const JSON_TAIL=/["\s]*\}\s*,?\s*\{?\s*"?\s*$/u;
-export const guardSceneLines=(lines,speakers,pack,context={stagedCast:speakers})=>splitRoleplay(enforceSpeakers((lines||[]).filter(l=>l&&typeof l.text==='string').map(l=>({...l,text:stripStateSyntax(l.text).replace(JSON_TAIL,'')})).filter(l=>l.text.trim()&&!containsPrivateAuthoredFact(l.text,context,pack)),speakers,pack),speakers,pack).map(l=>l.speaker&&/,\s*$/u.test(l.text)?{...l,text:l.text.replace(/,\s*$/u,'.')}:l);
+export const guardSceneLines=(lines,speakers,pack,context={stagedCast:speakers})=>tidyLines(splitRoleplay(enforceSpeakers(splitLabels((lines||[]).filter(l=>l&&typeof l.text==='string').map(l=>({...l,text:stripStateSyntax(l.text).replace(JSON_TAIL,'')})).filter(l=>l.text.trim()&&!containsPrivateAuthoredFact(l.text,context,pack)),pack),speakers,pack),speakers,pack),pack);
+// A label mid-narration ("She sets the cup down. Mina: Took you long enough.") starts that character's line.
+const labelNames=pack=>pack.actors.filter(a=>a.id!==pack.playerId).flatMap(a=>[a.name,a.name.split(' ')[0]]).filter(Boolean).map(escape).join('|');
+export function splitLabels(lines,pack){const names=labelNames(pack);if(!names)return lines;const at=new RegExp(`(?<=[.!?…”"])\\s+(?=\\**(?:${names})\\**\\s*:\\s*\\S)`,'u');
+ return lines.flatMap(l=>l.speaker?[l]:l.text.split(at).map((text,i)=>i?{speaker:'',text}:{...l,text}));}
+// A speaker's own name label left on their line ("**Mina:** Hey."); stripped before role-play splitting reads the bold as an action.
+const unlabel=(l,pack)=>{const a=pack.actors.find(x=>x.id===l.speaker);return a?{...l,text:l.text.replace(new RegExp(`^\\s*\\**(?:${[a.name,a.name.split(' ')[0]].map(escape).join('|')})\\**\\s*:\\s*\\**\\s*`,'iu'),'')}:l;};
+// The finishing pass: a line cut off at a comma or mid-word, and straight quotes in narration (“curly” is the one style the VN shows).
+export function tidyLines(lines,pack){
+ return lines.map(l=>{if(!l.speaker)return {...l,text:l.text.replace(/"([^"\n]+)"/gu,'“$1”')};
+  let text=l.text;text=text.replace(/,\s*$/u,'.');if(/[\p{L}\p{N}]$/u.test(text))text+='.';return {...l,text};}).filter(l=>l.text.trim());}
 // Small models loop: a sentence an NPC already said this scene ("I don't need your help.") is dropped when said again.
 // Short beats ("Yeah.", "Hey.") may recur. If every spoken line would go, the reply is kept as it is rather than silenced.
 const words=t=>new Set(t.toLowerCase().match(/[\p{L}\p{N}']+/gu)||[]),alike=(a,b)=>{if(a.size<4||b.size<4)return false;let n=0;for(const w of a)if(b.has(w))n++;return n/(a.size+b.size-n)>=0.75;};
@@ -68,8 +78,10 @@ const PRONOUN={i:'P',me:'P',you:'P',my:'Q',your:'Q',mine:'Q',yours:'Q'},mirror=t
 function freshLines(lines,earlier=[],input=''){
  const whole={},said={},note=(id,t)=>(said[id]||=[]).push(words(t)),sentences=t=>t.split(/(?<=[.!?…])\s+/u),echo=sentences(String(input)).map(words),theirs=new Set(mirror(String(input)));
  const parrot=t=>t.split(/[,;—]\s*|\s+-\s+/u).some(c=>{const w=mirror(c);return w.length>=(/\?\s*$/u.test(c)?3:4)&&w.every(x=>theirs.has(x));});
- for(const l of earlier)if(l.speaker){(whole[l.speaker]||=[]).push(words(l.text));sentences(l.text).forEach(t=>note(l.speaker,t));}
- const out=[];for(const line of lines){if(!line.speaker){out.push(line);continue;}
+ for(const l of earlier)if(l.speaker){(whole[l.speaker]||=[]).push(words(l.text));sentences(l.text).forEach(t=>note(l.speaker,t));}else if(l.text)sentences(l.text).forEach(t=>note('',t));
+ // A narration beat already used this scene ("She turns the ring on her finger.") is cut when someone still speaks this reply.
+ const speaks=lines.some(l=>l.speaker);
+ const out=[];for(const line of lines){if(!line.speaker){const kept=speaks?sentences(line.text).filter(t=>{const w=words(t);if((said['']||[]).some(s=>alike(s,w)))return false;note('',t);return true;}):[line.text];if(kept.length)out.push({...line,text:kept.join(' ')});continue;}
   const all=sentences(line.text);let kept=all.filter(t=>{const w=words(t);if(parrot(t)||[...(said[line.speaker]||[]),...echo].some(s=>alike(s,w)))return false;note(line.speaker,t);return true;});
   // Cutting "…right now. But... maybe it's what we both need?" must not leave a bare "But..." behind.
   if(kept.length<all.length)kept=kept.filter(t=>!/^(?:but|and|so|or|yet|well|still|anyway|because|though|then|and then)\W*$/iu.test(t.trim()));
@@ -86,10 +98,13 @@ const ADVANCE=/\b(?:kiss(?:es|ed|ing)?|grind(?:s|ing)?|grop(?:es?|ing)|straddl(?
 // is nothing but a face reacting is dropped when someone speaks this reply. Nothing spoken is touched.
 const STOCK_CLAUSE=/,\s*(?:(?:a|an)\s+(?:\p{L}+\s+)?(?:flicker|hint|glint|trace|touch|note|flash|spark|pang|mix)\s+of\s|(?:(?:a|an|his|her|their)\s+)?(?:(?:small|faint|slight|soft|wry|playful|knowing|amused|sly|shy|warm|gentle|fond|sad|nostalgic)\s+)*(?:smile|smirk|grin)\s+(?:playing|tugging|curling|pulling|spreading|forming|creeping)\b|(?:his|her|their)\s+(?:expression|gaze|eyes|features)\s+(?:soften|widen|brighten|darken|flicker|narrow|shift|warm|light|glint|sparkl|twinkl)\p{L}*ing\b|(?:(?:a|an)\s+)?(?:thoughtful|pensive|contemplative)\s+(?:expression|look)\b)[^.!?…]*/giu;
 const STOCK_SENTENCE=/^(?:(?:\p{Lu}\p{L}*[’']s|His|Her|Their)\s+)?(?:(?:a|an)\s+)?(?:\p{L}+\s+)?(?:expression|gaze|eyes|face|features|smile)\s+(?:softens?|softening|widens?|brightens?|darkens?|flickers?|shifts?|settles?|grows?\s+\p{L}+|lights?\s+up|narrows?)\b[^.!?…]{0,48}[.!?…]$|\b(?:consider(?:s|ing)|ponder(?:s|ing)|mull(?:s|ing) over|weigh(?:s|ing))\s+(?:your|the|this)\s+(?:question|words)\s*[.!?…]$|\b(?:raw|naked)\s+vulnerability\b|\blaid bare\b/iu;
-export function dropStock(lines){
- const speaks=lines.some(l=>l.speaker&&l.text.trim()),out=[];
+// avoid: the project's stock-phrase list; a narration sentence using one goes too, while anyone still speaks.
+// Narration that authors the player's feelings, thoughts or body ("your heart pounds"); the lint repairs it on strict models.
+export const PLAYER_INTERIOR=/\b(?:you (?:feel|realize|sense|think|wonder|hope|fear|want|need|remember|decide|resolve|brace yourself|steel yourself|can'?t quite place|find yourself)|your (?:heart|pulse) (?:pounds?|races?|quickens?)|(?:drawing|pulling|dragging|pulls?|draws?|drags?|lifts?) your (?:gaze|eyes|attention)|your (?:gaze|eyes) (?:being )?(?:drawn|pulled|dragged|drift(?:s|ing)?|travel(?:s|ling)?)|(?:anticipation|dread|excitement|nervous(?:ness| energy)?|relief|desire|longing) (?:courses?|washes?|floods?|surges?) (?:through|over) you|leaves? you feeling|(?:makes?|sends?) your (?:skin|spine|neck|ears|pulse) (?:prickl\w+|crawls?|tingl\w+|burn|ache)|your (?:skin|spine) (?:prickl\w+|crawls?|tingl\w+)|your (?:posture|stance|body language|breathing|breath) (?:\w+ ){0,2}(?:mirror\w*|match\w*|echo\w*|catch\w*|hitch\w*|quicken\w*|settle\w*|soften\w*|tense\w*|relax\w*|still\w*|deepen\w*|ease\w*|straighten\w*))\b/iu;
+export function dropStock(lines,avoid=[]){
+ const speaks=lines.some(l=>l.speaker&&l.text.trim()),out=[],flat=t=>t.toLowerCase().replace(/[’']/gu,"'"),bad=avoid.map(flat).filter(Boolean);
  for(const line of lines){if(line.speaker){out.push(line);continue;}
-  const kept=line.text.replace(STOCK_CLAUSE,'').split(/(?<=[.!?…])\s+/u).filter(t=>t&&!(speaks&&STOCK_SENTENCE.test(t)));
+  const kept=line.text.replace(STOCK_CLAUSE,'').split(/(?<=[.!?…])\s+/u).filter(t=>t&&!PLAYER_INTERIOR.test(t)&&!(speaks&&(STOCK_SENTENCE.test(t)||bad.some(b=>flat(t).includes(b)))));
   if(kept.length)out.push({...line,text:kept.join(' ')});}
  return out.some(l=>l.speaker)||out.length?out:lines;
 }

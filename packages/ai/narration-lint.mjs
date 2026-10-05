@@ -2,7 +2,7 @@
 // before it's shown: attendance, knowledge leaks, and content-level overflow.
 import {lintFacts,lintHistory,sharedAuthoredFact} from './knowledge.mjs';
 import {assertSceneBoundaries} from './scene-boundaries.mjs';
-import {onlyRepeats} from './untrusted-output.mjs';
+import {onlyRepeats,PLAYER_INTERIOR} from './untrusted-output.mjs';
 // A fact's quote is how facts.mjs proves a fact happened in narration; the same quote in a line spoken by
 // someone outside that fact's knownBy means the model let a character speak knowledge it was never given.
 function assertKnowledgeLeaks(value,context,pack){
@@ -28,7 +28,6 @@ function assertDaypart(value,context){
 // The narrator may report what the player visibly does, but it cannot author their private reaction. This keeps
 // free-form play conversational: the player owns their feelings, motives and decisions instead of the model
 // supplying stock role-play beats such as "your heart pounds with anticipation."
-const PLAYER_INTERIOR=/\b(?:you (?:feel|realize|sense|think|wonder|hope|fear|want|need|remember|decide|resolve|brace yourself|steel yourself|can'?t quite place|find yourself)|your (?:heart|pulse) (?:pounds?|races?|quickens?)|(?:drawing|pulling|dragging|pulls?|draws?|drags?|lifts?) your (?:gaze|eyes|attention)|your (?:gaze|eyes) (?:being )?(?:drawn|pulled|dragged|drift(?:s|ing)?|travel(?:s|ling)?)|(?:anticipation|dread|excitement|nervous(?:ness| energy)?|relief|desire|longing) (?:courses?|washes?|floods?|surges?) (?:through|over) you|leaves? you feeling|(?:makes?|sends?) your (?:skin|spine|neck|ears|pulse) (?:prickl\w+|crawls?|tingl\w+|burn|ache)|your (?:skin|spine) (?:prickl\w+|crawls?|tingl\w+)|your (?:posture|stance|body language|breathing|breath) (?:\w+ ){0,2}(?:mirror\w*|match\w*|echo\w*|catch\w*|hitch\w*|quicken\w*|settle\w*|soften\w*|tense\w*|relax\w*|still\w*|deepen\w*|ease\w*|straighten\w*))\b/iu;
 function assertPlayerInterior(value){
  for(const line of value.lines)if(!line.speaker&&PLAYER_INTERIOR.test(line.text))throw Error('Do not invent the player’s feelings, thoughts, motives, memories, decisions, gaze, posture, or bodily reactions; describe only observable action and surroundings');
 }

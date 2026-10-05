@@ -43,7 +43,7 @@ test('gear and situational modifiers push a check over its target',()=>{
 test('training activities raise stats and announce rank-ups',()=>{
  const p=checkPack({nerve:4}),h=harness(p);
  const r=h.act('core.scene',{text:'I do the open mic',location:'hub',characters:[],activity:'other',activityId:'open-mic'});
- const up=ev(r,'character.statChanged');assert.equal(up.payload.rankUp,true);assert.equal(up.payload.rank,'Steady');assert.equal(up.payload.text,'Your Nerve rose to Steady.');assert.equal(h.state.modules['character.stats'].values['player--nerve'],6);
+ const up=ev(r,'character.statChanged');assert.equal(up.payload.rankUp,true);assert.equal(up.payload.rank,'Steady');assert.equal(up.payload.text,'Your Nerve grows: Steady now.');assert.equal(h.state.modules['character.stats'].values['player--nerve'],6);
  const again=h.act('core.scene',{text:'again',location:'hub',characters:[],activity:'other',activityId:'open-mic'});assert.equal(ev(again,'character.statChanged').payload.text,'Nerve +2 · Steady');
 });
 

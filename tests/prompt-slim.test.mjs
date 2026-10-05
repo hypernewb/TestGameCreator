@@ -53,5 +53,5 @@ test('player stats render with rank names and the opening contract colors action
  const plain=scenePromptMessages({...withStats,characterStats:[]},p)[1].content;
  assert.doesNotMatch(plain,/YOU —/);
  assert.match(system.content,/stat ranks/);
- assert.match(user.content,/"You" narrator beat of the player.s action landing/);
+ assert.match(user.content,/short narrator beat of the player.s action landing/);
 });

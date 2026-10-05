@@ -249,7 +249,7 @@ test('wideContext tail window is 1500 chars instead of 700',()=>{
   assert.ok(longText.length>3000,'long text exceeds 3000 chars');
   const base={stagedCast:['ada'],sceneHistory:[{source:'h0',input:'Long turn',text:longText}],memories:[],playerAction:'Go on'};
   const render=c=>scenePromptMessages(c,p);
-  const opts={window:2400,reply:200,verbatim:0,render};
+  const opts={window:2500,reply:200,verbatim:0,render};
 
   // Without wideContext: no full/tail LODs available (charLine disabled) → compacted to digest
   const {context:stdCtx}=budgetSceneContext({...base},p,{turns:{}},'now',opts);

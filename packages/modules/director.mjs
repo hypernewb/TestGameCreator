@@ -63,8 +63,9 @@ function missedGoal(tx,current,profile,event){
  return current;
 }
 function eligible(tx,entries,settings,cal,tier,deck,recycle=false){
- const st=tx.state.modules['story.scenes'];
- return entries.map((c,i)=>({c,i})).filter(({c})=>{
+ // Nobody the player just said goodbye to barges straight back in as a complication in the same breath.
+ const st=tx.state.modules['story.scenes'],parted=new Set((tx.events||[]).filter(e=>e.type==='core.sceneEnded').flatMap(e=>e.payload.characters||[]));
+ return entries.map((c,i)=>({c,i})).filter(({c})=>{if(Object.values(c.roles||{}).some(id=>parted.has(id)))return false;
   // A template's castings share one budget: "spark" with Nova and "spark" with Abigail are the same beat and the same prose.
   const kin=c.template?entries.filter(e=>e.template===c.template).map(e=>e.id):[c.id],scene=tx.pack.scriptedScenes.find(x=>x.id===c.scene),used=kin.reduce((n,id)=>n+(deck.uses[id]||0),0),last=kin.reduce((m,id)=>deck.lastUse[id]==null?m:Math.max(m??-Infinity,deck.lastUse[id]),null);
   return scene&&(recycle?scene.repeatable:used<(c.maxUses??1))&&!(c.minTick&&tx.state.tick<c.minTick)

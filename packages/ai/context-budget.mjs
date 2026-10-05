@@ -101,8 +101,8 @@ function voiceExamplesByState(a,stage,mood,strained){
   return pick(moodTier);
 }
 
-const profileOf=(a,stage='',mood='',strained=false)=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',description:a.description||'',personality:a.personality||'',behavior:a.behavior||{},behaviorCue:a.behaviorCue||'',traits:a.traits||[],voice:a.voice||'',fingerprint:a.fingerprint||'',style:a.style||'',examples:a.examples||[],goal:a.goal||'',backstory:a.backstory||'',likes:a.likes||[],dislikes:a.dislikes||[],voiceBlock:{fingerprint:a.fingerprint||'',examples:voiceExamplesByState(a,stage,mood,strained)}});
-const compactProfile=(a,stage='',mood='',strained=false)=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',personality:clip(a.personality||a.description||'',240),behaviorCue:a.behaviorCue||'',traits:a.traits||[],voice:a.voice||'',fingerprint:a.fingerprint||'',voiceBlock:{fingerprint:a.fingerprint||'',examples:voiceExamplesByState(a,stage,mood,strained)},examples:(a.examples||[]).slice(0,2)});
+const profileOf=(a,stage='',mood='',strained=false)=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',description:a.description||'',personality:a.personality||'',behavior:a.behavior||{},behaviorCue:a.behaviorCue||'',traits:a.traits||[],voice:a.voice||'',fingerprint:a.fingerprint||'',style:a.style||'',examples:a.examples||[],goal:a.goal||'',backstory:a.backstory||'',likes:a.likes||[],dislikes:a.dislikes||[],neverSays:a.neverSays||[],voiceBlock:{fingerprint:a.fingerprint||'',examples:voiceExamplesByState(a,stage,mood,strained)}});
+const compactProfile=(a,stage='',mood='',strained=false)=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',personality:clip(a.personality||a.description||'',240),behaviorCue:a.behaviorCue||'',traits:a.traits||[],voice:a.voice||'',fingerprint:a.fingerprint||'',voiceBlock:{fingerprint:a.fingerprint||'',examples:voiceExamplesByState(a,stage,mood,strained)},examples:(a.examples||[]).slice(0,2),neverSays:a.neverSays||[]});
 
 /**
  * Fits a scene context into the model's window. `render(context)` must return the prompt messages so the fixed

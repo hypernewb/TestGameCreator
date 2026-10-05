@@ -24,11 +24,11 @@ export const liveWants=(state,pack,character)=>{
   const week=weekOf(state,pack),active=runtime.week===week?runtime.active||[]:pickWants(pack,state.initialSeed,week,character,runtime.spent||{});
   return active.map(id=>wantsOf(pack,character).find(w=>w.id===id)).filter(Boolean);
 };
-// One line, one heroine: what she has been wanting, in her words, never a price.
+// One line, one character: what they have been wanting, in their words, never a price.
 export function wantHint(state,pack,character){
   if(!pack.modules?.['social.wants']||character===pack.playerId)return '';
   const want=liveWants(state,pack,character)[0];
-  return want?.text?`she has been wanting ${want.text}`:'';
+  return want?.text?`has been wanting ${want.text}`:'';
 }
 function rotate(tx){
   const week=weekOf(tx.state,tx.pack);

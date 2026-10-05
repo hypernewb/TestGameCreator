@@ -2,7 +2,7 @@
 // continuation YOUR TURN), snapshot 79301df55bc39a0996229ccc6f12ccce422a80b2. AGPL-3.0-only; see LICENSE.
 // Same context and output schema as scenePromptMessages, but prose blocks and a persona instead of a rules list and a
 // state dump. Used by scripts/prompt-ab.mjs to compare the two shapes; the SFW persona (no sex direction) is used.
-import {soFarBlocks,calendarLine,awayLine,STAY_RULE,ECHO_RULE,PROP_RULE} from './scenePrompt.mjs';
+import {soFarBlocks,calendarLine,awayLine,avoidLine,STAY_RULE,ECHO_RULE,PROP_RULE,CONTRAST_RULE,neverLine,INITIATIVE_HEAD} from './scenePrompt.mjs';
 const ordinal=n=>n+(['th','st','nd','rd'][n%100>10&&n%100<14?0:n%10]||'th');
 const list=a=>(a||[]).filter(Boolean).join(', ');
 export const VENUS_PERSONA=[
@@ -18,7 +18,7 @@ export const VENUS_PERSONA=[
  'For dialogue, you write lines that are meant to be said, not read. You use contractions, imperfect grammar, ellipses, filler words like "like", and "um", and avoid overly flowery metaphors and strict sentence structure.',
  "And finally, you're totally anal retentive: You always return a single, fully-formed JSON object matching the provided schema exactly."
 ].join('\n');
-const profileLine=a=>[`${a.name} (${a.id}, ${a.pronouns||'they/them'}): ${a.description||''}`,a.traits?.length&&`Personality: ${list(a.traits)}.${a.personality?' '+a.personality:''}`,a.voice&&`Voice: ${a.voice}`,a.style&&`Style: ${a.style}`,a.goal&&`Wants: ${a.goal}`,a.backstory&&`Backstory: ${a.backstory}`,a.likes?.length&&`Likes: ${list(a.likes)}.`,a.dislikes?.length&&`Dislikes: ${list(a.dislikes)}.`,a.examples?.length&&`Sounds like: ${a.examples.map(e=>typeof e==='string'?e:e.text).join(' / ')}`].filter(Boolean).join(' ');
+const profileLine=a=>[`${a.name} (${a.id}, ${a.pronouns||'they/them'}): ${a.description||''}`,a.traits?.length&&`Personality: ${list(a.traits)}.${a.personality?' '+a.personality:''}`,a.voice&&`Voice: ${a.voice}`,a.style&&`Style: ${a.style}`,a.goal&&`Wants: ${a.goal}`,a.backstory&&`Backstory: ${a.backstory}`,a.likes?.length&&`Likes: ${list(a.likes)}.`,a.dislikes?.length&&`Dislikes: ${list(a.dislikes)}.`,a.examples?.length&&`Sounds like: ${a.examples.map(e=>typeof e==='string'?e:e.text).join(' / ')}`,neverLine(a)].filter(Boolean).join(' ');
 export function venusStyleMessages(context,pack){
  const cast=context.stagedCast||[],phase=context.scenePhase||'opening',speakers=context.speakers||cast;
  const profiles=context.castProfiles||pack.actors.filter(a=>cast.includes(a.id));
@@ -29,7 +29,7 @@ export function venusStyleMessages(context,pack){
   'Use an empty speaker ("") for narration lines. Otherwise, match who\'s saying what to their character key.',
   "Never mix dialogue and narration on a single line. Split them into two lines instead. An empty text field on a line isn't valid.",
   `Character keys that may speak: ${list(speakers)||'none (narration only)'}. Nobody else is in the scene or can walk in.`,
-  cast.length&&STAY_RULE,cast.length&&ECHO_RULE,cast.length&&PROP_RULE,
+  cast.length&&STAY_RULE,cast.length&&ECHO_RULE,cast.length&&PROP_RULE,cast.length>1&&CONTRAST_RULE,avoidLine(context)||undefined,
   'Write the summary in third person and refer to the MC as "the reader". Set end_scene only when the characters part ways.',
   'memories: at most one per present character about what they learned about the reader or how the reader made them feel, {charKey,type,desc} with type liked, disliked or neutral; [] when nothing meaningful happened. facts: at most three durable facts said on screen, {subject,text,quote} with quote copied exactly from the action or your lines.',
   context.actTags,context.claimsTags,'',
@@ -51,6 +51,7 @@ export function venusStyleMessages(context,pack){
   ...(memories.length?['WHAT THEY REMEMBER',...memories.map(t=>`- ${t}`),'']:[]),
   ...(context.openThreads?.length?['LOOSE ENDS',...context.openThreads.map(t=>`- ${t.text||t}`),'']:[]),
   ...(context.direction?['DIRECTOR\'S NOTE (steer the scene this way, never quote it)',context.direction,'']:[]),
+  ...(context.wantHint?[INITIATIVE_HEAD,context.wantHint,'']:[]),
   ...(context.actBrief?.length?['PRIVATE (her hidden likes and limits: let her reactions match, never say them)',...context.actBrief,'']:[]),
   ...(context.intimacyRule?[`BOUNDARY: ${context.intimacyRule}`,'']:[])
  ];

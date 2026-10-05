@@ -32,6 +32,7 @@ import {importCard,actorToCard,readCard} from './packages/cards/character-card.m
 import {cardMembers} from './packages/cards/card-world.mjs';
 import {draftStartup,editStartup,beginStartupRegeneration,regenerateStartup,restoreStartup} from './packages/ai/startup-authoring.mjs';
 import {KINDS} from './packages/ai/bulk-authoring.mjs';
+import {latestRelease,updatePlan,applyUpdate} from './packages/cards/pack-update.mjs';
 import {bakeDirectorTemplates} from './packages/cards/director-templates.mjs';
 import {creatorTemplate} from './packages/cards/creator-template.mjs';
 import {readPack} from './packages/cards/director-library.mjs';
@@ -191,6 +192,9 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider(),draf
       if(path==='/api/studio/publish'&&req.method==='POST'){const d=readDraft(body.id);let p=structuredClone(d.pack);const templates=p.directorTemplates||[],enabled=Boolean(p.modules?.['story.director']);assert(Array.isArray(templates),'Director templates must be a list');if(enabled){assert(templates.every(t=>t.reviewStatus==='approved'),'Review and approve every director template in Studio before publishing');if(templates.length)assert(p.modules?.['story.scenes'],'Enable Scripted scenes for director templates');}if(p.directorTemplates)p=bakeDirectorTemplates(p,enabled?templates:[]);p.id='created.'+randomUUID();p.version='0.1.0';p.publishedFrom=body.id;p.publishedAt=new Date().toISOString();validateProjectMedia(p,{read:readAsset});validatePack(p,registry);writeFileSync(resolve(publishedDir,p.id.slice(8)+'.json'),JSON.stringify(p,null,2));packs[p.id]=p;return send({id:p.id,title:p.title});}
       if(path==='/api/new'&&req.method==='POST'){const p=packs[body.packId];assert(p,'Unknown pack');const s=createWorld(p,registry,randomUUID(),randomInt(2**32-1),body.startId,{sceneWriter:body.sceneWriter});store.insert(s);return send(view(s));}
       if(path==='/api/load'&&req.method==='POST'){return send(view(await service.recover(body.id)));}
+      // A playthrough of an older Studio publish can move to the newest one (text fixes, edited or added people/places) without restarting.
+      if(path==='/api/update'&&req.method==='GET'){const w=store.load(url.searchParams.get('id')),p=packs[w.packId],next=latestRelease(packs,p);return send({update:next?updatePlan(w,p,next):null});}
+      if(path==='/api/update'&&req.method==='POST'){assert(!active.has(body.campaignId),'Wait for the current action to finish');const w=store.load(body.campaignId),p=packs[w.packId],next=latestRelease(packs,p);assert(next,'This game already uses the latest version');assert(!body.packId||body.packId===next.id,'A newer version was published; check again');const s=applyUpdate(w,p,next,registry);store.commit(s,w.revision);return send(view(s));}
       if(path==='/api/preview'&&req.method==='GET')return send({preview:service.preview(url.searchParams.get('id'))});
       if(path==='/api/backups'&&req.method==='GET')return send({backups:store.backups(url.searchParams.get('id'))});
       if(path==='/api/backups/create'&&req.method==='POST'){assert(!active.has(body.campaignId),'Wait for the current action to finish');const label=typeof body.label==='string'?body.label.trim().slice(0,60):'';const backupId=store.backup(body.campaignId,label?`checkpoint:manual:${label}`:'checkpoint:manual');return send({backupId,backups:store.backups(body.campaignId)});}

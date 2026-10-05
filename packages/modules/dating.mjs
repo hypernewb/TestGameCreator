@@ -79,7 +79,7 @@ function writeEvaluation(tx,character,previousScore,allowCrush=true){
  const result=datingEvaluation(tx.state,tx.pack,character),runtime=runtimeOf(tx.state,character),profile=profileOf(tx.pack,character);
  // Only changed fields are patched: re-scoring every profile on every event otherwise floods the turn's event budget.
  for(const key of ['score','eligible','reasons','trace'])if(JSON.stringify(runtime[key])!==JSON.stringify(result[key]))tx.set([...modulePath,'characters',character,key],result[key]);
- if(previousScore!==result.score)tx.emit('social.attractionChanged',{character,from:previousScore,to:result.score,eligible:result.eligible,text:`Attraction with ${tx.state.actors[character].name} changed.`},[tx.pack.playerId,character]);
+ if(previousScore!==result.score)tx.emit('social.attractionChanged',{character,from:previousScore,to:result.score,eligible:result.eligible,text:`${tx.state.actors[character].name} ${result.score>previousScore?'warms to you a little':'cools on you a little'}.`},[tx.pack.playerId,character]);
  if(allowCrush&&result.eligible&&result.score>=profile.thresholds.crush&&runtime.phase==='available'){tx.set([...modulePath,'characters',character,'phase'],'crush');tx.emit('social.crushStarted',{character,score:result.score,text:`A romantic possibility has opened with ${tx.state.actors[character].name}.`},[tx.pack.playerId,character]);}
  return result;
 }

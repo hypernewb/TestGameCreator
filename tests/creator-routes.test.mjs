@@ -20,14 +20,17 @@ test('the creator API takes a premise to a saved, playable campaign and reopens 
   const p=await call('/api/creator/propose',{premise:'A ferry summer',heroines:1});assert.equal(p.status,200);assert.equal(p.data.proposal.title,'Harbour Lights');assert.ok(p.data.missing.length>50);assert.equal(p.data.batches[0].id,'world');
   const edited={...p.data.proposal,heroines:[{...p.data.proposal.heroines[0],age:17}]};assert.match((await call('/api/creator/structure',{proposal:edited})).data.error,/18 or more/);
   let {data:{spec,batches}}=await call('/api/creator/structure',{proposal:{...p.data.proposal,title:'Harbour Nights'}});
-  assert.match((await call('/api/creator/save',{spec})).data.error,/still blank/);
+  const rough=await call('/api/creator/save',{spec});assert.equal(rough.status,200,JSON.stringify(rough.data));assert.ok(rough.data.improvised>20,'blanks are saved for the AI to improvise');
+  const roughPack=app.packs[rough.data.packId];assert.equal(roughPack.title,'Harbour Nights');assert.ok(roughPack.firsts.every(f=>f.title&&f.opening&&f.checkpoints.every(c=>c.cue)),'blank firsts play free with plain cues');
+  assert.equal((await call('/api/load',{id:rough.data.campaignId})).status,200);
   for(const b of batches){const r=await call('/api/creator/fill',{spec,batch:b.id});assert.equal(r.status,200);spec=r.data.spec;}
   const done=await call('/api/creator/check',{spec});assert.deepEqual(done.data.missing,[]);
   spec.heroines[0].rungs.talk.opening='Owner edit.';n=1;const redo=(await call('/api/creator/fill',{spec,batch:'mara:talk',redo:true})).data;
   assert.equal(redo.spec.heroines[0].rungs.talk.opening,'v1 heroines.mara.rungs.talk.opening','Redraft rewrites the whole card');assert.ok(redo.filled.length>5);assert.deepEqual(redo.missing,[]);
   assert.equal(redo.spec.heroines[0].rungs.date.opening,spec.heroines[0].rungs.date.opening,'other cards are untouched');assert.equal(redo.spec.heroines[0].actor.name,'Mara');
-  const saved=await call('/api/creator/save',{spec:redo.spec,proposal:p.data.proposal});assert.equal(saved.status,200);assert.match(saved.data.packId,/^harbour-nights-/);
-  assert.ok(app.packs[saved.data.packId]);assert.ok(app.store.list().some(c=>c.id===saved.data.campaignId));assert.equal(readdirSync(join(dir,'published')).length,1);
+  const saved=await call('/api/creator/save',{spec:redo.spec,proposal:p.data.proposal,from:rough.data.from});assert.equal(saved.status,200);assert.match(saved.data.packId,/^harbour-nights-/);assert.equal(saved.data.improvised,0);
+  assert.ok(app.packs[saved.data.packId]);assert.ok(app.store.list().some(c=>c.id===saved.data.campaignId));assert.equal(readdirSync(join(dir,'published')).length,2);
+  const offer=(await call(`/api/update?id=${rough.data.campaignId}`)).data.update;assert.equal(offer.packId,saved.data.packId,'the rough save is offered the finished world');
   const load=await call('/api/load',{id:saved.data.campaignId});assert.equal(load.status,200);
   const o=(await call('/api/creator/options')).data;assert.ok(o.temperaments.guarded);assert.deepEqual(o.paces,['slow','steady','easy','casual']);assert.equal(o.drafter,true);
   const worlds=(await call('/api/creator/worlds')).data.worlds;assert.equal(worlds[0].id,saved.data.packId);

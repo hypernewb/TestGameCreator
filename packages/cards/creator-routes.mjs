@@ -35,12 +35,13 @@ export function creatorRoutes({packs,store,registry,publishedDir,worldDir,drafte
    const todo=batches(assemble(spec).missing).filter(b=>ids.includes(b.id)),errors=[],filled=[];
    const raws=await Promise.all(todo.map(b=>c(draftMessages(spec,b,{style:body.style})).catch(e=>{errors.push(`${b.id}: ${e.message}`);return '';})));
    todo.forEach((b,i)=>{const x=acceptDraft(spec,b,raws[i]);spec=x.spec;filled.push(...x.filled);});return {spec,filled,errors,...report(spec)};}
-  // Save: a finished world becomes a published pack + a fresh campaign; the spec and proposal are kept so the wizard can reopen it.
-  if(path==='/api/creator/save'&&method==='POST'){const spec=obj(body.spec,'World spec required'),{pack,missing}=assemble(spec);assert(!missing.length,`${missing.length} text slots are still blank`);
-   pack.id=`${pack.id||'world'}-${randomUUID().slice(0,8)}`;validateMedia(pack);validatePack(pack,registry);assert(!packs[pack.id],'Duplicate pack ID');
+  // Save: a world becomes a published pack + a fresh campaign; the spec and proposal are kept so the wizard can reopen it. Blank text is allowed:
+  // assemble improvises it (plain names, free firsts, beats left out). `from` ties every save of one world together, so older campaigns are offered the update.
+  if(path==='/api/creator/save'&&method==='POST'){const spec=obj(body.spec,'World spec required'),{pack,improvised}=assemble(spec,{improvise:true}),from=typeof body.from==='string'&&/^creator:[a-z0-9-]{1,90}$/.test(body.from)?body.from:null;
+   pack.id=`${pack.id||'world'}-${randomUUID().slice(0,8)}`;pack.publishedFrom=from||`creator:${pack.id}`;pack.publishedAt=new Date().toISOString();validateMedia(pack);validatePack(pack,registry);assert(!packs[pack.id],'Duplicate pack ID');
    writeFileSync(resolve(publishedDir,randomUUID()+'.json'),JSON.stringify(pack,null,1));packs[pack.id]=pack;
-   writeFileSync(worldFile(pack.id),JSON.stringify({id:pack.id,title:pack.title,saved:new Date().toISOString(),spec,proposal:body.proposal||null},null,1));
-   const s=createWorld(pack,registry,randomUUID(),randomInt(2**32-1));store.insert(s);return {packId:pack.id,campaignId:s.campaignId,title:pack.title};}
+   writeFileSync(worldFile(pack.id),JSON.stringify({id:pack.id,from:pack.publishedFrom,title:pack.title,saved:pack.publishedAt,spec,proposal:body.proposal||null},null,1));
+   const s=createWorld(pack,registry,randomUUID(),randomInt(2**32-1));store.insert(s);return {packId:pack.id,campaignId:s.campaignId,title:pack.title,from:pack.publishedFrom,improvised:improvised.length};}
   // The enum picks the proposal form offers (code owns the numbers behind them).
   if(path==='/api/creator/options'&&method==='GET')return {temperaments:Object.fromEntries(Object.entries(TEMPERAMENTS).map(([k,t])=>[k,t.about])),paces:Object.keys(PACES),placeKinds:PLACE_KINDS,prices:Object.keys(PRICES),stats:STATS,levels:Object.keys(WANT_MIN),tones:TONE_CEILINGS,modules:catalog,drafter:!!drafter()};
   if(path==='/api/creator/worlds'&&method==='GET')return {worlds:readdirSync(worldDir).filter(f=>f.endsWith('.json')).map(f=>{const w=JSON.parse(readFileSync(resolve(worldDir,f),'utf8'));return {id:w.id,title:w.title,saved:w.saved};}).sort((a,b)=>b.saved.localeCompare(a.saved))};

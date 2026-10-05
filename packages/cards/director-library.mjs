@@ -34,8 +34,11 @@ export const libraryEntry=id=>DIRECTOR_LIBRARY.find(x=>x.id===id);
 
 // Library + text → director templates (the director-templates.mjs input). `text(value,path)` is the assembler's slot filler.
 // cast: how many love interests there are; beats needing more roles than that are left out (no blank text for them).
-export function directorTemplates(beats={},text=v=>v,cast=4){
- return DIRECTOR_LIBRARY.filter(L=>L.roles.length<=cast).map(L=>{const x=beats[L.id]||{},at=`director.beats.${L.id}`;
+// The engine only knows "some recent time together", never how often: a drafted sentence claiming a count or a span ("every evening this week", "for weeks") is dropped at bake time.
+const CLAIM=/\b(?:every|each)\s+(?:single\s+)?(?:day|night|morning|afternoon|evening|weekend)\b|\ball\s+(?:week|month|term|semester)\b|\b(?:this|last|past)\s+(?:whole\s+)?(?:week|month)\b|\bfor\s+(?:days|weeks|months)\b|\b(?:night|day)\s+after\s+(?:night|day)\b/i;
+export const dropClaims=v=>{if(typeof v!=='string'||!CLAIM.test(v))return v;const kept=(v.match(/[^.!?]+[.!?]+["')\]]*\s*|[^.!?]+$/g)||[]).filter(x=>!CLAIM.test(x)).join('').trim();return kept||v;};
+export function directorTemplates(beats={},text=v=>v,cast=4,skip){
+ return DIRECTOR_LIBRARY.filter(L=>L.roles.length<=cast&&!skip?.has(L.id)).map(L=>{const x=beats[L.id]||{},at=`director.beats.${L.id}`;
   const effects=ts=>ts.flatMap((t,i)=>{if(!t)return [];const [chem,trust]=TONES[t],c=`@${L.roles[i]}`;return [{type:'chemistry',character:c,delta:chem,reason:'how the moment went'},...(trust?[{type:'trust',character:c,delta:trust}]:[])];});
   const choice=(ts,i,p,src)=>({id:`choice-${i+1}`,label:text(src?.[i]?.label,`${p}.choices.${i}.label`),result:text(src?.[i]?.result,`${p}.choices.${i}.result`),effects:effects(ts)});
   const t={id:L.id,kind:L.kind,tone:L.tone,roles:Object.fromEntries(L.roles.map(r=>[r,{pool:'dating'}])),...(L.focus?{focusRole:L.focus}:{}),
@@ -43,28 +46,28 @@ export function directorTemplates(beats={},text=v=>v,cast=4){
    when:{trust:Object.fromEntries(Object.entries(L.gate).map(([r,v])=>[`@${r}`,v])),
     ...(L.spent?{attention:Object.fromEntries(Object.entries(L.spent).map(([r,v])=>[`@${r}`,v]))}:{}),
     ...(L.dayparts?{dayparts:L.dayparts}:{})},
-   scene:{title:text(x.title,`${at}.title`),opening:text(x.opening,`${at}.opening`),choices:L.choices.map((ts,i)=>choice(ts,i,at,x.choices))}};
+   scene:{title:text(x.title,`${at}.title`),opening:dropClaims(text(x.opening,`${at}.opening`)),choices:L.choices.map((ts,i)=>choice(ts,i,at,x.choices))}};
   if(L.phone){const from=L.phone===true?'lead':L.phone,ph=text(x.phone,`${at}.phone`);t.phone={character:`@${from}`,text:typeof ph==='string'?ph.replace(/^\{(lead|rival)\}\s*:\s*/,''):ph};}// the phone shows the sender: drop a drafted "{lead}:" prefix
   if(L.goal)t.goal={deadlineTicks:L.goal.deadlineTicks,missed:{kind:'relationship',cost:L.goal.cost},kept:{title:text(x.kept?.title,`${at}.kept.title`),opening:text(x.kept?.opening,`${at}.kept.opening`),choices:[choice(['best'],0,`${at}.kept`,x.kept?.choices)]}};
   return t;});
 }
 
 // Put the director into a pack: library templates baked over its love interests, every one of them a phone contact.
-export function withDirector(pack,{beats,tone='soap',text}={}){
+export function withDirector(pack,{beats,tone='soap',text,skip}={}){
  if(!TONE_CEILINGS.includes(tone))throw new Error(`director tone must be one of ${TONE_CEILINGS}`);
  const heroines=(pack.datingProfiles||[]).map(d=>d.character),contacts=[...new Set([...(pack.phoneContacts||[]),...heroines])];
  const p={...pack,modules:{...pack.modules,'social.phone':pack.modules['social.phone']||'0.1.0','story.director':'0.1.0'},phoneContacts:contacts,phoneMessages:pack.phoneMessages||[],directorProfile:{...DIRECTOR_PROFILE,...pack.directorProfile,toneCeiling:tone}};
- return bakeDirectorTemplates(p,directorTemplates(beats,text,heroines.length));
+ return bakeDirectorTemplates(p,directorTemplates(beats,text,heroines.length,skip));
 }
 // Pack files: a drafted packs/director/<file> ({tone,beats}, from scripts/draft-world.mjs --director) is baked in at load time.
 export const readPack=file=>{const p=JSON.parse(readFileSync(file,'utf8')),o=join(dirname(file),'director',basename(file));return existsSync(o)?withDirector(p,JSON.parse(readFileSync(o,'utf8'))):p;};
-export const DIRECTOR_NOTE='Director beats are shared by every love interest: write {lead} and {rival} literally (code puts in names and pronouns), keep them to what any of them could say, and never name one. Incident beats happen wherever the player already is: the cast comes to the player inside the scene, so never name a place (no "by the library steps"), never claim shared history ("we spent all week together" — beats gated on real time together are the only exception), and never narrate the player travelling. Only phone beats may move the player, because the player chooses to go. In text or tease, {last} is replaced at deal time with one engine line about the previous beat ("the \\"X\\" moment played out" / "you walked away from \\"X\\"") — use it to quote what actually happened instead of inventing shared history.';
+export const DIRECTOR_NOTE='Director beats are shared by every love interest: write {lead} and {rival} literally (code puts in names and pronouns), keep them to what any of them could say, and never name one. Incident beats happen wherever the player already is: the cast comes to the player inside the scene, so never name a place (no "by the library steps"), never claim shared history or how often you met ("we spent all week together", "every evening"; a beat gated on recent time together may say "lately", nothing more), and never narrate the player travelling. Only phone beats may move the player, because the player chooses to go. In text or tease, {last} is replaced at deal time with one engine line about the previous beat ("the \\"X\\" moment played out" / "you walked away from \\"X\\"") — use it to quote what actually happened instead of inventing shared history.';
 // Drafting help: what a director slot is for, for the cloud drafter.
 export function directorHint(path){
  const m=path.match(/^director\.beats\.([\w-]+)\.(.+)$/),L=m&&libraryEntry(m[1]);if(!L)return null;
  const f=m[2];
  const c=f.match(/^(kept\.)?choices\.(\d+)\.(label|result)$/),tones=c&&(c[1]?['best']:L.choices[c[2]]);
  const toneTxt=tones&&tones.map((t,i)=>t&&`for {${L.roles[i]}} ${t==='miss'?'it lands badly':t==='flat'?'it changes little':'it lands'}`).filter(Boolean).join(', ');
- const what=f==='title'?'scene title, 2–5 words':f==='opening'?`what happens right here, right now, 2–3 sentences, present tense; the scene happens wherever the player already is, so never name a place, never claim shared history, and never move the player — the cast comes to them`:f==='phone'?'her text message that starts it, 1 sentence, in her voice, no name prefix (this beat may move the player — she is calling them to her)':f==='kept.title'?'title of the scene where you keep the promise':f==='kept.opening'?'you show up as promised; 1–2 sentences':c?.[3]==='label'?'the player\'s choice, first person, under 10 words':'what happens after that choice, 1–2 sentences';
+ const what=f==='title'?'scene title, 2–5 words':f==='opening'?`what happens right here, right now, 2–3 sentences, present tense; the scene happens wherever the player already is, so never name a place, never claim shared history or how often you met (no "every evening", "all week"), and never move the player — the cast comes to them`:f==='phone'?'her text message that starts it, 1 sentence, in her voice, no name prefix (this beat may move the player — she is calling them to her)':f==='kept.title'?'title of the scene where you keep the promise':f==='kept.opening'?'you show up as promised; 1–2 sentences':c?.[3]==='label'?'the player\'s choice, first person, under 10 words':'what happens after that choice, 1–2 sentences';
  return `${L.kind} beat: ${L.about}. ${what}${toneTxt?` (${toneTxt})`:''}`;
 }

@@ -10,7 +10,7 @@ let O,S={step:1,premise:'',heroines:4,style:''};
 try{S={...S,...JSON.parse(localStorage.getItem(KEY)||'{}')};}catch{}
 if(S.navigation!==3){if(S.spec)S.step=S.navigation===2?(S.step===4?5:S.step===5?6:S.step):(S.step===4?6:S.step===5?5:S.step);S.navigation=3;}
 const keep=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch{}};
-const go=step=>{S.step=step;keep();render();scrollTo(0,0);};
+const go=step=>{S.step=step;keep();say('');render();scrollTo(0,0);};
 const busy=async(btn,msg,fn)=>{const all=[...view.querySelectorAll('button')];all.forEach(b=>b.disabled=true);say(msg);try{await fn();}catch(e){say(e.message,true);}finally{all.forEach(b=>b.disabled=false);}};
 
 // Paths: heroines.<id>.… picks the heroine by id; numeric keys make arrays.
@@ -27,14 +27,14 @@ const names=a=>(a||[]).map(x=>x.name).filter(Boolean);
 function stepPremise(){
  const worlds=h('div',{},h('p',{class:'muted'},'Loading saved worlds…'));
  api('worlds').then(({worlds:w})=>worlds.replaceChildren(...(w.length?w.map(x=>h('div',{class:'bar'},h('button',{onclick:()=>openWorld(x.id)},'Open'),h('span',{},x.title||x.id),h('span',{class:'muted'},new Date(x.saved).toLocaleString()))):[h('p',{class:'muted'},'No saved worlds yet.')])));
- return [h('section',{},h('h2',{},'Premise'),O.drafter?null:h('p',{class:'errs'},h('li',{},'No drafter key: set OPENROUTER_API_KEY in .env and restart the server.')),
+ return [h('section',{},h('h2',{},'Premise'),O.drafter?null:h('p',{class:'muted'},'No drafting AI is set up (OPENROUTER_API_KEY in .env), so propose and draft are off. Fill the setup by hand; any text you leave blank, the game\'s AI improvises while you play.'),
   h('div',{class:'bar'},S.card?[h('span',{class:'tone best'},'card'),h('span',{},`${S.card.name} is love interest 1; the rest of the cast fits around her.`),h('button',{title:'Remove the card',onclick:()=>{S.card=null;keep();render();}},'✕')]
    :[h('label',{},'Start from a character card (optional): '),h('input',{type:'file',accept:'.png,.json,image/png,application/json',onchange:e=>loadCard(e.target.files[0])})]),
   field('One or two sentences: who you are and where the story takes place',S,'premise',{type:'area'}),
   h('div',{class:'row'},field('Love interests',S,'heroines',{opts:['1','2','3','4','5','6'],num:true}),field('Writing style (optional)',S,'style')),
-  h('div',{class:'bar'},h('button',{id:'creator-next',onclick:()=>{S.proposal||={title:'',premise:S.premise,setting:'',player:{name:'',age:21},places:[{name:'',kind:'home',about:''},{name:'',kind:'public',about:''}],items:[],activities:[],weather:[],heroines:Array.from({length:Number(S.heroines)||1},()=>({name:'',age:21,temperament:'torn',pace:'steady',topic:'',home:'',wants:[]}))};go(2);}},'Next: edit setup (no generation)'),h('button',{onclick:e=>busy(e.target,'Proposing a world… (about 30 seconds)',async()=>{const r=await api('propose',{premise:S.premise,heroines:S.heroines,style:S.style,card:S.card||undefined});S.proposal=r.proposal;S.notes=r.notes;S.spec=null;go(2);say('');})},'Propose a world'),
+  h('div',{class:'bar'},h('button',{id:'creator-next',onclick:()=>{S.proposal||={title:'',premise:S.premise,setting:'',player:{name:'',age:21},places:[{name:'',kind:'home',about:''},{name:'',kind:'public',about:''}],items:[],activities:[],weather:[],heroines:Array.from({length:Number(S.heroines)||1},()=>({name:'',age:21,temperament:'torn',pace:'steady',topic:'',home:'',wants:[]}))};go(2);}},'Next: edit setup (no generation)'),h('button',{disabled:!O.drafter,onclick:e=>busy(e.target,'Proposing a world… (about 30 seconds)',async()=>{const r=await api('propose',{premise:S.premise,heroines:S.heroines,style:S.style,card:S.card||undefined});S.proposal=r.proposal;S.notes=r.notes;S.spec=null;go(2);say('');})},'Propose a world'),
    S.proposal?h('button',{onclick:()=>go(S.spec?6:2)},'Back to the current draft'):null)),
-  h('section',{},h('h2',{},'Saved worlds'),h('p',{class:'muted'},'Reopen a world to edit or redraft it. Saving again makes a new campaign.'),worlds)];
+  h('section',{},h('h2',{},'Saved worlds'),h('p',{class:'muted'},'Reopen a world to edit or redraft it. Saving again starts a new campaign, and games on the older save are offered the update.'),worlds)];
 }
 
 // A SillyTavern card is read on the server (no model call); its scenario becomes the premise if there is none yet.
@@ -64,7 +64,7 @@ function stepProposal(){
   list('Weather','weather',x=>[field('Name',x,'name'),field('Text',x,'text')],()=>({name:'',text:''})),
   h('section',{},h('h2',{},'Love interests'),(p.heroines||=[]).map(heroine),p.heroines.length<6?h('button',{onclick:()=>{p.heroines.push({name:'',age:21,temperament:'torn',pace:'steady',topic:'',wants:[]});rerender();}},'Add a love interest'):null),
   h('div',{class:'foot'},h('button',{onclick:()=>go(1)},'Back'),h('button',{id:'creator-next',onclick:e=>{if(S.spec){go(3);say('Existing structure and edits retained. Rebuild explicitly to use changed setup fields.');}else build(e);}},'Next: Draft text'),S.spec?h('button',{onclick:e=>{if(confirm('Rebuilding replaces drafted text and later settings with a fresh structure. Continue?'))build(e);}},'Rebuild structure'):null)];
- function build(e){return busy(e.target,'Building the structure.',async()=>{const used=(p.heroines||[]).filter(x=>String(x.name||'').trim()||String(x.topic||'').trim()),r=await api('structure',{proposal:used.length?{...p,heroines:used}:p});Object.assign(S,{uiOwner:crypto.randomUUID(),uiDesigner:{review:null},spec:r.spec,notes:r.notes,cards:r.cards,batches:r.batches,errors:[],progress:{}});go(3);say('');});}
+ function build(e){return busy(e.target,'Building the structure.',async()=>{const used=(p.heroines||[]).filter(x=>String(x.name||'').trim()||String(x.topic||'').trim()),r=await api('structure',{proposal:used.length?{...p,heroines:used}:p});Object.assign(S,{uiOwner:crypto.randomUUID(),uiDesigner:{review:null},from:null,spec:r.spec,notes:r.notes,cards:r.cards,batches:r.batches,errors:[],progress:{}});go(3);say('');});}
 }
 
 // Draft: world first (title, tone), then profiles (voice + description feed the scenes), then the scenes six at a time; two passes.
@@ -82,12 +82,13 @@ async function draftRun(){
 }
 const cardName=id=>{if(id==='world')return 'World';if(id.startsWith('director:'))return `Director · ${id.slice(9)}`;const [hid,r]=id.split(':'),mode=r&&getPath(S.spec,`heroines.${hid}.rungs.${r}.mode`),eff=mode||S.spec?.world?.firsts||(r?'authored':'');
  return `${getPath(S.spec,`heroines.${hid}.actor.name`)||hid} · ${r}${eff==='free'?' (free)':''}${mode==='authored'&&S.spec?.world?.firsts==='free'?' (authored)':''}`;};
+const draftLabel=()=>{const p=Object.values(S.progress||{}),bad=p.filter(v=>v==='bad').length;return bad?`Retry ${bad} failed card${bad>1?'s':''}`:p.includes('ok')&&S.batches?.length?'Draft what is left':'Draft everything';};
 function stepDraft(){
  const cards=S.cards||[];
  return [S.notes?.length?h('section',{},h('h2',{},'What code changed'),h('ul',{class:'notes'},S.notes.map(n=>h('li',{},n)))):null,
   h('section',{},h('h2',{},'Draft the text'),h('p',{class:'muted'},`${cards.length} cards. Scenes are drafted six at a time; a whole world takes a few minutes.`),
    h('ul',{class:'prog'},cards.map(c=>h('li',{class:S.progress?.[c.id]||''},cardName(c.id)))),S.errors?.length?h('ul',{class:'errs'},S.errors.map(e=>h('li',{},e))):null,
-   h('div',{class:'bar'},h('button',{disabled:running,onclick:e=>busy(e.target,'Drafting…',draftAll)},Object.keys(S.progress||{}).length?'Draft what is left':'Draft everything'),h('button',{onclick:()=>{stop=true;say('Stopping after the current group…');}},'Stop'),h('button',{id:'creator-next',onclick:()=>go(4)},'Next: Gameplay modules'),h('button',{onclick:()=>go(6)},'Edit text / Review now'))),
+   h('div',{class:'bar'},h('button',{disabled:running||!O.drafter,title:O.drafter?'':'No drafting AI is set up',onclick:e=>busy(e.target,'Drafting…',draftAll)},draftLabel()),h('button',{onclick:()=>{stop=true;say('Stopping after the current group…');}},'Stop'),h('button',{id:'creator-next',onclick:()=>go(4)},'Next: Gameplay modules'),h('button',{onclick:()=>go(6)},'Edit text / Review now'))),
   h('div',{class:'foot'},h('button',{onclick:()=>go(2)},'Back to the proposal'))];
 }
 
@@ -99,7 +100,7 @@ function card(c){
  const ORDER=['title','name','description','voice','opening','checkpoints','pages','choices','lead','rush','checkIn','peak','stop'],rank=p=>{const i=ORDER.indexOf(p.slice(base.length).split('.')[0]);return i<0?ORDER.length:i;};
  const fields=[...c.paths].sort((a,b)=>rank(a)-rank(b)).map(p=>{const rel=p.slice(base.length),v=String(getPath(S.spec,p)??''),m=rel.match(/^(.*choices\.\d+)\.label$/),tone=m&&getPath(S.spec,`${base}${m[1]}.tone`),short=/(^|\.)(title|label|name|stop)$/.test(rel)||/\.ranks\.\d+$|^ranks\.\d+$/.test(rel);
   const wrap=h('div',{class:'f'+(v.trim()?'':' blank')}),mark=e=>{setPath(S.spec,p,e.target.value);wrap.className='f'+(e.target.value.trim()?'':' blank');keep();foot();};
-  wrap.append(h('label',{},pretty(rel),tone?h('span',{class:`tone ${tone}`},tone):null),short?h('input',{value:v,oninput:mark}):h('textarea',{value:v,rows:Math.min(8,Math.ceil(v.length/110)+1),oninput:mark}));return wrap;});
+  wrap.append(h('label',{},pretty(rel),tone?h('span',{class:`tone ${tone}`},tone):null),short?h('input',{value:v,placeholder:'AI improvises',oninput:mark}):h('textarea',{value:v,placeholder:'Blank: the AI improvises this while you play',rows:Math.min(8,Math.ceil(v.length/110)+1),oninput:mark}));return wrap;});
  // O1: a rung card can flip its first between free (typed, checkpoint cues) and authored (choice scenes); the card set is re-derived.
  const rung=c.id.includes(':')&&!c.id.startsWith('director:')&&!c.id.endsWith(':profile')?c.id.split(':')[1]:null;
  const modeSel=rung?h('select',{title:'How this first plays',onchange:e=>busy(e.target,'Switching…',async()=>{setPath(S.spec,`${base}mode`,e.target.value);keep();const r=await api('check',{spec:S.spec});Object.assign(S,{cards:r.cards,batches:r.batches});render();say('');})},
@@ -108,15 +109,15 @@ function card(c){
  if(c.id.endsWith(':profile')){const actor=getPath(S.spec,base+'actor'),spec=S.spec;mountPortrait(el,{actor,candidates:()=>spec.heroines.map(x=>x.actor.portrait),active:()=>S.spec===spec&&spec.heroines.some(x=>x.actor===actor),onChange:()=>{keep();render();},onStatus:say});}return el;
 }
 let footEl;
-const foot=()=>{const n=blankCount();footEl?.replaceChildren(h('button',{onclick:()=>go(3)},'Back to drafting'),h('button',{onclick:()=>go(5)},'Back to Game UI'),h('span',{class:n?'errs':'muted'},n?`${n} blank fields`:'No blanks'),h('button',{disabled:!!n||!!S.uiDesigner?.designerDirty,onclick:e=>busy(e.target,'Saving…',async()=>{const r=await api('save',{spec:S.spec,proposal:S.proposal});S.saved=r;keep();say('');render();})},'Save as a new campaign'));};
+const foot=()=>{const n=blankCount();footEl?.replaceChildren(h('button',{onclick:()=>go(3)},'Back to drafting'),h('button',{onclick:()=>go(5)},'Back to Game UI'),h('span',{class:'muted'},n?`${n} blank field${n>1?'s':''}: the AI improvises these`:'No blanks'),h('button',{disabled:!!S.uiDesigner?.designerDirty,onclick:e=>busy(e.target,'Saving…',async()=>{const r=await api('save',{spec:S.spec,proposal:S.proposal,from:S.from||undefined});S.saved=r;S.from=r.from;keep();say('');render();})},'Save and start a campaign'));};
 function stepReview(){
- if(S.saved)return [h('section',{},h('h2',{},`Saved: ${S.saved.title}`),h('p',{},'It is a new campaign now. Open Campaigns on the Play page to start it.'),h('div',{class:'bar'},h('a',{class:'button',href:'/play.html?campaign='+encodeURIComponent(S.saved.campaignId)},'Play this saved campaign'),h('button',{onclick:()=>{S.saved=null;keep();render();}},'Keep editing'),h('button',{onclick:()=>{S={step:1,premise:'',heroines:4,style:''};go(1);}},'Start a new world')))];
+ if(S.saved)return [h('section',{},h('h2',{},`Saved: ${S.saved.title}`),h('p',{},`It is a new campaign now. Open Campaigns on the Play page to start it.${S.saved.improvised?` ${S.saved.improvised} blank fields are left for the AI to improvise.`:''}`),h('div',{class:'bar'},h('a',{class:'button',href:'/play.html?campaign='+encodeURIComponent(S.saved.campaignId)},'Play this saved campaign'),h('button',{onclick:()=>{S.saved=null;keep();render();}},'Keep editing'),h('button',{onclick:()=>{S={step:1,premise:'',heroines:4,style:''};go(1);}},'Start a new world')))];
  const groups=new Map();for(const c of S.cards||[]){const g=c.id==='world'?'World':c.id.startsWith('director:')?'Director beats (any love interest can play {lead} or {rival})':getPath(S.spec,`heroines.${c.id.split(':')[0]}.actor.name`)||c.id;if(!groups.has(g))groups.set(g,[]);groups.get(g).push(c);}
  footEl=h('div',{class:'foot'});foot();
  return [h('section',{},h('h2',{},'Review / Save'),S.uiDesigner?.designerDirty?h('p',{class:'errs'},'Game UI edits are pending. Return to Game UI and Apply or Cancel before saving.'):null),...[...groups].map(([g,cs])=>[h('div',{class:'group'},g),...cs.map(card)]).flat(),footEl];
 }
 
-async function openWorld(id){await busy(null,'Opening…',async()=>{const w=await api(`world?id=${encodeURIComponent(id)}`),r=await api('check',{spec:w.spec});Object.assign(S,{uiOwner:crypto.randomUUID(),uiDesigner:{review:null},proposal:w.proposal,spec:w.spec,cards:r.cards,batches:r.batches,notes:[],errors:[],progress:{},saved:null});go(6);say('');});}
+async function openWorld(id){await busy(null,'Opening…',async()=>{const w=await api(`world?id=${encodeURIComponent(id)}`),r=await api('check',{spec:w.spec});Object.assign(S,{uiOwner:crypto.randomUUID(),uiDesigner:{review:null},from:w.from||null,proposal:w.proposal,spec:w.spec,cards:r.cards,batches:r.batches,notes:[],errors:[],progress:{},saved:null});go(6);say('');});}
 
 function stepModules(){
  const spec=S.spec,box=h('section',{},h('h2',{},'Gameplay modules'),h('p',{class:'muted'},'These are engine systems, separate from Game UI element visibility. Dependencies are enabled automatically. Existing configuration is retained; unsupported changes explain the required configuration.'));

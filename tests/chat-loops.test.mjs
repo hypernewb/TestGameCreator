@@ -29,3 +29,7 @@ test('narration that invents the player’s feelings is cut on every model, neve
  assert.deepEqual(dropStock(lines).map(l=>l.text),['Olu hands you the rope.','Hold that tight.']);
  const only=[{speaker:'',text:'You feel the deck tilt.'}];assert.deepEqual(dropStock(only),only,'nothing left: the reply is kept for the lint');
 });
+test('narration that only says a line landed is cut while someone speaks',async()=>{
+ const {dropStock}=await import('../packages/ai/untrusted-output.mjs');
+ assert.deepEqual(dropStock([{speaker:'',text:'The question lands. Olu sets down the rope.'},{speaker:'olu',text:'Ask me later.'}]).map(l=>l.text),['Olu sets down the rope.','Ask me later.']);
+});

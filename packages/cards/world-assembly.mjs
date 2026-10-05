@@ -7,8 +7,29 @@ const MODULES=['social.conversation','social.relationships','world.schedule','it
 const VERSIONS={'items.inventory':'0.2.0','world.economy':'0.2.0','social.romance-tempo':'0.2.0'};
 const assert=(ok,msg)=>{if(!ok)throw new Error(`world spec: ${msg}`);};
 
-export function assemble(spec){
- const missing=[],text=(v,path)=>typeof v==='string'&&v.trim()?v:(missing.push(path),`[[${path}]]`);
+// improvise: save an unfinished world. An authored first or director beat with blanks can't be played as written, so the first turns free
+// (typed; the AI improvises it around the code-held checkpoints) and the beat is left out; other blanks get a plain name or stay empty for the AI to improvise.
+export function assemble(spec,{improvise=false}={}){
+ if(!improvise)return build(spec);const first=build(spec);if(!first.missing.length)return {...first,improvised:[]};
+ const s=structuredClone(spec),skip=new Set();for(const p of first.missing){const r=p.match(/^heroines\.([^.]+)\.rungs\.(talk|date|kiss|night)\./),b=p.match(/^director\.beats\.([^.]+)\./);
+  if(r){const x=s.heroines.find(h=>h.id===r[1]);x.rungs||={};x.rungs[r[2]]={...x.rungs[r[2]],mode:'free'};}if(b)skip.add(b[1]);}
+ const improvised=[],text=(v,path)=>typeof v==='string'&&v.trim()?v:(improvised.push(path),fallbackText(s,path));return {...build(s,text,skip),missing:[],improvised};
+}
+const RANK_NAMES=['Stranger','Acquaintance','Friend','Close'],STAGE_NAMES=['Guarded','Warming up','Open'],FIRST_TITLES={talk:'A real talk',date:'First date',kiss:'First kiss',night:'First night'};
+const FIRST_OPENINGS={talk:n=>`${n} sets down what they were doing and actually looks at you.`,date:n=>`${n} is already there, and smiles when they see you.`,kiss:n=>`${n} goes quiet, standing closer than before.`,night:n=>`${n} doesn't let go of your hand.`};
+const CUES={'opening-up':'they start to say something that matters to them','your-turn':'they turn it back on you','arrival':'the first look when you meet','noticing':'they notice something about you','moment':'a pause where something could happen','reading':'they read your face','leaning-in':'the distance closes','after':'right after','lead':'who moves first','check-in':'asking if this is what you both want','peak':'everything slows down'};
+const REASONS={topic:'you got them talking about something they love',looks:'a compliment that missed',sore:'you touched a sore spot',listen:'you really listened',tease:'you teased them','tease-public':'you teased them in front of people',pushy:'you pushed too hard',invite:'you asked them out'};
+function fallbackText(spec,path){
+ const h=path.match(/^heroines\.([^.]+)\.(.*)$/),name=h&&(spec.heroines.find(x=>x.id===h[1])?.actor?.name?.trim()||h[1].replace(/^./,c=>c.toUpperCase())),rel=h?.[2]||path;let m;
+ if(path==='title')return 'Untitled world';if(path==='fallback.name')return 'The end of the story';if(path==='fallback.text')return 'This chapter of your life comes to a close.';
+ if(m=rel.match(/^ranks\.(\d)$/))return RANK_NAMES[m[1]];if(m=rel.match(/^stages\.(\d)\.name$/))return STAGE_NAMES[m[1]];if(m=rel.match(/^rungs\.(\w+)\.title$/))return FIRST_TITLES[m[1]];
+ if(rel==='actor.name')return name;if(rel==='endings.route.name')return `${name}'s route`;if(rel==='endings.together.name')return `Together with ${name}`;if(/^endings\.\w+\.text$/.test(rel))return `You and ${name} found where you stand with each other.`;
+ if(m=rel.match(/^reasons\.(.+)$/))return REASONS[m[1]]||'something you did';if(/^harp\.\d+$/.test(rel))return 'you kept on about something they dislike';if(rel==='interest.label')return 'something to find out together';
+ if(m=rel.match(/^rungs\.(\w+)\.opening$/))return FIRST_OPENINGS[m[1]]?.(name)||'';if(m=rel.match(/^rungs\.\w+\.checkpoints\.([\w-]+)(\.cue)?$/))return CUES[m[1]]||'the moment shifts';
+ return '';
+}
+function build(spec,text,skip){
+ const missing=[];text||=(v,path)=>typeof v==='string'&&v.trim()?v:(missing.push(path),`[[${path}]]`);
  const w=spec.world||{},hs=spec.heroines||[];assert(hs.length>=1&&hs.length<=6,'1–6 love interests');assert(!w.firsts||w.firsts==='free'||w.firsts==='authored','world.firsts: must be "free" or "authored"');
  const run={days:spec.days||28,defaultEnding:spec.fallback?.id||'run-ends'},overFlag=spec.fallback?.flag||'run-over';
  const parts=hs.map(h=>heroine(h,spec,text));
@@ -29,7 +50,7 @@ export function assemble(spec){
   endings:[...parts.flatMap(x=>x.endings),{id:run.defaultEnding,name:text(spec.fallback?.name,'fallback.name'),priority:ENDING_PRIORITY.fallback,requires:{flags:{[overFlag]:true}},text:text(spec.fallback?.text,'fallback.text')}],
   scriptedScenes:parts.flatMap(x=>x.scenes),...(firsts.length?{firsts}:{})};
  // M3: the director library over every love interest; its text slots go through the same blank-tracking filler.
- return {pack:spec.director?withDirector(pack,{beats:spec.director.beats,tone:spec.director.tone,text}):pack,missing};
+ return {pack:spec.director?withDirector(pack,{beats:spec.director.beats,tone:spec.director.tone,text,skip}):pack,missing};
 }
 
 function heroine(h,spec,text){

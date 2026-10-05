@@ -1,4 +1,9 @@
 import {calendarFor,PERIODS} from './calendar.mjs';
+// Pending plans the player has made, soonest first: story plans (authored or from an agreed invite) plus invite plans kept outside story.scenes.
+export function upcomingPlans(s,p){const name=id=>s.actors[id]?.name||id,place=id=>p.locations.find(l=>l.id===id)?.name||id,when=t=>{const c=calendarFor(t,p);return `${c.weekday} ${c.daypart.toLowerCase()}`;};
+ const story=(s.modules['story.scenes']?.plans||[]).filter(x=>x.status==='pending').map(x=>({character:x.character,tick:x.deadlineTick,text:x.plan,when:Number.isInteger(x.deadlineTick)?`by ${when(x.deadlineTick)}`:''}));
+ const acts=Object.values(s.modules['social.acts']?.characters||{}).flatMap(r=>r.plans||[]).filter(x=>x.status==='pending'&&!x.storyId).map(x=>({character:x.character,tick:x.due,text:`Meet ${name(x.character)} at ${place(x.location)}`,when:when(x.due)}));
+ return [...story,...acts].sort((a,b)=>(a.tick??Infinity)-(b.tick??Infinity));}
 export const plannerReady=(s,p)=>p?.gameProject?.timeMode==='planner'&&!s.scene&&!s.modules['story.scenes']?.pending&&!s.modules['social.firsts']?.active;
 export function renderPlanner(box,data,go,busy=false){
  const {state:s,pack:p}=data,c=calendarFor(s.tick,p),make=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e;},button=a=>{const b=make('button',a.label);b.type='button';b.disabled=busy||a.enabled===false;b.title=a.reason||a.storylet?.hint||'';if(a.storylet?.where)b.append(make('small',a.storylet.where));b.onclick=()=>go({type:a.type,args:a.args});return b;};

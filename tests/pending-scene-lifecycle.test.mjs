@@ -38,3 +38,16 @@ test('restored offered Leave settles a missed NPC schedule and does not close an
  const q=structuredClone(p);q.gameProject={premise:'Test',setting:'Test',ai:{intent:'',scene:'',daypart:''},timeMode:'planner',conversationStyle:'continuous',calendar:{startWeekday:'Monday'}};q.modules['world.schedule']='0.1.0';q.schedules=[{actor:'npc',weekly:[{weekday:'Monday',daypart:'Afternoon',location:'room'}]}];let s=createWorld(q,registry);s=run(s,q,'story.startOfferedScene',{scene:'help'});s=run(s,q,'story.respond',{text:'I lend a hand.'});assert.equal(s.actors.npc.location,'yard');s=JSON.parse(JSON.stringify(s));const before=structuredClone(s),r=execute(s,{id:'leave',actorId:q.playerId,type:'story.leave',args:{scene:'help'},expectedRevision:s.revision},q,registry);assert.equal(r.state.tick,4);assert.equal(r.state.scene,null);assert.equal(r.state.planner,null);assert.equal(r.state.actors.npc.location,'room');assert.equal(r.state.flags.done,undefined);assert.equal(r.turn.events.filter(e=>e.type==='world.actorArrived'&&e.payload.actor==='npc').length,1);assert.equal(r.turn.events.filter(e=>e.type==='core.timeAdvanced').length,1);assert.deepEqual(execute(r.state,r.turn.command,q,registry).state,r.state);
  const unrelated=structuredClone(before);unrelated.scene.scripted='other';const left=run(unrelated,q,'story.leave',{scene:'help'});assert.equal(left.scene.scripted,'other');assert.equal(left.tick,0);
 });
+test('a texted beat takes a typed reply by phone without moving anyone',()=>{
+ const q=structuredClone(p);delete q.scriptedScenes[0].template;q.actors[1].location='yard';q.scriptedScenes[0].trigger={event:'story.directorDealt',match:{entry:'help'}};q.phoneMessages=[{id:'help.message',character:'npc',text:'Can you come?'}];
+ let s=createWorld(q,registry);s=run(s,q,'story.startOfferedScene',{scene:'help'});const r=execute(s,{id:'txt',actorId:'player',type:'story.respond',args:{text:'On my way.'},expectedRevision:s.revision},q,registry);
+ assert.equal(r.state.actors.player.location,'room');assert.equal(r.state.scene,null);assert.equal(r.state.modules['story.scenes'].pending,'help');assert.equal(r.turn.events.find(e=>e.type==='story.sceneResponded').payload.byPhone,true);
+ delete q.phoneMessages;assert.throws(()=>run(s,q,'story.respond',{text:'On my way.'}),/No character is present/);
+});
+test('the texter answers a typed phone reply in the narration',async()=>{
+ const q=structuredClone(p);delete q.scriptedScenes[0].template;q.scriptedScenes[0].trigger={event:'story.directorDealt',match:{entry:'help'}};q.phoneMessages=[{id:'help.message',character:'npc',text:'Can you come?'}];
+ const store=new Store(),provider=new MockProvider(),contexts=[];provider.generateScene=async c=>{contexts.push(structuredClone(c));return {lines:[{speaker:'npc',text:'Good. Hurry.'}],acts:[]};};
+ let s=createWorld(q,registry,'txt',1);s=run(s,q,'story.startOfferedScene',{scene:'help'});store.insert(s);const service=new GameService(store,{[q.id]:q},registry,provider);
+ const r=await service.act(s.campaignId,{id:'txt',expectedRevision:s.revision,input:'On my way.'});assert.equal(r.refusal,undefined);
+ assert.ok(contexts.at(-1).scriptedScene?.byPhone);assert.deepEqual(contexts.at(-1).stagedCast,['npc']);assert.ok(Object.values(r.state.turns).at(-1).narration?.lines?.some(l=>l.speaker==='npc')||JSON.stringify(r).includes('Good. Hurry.'));
+});

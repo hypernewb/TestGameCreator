@@ -28,12 +28,16 @@ test('with no scene open, "her" and "them" mean the one person standing here',as
 
 test('"them" with nobody here still asks who you mean',async()=>{
  const p=load('neutral');p.actors.find(a=>a.id==='ada').location='meeting';const provider=probe(),{store,service}=serve(p,'empty',provider);
- try{const r=await service.act('empty',{id:'t',expectedRevision:0,input:'Talk to them'});assert.match(r.clarification,/Nobody else is here/);assert.equal(provider.contexts.length,0);}finally{store.close();}
+ try{const r=await service.act('empty',{id:'t',expectedRevision:0,input:'Talk to them'});assert.match(r.clarification,/Nobody else is here/);assert.equal(provider.contexts.length,0);
+  const go=await service.act('empty',{id:'t2',expectedRevision:0,input:'Go introduce yourself to them'});assert.match(go.clarification,/Nobody else is here/,'not "where do you want to go"');}finally{store.close();}
 });
 
 test('"go find Brin" walks to where she is and opens the scene with her',async()=>{
  const provider=probe(['brin']),{store,service}=serve(load('neutral'),'find',provider);
  try{const r=await service.act('find',{id:'t',expectedRevision:0,input:'Go find Brin'});assert.equal(r.state.actors.player.location,'workshop');assert.deepEqual(r.state.scene.characters,['brin']);assert.equal(provider.contexts.length,1);}finally{store.close();}
+ // A cloud model once filed the sought person as merely mentioned and kept whoever stood here: "find" names who the trip is for.
+ const wrong={...probe(['ada']),async interpretScene(){return {characters:['ada'],mentionedOnly:['brin'],location:'hub',activity:'meet'};}},s2=serve(load('neutral'),'find2',wrong);
+ try{const r=await s2.service.act('find2',{id:'t',expectedRevision:0,input:'go find brin'});assert.equal(r.state.actors.player.location,'workshop');assert.deepEqual(r.state.scene.characters,['brin']);}finally{s2.store.close();}
 });
 
 // Creator casts use full names ("Selma Aydın"); players type the first name, lowercase, without accents.
@@ -130,6 +134,10 @@ test('the weekday check only rejects a line that says today is another day',asyn
  const {todayClaims}=await import('../packages/ai/narration-lint.mjs');
  assert.deepEqual(todayClaims('She wants to try the beach on Sunday.'),[]);assert.deepEqual(todayClaims('Next Friday there is a party.'),[]);
  assert.deepEqual(todayClaims('It is Sunday and the hall is quiet.'),['sunday']);assert.deepEqual(todayClaims('Sunday morning light fills the room.'),['sunday']);
+ const {lintScene}=await import('../packages/ai/narration-lint.mjs'),p=load('campus'),run=(lines,playerAction='')=>()=>lintScene({lines},{weekday:'Monday',playerAction},p);
+ assert.doesNotThrow(run([{speaker:'',text:'Sunday afternoon at the beach, then.'}],'Tell her you will go with her to the beach on sunday'));
+ assert.doesNotThrow(run([{speaker:'jana',text:'Beach? Sunday works.'},{speaker:'',text:'Sunday afternoon it is.'}]));
+ assert.throws(run([{speaker:'',text:'Sunday morning light fills the room.'}]),/It is Monday/);
 });
 test('a first talk opens with a greeting and one thread, not her life goal or a topic from her sheet',async()=>{
  const {beatDirection}=await import('../packages/ai/beats.mjs'),p=load('campus'),jana=p.actors.find(a=>a.id==='jana');

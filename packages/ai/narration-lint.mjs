@@ -56,7 +56,8 @@ const NOT_TODAY=/\b(?:on|next|last|until|till|by|before|after|since|from|every|c
 export const todayClaims=text=>[...text.matchAll(new RegExp(`\\b${WEEKDAY_WORDS.source}\\b`,'gi'))].filter(m=>{const before=text.slice(Math.max(0,m.index-16),m.index),after=text.slice(m.index+m[0].length);return !NOT_TODAY.test(before)&&(TODAY.test(before)||/^(?:'s)?\s+(?:morning|afternoon|evening|night)\b/i.test(after)||!text.slice(0,m.index).trim());}).map(m=>m[1].toLowerCase());
 function assertWeekday(value,context){
  // A day the player named ("the beach on Sunday") is their plan, not a claim about today. Soft: a second miss keeps the reply.
- if(!context.weekday)return;const named=new Set((String(context.playerAction||'').match(new RegExp(WEEKDAY_WORDS.source,'gi'))||[]).map(d=>d.toLowerCase()));
+ // A day the player or a character names in this exchange is plan talk ("Sunday?" … "Sunday afternoon it is"), not a claim about today.
+ if(!context.weekday)return;const named=new Set([context.playerAction,...value.lines.filter(l=>l.speaker).map(l=>l.text)].flatMap(t=>String(t||'').match(new RegExp(WEEKDAY_WORDS.source,'gi'))||[]).map(d=>d.toLowerCase()));
  for(const line of value.lines)if(!line.speaker)for(const day of todayClaims(line.text))if(day!==String(context.weekday).toLowerCase()&&!named.has(day))throw Object.assign(Error(`It is ${context.weekday}: do not describe today as ${day}`),{soft:true});
 }
 // Exact-match dedup misses a lightly paraphrased rerun of the same beats ("arches an eyebrow… crosses her arms…"

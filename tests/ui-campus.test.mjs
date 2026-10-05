@@ -113,7 +113,8 @@ test('every heroine first shows its own CG, and the art sheet renders each one a
 // Live run 3: the tester typed into Jana's first night while she was booked elsewhere and got "No character is present to answer this reply" twice.
 test('the prompt box locks during a scripted scene when nobody in it is here to answer',()=>{
  const src=read('play.mjs');assert.match(src,/voiced=beat&&!\[\.\.\.\(beat\.pages\|\|\[\]\)\.map\(x=>x\.speaker\),\.\.\.Object\.keys\(beat\.when\?\.charactersAt\|\|\{\}\),\.\.\.Object\.values\(scene\?\.template\?\.roles\|\|\{\}\),\.\.\.\(s\.scene\?\.characters\|\|\[\]\)\]\.some\(id=>id&&present\(id\)\)/);
- assert.match(src,/blocked=beat\?\.allowInput===false\|\|voiced\|\|/);
+ assert.match(src,/blocked=beat\?\.allowInput===false\|\|\(voiced&&!texter\)\|\|/);
+ assert.match(src,/texter=voiced&&\(p\.phoneMessages\|\|\[\]\)\.find\(/,'a beat texted to the player stays open for a typed reply');
 });
 
 test('M5 widgets: every campus activity resolves the same game in the UI and the engine, and the tier rides on the command', async()=>{

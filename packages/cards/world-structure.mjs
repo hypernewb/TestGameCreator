@@ -61,6 +61,8 @@ export function structureFromProposal(p){
    gifts:{...(h.loved?{loved:item(h.loved)}:{}),...(h.liked?{liked:[item(h.liked)]}:{}),...(h.disliked?{disliked:item(h.disliked)}:{})},...(h.buy?{buy:item(h.buy)}:{}),
    wants:list(h.wants).filter(w=>STATS.includes(w.stat)).slice(0,2).map(w=>({id:w.stat,stat:w.stat,min:WANT_MIN[w.level]||WANT_MIN.some})),activities:[],
    actor:{name:String(h.name).trim(),...(h.portrait?{portrait:h.portrait}:{}),age:h.age,pronouns:'she/her',location:hh.id,likes:list(h.likes).slice(0,4),dislikes:list(h.dislikes).slice(0,3)},_stops:stops.map(x=>x.id)};});
+ // The opening scene needs someone in it: if no love interest starts at the player's home, the game opens where the first one spends her morning.
+ let start=home;if(!heroines.some(h=>h._stops[0]===home.id)){const h=heroines[0],i=Math.max(0,h._stops.findIndex(s=>s!==h.actor.location));h._stops=[...h._stops.slice(i),...h._stops.slice(0,i)];h.actor.location=h._stops[0];start=places.find(x=>x.id===h._stops[0]);notes.push(`nobody starts at ${home.name}: the game opens at ${start.name}, where ${h.actor.name} is`);}
  const hero=n=>{const x=byName.get(key(n));return x?.heroine;};
  const activities=list(p.activities).slice(0,14).map(a=>{const at=place(a.at,home),w=hero(a.with),money=a.gives==='money',stat=STATS.includes(a.gives)?a.gives:money?null:'charm';
   const act={id:idFor(a.name,taken),name:String(a.name).trim(),description:a.about||'',location:at.id,duration:4,phrases:[String(a.name).trim().toLowerCase()],
@@ -70,7 +72,7 @@ export function structureFromProposal(p){
  const exits=x=>{const i=places.indexOf(x),n=places.length,to=new Set(i?[home.id]:places.slice(1).map(y=>y.id));if(i){to.add(places[i%(n-1)+1].id);to.add(places[(i-2+n-1)%(n-1)+1].id);}to.delete(x.id);return [...to].map(t=>({to:t}));};
  const drinks=items.filter(i=>i.drink).map(i=>i.id);items.forEach(i=>delete i.drink);
  const weather=list(p.weather).slice(0,3).map((w,i)=>({id:idFor(w.name,new Set()),name:String(w.name).trim(),weight:[50,30,20][i],text:w.text||''}));
- const spec={id:idFor(p.title||'world',new Set()),title:p.title||'',days:28,player:{name:p.player?.name||'You',age:p.player?.age,pronouns:'you',location:home.id,identityTags:['adult']},
+ const spec={id:idFor(p.title||'world',new Set()),title:p.title||'',days:28,player:{name:p.player?.name||'You',age:p.player?.age,pronouns:'you',location:start.id,identityTags:['adult']},
   project:{premise:p.premise||'',setting:p.setting||''},
   world:{locations:places.map(x=>({id:x.id,name:x.name,description:x.about,exits:exits(x)})),items,activities,statDefinitions:STAT_KIT,initialStats:STATS.map(stat=>({character:'player',stat,value:2})),
    schedules:heroines.map(h=>({actor:h.id,period:12,stops:h._stops.map((location,i)=>({at:i*4,location}))})),calendar:{startDate:'2026-09-07',...(weather.length?{weather}:{})},

@@ -17,7 +17,7 @@ export function scenePlanForTurn(world,pack,turn){
  cast=[...cast,...turn.events.filter(e=>e.type==='world.moment'&&e.payload.kind==='encounter').map(e=>e.payload.character)];
  // So do the people a director incident brings in (story.sceneStarted cast).
  cast=[...cast,...turn.events.filter(e=>e.type==='story.sceneStarted').flatMap(e=>e.payload.cast||[])];
- cast=[...new Set(cast)].filter(id=>id!==pack.playerId&&world.actors[id]?.location===location&&pack.actors.some(a=>a.id===id));
+ cast=[...new Set(cast)].filter(id=>id!==pack.playerId&&(world.actors[id]?.location===location||sceneEvent?.payload.byPhone&&world.actors[id])&&pack.actors.some(a=>a.id===id));
  // The speaker slate is the only set of IDs that may voice a line this beat; narration stays unattributed.
  return {cast,speakers:[...cast],location,source,actor:cast[0]||pack.playerId,sceneId:world.scene?.id||null,started:Boolean(sceneEvent||hangout),continuing:sceneEvent?.type==='core.sceneContinued'};
 }

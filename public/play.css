@@ -81,3 +81,5 @@
 
 @media(max-width:600px){.place-mark{flex:1}.place-mark small{letter-spacing:.1em}.time-mark{flex:none;max-width:34%;grid-template-columns:minmax(0,1fr)}.time-mark span{grid-row:auto}.time-mark small{grid-column:1}}
 @media(max-width:600px){.dialogue{display:grid;grid-template-rows:minmax(0,1fr);max-height:calc(100vh - anchor-size(--scene-header height) - anchor-size(--scene-nav height) - 300px)}.dialogue p{max-height:100%;min-height:0}.stage:has(#refusal-options:not([hidden]),#scene-status:not([hidden])) .dialogue{min-height:140px;max-height:calc(100vh - anchor-size(--scene-header height) - anchor-size(--scene-nav height) - 375px);padding-top:25px;padding-bottom:60px}}
+
+.pack-update{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:.5rem 0;padding:.6rem .8rem;border:1px solid currentColor;border-radius:8px;background:color-mix(in srgb,currentColor 8%,transparent)}.pack-update p{flex:1 1 16rem;margin:0}

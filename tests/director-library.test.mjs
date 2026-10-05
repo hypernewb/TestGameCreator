@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {createWorld,execute,validatePack} from '../packages/core/engine.mjs';
 import {registry} from '../packages/modules/index.mjs';
-import {DIRECTOR_LIBRARY,directorHint,directorTemplates,withDirector,readPack} from '../packages/cards/director-library.mjs';
+import {DIRECTOR_LIBRARY,directorHint,directorTemplates,withDirector,readPack,dropClaims} from '../packages/cards/director-library.mjs';
 
 // M3: the code-owned director library baked over campus's four love interests with placeholder text.
 const probe={id:'test.court',version:'0.1.0',coreApi:'0.1.0',requires:[],commands:{'test.court'(tx,a){tx.emit('social.actPriced',{character:a.character,act:{kind:'listen',target:'plans'},points:1});}}},mods={...registry,[probe.id]:probe};
@@ -76,3 +76,9 @@ test('taking a phone invite walks you out of a conversation with someone else, a
  g.act('core.scene',{text:'Hi Jana.',location:jana.location,characters:['jana'],activity:'talk'});assert.deepEqual(g.s.scene?.characters,['jana']);
  g.s.modules['story.director'].offers=[{id:inv.id,scene:inv.scene,template:'invite',roles:inv.roles}];const ev=g.act('story.startOfferedScene',{scene:inv.scene});
  assert(ev.some(e=>e.type==='core.sceneEnded'&&e.payload.reason==='player'),'Jana\'s scene ends');assert(!g.s.scene?.characters?.includes('jana'),'no Jana scene to continue');assert.equal(g.s.modules['story.scenes'].pending,inv.scene);});
+test('a drafted opening drops sentences claiming how often you met; the engine cannot back them',()=>{
+ const t=directorTemplates({spark:{opening:'You have spent every evening this week with {lead}, and everyone noticed. {rival} stands a half-step too close.'}}).find(x=>x.id==='spark');
+ assert.equal(t.scene.opening,'{rival} stands a half-step too close.');
+ assert.equal(dropClaims('You and {lead} have been close lately.'),'You and {lead} have been close lately.');
+ assert.equal(dropClaims('They have met for weeks.'),'They have met for weeks.','nothing left to keep: the line stays');
+});

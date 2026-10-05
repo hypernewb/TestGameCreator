@@ -1,0 +1,72 @@
+Status: done
+Files: repair tests: tests/creator-module-roundtrip.test.mjs, tests/creator-systems-controls.test.mjs, tests/free-tier-guard.test.mjs, tests/player-session-lifecycle.test.mjs, tests/project-media-validation.test.mjs, tests/proposal-review.test.mjs, tests/studio-knowledge.test.mjs, tests/studio-rules-controls.test.mjs, tests/studio-weekly-routines.test.mjs, tests/time-cost.test.mjs; preserved existing work in commits below; this report.
+Tests: full requested non-browser filename set pass 1855 fail 0 cancelled 0 skipped 10 (1865 total); final focused media pass 16 fail 0; four unchanged browser checks pass 4 fail 0.
+Acceptance: requested set green; explicit-path staging only; no reversions, settings-file access, model calls or pushes. Local commits below.
+Deviations: PowerShell equivalent used on Windows. Node defaulted to spec output, so initial requested regex matched no lines; saved output was parsed. Final run explicitly used TAP. Initial: pass 1818 fail 35 cancelled 2 skipped 10. Of 35 failures, 31 were outdated tests and four were browser startup failures. Two media cancellations had the same missing-harness cause. Full set ran once after all repairs with approved unrestricted execution for included browser tests. User's test scope supersedes repository/role full npm-test instruction.
+Noticed: package.json, scripts/test.mjs and scripts/cleanup-data.mjs appeared/changed after the initial inventory; left uncommitted as concurrent work. Comfy documentation also remains with that excluded group. Existing creator brief records a live-server restart/readiness limitation; this task proves current source with isolated servers, not deployment.
+Questions: none
+
+## Evidence for intended changes
+
+- [T-creator-character-workflow.report.md](T-creator-character-workflow.report.md), reproduced fixes and owned hunks: Studio delegates portraits to shared mountPortrait and relocates preparedImage unchanged, including the animation branch. Stripped-import harnesses need that unrelated dependency. Dedicated character-media tests cover the actual module.
+- [T-creator-embedded-ui-wizard.report.md](T-creator-embedded-ui-wizard.report.md), preview/creator repair: preview is read-only; handlers guard previewMode; checkboxes gain accessibility metadata; pending designer work gates snapshots; displaying optional absent startOptions must not insert an invalid empty list. Its fresh-publication evidence explicitly documents Publish and play creating a new campaign.
+- Source diffs confirm these seams in public/studio.mjs moduleEditor(), studioSnapshot(), rows() and publish; public/play.mjs act()/retry(); public/character-media.mjs preparedImage(). Existing retry ownership, no-write preflight, payload identity, import/export, module retention, knowledge/replay and rule-buffer assertions remain. The source-syntax assertion becomes a direct behavior check; campaign coverage is strengthened.
+- No tested production regression found. This reconciliation changed only ten test files plus this report. Other source commits preserve existing uncommitted work.
+
+## Test → cause → fix → commit
+
+| Test | Cause | Fix | Repair commit |
+| --- | --- | --- | --- |
+| tests/creator-module-roundtrip.test.mjs: CB-05 actual Studio module checkbox handlers and Save/Open retain config across transitive disable/re-enable (DOM surrogate, real API) | Outdated DOM mock: module checkbox now sets aria-label | Implement setAttribute; retain module/storage assertions | 8324ef7 |
+| tests/creator-systems-controls.test.mjs: production pending buffers gate save/check/export/import/open and module changes; late validation preserves newer input | Outdated VM harness: stripped mountPortrait import is now used | Stub unrelated portrait mount; retain mechanic/control assertions | 8324ef7 |
+| tests/creator-systems-controls.test.mjs: module enable resolves dependencies and disable retains authored configuration; pending changes invalidate a saved snapshot | Outdated VM harness: stripped mountPortrait import is now used | Stub unrelated portrait mount; retain mechanic/control assertions | 8324ef7 |
+| tests/creator-systems-controls.test.mjs: production Check/Save/Open/export/import handlers roundtrip all systems through isolated storage; runtime outcomes replay | Outdated VM harness: stripped mountPortrait import is now used | Stub unrelated portrait mount; retain mechanic/control assertions | 8324ef7 |
+| tests/free-tier-guard.test.mjs: the player keeps failed input and can retry it from the status button | Outdated extracted-handler harness: missing previewMode | Supply normal-play previewMode=null; retain retry/stale-response/cost assertions | 5af3a20 |
+| tests/play-navigation-layout.test.mjs: mobile-navigation-clock-clearance | Environment: sandbox Edge startup CDP timeout | Unchanged checks pass with approved unrestricted execution | — (no repair) |
+| tests/play-ui-clearance.test.mjs: player-refusal-status-header-clearance | Environment: sandbox Edge startup CDP timeout | Unchanged checks pass with approved unrestricted execution | — (no repair) |
+| tests/play-ui-clearance.test.mjs: landing-planner-warning-scroll-reachability | Environment: sandbox Edge startup CDP timeout | Unchanged checks pass with approved unrestricted execution | — (no repair) |
+| tests/player-session-lifecycle.test.mjs: play stale action resolve cannot mutate B or release B busy | Outdated extracted-handler harness: missing previewMode | Supply normal-play previewMode=null; retain retry/stale-response/cost assertions | 5af3a20 |
+| tests/player-session-lifecycle.test.mjs: play stale action reject cannot mutate B or release B busy | Outdated extracted-handler harness: missing previewMode | Supply normal-play previewMode=null; retain retry/stale-response/cost assertions | 5af3a20 |
+| tests/player-session-lifecycle.test.mjs: play stale retry resolve cannot mutate B or release B busy | Outdated extracted-handler harness: missing previewMode | Supply normal-play previewMode=null; retain retry/stale-response/cost assertions | 5af3a20 |
+| tests/player-session-lifecycle.test.mjs: play stale retry reject cannot mutate B or release B busy | Outdated extracted-handler harness: missing previewMode | Supply normal-play previewMode=null; retain retry/stale-response/cost assertions | 5af3a20 |
+| tests/player-session-lifecycle.test.mjs: play title and same-campaign replace invalidate failure and held preview | Outdated extracted-handler harness: missing previewMode | Supply normal-play previewMode=null; retain retry/stale-response/cost assertions | 5af3a20 |
+| tests/project-media-validation.test.mjs: actual import handler preflights before writes and retains active draft; valid media remaps all references | Outdated extracted-helper harness: missing uiProjectSessions | Supply Map; retain preflight/stale-edit/remap assertions | d3aab0b |
+| tests/project-media-validation.test.mjs: actual Publish rejects missing media before Save and preserves prior draft/publication bytes and local edits | Outdated extracted-helper harness: missing uiProjectSessions | Supply Map; retain preflight/stale-edit/remap assertions | d3aab0b |
+| tests/project-media-validation.test.mjs: Publish detects edits/replacement while validation awaits; unchanged snapshot is the one saved and published | Outdated extracted-helper harness: missing uiProjectSessions | Supply Map; expect documented /api/new and assert one fresh campaign | d3aab0b |
+| tests/project-media-validation.test.mjs: edits arriving during publish Save cannot change the validated payload or replace newer local edits | Outdated extracted-helper harness: missing uiProjectSessions | Supply Map; retain preflight/stale-edit/remap assertions | d3aab0b |
+| tests/project-media-validation.test.mjs: animated WebP passes the animation kind and uploads preserve its bytes exactly | Outdated source location: preparedImage moved unchanged | Check shared character-media animation branch; retain upload byte checks | d3aab0b |
+| tests/project-media-validation.test.mjs: import handler remaps Wizard UI art to fresh uploads; export handler embeds it | Outdated extracted-helper harness: missing uiProjectSessions | Supply Map; retain preflight/stale-edit/remap assertions | d3aab0b |
+| tests/proposal-review.test.mjs: Studio wires the review panel and card buttons to server routes that exist | Outdated syntax assertion: absent startOptions must remain absent during render | Exercise rows() for missing optional/ordinary lists and explicit Add | d3aab0b |
+| tests/studio-knowledge.test.mjs: actual creator controls author truth and initial owners; event grants only chosen actor once, with no rewards | Outdated VM harness: stripped mountPortrait import is now used | Stub unrelated portrait mount; retain mechanic/control assertions | 8324ef7 |
+| tests/studio-knowledge.test.mjs: actionable invalid IDs, scenes, beats, choices and disabled module are rejected; UI save stops before a request | Outdated VM harness: stripped mountPortrait import is now used | Stub unrelated portrait mount; retain mechanic/control assertions | 8324ef7 |
+| tests/studio-knowledge.test.mjs: advanced reveal conditions, extensions, authored lore and generated memory edits keep their existing scope | Outdated VM harness: stripped mountPortrait import is now used | Stub unrelated portrait mount; retain mechanic/control assertions | 8324ef7 |
+| tests/studio-knowledge.test.mjs: real isolated Studio Check/Save/Open/full-project export/import retain truth, ownership and schema; saves replay knowledge | Outdated VM harness: stripped mountPortrait import is now used | Stub unrelated portrait mount; retain mechanic/control assertions | 8324ef7 |
+| tests/studio-knowledge.test.mjs: reveal mechanics and initial ownership affect exact-pack saves without changing legacy digests | Outdated VM harness: stripped mountPortrait import is now used | Stub unrelated portrait mount; retain mechanic/control assertions | 8324ef7 |
+| tests/studio-knowledge.test.mjs: visual choice selection, public knowledge and referenced deletion preserve advanced rows | Outdated VM harness: stripped mountPortrait import is now used | Stub unrelated portrait mount; retain mechanic/control assertions | 8324ef7 |
+| tests/studio-rules-controls.test.mjs: actual rule controls author native stage/plan/unlock; invalid buffers survive render and prevent Check/Save/export/replacement | Outdated VM harness: stripped mountPortrait import is now used | Stub unrelated portrait mount; retain mechanic/control assertions | 8324ef7 |
+| tests/studio-rules-controls.test.mjs: actual controls + Studio Check/Save/Open/export/import handlers retain rules/extensions through real isolated storage; restored mechanics replay | Outdated VM harness: stripped mountPortrait import is now used | Stub unrelated portrait mount; retain mechanic/control assertions | 8324ef7 |
+| tests/studio-rules-controls.test.mjs: complete production render preserves unconditional escapes across stage rename, invalid rerender and module disable | Outdated VM harness: stripped mountPortrait import is now used | Stub unrelated portrait mount; retain mechanic/control assertions | 8324ef7 |
+| tests/studio-rules-controls.test.mjs: retained Apply/Cancel/input callbacks retire after success, cancel and rerender; invalid form can still be corrected | Outdated VM harness: stripped mountPortrait import is now used | Stub unrelated portrait mount; retain mechanic/control assertions | 8324ef7 |
+| tests/studio-rules-controls.test.mjs: production visual deletion controls remove transition/path and retain unrelated advanced data; referenced path refuses | Outdated VM harness: stripped mountPortrait import is now used | Stub unrelated portrait mount; retain mechanic/control assertions | 8324ef7 |
+| tests/studio-rules-controls.test.mjs: accepted weekly snapshot guard detects newer pending rule buffers without replacing ownership | Outdated VM harness: stripped mountPortrait import is now used | Stub unrelated portrait mount; retain mechanic/control assertions | 8324ef7 |
+| tests/studio-rules-controls.test.mjs: production stage deletion refuses a native-valid lorebook gate and preserves the complete project | Outdated VM harness: stripped mountPortrait import is now used | Stub unrelated portrait mount; retain mechanic/control assertions | 8324ef7 |
+| tests/studio-rules-controls.test.mjs: production stage deletion refuses a native-valid stat-check modifier gate and preserves the complete project | Outdated VM harness: stripped mountPortrait import is now used | Stub unrelated portrait mount; retain mechanic/control assertions | 8324ef7 |
+| tests/studio-weekly-routines.test.mjs: actual module checkbox disable/re-enable and Save/Open retain linked source and compiled configuration | Outdated DOM mock: module checkbox now sets aria-label | Implement setAttribute; retain module/storage assertions | 8324ef7 |
+| tests/time-cost.test.mjs: typed result line displays the committed cost | Outdated extracted-handler harness: missing previewMode | Supply normal-play previewMode=null; retain retry/stale-response/cost assertions | 5af3a20 |
+| tests/ui-screen-fidelity.test.mjs: Wizard panel contents respect authored surfaces and fit compact date geometry; Classic restores its chrome | Environment: sandbox Edge startup CDP timeout | Unchanged checks pass with approved unrestricted execution | — (no repair) |
+
+## Commit groups
+
+| Commit | Scope |
+| --- | --- |
+| 8324ef7 | Studio DOM/VM harness repairs |
+| 5af3a20 | Normal-play context for extracted handlers |
+| d3aab0b | Media location/designer fixture/fresh campaign and optional-start checks; includes pre-existing media tests |
+| 4e71bcd | Existing character generation, portrait helper and animated media |
+| 3915ed2 | Existing asset audit and reference-aware rename modules |
+| d14b747 | Existing Wizard live panels, bindings and preview runtime |
+| cc1be71 | Existing publication picker and reasoning-model connection probe |
+| 1ea8daa | Existing world creator media/module contracts |
+| 54a6e53 | Existing embedded designer integration, guarded Apply, preview API and tests |
+
+Left uncommitted: .claude/launch.json; assets/comfy/; packages/assets/comfy.mjs; scripts/comfy-sprites.mjs; tests/comfy.test.mjs; associated docs/ASSET-PIPELINE.md; concurrent package.json, scripts/test.mjs and scripts/cleanup-data.mjs. CLAUDE.md's pre-existing wording clarification is included with this documentation report.

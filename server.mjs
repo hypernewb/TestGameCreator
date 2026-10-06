@@ -28,7 +28,7 @@ import {contextFor} from './packages/ai/context.mjs';
 import {daypartContext} from './packages/ai/daypart.mjs';
 import {modelIdsOf} from './vendor/venus/openaiResponse.mjs';
 import {runPlaytestSuite} from './packages/testing/playtest-audit.mjs';
-import {normalizeCandidate,messagesFor} from './packages/ai/bulk-authoring.mjs';
+import {normalizeCandidate,messagesFor,enrichProject,createProposal,applyProposal} from './packages/ai/bulk-authoring.mjs';
 import {importCard,actorToCard,readCard} from './packages/cards/character-card.mjs';
 import {cardMembers} from './packages/cards/card-world.mjs';
 import {draftStartup,editStartup,beginStartupRegeneration,regenerateStartup,restoreStartup} from './packages/ai/startup-authoring.mjs';
@@ -160,6 +160,7 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider(),draf
       // Character Card V1/V2/V3 (JSON, or a PNG data URL with chara/ccv3 chunks) → a new actor + character lore in the draft.
       if(path==='/api/studio/import-card'&&req.method==='POST'){const d=readDraft(body.id);assert(body.card&&(typeof body.card==='object'||typeof body.card==='string'&&body.card.length<=4900000),'Character card required');const png=typeof body.card==='string'&&body.card.match(/^data:image\/png;base64,([A-Za-z0-9+/=]+)$/);const {pack,actorId}=importCard(d.pack,png?Buffer.from(png[1],'base64'):body.card,{id:body.actorId||undefined,location:body.location||undefined});d.pack=pack;d.updated=new Date().toISOString();writeFileSync(draftFile(d.id),JSON.stringify(d,null,2));return send({...d,actorId});}
       if(path==='/api/studio/export-card'&&req.method==='GET'){const d=readDraft(url.searchParams.get('id'));return send(actorToCard(d.pack,url.searchParams.get('actor'),{version:url.searchParams.get('version')==='2'?2:3}));}
+      if(path==='/api/studio/approve-character'&&req.method==='POST'){assert(body.pack&&body.character,'Project and character required');const proposal=createProposal(body.pack,{characters:[body.character]});proposal.characters[0].status='approved';return send({pack:applyProposal(body.pack,proposal)});}
       if(path==='/api/studio/ai-character'&&req.method==='POST'){
         assert(service.provider instanceof CompatibleProvider,'Connect a local AI model in AI settings before generating a character');assert(body.pack&&typeof body.pack==='object','Project data required');assert(typeof body.brief==='string'&&body.brief.trim()&&body.brief.length<=6000,'Enter a character brief (maximum 6,000 characters)');
         const options={name:body.name,pronouns:body.pronouns,age:body.age,location:body.location},request=characterMessages(body.pack,body.brief,options);let raw,character;
@@ -174,6 +175,7 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider(),draf
         for(let attempt=0;attempt<2;attempt++){raw=await service.provider.complete(messages,undefined,{type:'json_object'});try{candidate=normalizeCandidate(raw,body.pack,counts);break;}catch(error){if(attempt)throw error;messages.push({role:'assistant',content:raw},{role:'user',content:`Return a complete corrected JSON candidate. Validation failed: ${error.message}`});}}
         return send({scene:candidate.scenes[0],provider:service.provider.name});
       }
+      if(path==='/api/studio/enrich'&&req.method==='POST'){assert(body.pack&&typeof body.pack==='object'&&!Array.isArray(body.pack),'Project data required');validatePack(body.pack,registry);assert(['cast','world'].includes(body.scope),'Choose cast or world');const proposal=await enrichProject(startupProvider,body.pack,{scope:body.scope,brief:typeof body.brief==='string'?body.brief.slice(0,2000):''});return send({proposal,review:reviewProposal(body.pack,proposal,{play:false})});}
       // AI proposal review (packages/ai/proposal-review.mjs): the editor's current pack + a proposal file; nothing is saved here.
       if(path.startsWith('/api/studio/proposal/')&&req.method==='POST'){
         assert(body.pack&&typeof body.pack==='object'&&!Array.isArray(body.pack),'Project data required');assert(body.proposal&&typeof body.proposal==='object','Proposal file required');

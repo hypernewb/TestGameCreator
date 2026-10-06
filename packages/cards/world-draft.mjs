@@ -1,5 +1,6 @@
 // M2 draft pass: fill a spec's blank text slots with a cloud model (OpenRouter in Studio), batch by batch, then re-assemble.
 // The model only ever returns strings for paths we asked for; ids, tones, gates and numbers never pass through it.
+import {enrichProject} from '../ai/bulk-authoring.mjs';
 import {assemble} from './world-assembly.mjs';
 import {TEMPERAMENTS,DEFAULT_CHOICE_TONES} from './beat-library.mjs';
 import {directorHint,libraryEntry,DIRECTOR_NOTE} from './director-library.mjs';
@@ -70,12 +71,12 @@ export function acceptDraft(spec,batch,raw){
 }
 
 // complete(messages) -> Promise<string>. Retries only what is still missing, up to `rounds` passes; a batch that throws just stays missing.
-export async function draftWorld(spec,{complete,rounds=2,style,onBatch}={}){
+export async function draftWorld(spec,{complete,rounds=2,style,onBatch,depth=false}={}){
  let s=structuredClone(spec),{missing}=assemble(s),calls=0;
  for(let r=0;r<rounds&&missing.length;r++){
   for(const b of batches(missing)){let raw,error;try{raw=await complete(draftMessages(s,b,{style}));}catch(e){error=e.message;}calls++;const x=error?{spec:s,filled:[]}:acceptDraft(s,b,raw);s=x.spec;onBatch?.({batch:b.id,asked:b.paths.length,filled:x.filled.length,...(error?{error}:{})});}
   missing=assemble(s).missing;}
- const {pack}=assemble(s);return {spec:s,pack,missing,calls};
+ const {pack}=assemble(s);if(depth){const proposal=await enrichProject((messages,schema)=>{calls++;return complete(messages,schema);},pack,{brief:style||'',scope:'all'});return {spec:s,pack,missing,calls,proposal};}return {spec:s,pack,missing,calls};
 }
 
 // What the wizard hands the drafter: the owner's picks (templates, targets, ids, world data) with every prose slot empty.

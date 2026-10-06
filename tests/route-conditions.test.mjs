@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {routeConditionReasons} from '../packages/modules/route-conditions.mjs';
+const p={daypart:{interval:4}},s=()=>({tick:36,modules:{goals:{pilot:{steps:[{id:'launch'},{id:'return'}],current:1}},'social.firsts':{completed:['greeting'],history:[{first:'greeting',outcome:'completed',tick:12}]}}});
+test('goal gates require committed ordered progress, not the active step',()=>{assert.deepEqual(routeConditionReasons({goalSteps:{pilot:'launch'}},s(),p),[]);assert.equal(routeConditionReasons({goalSteps:{pilot:'return'}},s(),p).length,1);assert.equal(routeConditionReasons({goalSteps:{pilot:'missing'}},s(),p).length,1);});
+test('first completion and elapsed days fail closed for missing or stopped firsts',()=>{const a=s();assert.deepEqual(routeConditionReasons({firstCompleted:['greeting'],elapsedDays:[{first:'greeting',min:2}]},a,p),[]);a.tick=35;assert.equal(routeConditionReasons({elapsedDays:[{first:'greeting',min:2}]},a,p).length,1);a.modules['social.firsts'].history[0].outcome='stopped';assert.equal(routeConditionReasons({elapsedDays:[{first:'greeting',min:0}]},a,p).length,1);assert.equal(routeConditionReasons({firstCompleted:['missing']},a,p).length,1);});
+test('adapter is read-only and missing goal state cannot pass',()=>{const a=s(),before=structuredClone(a);routeConditionReasons({goalSteps:{absent:'launch'}},a,p);assert.deepEqual(a,before);assert.equal(routeConditionReasons({goalSteps:{absent:'launch'}},a,p).length,1);});
+
+import {validateRouteConditions} from '../packages/modules/route-conditions.mjs';
+test('adapter validates references and rejects malformed elapsed/goal gates',()=>{const p={playerId:'traveler',actors:[{id:'traveler'},{id:'pilot'}],firsts:[{id:'greeting'}]};validateRouteConditions({goalSteps:{pilot:'launch'},firstCompleted:['greeting'],elapsedDays:[{first:'greeting',min:2}]},p);for(const w of [{goalSteps:{traveler:'launch'}},{goalSteps:[]},{firstCompleted:['missing']},{elapsedDays:[{first:'greeting',min:-1}]},{elapsedDays:[{first:'greeting',min:1.5}]}])assert.throws(()=>validateRouteConditions(w,p),/Route condition/);});
+
+test('elapsed days can use committed completion events after bounded first history expires',()=>{const a=s();a.modules['social.firsts'].history=[];a.events=[{type:'social.firstCompleted',tick:12,payload:{first:'greeting'}}];assert.deepEqual(routeConditionReasons({elapsedDays:[{first:'greeting',min:2}]},a,p),[]);});

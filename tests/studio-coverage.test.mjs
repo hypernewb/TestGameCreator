@@ -16,7 +16,7 @@ const systems=readFileSync(join(root,'public','studio-systems.mjs'),'utf8'),syst
 const advancedKeys=Object.values(advancedSpecs({actors:[],locations:[]})).map(s=>s.path[0]);
 // The weekly preview reads exceptions to warn about precedence; it does not edit them.
 // A control counts when the key is bound as a field key ('key'), an editor/rows key, or a p.key / pack.key path.
-const controlSource=(studio+'\n'+knowledge).replace(/\(p\.scheduleExceptions\|\|\[\]\)\.some\(x=>x\.actor===entry\.actor\)/g,'false');
+const controlSource=(studio+'\n'+knowledge+'\n'+readFileSync(join(root,'public','route-map.mjs'),'utf8')).replace(/\(p\.scheduleExceptions\|\|\[\]\)\.some\(x=>x\.actor===entry\.actor\)/g,'false');
 const hasControl=k=>systemKeys.includes(k)&&systems.includes('edit(')&&studio.includes('mountSystems(')||advancedKeys.includes(k)&&studio.includes('mountAdvanced(')||new RegExp(`(?:'|"|p\\.|pack\\.)${k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}(?![A-Za-z0-9_$])`).test(controlSource);
 // NOISE: pack-shaped locals that are not pack options (react uses `const p=event.payload`; plans, pages).
 const NOISE=new Set(['act','capped','character','characters','company','deadlineTick','entry','points','sceneId','source','status','target','verdict']);

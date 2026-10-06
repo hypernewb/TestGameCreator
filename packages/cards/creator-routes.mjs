@@ -9,10 +9,11 @@ import {batches,draftMessages,acceptDraft,setPath,structureOnly} from './world-d
 import {TONE_CEILINGS} from './director-library.mjs';
 import {structureFromProposal,proposeWorld,cardSeed,PLACE_KINDS,PRICES,STATS,WANT_MIN} from './world-structure.mjs';
 import {TEMPERAMENTS,PACES} from './beat-library.mjs';
+import {routeDiagnostics,routeSameness} from './route-archetypes.mjs';
 
 const obj=(x,m)=>{assert(x&&typeof x==='object'&&!Array.isArray(x),m);return x;};
 // cards: every text path per card (from the picks alone), so the wizard can lay out scene cards whether or not they are drafted yet.
-const report=spec=>{const {pack,missing}=assemble(spec);return {missing,batches:batches(missing).map(b=>({id:b.id,count:b.paths.length})),cards:batches(assemble(structureOnly(spec)).missing),scenes:pack.scriptedScenes.length};};
+const report=spec=>{const {pack,missing}=assemble(spec);return {routeDiagnostics:routeDiagnostics(pack),routeSameness:routeSameness(pack),missing,batches:batches(missing).map(b=>({id:b.id,count:b.paths.length})),cards:batches(assemble(structureOnly(spec)).missing),scenes:pack.scriptedScenes.length};};
 
 export function creatorRoutes({packs,store,registry,publishedDir,worldDir,drafter,validateMedia=()=>{},catalog={}}){
  mkdirSync(worldDir,{recursive:true});

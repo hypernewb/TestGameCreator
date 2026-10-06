@@ -246,6 +246,7 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider(),draf
       }
       if(path.startsWith('/api/creator/')){const r=await creator(path,req.method,req.method==='GET'?Object.fromEntries(url.searchParams):body);if(r)return send(r);}
       if(path.startsWith('/api/'))return send({error:'Not found'},404);
+      if(path==='/route-archetypes.mjs'&&req.method==='GET'){res.writeHead(200,{'Content-Type':'text/javascript','X-Content-Type-Options':'nosniff'});res.end(readFileSync(resolve(root,'packages/cards/route-archetypes.mjs')));return;}
       if(path==='/vendor/venus/sceneActions.mjs'&&req.method==='GET'){res.writeHead(200,{'Content-Type':'text/javascript','X-Content-Type-Options':'nosniff'});res.end(readFileSync(resolve(root,'vendor/venus/sceneActions.mjs')));return;}
       if(path==='/vendor/venus/stageDisplay.mjs'&&req.method==='GET'){res.writeHead(200,{'Content-Type':'text/javascript','X-Content-Type-Options':'nosniff'});res.end(readFileSync(resolve(root,'vendor/venus/stageDisplay.mjs')));return;}
       if(path==='/vendor/venus/sceneText.mjs'&&req.method==='GET'){res.writeHead(200,{'Content-Type':'text/javascript','X-Content-Type-Options':'nosniff'});res.end(readFileSync(resolve(root,'vendor/venus/sceneText.mjs')));return;}

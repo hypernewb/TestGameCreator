@@ -37,8 +37,8 @@ The owner's latest direction supersedes READY/resume/dispatch/running statements
 - T-064 prompt slimming: owner-direct work is present on main; supporting tests, explanation tooling/report and A/B artifacts remain partly dirty/untracked. Preserve this bundle; historical 1195/0 is not current certification.
 - T-077 conversation experiment: uncommitted main patch/report. Historical full run 1278 pass, 1 fail, 10 skipped came from terminating tests/endings-reachable.test.mjs, without a reported failing assertion. Quality improvement remains unproven.
 - T-066/T-067/T-068 UI prototype: reports and vn_ui_studio bundle untracked on main; reported completion is not a commit or engine integration.
-- T-078 independent UI buttons/presets/state editor (formerly collided with engine T-069): untracked prototype record; exact old brief/report retained under T-078.original-T-069*.
-- T-079 responsive UI tools/connection map (formerly collided with engine T-070): untracked prototype record; exact old brief/report retained under T-079.original-T-070*.
+- T-078 independent UI buttons/presets/state editor (formerly collided with engine T-069): prototype brief/report consolidated under T-078.
+- T-079 responsive UI tools/connection map (formerly collided with engine T-070): prototype brief/report consolidated under T-079.
 - Main still contains unrelated dirty docs, tooling, research and playtest artifacts/deletions. Previous workers are stopped; preserve changes until reviewed and attributed.
 
 ## Parked

@@ -51,7 +51,9 @@ test('a line one turn settled twice reaches the model once, in the order it happ
 });
 
 test('the STAGING paragraph asks for a prop without naming one, and the prompt gets smaller',async()=>{
-  const p=campus(),{context}=await scene(p,'slips2-staging',48),messages=scenePromptMessages(context,p);
+  // STAGING belongs to bounded scenes; continuous free conversation uses the live-reply contract instead.
+  const p=campus(),{context:live}=await scene(p,'slips2-staging',48),context={...live,gameProject:{...live.gameProject,conversationStyle:'bounded'}},messages=scenePromptMessages(context,p);
+  assert.doesNotMatch(scenePromptMessages(live,p)[0].content,/STAGING:/);
   const staging=messages[0].content.match(/STAGING:[^\n]*/)[0];
   assert.match(staging,/^STAGING: Give each present character one physical object or task in their hands and let it carry their mood\./,'the instruction stays');
   assert.doesNotMatch(messages[0].content+messages[1].content,/a cup, a phone, a book|cup, a phone/,'no example prop is named anywhere');

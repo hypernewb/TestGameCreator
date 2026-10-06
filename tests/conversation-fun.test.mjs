@@ -68,6 +68,9 @@ test('questions, encouragement, feelings, openings and engine-controlled beats k
 
 test('question endings and a new agenda stay optional for brief continuations',()=>{
  for(const sceneWriter of ['framework','venus'])for(const conversationStyle of ['continuous','bounded']){
-  const c=ctx('Okay.',{sceneWriter,gameProject:{conversationStyle}}),[sys,user]=scenePromptMessages(c,pack);assert.match(sys.content,/no new question or agenda is required/);assert.doesNotMatch(user.content,/Let the character react with initiative/);assert.match(user.content,/brief reaction on this same subject/);
+  const c=ctx('Okay.',{sceneWriter,gameProject:{conversationStyle}}),[sys,user]=scenePromptMessages(c,pack);assert.doesNotMatch(user.content,/Let the character react with initiative/);
+  // Continuous free conversation uses the connected live-reply contract instead of the brief-exchange entry quota.
+  if(conversationStyle==='continuous'){assert.match(sys.content,/a question is optional, not a required ending/);assert.doesNotMatch(sys.content,/INITIATIVE:|End with a specific question/);assert.match(user.content,/Stay with their subject/);}
+  else{assert.match(sys.content,/no new question or agenda is required/);assert.match(user.content,/brief reaction on this same subject/);}
  }
 });

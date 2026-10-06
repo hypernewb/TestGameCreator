@@ -1,0 +1,16 @@
+[
+  {
+    "sceneWriter": "framework",
+    "before": 1982,
+    "after": 1491,
+    "delta": -491,
+    "units": "uncalibrated estimated prompt tokens; same supplied context; no model calls"
+  },
+  {
+    "sceneWriter": "venus",
+    "before": 1948,
+    "after": 1476,
+    "delta": -472,
+    "units": "uncalibrated estimated prompt tokens; same supplied context; no model calls"
+  }
+]

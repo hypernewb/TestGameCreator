@@ -2,6 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {actionCost,actions,createWorld,execute,replay} from '../packages/core/engine.mjs';
 import {timeCost,optionCost} from '../public/calendar.mjs';
+import {freeConversation,conversationCommand} from '../public/turn-presentation.mjs';
 import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 const pack=(extra={})=>({schemaVersion:1,id:'test',title:'Test',version:'0.1.0',modules:{},playerId:'you',locations:[{id:'home',name:'Home',exits:[{to:'gym'}]},{id:'gym',name:'Gym',exits:[{to:'home'}]}],actors:[{id:'you',name:'You',location:'home'},{id:'friend',name:'Friend',location:'home'}],activities:[{id:'gym-session',name:'Gym',description:'Train',location:'gym',duration:2,effects:[]}],...extra,...(extra.gameProject?{gameProject:{premise:'Test',setting:'Test',ai:{intent:'',scene:'',daypart:''},...extra.gameProject}}:{})});
@@ -38,6 +39,6 @@ test('option buttons and planner labels render costs without changing commands o
  assert.ok(plannerData.actions.every(a=>a.label.includes(' · ')&&a.storylet.title.includes(' · ')));assert.deepEqual(plannerData.actions.map(a=>a.args),list.map(a=>a.args));assert.deepEqual(plannerData.actions.map(a=>a.storylet.timeCost),list.map(a=>a.storylet?.timeCost));assert.deepEqual(data.actions,list);
 });
 test('typed result line displays the committed cost',async()=>{
- const p=pack({tickMinutes:30}),s=createWorld(p,{}),data={state:{...s,tick:2},pack:p},nodes=new Map(),ctx={previewMode:null,session:0,requestSeq:0,liveUi:{refresh(){}},current:{state:s,pack:p},busy:false,lines:[],cursor:0,timeCost,stopAuto(){},renderFirstControls(){},showLine(){},showLoading(){},api:async()=>data,render(d){ctx.current=d;ctx.lines=[{text:'Narration'}];},setTimeout:r=>{r();},crypto:{randomUUID:()=> 'typed'},renderMessages(){},$:id=>{if(!nodes.has(id))nodes.set(id,{});return nodes.get(id);}};
+ const p=pack({tickMinutes:30}),s=createWorld(p,{}),data={state:{...s,tick:2},pack:p},nodes=new Map(),ctx={freeConversation,conversationCommand,previewMode:null,session:0,requestSeq:0,liveUi:{refresh(){}},current:{state:s,pack:p},busy:false,lines:[],cursor:0,timeCost,stopAuto(){},renderFirstControls(){},showLine(){},showLoading(){},api:async()=>data,render(d){ctx.current=d;ctx.lines=[{text:'Narration'}];},setTimeout:r=>{r();},crypto:{randomUUID:()=> 'typed'},renderMessages(){},$:id=>{if(!nodes.has(id))nodes.set(id,{});return nodes.get(id);}};
  const result=await runInNewContext(extract('async function act(request)','async function retry()')+"act({input:'Train at the gym'})",ctx);assert.equal(result,data);assert.equal(ctx.lines[0].text,'Train at the gym · 1h');assert.equal(ctx.lines[1].text,'Narration');
 });

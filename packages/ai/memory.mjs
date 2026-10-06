@@ -9,10 +9,23 @@ const FIRST_PERSON=/\b(?:i|i'm|im|i've|i'd|i'll|my|me|mine|myself)\b/i;
 const ASKING=/^\s*(?:i\s+)?(?:ask|asks|wonder|quiz|question)\b/i;
 const INTERROGATIVE=/^\s*(?:what|where|when|who|whom|whose|why|how|which|whether|if|do|does|did|are|is|was|were|can|could|will|would|should|have|has|had)\b/i;
 const PROMISE=/\bpromise[sd]?\b|\b(?:i'll|i will|i swear|i vow)\b/i;
+// Physical moves typed as commands ("Touch her hand while you flirt with her") are things the player did, not words:
+// stored raw they read as the player ordering the listener about. Meta-commands ("Go talk to Selma") steer the engine
+// and are not remembered at all. (T-114)
+const ACTS='touch|kiss|hug|hold|take|grab|walk|run|sit|stand|lean|look|smile|grin|wink|nod|laugh|flirt|follow|wait|move|give|hand|reach|pull|push|brush|stroke|squeeze|put|pour|buy|order|show|wave|step|pat|caress|cuddle|dance|bring|watch|offer|lift|carry|kneel|tease|poke|nudge|tickle|wrap|stare|glance|shrug|sigh|lead|pick';
+// Imperative ("Kiss her cheek"), but not "Hold on" / "Wait, …"; with "I" only when an object follows ("I lean closer"), so "I watch anime" stays a disclosure.
+const ACTION=new RegExp(`^(?:${ACTS})(?:s|es)?\\b(?!\\s*,)(?!\\s+(?:on|up)\\b)`,'i');
+const ACTION_I=new RegExp(`^i\\s+(?:${ACTS})(?:s|es)?\\s+(?:her|him|them|his|their|the|a|an|at|over|up|down|back|closer|close|in|into|on|onto|out|across|around|toward|towards|beside|next|by|to|with|for|your|you)\\b`,'i');
+const META=/^(?:let['’]?s\s+|i\s+)?(?:(?:go|head|walk|run)\s+(?:over\s+)?(?:and\s+|to\s+)?(?:talk|speak|chat)\s+(?:to|with)|(?:go\s+(?:and\s+)?)?(?:find|look for|go see|visit|meet up with|check on))\s+\S/i;
 
-/** Classifies one player utterance: question | promise | disclosure (about the player) | statement. */
-export function classifyUtterance(input,names=[]){
+/** Classifies one player utterance: question | promise | disclosure (about the player) | statement | action | meta. */
+export function classifyUtterance(input,names=[],{player=''}={}){
  const text=String(input||'').trim();if(!text)return {kind:'statement',said:''};
+ // "Tell me more about…" (or the player's own name) asks the narrator for something: a question, not a line said.
+ const self=['me','us',...(player&&player!=='You'?[player,player.split(' ')[0]]:[])].map(escape).join('|');
+ if(new RegExp(`^tell\\s+(?:${self})\\s+(?:more\\s+|all\\s+)?about\\b`,'i').test(text))return {kind:'question',said:text};
+ if(META.test(text))return {kind:'meta',said:text};
+ if(!/["“]/.test(text)&&(ACTION.test(text)||ACTION_I.test(text)))return {kind:'action',said:text.replace(/^i\s+/i,'').replace(/[.!]+$/,'')};
  const who=[...names.filter(Boolean).map(escape),'her','him','them'].join('|');
  // Strip the addressing wrapper players type in scene mode: "Tell Brin (that) …", "Talk to Brin: …".
  let said=text.replace(new RegExp(`^\\s*talk to (?:${who})\\s*:\\s*`,'i'),'')
@@ -41,8 +54,20 @@ function thirdPerson(text,player,listener){
   .replace(/\bI\b/g,player).replace(/\b(?:my|mine)\b/gi,`${player}’s`).replace(/\b(?:me|myself)\b/gi,player)
   .replace(/\byour\b/gi,`${listener}’s`).replace(/\byou\b/gi,listener);
 }
+const IRREGULAR={run:'ran',take:'took',hold:'held',sit:'sat',stand:'stood',give:'gave',buy:'bought',bring:'brought',put:'put',lead:'led',kneel:'knelt'};
+const DOUBLE=/^(?:hug|pat|nod|step|grab|wrap|grin|poke)$/i;
+const stem=v=>{const w=v.toLowerCase();return IRREGULAR[w]||DOUBLE.test(w)||!/s$/.test(w)||/ss$/.test(w)?w:/(?:sh|ch|x|ss)es$/.test(w)?w.slice(0,-2):w.slice(0,-1);};
+const past=v=>{const w=stem(v);return IRREGULAR[w]||(DOUBLE.test(w)?w+w.at(-1)+'ed':/e$/.test(w)?w+'d':/[^aeiou]y$/.test(w)?w.slice(0,-1)+'ied':w+'ed');};
+const ing=v=>{const w=v.toLowerCase();return DOUBLE.test(w)?w+w.at(-1)+'ing':/[^e]e$/.test(w)?w.slice(0,-1)+'ing':w+'ing';};
+/** A command-shaped move, told as something the player did: "With Selma, Ari touched her hand while flirting with her". */
+function actionText(said,listener,player){
+ const [,verb,rest='']=said.match(/^(\S+)\s*(.*)$/)||[,said];
+ const body=rest.replace(/\b(while|as|and)\s+you\s+(\w+)/gi,(_,c,v)=>`${c} ${ing(v)}`).replace(/\byour\b/gi,`${player}’s`).replace(/\byou\b/gi,player).replace(/\bmy\b/gi,`${player}’s`).replace(/\bme\b/gi,player);
+ return `With ${listener}, ${player} ${past(verb)}${body?` ${body}`:''}`;
+}
 /** Phrases a classified utterance so a small model cannot take the player's "I" and "my" as its own. */
 export function memoryText(kind,said,listener,player='the player'){
+ if(kind==='action')return actionText(said,listener,player);
  const verb=kind==='promise'?'promised':'told';
  // "Thank Brin and promise to bring him coffee" keeps only the promise itself.
  const text=(kind==='promise'&&!/^i\b/i.test(said)?said.replace(/^.*?\bpromise[sd]?\s+(?:(?:him|her|them)\s+)?/i,''):said).replace(/^[“"]|[”"]$/g,'');
@@ -71,14 +96,14 @@ export function capturedStatements(state,pack,actorId=pack.playerId){
   if(!visible(m.knownBy||[]))continue;
   const listeners=(m.knownBy||[]).filter(id=>id!==pack.playerId),names=listeners.flatMap(id=>[nameOf(id),nameOf(id).split(' ')[0]]);
   const raw=String(m.text||'').replace(/^You (?:tell|talk to) [^:]+:\s*/,'').replace(/^“|”$/g,'');
-  const c=classifyUtterance(raw,names);covered.add(String(m.source).split('.')[0]);
+  const c=classifyUtterance(raw,names,{player:nameOf(pack.playerId)});covered.add(String(m.source).split('.')[0]);
   out.push({id:`heard:${m.id||m.source}`,knownBy:m.knownBy||[],original:raw,source:m.source,tick:m.tick||0,kind:m.promise&&c.kind!=='question'?'promise':c.kind,said:c.said,listener:listeners.map(nameOf).join(' and ')||'someone'});
  }
  for(const turn of Object.values(state.turns||{})){
   if(turn.status!=='complete'||covered.has(turn.id)||turn.command?.type!=='core.scene')continue;
   const cast=sceneCast(turn);if(!cast.length||!(actorId===pack.playerId||cast.includes(actorId)))continue;
   const input=turn.input||turn.command.args?.text||'';if(!input)continue;
-  const c=classifyUtterance(input,cast.flatMap(id=>[nameOf(id),nameOf(id).split(' ')[0]]));
+  const c=classifyUtterance(input,cast.flatMap(id=>[nameOf(id),nameOf(id).split(' ')[0]]),{player:nameOf(pack.playerId)});
   out.push({id:`turn:${turn.id}`,knownBy:[pack.playerId,...cast],original:input,source:turn.id,tick:turn.events?.[0]?.tick||0,kind:c.kind,said:c.said,listener:cast.map(nameOf).join(' and ')});
  }
  out.sort((a,b)=>a.tick-b.tick);
@@ -92,7 +117,7 @@ export function playerStatements(state,pack,actorId,{keep=40,statements=4,audien
  const seen=new Set();
  for(const m of [...out].reverse()){if(m.kind!=='disclosure')continue;const parts=clauses(m.said),kept=parts.filter(c=>{const s=slotOf(c);if(!s)return true;const old=seen.has(s);seen.add(s);return !old;});
   if(kept.length<parts.length)m.kept=kept.join(', ');}
- const lasting=out.filter(m=>m.kind==='promise'||m.kind==='disclosure').slice(-keep),plain=out.filter(m=>m.kind==='statement').slice(-statements);
+ const lasting=out.filter(m=>m.kind==='promise'||m.kind==='disclosure').slice(-keep),plain=out.filter(m=>m.kind==='statement'||m.kind==='action').slice(-statements);
  const chosen=new Set([...lasting,...plain]);
  // Once this character has heard the player's name, later memories use it: "Mara promised Ada…" reads as a person.
  let known=player;

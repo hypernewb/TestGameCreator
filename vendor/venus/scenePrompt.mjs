@@ -5,6 +5,7 @@ import {relationshipStageOf,behaviorCueOf} from '../../packages/ai/character-con
 // The surrounding request builder uses this framework's authored world and rules.
 import {exchangePolicy} from '../../packages/ai/conversation.mjs';
 import {avoidList} from '../../public/avoid-phrases.mjs';
+import {intimacyProse,npcProse,firstProse,awayFrom,timeLine} from '../../packages/ai/prompt-sections.mjs';
 export function soFarBlocks(summary,stubs,quoteSummary=true){
  return [...(summary?['STORY SO FAR',quoteSummary?'"'+summary+'"':summary,'']:[]),'SCENE SO FAR',"'''",...stubs,"'''",''];
 }
@@ -118,10 +119,10 @@ export function scenePromptMessages(context,pack,{trace}={}){
  const bondLines=cast.flatMap(id=>{const n=nameOf(id),bits=[];
   const d=(context.dating||[]).find(x=>x.character===id);if(d)bits.push(`stage: ${d.phase}${d.agreement&&d.agreement!=='uncommitted'?` (${d.agreement})`:''}`);
   const j=(context.jealousy||[]).find(x=>x.character===id);if(j)bits.push(`rival tension: ${j.tension}`);
-  const it=(context.intimacy||[]).filter(x=>x.character===id);if(it.length)bits.push(it.map(x=>JSON.stringify({...x,character:undefined})).join('; '));
+  const it=(context.intimacy||[]).filter(x=>x.character===id);if(it.length)bits.push(it.map(intimacyProse).filter(Boolean).join('; '));
   const b=(context.nearbyBonds||[]).find(x=>x.character===id);if(b)bits.push(Object.entries(b.values).map(([k,v])=>`${k} ${v}`).join(', '));
   return bits.length?`${n} — ${bits.join(' — ')}`:[];});
- const npcLines=(context.npcRelationships||[]).map(r=>`${r.characters.map(nameOf).join(' & ')}: ${JSON.stringify({...r,characters:undefined})}`);
+ const npcLines=(context.npcRelationships||[]).map(r=>npcProse(r,nameOf));
  const hereNames=[...(context.items||[]).map(i=>i.name),...(context.objects||[]).map(o=>o.name)],byName=n=>sceneQuery.toLowerCase().includes(String(n).toLowerCase());
  const stuff=[moneyish&&context.money!=null?`money: $${context.money}`:'',hereNames.length?`in the room: ${hereNames.join(', ')}`:'',(context.carried||[]).filter(i=>byName(i.name)).map(i=>i.name).join(', '),(context.equipped||[]).filter(i=>byName(i.name)).map(i=>i.name).join(', ')].filter(Boolean);
  const av=absentView(context.absentCharacters),absent=av?`not here (can be talked about, can't show up): ${(Array.isArray(av)?av:av.names).map(a=>a.name||a).join(', ')}.`:'';
@@ -130,9 +131,10 @@ export function scenePromptMessages(context,pack,{trace}={}){
  const used=phase==='continuation'?context.usedBeats||[]:[];
  const section=(h,items)=>items.filter(Boolean).length?`${h}\n${items.filter(Boolean).map(x=>`- ${x}`).join('\n')}`:'';
  const stateProse=[
-  `${[context.weekday,context.date,context.daypart].filter(Boolean).join(', ')}. ${context.location?.name||''}${context.location?.description?`: ${context.location.description}`:''}${context.timeNote?` ${context.timeNote}`:''}`.replace(/^[,. ]+/,'').trim(),
-  youLine,
+  // Stable first (T-114): profiles stay put across a scene's turns, so the cacheable prefix runs through them; when/where come after.
   profiles.map(a=>emit('persona',a,profileLine(a),'CURRENT STATE')).join('\n'),
+  timeLine(context),
+  youLine,
   absent,
   section('WITH YOU',bondLines),
   section('AROUND',hereNames.length?[hereNames.join(', ')]:[]),
@@ -148,5 +150,5 @@ export function scenePromptMessages(context,pack,{trace}={}){
   cast.length?'':section('AROUND YOU',(context.present||[]).filter(a=>a.id!==pack.playerId).map(a=>a.name)),
   npcLines.length?section('BETWEEN OTHERS',npcLines):''
  ].filter(Boolean).join('\n\n');
- return [{role:'system',content:system},{role:'user',content:[context.gameProject?.premise&&`PREMISE\n${context.gameProject.premise}`,context.gameProject?.setting&&`SETTING\n${context.gameProject.setting}`,'CURRENT STATE',stateProse,...[calendarLine(context),awayLine(context.absentCharacters)].filter(Boolean),...soFarBlocks(context.sceneSummary||null,stubs),...(used.length?['ALREADY USED THIS SCENE (do not reuse these gestures, props or images; find fresh ones)',...used.map(t=>`- ${t}`)]:[]),'YOUR TURN',task,...(context.dailyNeedHints?['BEHAVIOUR: '+context.dailyNeedHints]:[]),...(context.wantHint?[INITIATIVE_HEAD,context.wantHint]:[]),...(context.direction?['DIRECTION: '+context.direction]:[]),...(context.intimacyRule?['BOUNDARY: '+context.intimacyRule]:[]),...(context.actBrief?.length?['PRIVATE (hidden likes and limits: let the reaction match them, never state them)',...context.actBrief]:[]),...(context.suspicions?.length?['PRIVATE (she suspects the player: show it through coldness, distance and pointed questions, never state numbers or list reasons outright)',...context.suspicions]:[]),...(context.jealousyHints?.length?['PRIVATE (she is jealous: play the tone below in her own voice, never state a meter or say why outright)',...context.jealousyHints]:[]),...(context.first?['PRIVATE FIRST MOMENT (engine-held; never reveal the wanted tags)',JSON.stringify(context.first)]:[]),...(context.confrontation?['CONFRONTATION: '+context.confrontation.brief]:[]),...(phase==='closing'&&!context.playerAction?[]:['PLAYER ACTION',context.playerAction||'']),...(recall.length?['RELEVANT MEMORY',...recall]:[]),...(phase==='closing'||phase==='continuation'?['SUMMARY','Summarize the scene in third person in the summary field; end_scene true only when the scene naturally ends.']:[]),'ALLOWED PRESENTATION',JSON.stringify({cast,backgrounds:[context.location?.background].filter(Boolean),poses:Object.fromEntries(profiles.map(a=>[a.id,pack.actors.find(x=>x.id===a.id)?.poses?.map(p=>p.id)||[]]))})].filter(x=>x!==undefined&&x!==false).join('\n')}];
+ return [{role:'system',content:system},{role:'user',content:[context.gameProject?.premise&&`PREMISE\n${context.gameProject.premise}`,context.gameProject?.setting&&`SETTING\n${context.gameProject.setting}`,'CURRENT STATE',stateProse,...[calendarLine(context),awayLine(awayFrom(context.absentCharacters,context.location?.name))].filter(Boolean),...soFarBlocks(context.sceneSummary||null,stubs),...(used.length?['ALREADY USED THIS SCENE (do not reuse these gestures, props or images; find fresh ones)',...used.map(t=>`- ${t}`)]:[]),'YOUR TURN',task,...(context.dailyNeedHints?['BEHAVIOUR: '+context.dailyNeedHints]:[]),...(context.wantHint?[INITIATIVE_HEAD,context.wantHint]:[]),...(context.direction?['DIRECTION: '+context.direction]:[]),...(context.intimacyRule?['BOUNDARY: '+context.intimacyRule]:[]),...(context.actBrief?.length?['PRIVATE (hidden likes and limits: let the reaction match them, never state them)',...context.actBrief]:[]),...(context.suspicions?.length?['PRIVATE (she suspects the player: show it through coldness, distance and pointed questions, never state numbers or list reasons outright)',...context.suspicions]:[]),...(context.jealousyHints?.length?['PRIVATE (she is jealous: play the tone below in her own voice, never state a meter or say why outright)',...context.jealousyHints]:[]),...(context.first?['PRIVATE FIRST MOMENT (engine-held; never reveal the wanted tags)',firstProse(context.first)]:[]),...(context.confrontation?['CONFRONTATION: '+context.confrontation.brief]:[]),...(phase==='closing'&&!context.playerAction?[]:['PLAYER ACTION',context.playerAction||'']),...(recall.length?['RELEVANT MEMORY',...recall]:[]),...(phase==='closing'||phase==='continuation'?['SUMMARY','Summarize the scene in third person in the summary field; end_scene true only when the scene naturally ends.']:[]),'ALLOWED PRESENTATION',JSON.stringify({cast,backgrounds:[context.location?.background].filter(Boolean),poses:Object.fromEntries(profiles.map(a=>[a.id,pack.actors.find(x=>x.id===a.id)?.poses?.map(p=>p.id)||[]]))})].filter(x=>x!==undefined&&x!==false).join('\n')}];
 }

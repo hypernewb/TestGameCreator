@@ -72,7 +72,8 @@ export function selectLore(s,p,actorId,query='',budget=1200,audience=[actorId]){
 }
 // opts.wide gathers every candidate so a caller-side allocator (context-budget.mjs) can decide what fits.
 export function contextFor(s,p,actorId=p.playerId,turn=null,query='',opts={}){
- const location=s.actors[actorId].location,canSee=v=>visibleTo(v,actorId),own=p.actors.find(a=>a.id===actorId);
+ // The scene line comes from state: a cast member (or the player) in the open scene is where the scene is, not wherever a stale actor record says.
+ const location=(s.scene?.location&&(actorId===p.playerId||s.scene.characters?.includes(actorId))&&p.locations.some(l=>l.id===s.scene.location)?s.scene.location:null)||s.actors[actorId].location,canSee=v=>visibleTo(v,actorId),own=p.actors.find(a=>a.id===actorId);
  const audience=turn?[...new Set([p.playerId,actorId,...scenePlanForTurn(s,p,{...turn,events:turn.events||[],command:turn.command||{type:'',args:{}}}).speakers])]:[actorId],authored=(p.facts||[]).filter(f=>audience.every(id=>factKnownTo(s,f,id)&&!(p.facts||[]).some(n=>n.supersedes===f.id&&factKnownTo(s,n,id)))),authoredKnowledge={viewer:p.playerId,audience,knownBy:Object.fromEntries(authored.map(f=>[f.id,f.knownBy==='public'?'public':p.actors.filter(a=>factKnownTo(s,f,a.id)).map(a=>a.id)]))};
  const scope={authoredKnowledge},knows=v=>sharedKnown(v,scope,p);
  const player=p.actors.find(a=>a.id===p.playerId);

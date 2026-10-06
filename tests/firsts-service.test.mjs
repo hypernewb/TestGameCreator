@@ -83,7 +83,7 @@ test('the prompt keeps firsts private and gives ask its meaning; peak is only br
   assert.equal(g.state.modules['social.firsts'].active.checkpoint,1);assert.ok(g.state.scene,'ordinary budget and model end_scene cannot end the first');
   assert.ok(g.provider.seen.every(x=>x.first.checkpoint!=='peak'));
   const before=g.provider.seen.at(-1);assert.equal(before.phase,'continuation');assert.match(before.messages[0].content,/Stay in this moment/);assert.match(before.messages[0].content,/ask means asking her what she wants or checking in/);
-  assert.match(before.messages[1].content,/PRIVATE FIRST MOMENT/);assert.match(before.messages[1].content,/"waitingFor":\["ask"\]/);assert.doesNotMatch(before.messages[1].content,/Her peak cue/);
+  assert.match(before.messages[1].content,/PRIVATE FIRST MOMENT/);assert.match(before.messages[1].content,/Waiting for: ask\./);assert.doesNotMatch(before.messages[1].content,/Her peak cue/);
   assert.ok(before.schema.json_schema.schema.properties.acts.items.properties.kind.enum.includes('ask'));
   g.provider.tags=['ask'];await g.act('check','Is this okay?');assert.equal(g.state.modules['social.firsts'].active.checkpoint,2);
   g.provider.tags=['listen'];await g.act('peak','I listen to her.');assert.equal(g.provider.seen.at(-1).first.checkpoint,'peak');assert.ok(g.state.flags['jana-first-night']);

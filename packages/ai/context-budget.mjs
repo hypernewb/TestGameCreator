@@ -4,6 +4,7 @@ import {allocate,lods,messageTokens,DEFAULT_TIERS} from './budget.mjs';
 import {calendarFor} from '../../public/calendar.mjs';
 import {promptView} from '../../vendor/venus/scenePrompt.mjs';
 import {relevance} from './memory.mjs';
+import {proseOf} from './prompt-sections.mjs';
 
 // Engine-authored digests come from committed events, so older history can shrink without the drift of a
 // model-written summary: the model's prose is flavor, the digest is the record.
@@ -13,9 +14,9 @@ export function eventChanges(turn,audience=null){
  const out=[];
  for(const e of turn.events||[]){
   if(audience&&!visibleToAudience(e.visibility,audience))continue;
-  if(e.type==='core.patch'){if(audience)continue;if(e.payload.path?.[0]==='flags')out.push(`flag ${e.payload.path[1]}=${JSON.stringify(e.payload.value)}`);continue;}
+  if(e.type==='core.patch'){if(audience)continue;if(e.payload.path?.[0]==='flags')out.push(`flag ${e.payload.path[1]}=${typeof e.payload.value==='object'?proseOf(e.payload.value)||'none':e.payload.value}`);continue;}
   if(QUIET.has(e.type)||!Array.isArray(e.visibility)&&e.visibility!=='public')continue;
-  out.push(e.payload.text?clip(e.payload.text,90):`${e.type} ${clip(JSON.stringify(e.payload),70)}`);
+  out.push(e.payload.text?clip(e.payload.text,90):`${e.type} ${clip(proseOf(e.payload),70)}`.trim());
  }
  return [...new Set(out)];
 }

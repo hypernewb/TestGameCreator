@@ -1,3 +1,4 @@
+import {routeConditionReasons,validateRouteConditions} from './route-conditions.mjs';
 import {assert,safeKey} from '../core/engine.mjs';
 import {calendarFor,WEEKDAYS,PERIODS} from '../../public/calendar.mjs';
 import {bondKey} from './bonds.mjs';
@@ -23,6 +24,7 @@ export function validateConditions(when,p,label){
  for(const id of when.completedScenes||[])assert((p.scriptedScenes||[]).some(s=>s.id===id),`${label}.completedScenes: unknown scene ${id}`);
  for(const [id,status] of Object.entries(when.plans||{}))assert(safeKey(id)&&['pending','kept','broken','none'].includes(status),`${label}.plans: expected pending, kept, broken or none`);
  validateExtraConditions(when,p,label);
+ validateRouteConditions(when,p);
 }
 export function validateExtraConditions(when,p,label){
  if(when.goalStep!==undefined){assert(when.goalStep&&typeof when.goalStep==='object'&&!Array.isArray(when.goalStep),`${label}.goalStep: expected character/step map`);for(const [id,step] of Object.entries(when.goalStep))assert(p.modules.goals&&(p.characterSheets||[]).some(s=>s.actorId===id&&s.goal?.steps?.some(x=>x.id===step)),`${label}.goalStep: unknown goal step`);}
@@ -63,7 +65,7 @@ export function conditionReasons(when,state,pack,pages=[]){
   for(const [id,min] of Object.entries(when.trust||{})){const actual=state.modules['social.relationships']?.edges[`${id}--${pack.playerId}`]||0;if(actual<min)reasons.push(`Trust with ${id}: ${actual}; needs ${min}`);}
   for(const id of when.completedScenes||[])if(!(state.modules['story.scenes']?.completed||[]).includes(id))reasons.push(`Scene ${id} not completed yet`);
   for(const [id,required] of Object.entries(when.plans||{})){const actual=(state.modules['story.scenes']?.plans||[]).filter(x=>x.id===id).at(-1)?.status||'none';if(actual!==required)reasons.push(`Plan ${id}: ${actual}; needs ${required}`);}
-  return reasons;
+  return [...reasons,...routeConditionReasons(when,state,pack)];
 }
 
 // Stat checks are deterministic: base stat + equipped gear + situational modifiers against a visible target. No dice, so the

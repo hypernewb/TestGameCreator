@@ -12,6 +12,7 @@ import {mountSheetEditor} from './sheet-editor.mjs';
 import {mountUiProject} from './ui-project.mjs';
 import {uiMediaReferences,remapUiMedia} from './ui-art.mjs';
 import {mountScenarioEditor} from './studio-scenarios.mjs';
+import {mountChatLab} from './studio-chat-lab.mjs';
 import {mountActivityAnalysis} from './studio-activity-analysis.mjs';
 import {mountAssetAudit} from './studio-asset-audit.mjs';
 import {compileWeeklyRoutines,validateWeeklyRoutines,applyWeeklyRoutines,convertWeeklyRoutines,reassignWeeklyRoutine} from './weekly-routines.mjs';
@@ -71,6 +72,7 @@ let balanceSession=null;
 function balanceEditor(){if(balanceSession?.id!==draft.id)balanceSession={id:draft.id,state:{}};const s=section('Activity balance','Compare up to two sequences of existing activities from one isolated start: time, money, items, stats and trust after each step, and why a step is unavailable. Engine only; never changes saves or the project.');mountActivityAnalysis(s,{getPack:()=>draft.pack,getProjectId:()=>draft?.id,api,onStatus:message,state:balanceSession.state});}
 let assetAuditSession=null;
 function assetAuditEditor(){if(assetAuditSession?.id!==draft.id)assetAuditSession={id:draft.id,state:{}};const s=section('Asset usage','Read-only report of where this project uses images: backgrounds, portraits, poses, idle animations, still fallbacks and scene CGs. Flags missing or invalid references; static files without a project reference are only marked undetermined. Scanning changes nothing.');if(typeof mountAssetAudit==='function')mountAssetAudit(s,{getPack:()=>draft.pack,api,onStatus:message,state:assetAuditSession.state});}
+function chatLabEditor(){mountChatLab(section('Character Chat Lab','Chat with one character from first meeting to the last route stage without playing the game: live route state, lab time controls, stage jump, stat sliders, fork and export. The lab runs in an isolated campaign and never touches saves.'),{getPack:()=>draft.pack,getDraftId:()=>draft?.id,api,onStatus:message});}
 function directorEditor(p){
  if(!p.modules['story.director'])return;
  p.directorProfile||={};p.directorTemplates||=[];
@@ -510,6 +512,7 @@ interfaceEditor();reviewSaveEditor();
 scenarioEditor();
 balanceEditor();
 assetAuditEditor();
+if(typeof mountChatLab==="function")chatLabEditor();
 const refusalSection=section('Refusal style','Keep typing with subtle hints in the story, or show alternative action buttons.');const refusalStyle=field(refusalSection,{value:p.refusalStyle||'hint'},'value','When an attempt cannot happen','text',[['hint','In-story hints'],['buttons','Alternative buttons']]);refusalStyle.oninput=()=>{p.refusalStyle=refusalStyle.value;message('Unsaved changes');};
 const dayLoop=section('Day loop','Planner has morning, afternoon and evening slots. Each activity includes travel and conversation; goodbye returns to the planner.');const timeMode=field(dayLoop,{value:p.gameProject.timeMode||'clock'},'value','Time mode','text',[['clock','Clock (legacy default)'],['planner','Planner (three activities per day)']]);timeMode.oninput=()=>{p.gameProject.timeMode=timeMode.value;message('Unsaved changes');};
 tickMinutesEditor(dayLoop,p);

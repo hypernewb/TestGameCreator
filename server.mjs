@@ -2,12 +2,13 @@ import {buildContentPackage,reviewContentPackage,applyContentPackage,commitConte
 import {memorySnapshot,memoryPreview} from './packages/ai/memory-controls.mjs';
 import {inspectSceneRequest} from './packages/ai/inspect.mjs';
 import http from 'node:http';
-import {readFileSync,readdirSync,existsSync,mkdirSync,writeFileSync,realpathSync,rmSync} from 'node:fs';
+import {readFileSync,readdirSync,existsSync,mkdirSync,writeFileSync,realpathSync,rmSync,statSync} from 'node:fs';
 import {diagnoseScenes} from './packages/modules/scenes.mjs';
 import {allGeneratedFacts,validateFactEdits,selectGeneratedFacts} from './packages/modules/facts.mjs';
 import {fileURLToPath} from 'node:url';
 import {resolve,dirname,extname,relative as pathRelative,isAbsolute,sep} from 'node:path';
-import {randomUUID,randomInt} from 'node:crypto';
+import {randomUUID,randomInt,createHash} from 'node:crypto';
+import {createLab,labCast,stagesOf} from './packages/testing/character-lab.mjs';
 import {validateImage,validateProjectMedia} from './packages/assets/project-media.mjs';
 import {assetAudit} from './packages/assets/asset-audit.mjs';
 import {createWorld,validatePack,actions,resolveModules,execute,assert,refusalFor,refusalCode,mechanicsDigest} from './packages/core/engine.mjs';
@@ -75,6 +76,17 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider(),draf
   let aiSettings={mode:'offline',endpoint:LOCAL_PRESETS.lmstudio,model:'',contextSize:'default'};
   if(aiSettingsFile&&existsSync(aiSettingsFile)){try{const saved=JSON.parse(readFileSync(aiSettingsFile,'utf8'));if(saved.contextSize)aiSettings.contextSize=validateContextSize(saved.contextSize);if(saved.mode==='local'){aiSettings={...aiSettings,mode:'local',endpoint:normalizeLocalEndpoint(saved.endpoint),model:validateLocalModel(saved.model)};provider=new CompatibleProvider({endpoint:aiSettings.endpoint,model:aiSettings.model,timeout:120000,maxRequests:10000,maxTokens:1800});}else if(saved.mode==='cloud'){aiSettings={...connection(saved),contextSize:aiSettings.contextSize};provider=connected(aiSettings);}}catch{console.warn('Ignoring invalid AI settings');}}
   const store=new Store(dataPath||resolve(root,'data/campaigns.sqlite')),service=new GameService(store,packs,registry,sizeContextWindow(provider,aiSettings.contextSize));const active=new Map(),memoryAccess=new Map();
+  // Character Chat Lab (T-107): isolated one-NPC campaigns on throwaway :memory: stores. The real campaigns DB is
+  // never written, and data/ai-settings.json is never read here: local/cloud providers reuse the settings in memory.
+  const labStartedAt=Date.now(),labs=new Map();
+  const gitShort=()=>{try{const head=readFileSync(resolve(root,'.git/HEAD'),'utf8').trim();if(head.startsWith('gitdir:'))return null;const m=/^ref: (.+)$/.exec(head);return (m?readFileSync(resolve(root,'.git',m[1]),'utf8'):head).trim().slice(0,7);}catch{return null;}};
+  const LAB_PROMPT_SOURCES=['vendor/venus/scenePrompt.mjs','vendor/venus/venusStylePrompt.mjs','packages/ai/service.mjs','packages/ai/beats.mjs','packages/ai/context.mjs','packages/ai/context-budget.mjs','public/turn-presentation.mjs'];
+  const newestSourceMtime=dir=>readdirSync(dir,{withFileTypes:true}).reduce((n,e)=>{const f=resolve(dir,e.name);return Math.max(n,e.isDirectory()?newestSourceMtime(f):statSync(f).mtimeMs);},0);
+  const labPromptHash=()=>{const h=createHash('sha256');for(const f of LAB_PROMPT_SOURCES){try{h.update(f);h.update(readFileSync(resolve(root,f)));}catch{}}return h.digest('hex').slice(0,12);};
+  const labBuild=()=>{let newest=0;for(const d of ['packages','vendor']){try{newest=Math.max(newest,newestSourceMtime(resolve(root,d)));}catch{}}return {startedAt:new Date(labStartedAt).toISOString(),git:gitShort(),promptHash:labPromptHash(),stale:newest>labStartedAt,newest:newest?new Date(newest).toISOString():null,checkedAt:new Date().toISOString()};};
+  const labPackFrom=body=>{if(body.pack){validatePack(body.pack,registry);return structuredClone(body.pack);}const p=packs[body.packId];assert(p,'Unknown pack');return structuredClone(p);};
+  const labProvider=kind=>{if(kind==='local'){assert(aiSettings.mode==='local','No local AI is configured in AI settings');return new CompatibleProvider({endpoint:aiSettings.endpoint,model:aiSettings.model,timeout:120000,maxRequests:10000,maxTokens:1800});}
+   if(kind==='cloud'){assert(aiSettings.mode==='cloud','No cloud AI is configured in AI settings');return connected(aiSettings);}return new MockProvider();};
   let cloud;const creator=creatorRoutes({packs,store,registry,catalog:moduleCatalog,publishedDir,worldDir:resolve(authorDir,'worlds'),validateMedia:pack=>validateProjectMedia(pack,{read:readAsset}),drafter:()=>drafter||(cloud||=process.env.OPENROUTER_API_KEY?openRouterComplete():null)});
   const view=(s,previewPack)=>{s=structuredClone(s);const normalize=e=>{if(['world.meetingRedirect','world.meetingUnavailable'].includes(e.type)&&typeof e.payload.text==='string')e.payload.diagnostic??={code:'attendance',detail:e.payload.text.slice(0,350)};if(e.payload.refusal)e.payload.text=e.payload.refusal.reason;};for(const t of Object.values(s.turns)){if(t.refusal){t.failureReason=t.refusal.reason;if(!t.refusalNarrated){t.narrative=t.refusal.reason;t.sceneLines=[{speaker:'',text:t.refusal.reason}];}}for(const e of t.events)normalize(e);}for(const e of s.events)normalize(e);const p=previewPack||packs[s.packId];assert(p,'Missing pack');const context=contextFor(s,p),acts=actions(s,p,registry).map(a=>{if(a.enabled)return a;const refusal=refusalFor(s,p,registry,refusalCode({message:a.reason}));return {...a,reason:refusal.reason,refusal,diagnostic:{code:refusal.code,detail:String(a.reason||'Unavailable under the current rules.').slice(0,350)}};}),panels=resolveModules(p,registry).flatMap(m=>m.panel?[m.panel(s,p)]:[]),playerAt=s.actors[p.playerId].location,present=p.actors.filter(a=>a.id!==p.playerId&&s.actors[a.id].location===playerAt).map(a=>a.id),latest=Object.values(s.turns).at(-1),main=[...Object.values(s.turns)].reverse().find(t=>!SUB_TURNS.has(t.command?.type))||latest,issues=[],rollbackPoints={};const leads=leadLines(s,p,acts);if(leads.length)panels.unshift({title:'Leads',lines:leads});for(const backup of store.backups(s.campaignId))if(backup.reason==='before commit'&&rollbackPoints[backup.revision]===undefined)rollbackPoints[backup.revision]=backup.id;for(const id of s.scene?.characters||[])if(s.actors[id]?.location!==playerAt)issues.push(`${p.actors.find(a=>a.id===id)?.name||id} is in the active cast but physically at ${s.actors[id]?.location||'unknown'}.`);for(const actor of p.actors.filter(a=>a.id!==p.playerId))if(!actor.portrait)issues.push(`${actor.name} has no portrait/sprite.`);if(s.modules['social.relationships'])for(const actor of p.actors.filter(a=>a.id!==p.playerId))if(s.modules['social.relationships'].edges[`${actor.id}--${p.playerId}`]===undefined)issues.push(`${actor.name} has no initial trust entry and currently reads as 0.`);const diagnostics={location:playerAt,present,sceneCast:s.scene?.characters||[],activeScene:s.modules['story.scenes']?.pending||null,command:main?.command?.type||null,timeCost:latest?.events?.find(e=>e.type==='core.timeAdvanced')?.payload||null,scenePlan:main?.scenePlan||null,relationshipEvents:actionEvents(s).filter(e=>['social.relationshipChanged','social.bondChanged','social.chemistryChanged','social.satisfactionChanged'].includes(e.type)).map(e=>({...e.payload,eventType:e.type})),prompt:main?.contextReport||null,issues,highlights:turnHighlights(actionEvents(s),p),ended:endedView(s,p)};const characters=characterProgress(s,p);if(p.showRawCharacterStats)panels.unshift({title:'Character progress (test values)',lines:characters.map(c=>`${c.name}: ${Object.entries(c.stats).map(([k,v])=>`${k} ${v}`).join(' · ')}`)});return {state:s,pack:p,actions:acts,panels,characters,diagnostics,rollbackPoints,eventDebug:diagnoseScenes(s,p),known:[...context.facts,...context.generatedFacts],contextTrace:{lore:context.loreTrace,generatedFacts:context.generatedFactTrace,recentActions:context.recentActions}};};
   const server=http.createServer(async(req,res)=>{const send=(body,status=200)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(body));};
@@ -244,6 +256,36 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider(),draf
         if(saved){saved.lastRun=result;writeFileSync(scenarioFile(body.id),JSON.stringify(saved,null,2));persisted=true;}
         return send({result,persisted,currentDigest:scenarioSnapshotDigest(body.pack)});
       }
+      if(path==='/api/lab/cast'&&req.method==='POST'){const pack=labPackFrom(body);return send({cast:labCast(pack).map(c=>({...c}))});}
+      if(path==='/api/lab/start'&&req.method==='POST'){
+       assert(labs.size<8,'Too many open lab sessions; reset or close one first');
+       assert(body.npcId&&typeof body.npcId==='string','Choose a character for the lab');
+       const pack=labPackFrom(body);assert(labCast(pack).some(c=>c.id===body.npcId),'Unknown NPC');
+       const provider=body.provider&&body.provider!=='server'?labProvider(body.provider):service.provider;
+       const lab=createLab({pack,registry,npcId:body.npcId,provider,seed:Number(body.seed)||42});
+       const labId=randomUUID();labs.set(labId,lab);
+       return send({labId,provider:body.provider||'server',stages:stagesOf(pack,body.npcId),stats:(pack.statDefinitions||[]).map(d=>({id:d.id,name:d.name,min:d.min,max:d.max,value:(pack.initialStats||[]).find(x=>x.character===pack.playerId&&x.stat===d.id)?.value??0})),build:labBuild(),snapshot:lab.snapshot(),view:view(lab.world,pack)});
+      }
+      if(path==='/api/lab/turn'&&req.method==='POST'){
+       const lab=labs.get(body.labId);assert(lab,'Lab session not found');
+       assert(typeof body.input==='string'&&body.input.trim()&&body.input.length<=2000,'Type a line for the lab (1–2000 characters)');
+       const row=await lab.turn(body.input.trim());
+       return send({row:{turn:row.turn,text:row.text,lines:row.lines,refusal:row.refusal,clarification:row.clarification,command:row.command,ms:row.ms,ttft:row.ttft,promptTokens:row.promptTokens,snapshot:row.snapshot},view:view(lab.world,lab.pack)});
+      }
+      if(path==='/api/lab/control'&&req.method==='POST'){
+       const lab=labs.get(body.labId);assert(lab,'Lab session not found');
+       let result={};
+       if(body.kind==='skip')result=await lab.skip(body.unit);
+       else if(body.kind==='stage'){assert(lab.jumpToStage(body.stage),'Unknown stage for this character');}
+       else if(body.kind==='stat')assert(lab.setStat(body.stat,Number(body.value)),'Unknown stat');
+       else if(body.kind==='endScene')result=lab.command('core.endScene',{});
+       else if(body.kind==='reset')lab.reset();
+       else if(body.kind==='fork')result={campaignId:lab.fork(Number(body.turn))};
+       else if(body.kind==='close'){labs.delete(body.labId);lab.store.close();return send({ok:true});}
+       else throw Error('Unknown lab control');
+       return send({ok:true,result,patches:lab.patches.map(p=>({turn:p.turn,label:p.label})),snapshot:lab.snapshot(),view:view(lab.world,lab.pack)});
+      }
+      if(path==='/api/lab/build'&&req.method==='GET')return send(labBuild());
       if(path.startsWith('/api/creator/')){const r=await creator(path,req.method,req.method==='GET'?Object.fromEntries(url.searchParams):body);if(r)return send(r);}
       if(path.startsWith('/api/'))return send({error:'Not found'},404);
       if(path==='/modules/route-conditions.mjs'&&req.method==='GET'){res.writeHead(200,{'Content-Type':'text/javascript','X-Content-Type-Options':'nosniff'});res.end(readFileSync(resolve(root,'packages/modules/route-conditions.mjs')));return;}

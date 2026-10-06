@@ -40,7 +40,7 @@ function build(spec,text,skip){
  const pack={schemaVersion:1,id:spec.id,version:spec.version||'0.1.0',title:text(spec.title,'title'),...(spec.subtitle?{subtitle:spec.subtitle}:{}),playerId:'player',
   calendar:w.calendar||{},romanceStats:w.romanceStats||{dailyGain:6},modules,gameProject:{presentation:'visual-novel',conversationStyle:'continuous',sceneBudget:4,...spec.project,ai:{...AI_GUIDANCE,...spec.project?.ai},premise:text(spec.project?.premise,'project.premise'),setting:text(spec.project?.setting,'project.setting')},run,
   locations:w.locations||[],actors:cast,initialRelationships:[...parts.map(x=>x.relationship),...(w.initialRelationships||[])],
-  statDefinitions:w.statDefinitions||[],initialStats:w.initialStats||[],items:w.items||[],activities:w.activities||[],schedules:w.schedules||[],initialMoney:w.initialMoney??50,economySettings:w.economySettings||{debtLimit:10},
+  statDefinitions:w.statDefinitions||[],initialStats:w.initialStats||[],...Object.fromEntries(['startingStats','deliveryStats','deliveryExamples'].filter(k=>w[k]!==undefined).map(k=>[k,structuredClone(w[k])])),items:w.items||[],activities:w.activities||[],schedules:w.schedules||[],initialMoney:w.initialMoney??50,economySettings:w.economySettings||{debtLimit:10},
   datingProfiles:parts.map(x=>x.dating),romanceTempoProfiles:parts.map(x=>x.tempo),actProfiles:parts.map(x=>x.acts),arcTracks:parts.map(x=>x.arc),
   ...(w.sobriety?{sobriety:w.sobriety}:{}),
   intimacySettings:{difficulty:'normal',contentLevel:w.contentLevel||'explicit',privateLocations:w.privateLocations||[w.locations?.[0]?.id],aftercareWindow:2,aftercareOptions:w.aftercareOptions||[{id:'stay',name:'Ask her to stay'},{id:'talk',name:'Lie there and talk'},{id:'space',name:'Give her some space'}]},

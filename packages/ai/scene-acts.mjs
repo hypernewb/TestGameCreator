@@ -1,7 +1,14 @@
 // The model tags what the player did; the engine (social.acts) prices it. Tags are untrusted text: a closed kind list,
 // short slug targets, at most four per reply. See docs/handoffs/M0-CONTRACT.md §1.
+import {mapTouchText,touchTextRegion,touchRegion} from '../modules/touch-ladder.mjs';
 import {REGIONS} from '../core/character-sheet.mjs';
 export const ACT_KINDS=['flirt','compliment','gift','touch','insult','buy','invite','tease','listen','boast','pushy','ask'];
+// Only explicit performance requests are graded; questions and descriptions of preferences are ordinary talk.
+export function deliveryAct(text,pack){
+ const clauses=String(text||'').toLowerCase().split(/\b(?:and|then|while)\b|[.!;]/),patterns={touch:'touch|hold|hug|kiss|caress',physical:'lift|carry|dance',flirt:'flirt',compliment:'compliment',joke:'joke|tell (?:her |him |them )?a joke',tease:'tease','help-study':'help (?:her |him |them )?study',boast:'boast'};
+ for(const [kind,verbs] of Object.entries(patterns)){const clause=pack.deliveryStats?.[kind]&&clauses.find(c=>new RegExp(`^\\s*(?:(?:i|you)\\s+)?(?:${verbs})\\b`).test(c));if(clause){const target=kind==='touch'?mapTouchText(clause)||kind:kind;return {kind,target,size:'small',...(kind==='touch'?{region:touchTextRegion(clause)||touchRegion(target)}:{})};}}
+ return null;
+}
 const SIZES=['small','medium','large'];
 export const actsEnabled=(context,pack)=>Boolean(pack.modules?.['social.acts']&&context.sceneBudget?.focus&&(pack.actProfiles||[]).some(p=>p.character===context.sceneBudget.focus));
 export function sceneActs(raw){

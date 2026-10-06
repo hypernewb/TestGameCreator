@@ -1,4 +1,5 @@
 {
+  "deliveryStats": {"flirt": "charm", "compliment": "charm", "touch": "fitness", "physical": "fitness", "joke": "wit", "tease": "wit", "help-study": "focus", "boast": "charm"},
   "narratorPersona": "lush",
   "schemaVersion": 1,
   "id": "campus.ashford-trio",

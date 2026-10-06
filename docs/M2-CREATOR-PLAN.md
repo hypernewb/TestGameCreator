@@ -32,7 +32,7 @@ Known same-shape drift from the hand-tuned pack: a few points differ by 1–2 (n
    - Save makes a new campaign.
    - The heroine form shows the essentials, with a "More" fold for the rest.
 
-   The steps are Premise → Proposal (every field is editable, and lists have add and remove) → Draft (one button with a progress pill per card, and Stop/resume; it drafts the world first, then the profiles, then the scenes 6 at a time, over 2 passes) → Review & save (cards grouped by heroine, tone badges on choices, blank fields flagged, and Save blocked until nothing is blank). The draft lives in localStorage, and saved worlds can be reopened from step 1.
+   The steps are Premise → Proposal (every field is editable, and lists have add and remove) → Draft (one button with a progress pill per card, and Stop/resume; it drafts the world first, then the profiles, then the scenes 6 at a time, over 2 passes) → Review & save (cards grouped by heroine, tone badges on choices, blank fields flagged as "AI improvises"; Save keeps them and the game improvises them). The draft lives in localStorage, and saved worlds can be reopened from step 1.
    The API lives in `packages/cards/creator-routes.mjs`:
    - `POST /api/creator/propose`, `structure`, `check`, `fill` and `save`.
    - `fill` takes `batch` or up to 6 `batches` and runs them in parallel. With `redo`, it blanks those cards first. A failed card stays missing and is listed in `errors`.

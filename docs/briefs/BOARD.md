@@ -1,6 +1,22 @@
 # Ticket board
 Every ticket lists `model:` (the AI that did the work) or `planned:` (before dispatch). Reconciled 2026-10-02 against main 3483d4b, remaining worktrees and reports. All previous workers have stopped; no entry below implies a worker is running. Historical test counts are not today's suite certification.
 
+## Conversation quality (2026-10-06b; Wave A launched 2026-10-06)
+
+The owner played two chats (the second on a restarted 4317) and conversation still "feels off" next to VU. Diagnosis and owner answers: [conversation-quality-2026-10-06](../research/conversation-quality-2026-10-06.md#revision-2026-10-06b-owner-answers-and-the-revised-plan-supersedes-7-items-1-3-4-6-9-10-8-order-10-11-d3d4). Dispatch needs the owner's go.
+
+- **Wave A** (can run in parallel now; disjoint files):
+  - [T-107](T-107.md) Character Chat Lab. in progress: zai (owner-dispatched)
+  - [T-110](T-110.md) Character goals/quests. in progress: codex (worktree sf-wt/T-110)
+  - [T-111](T-111.md) Route Map editor + archetypes (absorbs P4). in progress: codex (worktree sf-wt/T-111)
+  - [T-114](T-114.md) Context hygiene + local speed. in progress: Claude (worktree sf-wt/T-114)
+- **Wave B** (unblocked: T-conversation-workflow landed in 44abf5a):
+  - [T-108](T-108.md) Scene voice. planned: codex
+  - [T-109](T-109.md) Delivery verdict (after T-108). planned: codex
+  - [T-112](T-112.md) Reaction flash + scene summary. planned: codex; owner to confirm it is compatible with the Game UI redesign pause.
+- **Wave C:** [T-113](T-113.md) Generated depth. planned: codex
+- **Later:** CQ6 (more random encounters, walk-ins, two heroines), plus the CQ7 leftovers.
+
 ## Current priority (2026-10-04)
 
 Owner approved the proper evidence-backed creator gap assessment after allowance uncertainty disclosure. **T-098 assessment/doc task complete; no implementation dispatched.** The goal supersedes polish-only wording: a reusable creator capable of authoring essentially the whole kind of Venus University social/romance experience, including character setup, rules, events and player screens. All core controls visual; code optional for extensions. [26-capability assessment](../research/creator-gap-assessment-2026-10-04.md), [dependency roadmap](../NEXT-MILESTONES.md#creator-milestones-2026-10-04), [T-098 report](T-098.report.md).

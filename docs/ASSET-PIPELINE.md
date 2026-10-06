@@ -47,3 +47,6 @@ Once a render lands in `public/assets/generated/`, point the relevant `backgroun
 ## Adding a new asset
 
 Add an entry to `ASSET_MANIFEST` in `packages/assets/manifest.mjs` with a `bg(...)` or `portrait(...)` call, then add a test case in `tests/assets-manifest.test.mjs` asserting its id, kind, and size.
+
+## ComfyUI Venus-style pipeline
+`node scripts/comfy-sprites.mjs --check` verifies a running ComfyUI (COMFY_HOST, default 127.0.0.1:8188) has the nodes/models; without `--check` it renders sprites (base → cutout → face pass) and scene CGs from the same character folders as `novelai-sprites.mjs`. Rooms are skipped. Workflows live in `assets/comfy/workflows`.

@@ -83,8 +83,8 @@ test('scene JSON is repaired once and malformed structured data is never returne
  const context={stagedCast:['ada'],scenePhase:'continuation',sceneHistory:[],playerAction:'Yes',location:p.locations[0]};const output=await provider.generateScene(context,p);assert.equal(calls,2);assert.equal(output.lines[0].speaker,'ada');provider.complete=async()=>'{}';await assert.rejects(()=>provider.generateScene(context,p),/Scene format failed after repair/);
 });
 
-test('continuous conversation mode keeps a live connected reply open; bounded mode keeps initiative and natural endings',()=>{const p=pack();p.gameProject={conversationStyle:'continuous'};const context={stagedCast:['ada'],scenePhase:'continuation',sceneHistory:[],playerAction:'I think we have said enough.',location:p.locations[0],gameProject:p.gameProject};let messages=scenePromptMessages(context,p);assert.match(messages[1].content,/Respond directly to the latest player words/);assert.match(messages[1].content,/do not end a live conversation just because this reply is complete/);assert.match(messages[0].content,/Write one connected reply, mostly direct NPC dialogue/);assert.doesNotMatch(messages[0].content,/PLAYER DELIVERY:|STAGING:/);
- messages=scenePromptMessages({...context,first:{checkpoint:0}},p);assert.doesNotMatch(messages[0].content,/Write one connected reply/);
+test('continuous conversation mode keeps a live connected reply open; bounded mode keeps initiative and natural endings',()=>{const p=pack();p.gameProject={conversationStyle:'continuous'};const context={stagedCast:['ada'],scenePhase:'continuation',sceneHistory:[],playerAction:'I think we have said enough.',location:p.locations[0],gameProject:p.gameProject};let messages=scenePromptMessages(context,p);assert.match(messages[1].content,/Respond directly to the latest player words/);assert.match(messages[1].content,/let her leave with a reason or next-time hook and set end_scene true/);assert.match(messages[0].content,/Write one connected reply, mostly direct NPC dialogue/);assert.doesNotMatch(messages[0].content,/PLAYER DELIVERY:|STAGING:/);
+ messages=scenePromptMessages({...context,first:{checkpoint:0}},p);assert.match(messages[0].content,/Write one connected reply/);
  messages=scenePromptMessages({...context,gameProject:{conversationStyle:'bounded'}},p);assert.match(messages[1].content,/Stop at a natural point for the player to respond/);});
 
 test('direct conversation pins attendance across schedule boundary and pronoun follow-up',async()=>{
@@ -155,7 +155,7 @@ test('scene summary persists and a natural ending settles without a second writi
   let r=await service.act('ending',{id:'start',expectedRevision:0,command:{type:'core.scene',args:{text:'Meet Ada.',location:'hub',characters:['ada'],activity:'talk'}}});
   assert.equal(r.state.scene.summary,'The reader met Ada.');assert.equal(r.state.scene.id,'start');
   r=await service.act('ending',{id:'follow',expectedRevision:1,input:'That sounds good.'});
-  assert.equal(seen[1].sceneSummary,'The reader met Ada.');assert.equal(seen.length,2);assert.equal(r.state.scene,null);assert.equal(r.turn.sceneEnded,true);assert.match(r.turn.narrative,/Let us meet again/);assert.equal(r.turn.sceneSummary,'The reader and Ada agreed on a later meeting.');assert.equal(ledgerCalls,2);
+  assert.equal(seen[1].sceneSummary,'The reader met Ada.');assert.equal(seen.length,2);assert.equal(r.state.scene,null);assert.ok(r.state.events.some(e=>e.type==='core.sceneEnded'&&e.payload.reason==='natural'));assert.match(r.turn.narrative,/Let us meet again/);assert.equal(r.turn.sceneSummary,'The reader and Ada agreed on a later meeting.');assert.equal(ledgerCalls,2);
   const restored=validateImport(exportCampaign(r.state),p,registry);assert.equal(restored.scene,null);assert.equal(restored.turns.follow.sceneSummary,r.turn.sceneSummary);
  }finally{store.close();}
 });

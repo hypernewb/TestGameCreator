@@ -25,7 +25,7 @@ test('Venus-inspired prompt keeps the shared contract and requests a full scene 
  assert.match(system.content,/VENUS SCENE STRUCTURE/);
  assert.match(system.content,/6–9 visual-novel entries/);
  assert.match(system.content,/at least four entries NPC dialogue/);
- assert.match(system.content,/End with a specific question or offer/);
+ assert.match(system.content,/End on something she does, says or wants; a question at most one reply in three/);
  assert.match(system.content,/OUTPUT CONTRACT: Return one JSON object/);
  assert.match(user.content,/Respond directly to the latest player words or action/);
  assert.doesNotMatch(system.content,/Then 2–5 short entries/);

@@ -2,6 +2,7 @@
 // before it's shown: attendance, knowledge leaks, and content-level overflow.
 import {lintFacts,lintHistory,sharedAuthoredFact} from './knowledge.mjs';
 import {assertSceneBoundaries} from './scene-boundaries.mjs';
+import {speechOf} from './character-context.mjs';
 import {onlyRepeats,PLAYER_INTERIOR} from './untrusted-output.mjs';
 // A fact's quote is how facts.mjs proves a fact happened in narration; the same quote in a line spoken by
 // someone outside that fact's knownBy means the model let a character speak knowledge it was never given.
@@ -28,7 +29,8 @@ function assertDaypart(value,context){
 // The narrator may report what the player visibly does, but it cannot author their private reaction. This keeps
 // free-form play conversational: the player owns their feelings, motives and decisions instead of the model
 // supplying stock role-play beats such as "your heart pounds with anticipation."
-function assertPlayerInterior(value){
+function assertPlayerInterior(value,context){
+ if(context.allowPlayerReactions)return;
  for(const line of value.lines)if(!line.speaker&&PLAYER_INTERIOR.test(line.text))throw Error('Do not invent the player’s feelings, thoughts, motives, memories, decisions, gaze, posture, or bodily reactions; describe only observable action and surroundings');
 }
 // Narration is second person. Once a named player turns up in memories, small models drift to "Cael vows to protect her",
@@ -113,10 +115,10 @@ function assertPlayerTransactions(value,context){
   throw Object.assign(Error(`Do not narrate "you ${m[1]} ..." during a typed activity: purchases, sales, trades and item transfers are committed by the engine, not by prose. Describe the scene or have a character speak instead`),{soft:true});
  }
 }
-const CHECKS=[['attendance',assertSceneBoundaries],['knowledge',assertKnowledgeLeaks],['time',assertDaypart],['calendar',assertWeekday],['player-agency',assertPlayerInterior],['player-person',assertPlayerPerson],['player-transactions',assertPlayerTransactions],['touch-stage',assertStageTouch],['speech',assertCastSpeaks],['repeat',assertFresh],['paraphrase',assertFreshNarration],['beats',assertFreshBeats]];
+const CHECKS=[['attendance',assertSceneBoundaries],['knowledge',assertKnowledgeLeaks],['time',assertDaypart],['calendar',assertWeekday],['player-agency',assertPlayerInterior],['player-decisions',assertPlayerDecisions],['question-ending',assertQuestionEnding],['player-person',assertPlayerPerson],['player-transactions',assertPlayerTransactions],['touch-stage',assertStageTouch],['speech',assertCastSpeaks],['repeat',assertFresh],['paraphrase',assertFreshNarration],['beats',assertFreshBeats]];
 // Style checks a strong model may break without a repair call; attendance, knowledge, content, player-person,
 // touch-stage and speech stay hard for every model.
-export const STYLE_CHECKS=new Set(['time','calendar','player-agency','player-transactions','repeat','paraphrase','beats']);
+export const STYLE_CHECKS=new Set(['question-ending','time','calendar','player-agency','player-transactions','repeat','paraphrase','beats']);
 // A character asking the same question twice in one scene reads as not listening. Warn only: rewording is the model's job.
 const QSTOP=new Set('the and you your are was were did does what how who why where when that this for with have has about just really so do is it to of a an in on me my i'.split(' '));
 const qWords=q=>new Set(q.toLowerCase().replace(/[^a-z\s]/g,' ').split(/\s+/).filter(w=>w.length>1&&!QSTOP.has(w)));
@@ -136,6 +138,7 @@ export function echoedRun(text,input,min){
 }
 export function lintScene(value,context,pack,{lenient=false}={}){
  const warnings=[];
+ for(const line of value.lines.filter(l=>l.speaker))for(const owner of pack.characterSheets||[]){if(owner.actorId===line.speaker)continue;const own=speechOf(pack,line.speaker),mine=[...(own?.tics||[]),...(own?.petPhrases||[])].map(x=>x.trim().toLowerCase());for(const phrase of [...(owner.speech?.tics||[]),...(owner.speech?.petPhrases||[])]){const tic=phrase.trim().toLowerCase(),text=line.text.toLowerCase();if(tic&&!mine.includes(tic)&&phraseIn(text,tic))warnings.push({check:'speech-owner',message:line.speaker+' used '+owner.actorId+'’s speech phrase: '+phrase});}}
  for(const [check,run] of CHECKS){
   try{run(value,context,pack);}
   catch(error){if(lenient&&STYLE_CHECKS.has(check)){warnings.push({check,message:String(error.message).slice(0,200)});continue;}throw Object.assign(Error(error.message),{lintCheck:check,soft:!!error.soft,safeRepair:error.safeRepair});}
@@ -150,3 +153,16 @@ export function lintScene(value,context,pack,{lenient=false}={}){
  return warnings;
 }
 
+
+const phraseIn=(text,phrase)=>{let at=text.indexOf(phrase);while(at>=0){if(!/[\p{L}\p{N}]/u.test(text[at-1]||'')&&!/[\p{L}\p{N}]/u.test(text[at+phrase.length]||''))return true;at=text.indexOf(phrase,at+1);}return false;};
+export const questionEnding=lines=>/\?["”’'\s]*$/u.test((lines||[]).filter(l=>l.speaker).at(-1)?.text||'');
+function assertQuestionEnding(value,context,pack){
+ if(context.first?.required||!questionEnding(value.lines))return;
+ const names=pack.actors.filter(a=>(context.stagedCast||[]).includes(a.id)).map(a=>a.name+': '),prior=(context.sceneHistory||[]).slice(-2).map(h=>h.lines?questionEnding(h.lines):/\?["”’'\s]*$/u.test(String(h.text||'').split('\n').filter(l=>names.some(n=>l.startsWith(n))).at(-1)||String(h.text||'')));
+ if(prior.some(Boolean))throw Object.assign(Error('Question endings: more than one in the last three replies. End on something she does, says or wants instead.'),{soft:true});
+}
+function assertPlayerDecisions(value,context){
+ if(!context.allowPlayerReactions)return;
+ const decision=/\byou (?:accept|agree to|consent|promise|swear|buy|purchase|pay|spend|travel|leave for|head to)\b/iu;
+ for(const line of value.lines)if(!line.speaker&&decision.test(line.text)){const verb=line.text.match(decision)[0].replace(/^you /iu,'');if(!String(context.playerAction||'').toLowerCase().includes(verb)||!(context.outcomes||[]).length)throw Error('Leave player decisions about accepting, consent, promises, travel and spending open; narrate reactions or committed outcomes instead.');}
+}

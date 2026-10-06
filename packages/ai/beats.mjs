@@ -5,7 +5,7 @@ import {relationshipStageOf} from './character-context.mjs';
 import {relevance} from './memory.mjs';
 import {briefOf} from '../modules/director.mjs';
 import {conversationCue,exchangePolicy,isQuestion} from './conversation.mjs';
-const MOVES={flirt:'flirt a little, their own way',ask:'ask the player one specific question back',opinion:'give their own opinion, even one the player may not share',notice:'point out one concrete detail around them',tease:'tease the player lightly',deflect:'dodge with a dry aside before giving a little ground',confide:'admit one small, true thing about themselves',challenge:'disagree with something the player said, with a reason'};
+const MOVES={flirt:'flirt a little, their own way',ask:'show curiosity through a specific observation; a question is optional',opinion:'give their own opinion, even one the player may not share',notice:'point out one concrete detail around them',tease:'tease the player lightly',deflect:'dodge with a dry aside before giving a little ground',confide:'admit one small, true thing about themselves',challenge:'disagree with something the player said, with a reason'};
 const TEMPERAMENT=[[/teas|joke|wry|dry|playful|sarcas|wit|funny/i,['tease','deflect']],[/guarded|careful|reserved|shy|self-reliant|private|afraid|proud/i,['deflect','challenge']],[/curious|observant|perceptive|nosy/i,['notice','ask']],[/direct|blunt|honest|sincere|impulsive|restless/i,['opinion','challenge']],[/warm|kind|sentimental|gentle|loyal|patient/i,['confide','ask']]];
 const FEELING=/\b(?:sorry|miss|love|sad|scared|afraid|hurt|thank|thanks|proud|happy|excited|nervous|worried|sucks)\b/i;
 const STAGE={stranger:{tone:'just met the player: polite but quick to spar — banter and teasing pushback welcome, confiding not',drop:['confide']},familiar:{tone:'knows the player a little: warming up, easy banter, not close yet',drop:['confide']},friend:{tone:'knows the player well: relaxed',add:['tease','confide']},close:{tone:'close to the player: warm, at ease',add:['confide']},
@@ -47,7 +47,7 @@ export function beatDirection(context,pack,seed=''){
  const actors=cast.map(id=>pack.actors.find(a=>a.id===id)).filter(Boolean),named=actors.find(a=>new RegExp(`\\b${a.name.split(' ')[0].replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`,'i').test(input)),actor=named||actors[0];if(!actor)return '';
  const history=context.sceneHistory||[],said=history.map(h=>`${h.input||''} ${h.text||''}`).join(' ')+' '+input,seeds=topicSeeds(actor,said),ground=groundFor(actor,input);
  // "What's my favourite colour?" is a memory check about the player: answered from what they said, never invented.
- const question=isQuestion(input),aboutPlayer=question&&/\b(?:my|mine|remember)\b|\b(?:what|where|when|who|how|why)\s+I\b/i.test(input),responsive=phase==='continuation'&&!context.first&&!context.scriptedScene,cue=responsive?conversationCue(input):'neutral',policy=exchangePolicy(context);
+ const question=isQuestion(input),aboutPlayer=question&&/\b(?:my|mine|remember)\b|\b(?:what|where|when|who|how|why)\s+I\b/i.test(input),responsive=phase==='continuation'&&!context.scriptedScene,cue=responsive?conversationCue(input):'neutral',policy=exchangePolicy(context);
  // How close they are shapes how they talk, as in Persona's ranks or Venus University's trust: a stranger is polite and keeps
  // their secrets, a friend teases and confides, a crush gets flustered and flirts. A dating phase outranks raw trust.
  const stageOf=a=>relationshipStageOf(context,a);

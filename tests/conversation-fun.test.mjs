@@ -29,7 +29,7 @@ test('encouragement develops the existing topic; an empty conversation can still
 test('fitting moves preserve personality, stage restrictions and seeded variation',()=>{
  const playful=seeds.map(seed=>move(dir('Nice try!',{},seed)));
  assert.ok(playful.every(s=>/tease the player|dodge with a dry aside/.test(s)));assert.ok(new Set(playful).size>1);
- for(const seed of seeds){assert.match(move(dir('I grew up by the harbor.',{},seed)),/ask the player one specific question back/);assert.match(move(dir('I think coffee is overrated.',{},seed)),/give their own opinion|disagree with something the player said/);}
+ for(const seed of seeds){assert.match(move(dir('I grew up by the harbor.',{},seed)),/show curiosity through a specific observation/);assert.match(move(dir('I think coffee is overrated.',{},seed)),/give their own opinion|disagree with something the player said/);}
  for(const phase of ['rejected','broken'])for(const seed of seeds)assert.doesNotMatch(dir('Nice try!',{dating:[{character:'mina',phase}]},seed),/flirt a little|admit one small/);
  const before=ctx('Nice try!');assert.equal(beatDirection(before,pack,'same'),beatDirection(before,pack,'same'));const saved=structuredClone(before);beatDirection(before,pack,'different');assert.deepEqual(before,saved);
 });
@@ -50,8 +50,8 @@ test('brief exchanges have matching length instructions in both writers and keep
   const c=ctx(input,{sceneWriter}),p=exchangePolicy(c);assert.equal(p.quick,true);assert.equal(p.range,'2–3');c.direction=beatDirection(c,pack,'s1');
   const [sys,user]=scenePromptMessages(c,pack);assert.match(sys.content,/2–3 visual-novel entries/);assert.match(user.content,/2–3 visual-novel entries/);
   assert.doesNotMatch(sys.content,/5–7 visual-novel entries|6–9 visual-novel entries|at least four entries NPC dialogue|never a bare one-liner|End with a specific question or offer|INITIATIVE:/);
-  assert.match(sys.content,/one short narrator beat/);assert.match(sys.content,/Never add player intent, promises, consent, gestures or movement/);assert.match(sys.content,/This JSON contract takes priority/);
-  assert.match(sys.content,/never announce plans to leave.*never walk out mid-beat/);
+  assert.match(sys.content,/one short narrator beat/);assert.match(sys.content,/leave accepting, promises, consent, travel and spending to player decisions and committed outcomes/);assert.match(sys.content,/This JSON contract takes priority/);
+  assert.match(sys.content,/An NPC may leave with a reason or a next-time hook; set end_scene true/);
  }
 });
 
@@ -63,7 +63,7 @@ test('questions, encouragement, feelings, openings and engine-controlled beats k
  for(const input of ['What made you start drawing?','Go on.',"I'm scared."]){assert.equal(exchangePolicy(ctx(input)).quick,false);assert.match(scenePromptMessages(ctx(input),pack)[0].content,/5–7 visual-novel entries/);}
  for(const extra of [{scenePhase:'opening'},{scenePhase:'closing'},{scenePhase:'solo',stagedCast:[]},{scriptedScene:{id:'authored'}},{first:{checkpoint:0}},{repeatAsk:'Mina'},{hangingAsk:{by:'Mina',text:'What do you think?'}}])assert.equal(exchangePolicy(ctx('Okay.',extra)).quick,false);
  assert.equal(exchangePolicy(ctx('Bye.')).quick,false);
- for(const extra of [{scriptedScene:{id:'authored'}},{first:{checkpoint:0}}])assert.doesNotMatch(dir('No thanks.',extra),/acknowledge what the player declined without pressure/);
+ assert.doesNotMatch(dir('No thanks.',{scriptedScene:{id:'authored'}}),/acknowledge what the player declined without pressure/);assert.match(dir('No thanks.',{first:{checkpoint:0}}),/acknowledge what the player declined without pressure/);
 });
 
 test('question endings and a new agenda stay optional for brief continuations',()=>{

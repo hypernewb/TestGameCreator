@@ -1,0 +1,76 @@
+{
+  "provider": "mock",
+  "seed": 42,
+  "script": "stranger-to-close",
+  "limits": "No live calls. Fixed mock replies test plumbing; identical output is not evidence of improved prose or fun. Token counts are characters/4 estimates, not tokenizer measurements.",
+  "promptSizes": [
+    {
+      "conversationStyle": "authored",
+      "first": false,
+      "beforeEstimatedTokens": 1694,
+      "afterEstimatedTokens": 1859,
+      "delta": 165
+    },
+    {
+      "conversationStyle": "authored",
+      "first": true,
+      "beforeEstimatedTokens": 1643,
+      "afterEstimatedTokens": 1817,
+      "delta": 174
+    },
+    {
+      "conversationStyle": "continuous",
+      "first": false,
+      "beforeEstimatedTokens": 1245,
+      "afterEstimatedTokens": 1397,
+      "delta": 152
+    },
+    {
+      "conversationStyle": "continuous",
+      "first": true,
+      "beforeEstimatedTokens": 1685,
+      "afterEstimatedTokens": 1581,
+      "delta": -104
+    }
+  ],
+  "runs": {
+    "before": {
+      "turns": 15,
+      "refusals": 1,
+      "npcReplies": 2,
+      "questionEndings": 0,
+      "questionEndingRate": 0,
+      "distinctVoice": null,
+      "distinctVoiceReason": "The fixed stock MockProvider does not render authored speech profiles; no model voice-quality metric can be inferred.",
+      "excerpt": "Jana: “Thanks for checking in.\nJana: Keep an eye on the objectives and the schedule.”",
+      "dialogue": {
+        "questionRate": 0,
+        "walls": 0,
+        "narrationWalls": 0,
+        "medianWords": 6.5,
+        "dialogueRatio": 0.13,
+        "recycledGrams": 0,
+        "echoViolations": 0
+      }
+    },
+    "after": {
+      "turns": 15,
+      "refusals": 1,
+      "npcReplies": 2,
+      "questionEndings": 0,
+      "questionEndingRate": 0,
+      "distinctVoice": null,
+      "distinctVoiceReason": "The fixed stock MockProvider does not render authored speech profiles; no model voice-quality metric can be inferred.",
+      "excerpt": "Jana: “Thanks for checking in.\nJana: Keep an eye on the objectives and the schedule.”",
+      "dialogue": {
+        "questionRate": 0,
+        "walls": 0,
+        "narrationWalls": 0,
+        "medianWords": 6.5,
+        "dialogueRatio": 0.13,
+        "recycledGrams": 0,
+        "echoViolations": 0
+      }
+    }
+  }
+}

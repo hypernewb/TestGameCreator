@@ -17,7 +17,7 @@ test('both writers recast the current speech on openings and continuations with 
   assert.match(sys.content,/Supplied stat ranks only slightly color delivery, and only on a bold move/);
   assert.match(sys.content,/Show audible timing or wording only, never hidden motives/);
   assert.match(sys.content,/low Charm adds awkward timing or a small hesitation; high Charm sounds easy, never guaranteed success/);
-  assert.match(sys.content,/Never add player intent, promises, consent, gestures or movement/);
+  assert.match(sys.content,/leave accepting, promises, consent, travel and spending to player decisions and committed outcomes/);
   assert.match(sys.content,/NPC replies never restate or paraphrase the player action/);
   assert.doesNotMatch(sys.content,/on a continuation never restate|Never restate or paraphrase the player action \(the reader/);
   assert.ok(user.content.includes(`Charm: ${rank} (${charm})`));assert.deepEqual(c,before);

@@ -101,10 +101,10 @@ const STOCK_SENTENCE=/^(?:(?:\p{Lu}\p{L}*[’']s|His|Her|Their)\s+)?(?:(?:a|an)\
 // avoid: the project's stock-phrase list; a narration sentence using one goes too, while anyone still speaks.
 // Narration that authors the player's feelings, thoughts or body ("your heart pounds"); the lint repairs it on strict models.
 export const PLAYER_INTERIOR=/\b(?:you (?:feel|realize|sense|think|wonder|hope|fear|want|need|remember|decide|resolve|brace yourself|steel yourself|can'?t quite place|find yourself)|your (?:heart|pulse) (?:pounds?|races?|quickens?)|(?:drawing|pulling|dragging|pulls?|draws?|drags?|lifts?) your (?:gaze|eyes|attention)|your (?:gaze|eyes) (?:being )?(?:drawn|pulled|dragged|drift(?:s|ing)?|travel(?:s|ling)?)|(?:anticipation|dread|excitement|nervous(?:ness| energy)?|relief|desire|longing) (?:courses?|washes?|floods?|surges?) (?:through|over) you|leaves? you feeling|(?:makes?|sends?) your (?:skin|spine|neck|ears|pulse) (?:prickl\w+|crawls?|tingl\w+|burn|ache)|your (?:skin|spine) (?:prickl\w+|crawls?|tingl\w+)|your (?:posture|stance|body language|breathing|breath) (?:\w+ ){0,2}(?:mirror\w*|match\w*|echo\w*|catch\w*|hitch\w*|quicken\w*|settle\w*|soften\w*|tense\w*|relax\w*|still\w*|deepen\w*|ease\w*|straighten\w*))\b/iu;
-export function dropStock(lines,avoid=[]){
+export function dropStock(lines,avoid=[],{allowPlayerReactions=false}={}){
  const speaks=lines.some(l=>l.speaker&&l.text.trim()),out=[],flat=t=>t.toLowerCase().replace(/[’']/gu,"'"),bad=avoid.map(flat).filter(Boolean);
  for(const line of lines){if(line.speaker){out.push(line);continue;}
-  const kept=line.text.replace(STOCK_CLAUSE,'').split(/(?<=[.!?…])\s+/u).filter(t=>t&&!PLAYER_INTERIOR.test(t)&&!(speaks&&(STOCK_SENTENCE.test(t)||bad.some(b=>flat(t).includes(b)))));
+  const kept=line.text.replace(STOCK_CLAUSE,'').split(/(?<=[.!?…])\s+/u).filter(t=>t&&(allowPlayerReactions||!PLAYER_INTERIOR.test(t))&&!(speaks&&(STOCK_SENTENCE.test(t)||bad.some(b=>flat(t).includes(b)))));
   if(kept.length)out.push({...line,text:kept.join(' ')});}
  return out.some(l=>l.speaker)||out.length?out:lines;
 }

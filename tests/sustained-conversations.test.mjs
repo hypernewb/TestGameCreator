@@ -11,7 +11,7 @@ import {registry} from '../packages/modules/index.mjs';
 import {runPromptAB} from '../packages/testing/prompt-ab-runner.mjs';
 import {CRITERIA} from '../packages/testing/prompt-ab.mjs';
 
-test('calm changes continuation policy while preserving length, openings, closing and checkpoint prompts',()=>{
+test('calm changes continuation policy while preserving length, openings and closing while firsts retain calm',()=>{
  const pack=JSON.parse(readFileSync(new URL('../packs/campus.json',import.meta.url))),context={stagedCast:['jana'],scenePhase:'continuation',playerAction:'Ask Jana what she misses about home.',sceneHistory:[],actor:{id:'jana',relationshipToPlayer:30},gameProject:{conversationStyle:'continuous'}};
  context.baseDirection=beatDirection(context,pack,'same-seed');context.direction=context.baseDirection;
  context.calmDirection=beatDirection({...context,continuationStyle:'calm'},pack,'same-seed');
@@ -19,7 +19,8 @@ test('calm changes continuation policy while preserving length, openings, closin
  // Continuous free conversation shares the live-reply system contract; calm changes only the beat direction.
  assert.notDeepEqual(calm,plain);assert.equal(calm[0].content,plain[0].content);assert.doesNotMatch(calm[0].content,/INITIATIVE:/);
  assert.match(calm[0].content,/Write one connected reply/);assert.match(calm[1].content,/same subject/);assert.doesNotMatch(plain[1].content,/without requiring a new plan or question/);
- for(const override of [{scenePhase:'opening'},{scenePhase:'closing'},{first:{rung:'kiss'}},{scriptedScene:'authored'},{direction:'Engine-controlled closure'}])assert.deepEqual(calmContinuationMessages({...context,...override},pack),scenePromptMessages({...context,...override},pack));
+ assert.match(calmContinuationMessages({...context,first:{rung:'kiss'}},pack)[1].content,/without requiring a new plan or question/);
+ for(const override of [{scenePhase:'opening'},{scenePhase:'closing'},{scriptedScene:'authored'},{direction:'Engine-controlled closure'}])assert.deepEqual(calmContinuationMessages({...context,...override},pack),scenePromptMessages({...context,...override},pack));
 });
 
 test('whole conversation judging sees complete final displays, independent initial trust and no early termination',async()=>{

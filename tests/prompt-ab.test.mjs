@@ -48,9 +48,9 @@ test('tally and report count pairwise wins, failures and words for every variant
 test('the hybrid style is the default: a persona, staging and hooks, ending on a character move instead of a question',()=>{
  const two=ctx({stagedCast:['jana','nova'],speakers:['jana','nova'],castProfiles:[jana,{id:'nova',name:'Nova'}],scenePhase:'continuation',sceneHistory:[]});
  const [plain]=scenePromptMessages({...two,sceneStyle:'plain'},pack),[hy]=scenePromptMessages(two,pack);
- assert.doesNotMatch(plain.content,/romance novelist|STAGING/);assert.match(plain.content,/not every reply needs a question/);assert.match(scenePromptMessages({...two,scenePhase:'opening',sceneStyle:'plain'},pack)[0].content,/End with a specific question or offer/);assert.doesNotMatch(scenePromptMessages({...two,sceneWriter:'venus'},pack)[0].content,/romance novelist|STAGING/);
- assert.match(hy.content,/^You are a romance novelist/);assert.match(hy.content,/STAGING: Give each present character one physical object[\s\S]*Every present character gets at least one spoken line/);
- assert.match(hy.content,/never write the player’s words, feelings or backstory/);assert.match(hy.content,/end on a character’s move/);assert.doesNotMatch(hy.content,/End with a specific question or offer/);
+ assert.doesNotMatch(plain.content,/romance novelist|STAGING/);assert.match(plain.content,/not every reply needs a question/);assert.match(scenePromptMessages({...two,scenePhase:'opening',sceneStyle:'plain'},pack)[0].content,/End on something she does, says or wants/);assert.doesNotMatch(scenePromptMessages({...two,sceneWriter:'venus'},pack)[0].content,/romance novelist|STAGING/);
+ assert.match(hy.content,/^NARRATOR PERSONA: Lean/);assert.match(hy.content,/STAGING: Give each present character one physical object[\s\S]*Every present character gets at least one spoken line/);
+ assert.match(hy.content,/use narration for player reactions and requested actions, supplied facts for backstory/);assert.match(hy.content,/end on a character’s move/);assert.doesNotMatch(hy.content,/End with a specific question or offer/);
  assert.doesNotMatch(scenePromptMessages({...ctx(),sceneStyle:'hybrid'},pack)[0].content,/Every present character gets/,'a one-on-one scene skips the ensemble rule');
  const solo={...ctx({stagedCast:[],speakers:[],castProfiles:[]}),sceneStyle:'hybrid'};assert.match(scenePromptMessages(solo,pack)[0].content,/one small discovery or hook/);assert.doesNotMatch(scenePromptMessages(solo,pack)[0].content,/STAGING/);
 });
@@ -76,9 +76,9 @@ test('the shown turn adds the engine text around the drive reply, and the report
  const md=reportMarkdown(rows,{model:'m',judge:'j',drive:'ours',date:'d',names:['ours']});
  assert.match(md,/2 line\(s\) filtered[\s\S]*shown to the player[\s\S]*\[SCENE END\] You head to class[\s\S]*turn 1 \(engine\)[\s\S]*shown to the player[\s\S]*A beat\./);
 });
-test('hybrid scenes ask for initiative without departures and forbid invented history between characters',()=>{
+test('hybrid scenes ask for initiative with hooked departures and forbid invented history between characters',()=>{
  const two=ctx({stagedCast:['jana','nova'],speakers:['jana','nova'],castProfiles:[jana,{id:'nova',name:'Nova'}],scenePhase:'continuation',sceneHistory:[]}),sys=scenePromptMessages(two,pack)[0].content;
- assert.match(sys,/INITIATIVE: at least one character acts on their own plan[\s\S]*while staying in the scene/);assert.doesNotMatch(sys.match(/INITIATIVE:[^\n]*/)[0],/\bleave|walk away|depart/);
+ assert.match(sys,/INITIATIVE: at least one character acts on their own plan[\s\S]*with a concrete move or a reason to leave and a next-time hook/);assert.match(sys.match(/INITIATIVE:[^\n]*/)[0],/reason to leave and a next-time hook/);
  assert.match(sys,/never invent shared history between characters/);assert.match(sys,/closed attendance list/);
  assert.doesNotMatch(scenePromptMessages({...two,sceneStyle:'plain'},pack)[0].content,/INITIATIVE/);
 });

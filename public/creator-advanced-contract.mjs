@@ -8,6 +8,7 @@ export const valueAt=(p,path)=>path.reduce((x,k)=>x?.[k],p);
 export function advancedSpecs(p){
  const out={},npcs=pairs((p.actors||[]).filter(a=>a.id!==p.playerId)),actors=pairs(p.actors),items=pairs(p.items),scenes=pairs(p.scriptedScenes),conditions=systemSpecs(p).moments.fields.when;
  const add=(path,label,fields,removable=false)=>{out['advanced/'+path.join('/')]= {path,label,fields,singleton:true,removable};},each=(key,label,fields)=>{for(const [i,v] of (p[key]||[]).entries())add([key,i],label+' · '+(v.name||v.title||v.id||p.actors?.find(a=>a.id===v.character)?.name||v.character||i+1),typeof fields==='function'?fields(v):fields);};
+ add(['goalSettings'],'Character goal reveal',{revealTrust:num('Trust to reveal non-secret goals (requires Relationships; empty means mention only)',0,100)});
  const disclosure=obj('Disclosure reactions',{honestyDelta:num('Honesty satisfaction change',-100,100),agreementDeltas:map('Agreement satisfaction changes',num('Change',-100,100,true),agreements.map(x=>[x,x]))});
  each('romanceTempoProfiles','Romance progression',{
   ranks:arr('Ordered romance ranks',obj('Rank',{id:id(),name:text('Rank name',true),points:num('Required points',0,Number.MAX_SAFE_INTEGER,true),ceiling:num('Point ceiling',0,Number.MAX_SAFE_INTEGER,true),scene:choice('Rank-up scene',scenes)},true),1,20),

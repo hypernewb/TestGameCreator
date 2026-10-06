@@ -87,6 +87,7 @@ export function mechanicsShape(pack) {
  return {
   schemaVersion:pack.schemaVersion,id:pack.id,version:pack.version,modules:pack.modules,playerId:pack.playerId,...pick(pack.gameProject||{},['timeMode']),...pick(pack,['socialPacing','sceneFeedback','lustBaseline']),
   ...(pack.dailyNeeds?{dailyNeeds:pack.dailyNeeds,dailyNeedTraits:pack.actors.filter(a=>a.id!==pack.playerId).map(a=>({id:a.id,traits:pack.characterSheets?.find(x=>x.actorId===a.id)?.personality?.traits||a.traits||[]}))}:{}),
+  ...(pack.modules?.goals?{goalSettings:pack.goalSettings||null,goals:(pack.characterSheets||[]).filter(s=>s.goal).map(s=>({actorId:s.actorId,goal:s.goal}))}:{}),
   ...(pack.wantSettings||pack.characterSheets?.some(s=>s.wants?.length)?{wantSettings:pack.wantSettings||null,wants:pack.characterSheets.filter(s=>s.wants?.length).map(s=>({actorId:s.actorId,wants:s.wants}))}:{}),
   ...(pack.jealousyProfiles?{jealousySettings:pack.jealousySettings||null,jealousyProfiles:pack.jealousyProfiles,jealousyTraits:pack.actors.filter(a=>a.id!==pack.playerId).map(a=>({id:a.id,traits:pack.characterSheets?.find(x=>x.actorId===a.id)?.personality?.traits||a.traits||[]}))}:{}),
   locations:pack.locations.map(l=>({id:l.id,exits:(l.exits||[]).map(e=>pick(e,['to','flag']))})),
@@ -409,7 +410,7 @@ export function actionCost(state,action,pack,registry={},next){
  return timeCost(Math.max(0,to-state.tick),pack);
 }
 // Bookkeeping that takes no story time: looking, dressing, reading the phone.
-export const FREE_ACTIONS=new Set(['core.refuse','core.inspect','items.equip','items.unequip','social.readFeed','social.readThread','social.acceptPhoneOffer','social.declinePhoneOffer','social.reactToPost','social.setRumorStance','social.resolveConfrontation','social.scoreFirst','social.stopFirst','world.pushLuck']);
+export const FREE_ACTIONS=new Set(['goals.reveal','goals.advance','core.refuse','core.inspect','items.equip','items.unequip','social.readFeed','social.readThread','social.acceptPhoneOffer','social.declinePhoneOffer','social.reactToPost','social.setRumorStance','social.resolveConfrontation','social.scoreFirst','social.stopFirst','world.pushLuck']);
 // The typed turns a model scene answers inside an open continuous scene: the only ones that count toward the
 // sceneTurns safety cap. Score sub-turns (priceActs, scoreFirst, resolveConfrontation), waits and rules-only
 // commands are not conversation, and failed generations are refunded by the service, so none of them spend the scene.

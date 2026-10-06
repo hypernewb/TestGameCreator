@@ -1,7 +1,7 @@
 // Shared by the play screen and evaluation: presentation only, no state changes.
 import {sceneLines} from '../vendor/venus/sceneText.mjs';
 import {firstTurn} from './firsts-ui.mjs';
-export const SUB_TURNS=new Set(['social.priceActs','social.scoreFirst','social.resolveConfrontation','core.endScene']);
+export const SUB_TURNS=new Set(['goals.reveal','goals.advance','social.priceActs','social.scoreFirst','social.resolveConfrontation','core.endScene']);
 // One player action spans its main turn and the sub-turns after it (act pricing, first scoring, the scene close).
 export const actionTurns=s=>{const turns=Object.values(s.turns||{}),i=turns.findLastIndex(t=>!SUB_TURNS.has(t.command?.type));return turns.slice(i<0?Math.max(0,turns.length-1):i);};
 export const freeConversation=data=>Boolean(data.pack.gameProject?.conversationStyle==='continuous'&&data.state.scene?.characters?.length&&!data.state.modules['story.scenes']?.pending&&!data.state.modules['social.firsts']?.active&&!data.diagnostics?.ended);

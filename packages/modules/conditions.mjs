@@ -25,6 +25,7 @@ export function validateConditions(when,p,label){
  validateExtraConditions(when,p,label);
 }
 export function validateExtraConditions(when,p,label){
+ if(when.goalStep!==undefined){assert(when.goalStep&&typeof when.goalStep==='object'&&!Array.isArray(when.goalStep),`${label}.goalStep: expected character/step map`);for(const [id,step] of Object.entries(when.goalStep))assert(p.modules.goals&&(p.characterSheets||[]).some(s=>s.actorId===id&&s.goal?.steps?.some(x=>x.id===step)),`${label}.goalStep: unknown goal step`);}
  const actorIds=new Set(p.actors.filter(a=>a.id!==p.playerId).map(a=>a.id)),items=new Map((p.items||[]).map(i=>[i.id,i])),dimensions=new Set((p.relationshipDimensions||[]).map(d=>d.id));
  const stats=new Set((p.statDefinitions||[]).map(x=>x.id)),states=new Set((p.relationshipStates||[]).map(x=>x.id));
  assert(Array.isArray(when.equipped||[])&&Array.isArray(when.bonds||[])&&Array.isArray(when.stats||[]),`${label}: equipment, bond, and stat requirements must be arrays`);
@@ -39,6 +40,7 @@ export function validateExtraConditions(when,p,label){
 
 export function conditionReasons(when,state,pack,pages=[]){
   when||={};const reasons=[],location=state.actors[pack.playerId].location;
+  for(const [id,step] of Object.entries(when.goalStep||{}))if(!pack.modules.goals||!state.modules.goals?.[id]?.completed?.includes(step))reasons.push(`${id} goal step ${step}: not completed`);
   const clock=calendarFor(state.tick,pack);
   if(when.location&&when.location!==location)reasons.push(`Player location: ${location}; needs ${when.location}`);
   for(const page of pages)if(page.speaker&&state.actors[page.speaker]?.location!==location)reasons.push(`${page.speaker} is at ${state.actors[page.speaker]?.location}; needs to be here to speak`);

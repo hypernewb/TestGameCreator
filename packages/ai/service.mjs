@@ -1,6 +1,6 @@
 import {AsyncLocalStorage} from 'node:async_hooks';
 import {Store} from '../persistence/store.mjs';
-import {assert,actions,execute,fallback,FREE_ACTIONS,EXCHANGE_COMMANDS,rankLock,routeBetween,refusalCode,plannerMode,committedChange} from '../core/engine.mjs';
+import {assert,actions,execute,fallback,digest,FREE_ACTIONS,EXCHANGE_COMMANDS,rankLock,routeBetween,refusalCode,plannerMode,committedChange} from '../core/engine.mjs';
 import {giftSceneCue} from '../modules/romance-tempo.mjs';
 import {calendarFor} from '../../public/calendar.mjs';
 import {closedReason} from '../modules/calendar.mjs';
@@ -22,6 +22,7 @@ import {actsEnabled,sceneActs,typedListen,typedDislike,ACTS_RULE,sceneClaims,CLA
 import {sobrietyLevel} from '../modules/intimacy.mjs';
 import {firstBrief,typedStop} from '../modules/firsts.mjs';
 import {jealousyHint} from '../modules/jealousy.mjs';
+import {goalHint,mentionedGoals} from '../modules/goals.mjs';
 import {wantHint} from '../modules/wants.mjs';
 import {parseInvite} from '../modules/social.mjs';
 // A scene's start/continue events carry the player's own words; echoing them back reads as if the story repeated
@@ -133,6 +134,7 @@ const budgetDone=Boolean(world.scene?.budget&&cast.length&&world.scene.inputs>=w
     if(pack.modules['social.secrecy']&&cast.length){const sec=await import('../modules/secrecy.mjs').catch(()=>null);if(sec?.suspicionLinesFor){const suspicionLines=sec.suspicionLinesFor(world,pack,cast);if(suspicionLines.length)context.suspicions=suspicionLines;const confrontation=sec.confrontationFor(world,pack,cast);if(confrontation){context.confrontation=confrontation;context.claimsTags=CLAIMS_RULE;}}}
     // Jealousy (C1): behaviour only, one private line per jealous cast member; the meter itself never reaches the prompt.
     if(pack.modules['social.jealousy']&&cast.length){const jealous=cast.map(id=>{const hint=jealousyHint(world,pack,id);return hint?`${world.actors[id].name}: ${hint}`:'';}).filter(Boolean);if(jealous.length)context.jealousyHints=jealous;}
+    if(pack.modules.goals){context.goalPrompt=cast.map(id=>{const hint=goalHint(world,pack,id);return hint?`${world.actors[id].name}: ${hint}`:'';}).filter(Boolean).join('\n');context.contextKnowledge.fields.goalPrompt='public';}
     // Wants (C1): one heroine, one line, only while she is in the scene. What she wants reaches the model; the price never does.
     if(pack.modules['social.wants']&&cast.length){const who=cast.find(id=>id===world.scene?.focus)||cast.find(id=>wantHint(world,pack,id)),hint=who&&wantHint(world,pack,who);if(hint){context.wantHint=`${world.actors[who].name}: ${hint}`;context.contextKnowledge.fields.wantHint='public';}}
     // Initiative (gameProject.initiativeEvery, default 3, 0 off): with no want live, every Nth exchange a present character with an authored goal raises it, taking turns.
@@ -254,7 +256,7 @@ export class GameService {
     // social.speak is validated by its own command (target exists, co-located, text bounds); running it through
     // parseIntent would demand a suggestion button, breaking typed conversation once the authored topics run dry.
     assert(proposal,'Missing command');if(proposal.type==='core.wait'&&typeof proposal.args?.until==='string')proposal={type:'core.wait',args:{until:proposal.args.until}};// "Skip to Evening": the engine checks the daypart
-    else if(!['core.inspect','core.scene','story.respond','social.invite','social.speak','items.equip','items.unequip'].includes(proposal.type))proposal=parseIntent(proposal,available);
+    else if(!['goals.reveal','goals.advance','core.inspect','core.scene','story.respond','social.invite','social.speak','items.equip','items.unequip'].includes(proposal.type))proposal=parseIntent(proposal,available);
     if(proposal.type==='clarify')return await this.refuse(id,request,proposal.args.code||proposal.refusal?.code||'unavailable',proposal.args.target||request.input?.trim().toLowerCase(),proposal.args.question,true,signal);
     // Re-asking something the person already heard costs their patience in life and a tick here: answer for free
     // (0-tick clarification, no turn committed) instead of charging for a deflection the model has to invent.
@@ -321,6 +323,7 @@ export class GameService {
     // A continuous scene is closed by the engine (core.endScene), so the clock and attendance settle like any other exit.
     const continuous=pack.gameProject?.conversationStyle==='continuous',settled=world.scene&&cast.length&&!failed?{sceneId:world.scene.id,sceneSummary:sceneSummary||world.scene.summary||'',sceneEnded:sceneEnded&&!continuous&&!budgetDone&&!context.first}:{};
     let state=this.store.narrative(id,turnId,text,{sceneRequest:{writer:context.sceneWriter,phase:context.scenePhase,playerAction:context.playerAction,cast,history:context.sceneHistory,...(this.provider instanceof CompatibleProvider?{messages:scenePromptMessages(context,pack)}:{})},scenePlan,refusalNarrated:Boolean(turn.refusal&&pack.refusalStyle!=='buttons'&&!failed&&!generatedRefusal),sceneLines:visualLines||sceneLines(text,pack,actor),ledger,...(pack.modules['story.facts']?{generatedFacts}:{}),...(lintTrace.length?{lintTrace}:{}),...settled,fallback:failed,failureDiagnostic,failureReason:failed?'The moment falls quiet. Take a breath and choose what to do next.':null,refusal:generatedRefusal||(!retry?turn.refusal:null)||null,retry,...(failed&&!retry&&EXCHANGE_COMMANDS.has(turn.command.type)?{exchangeRefund:world.scene?.id||null}:{}),...(context.loreTrace?.activated?.length?{loreActivations:{tick:context.loreTrace.tick,ids:context.loreTrace.activated.filter(id=>context.lorebook.some(e=>e.id===id))}}:{}),contextSources:[...context.sceneHistory.map(m=>m.source),...context.pastScenes.map(m=>m.source),...context.memories.map(m=>m.source),...context.generatedFacts.map(f=>f.id),...context.lorebook.map(e=>e.id),...context.recentActions.map(e=>e.source)],contextReport,promptVersion:visualLines?'scene_structured_v1':context.promptVersion,provider:this.provider.name},pack);this.previews.delete(id);
+    if(!failed&&!generatedRefusal)for(const character of mentionedGoals(state,pack,state.turns[turnId]?.sceneLines)){const revealId=`${turnId.slice(0,65)}-goal-${digest(character)}`,r=execute(state,{type:'goals.reveal',args:{character,source:turnId},id:revealId,actorId:pack.playerId,expectedRevision:state.revision},pack,this.registry);this.store.commit(r.state,state.revision);state=(await this.finish(id,revealId,signal)).state;}
     // Model tags become one recorded social.priceActs turn, so replay never calls the model; it lands before the close so the end card sees it.
     if(!failed&&!generatedRefusal&&pack.modules['social.acts']&&state.scene&&state.scene.id===world.scene?.id&&(priced.length||Object.values(state.modules['social.acts']?.characters||{}).some(r=>r.departure))) {const actsId=`${turnId}-acts`.slice(0,100);try{const r=execute(state,{type:'social.priceActs',args:{character:context.sceneBudget?.focus||cast[0],sceneId:world.scene.id,source:turnId,private:cast.length===1,acts:priced},id:actsId,actorId:pack.playerId,expectedRevision:state.revision},pack,this.registry);this.store.commit(r.state,state.revision);state=(await this.finish(id,actsId,signal)).state;}catch(e){if(e.name==='AbortError')throw e;}}
     // Empty tags still consume an input. The score command reads engine-priced events, never model numbers.

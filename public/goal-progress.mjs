@@ -1,0 +1,2 @@
+export function goalRows(state,pack,character){return (pack.modules?.goals?pack.characterSheets||[]:[]).filter(s=>!character||s.actorId===character).flatMap(({actorId,goal:g})=>{const r=state.modules?.goals?.[actorId];if(!g||r?.id!==g.id||!r.revealed)return [];const n=r.completed.length;return [{character:actorId,title:g.title,step:Math.min(n+1,g.steps.length),total:g.steps.length,hint:g.steps[n]?.hint||'',done:n>=g.steps.length}];});}
+export const goalMarker=g=>`◆ ${g.title} · ${g.done?'complete':`step ${g.step}/${g.total} · ${g.hint}`}`;

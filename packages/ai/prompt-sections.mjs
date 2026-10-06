@@ -10,6 +10,7 @@ export function proseOf(v,depth=0){
  if(Array.isArray(v))return v.filter(x=>!empty(x)).map(x=>typeof x==='object'&&!Array.isArray(x)?Object.values(x).filter(y=>!empty(y)).map(y=>proseOf(y,depth+1)).join(' '):proseOf(x,depth+1)).filter(Boolean).join(', ');
  return Object.entries(v).filter(([,x])=>!empty(x)).map(([k,x])=>x===true?words(k):typeof x==='object'&&!Array.isArray(x)?`${words(k)} (${proseOf(x,depth+1)})`:`${words(k)} ${proseOf(x,depth+1)}`).join(depth?', ':'; ');
 }
+export const goalProse=g=>proseOf(g);
 export const intimacyProse=x=>proseOf({...x,character:undefined});
 export const npcProse=(r,nameOf=id=>id)=>`${r.characters.map(nameOf).join(' & ')}: ${proseOf({...r,characters:undefined})||'acquainted'}`;
 export function firstProse(f){

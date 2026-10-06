@@ -34,8 +34,8 @@ export const promptView={
  pastScenes:({source,...g})=>compact(g),
  castProfiles:a=>compact(a),
  npcRelationships:r=>r,
- sceneHistory:h=>h.compact?`(earlier) ${h.text}`:`Player: ${h.input}
-${h.text}`
+ sceneHistory:h=>h.compact?`(earlier${h.daypart?`, ${h.daypart}`:''}) ${h.text}`:`Player: ${h.input}
+${h.daypart?`(earlier, ${h.daypart}) `:''}${h.text}`
 };
 // One shared rule instead of a copy per absent NPC: a large cast would otherwise spend hundreds of tokens here.
 export function absentView(list){

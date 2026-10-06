@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {mkdtempSync,rmSync,writeFileSync,unlinkSync,mkdirSync} from 'node:fs';import {tmpdir} from 'node:os';import {join} from 'node:path';
-import {createApp} from '../server.mjs';import {browser} from '../scripts/visual-fixtures/browser.mjs';import {fixture} from './ui-live-fixture.mjs';
+import {createApp} from '../server.mjs';import {browser} from '../scripts/visual-fixtures/browser.mjs';import {fixture} from './ui-live-fixture.mjs';import {importCharacterSheet} from '../public/sheet-editor.mjs';
 test('Studio Chat Lab: three mock turns update the side panel, export works and the stale banner appears',{timeout:180000},async()=>{
  const dir=mkdtempSync(join(tmpdir(),'sf-character-lab-browser-')),probe=join(process.cwd(),'packages','__lab_stale_probe.tmp');
  const app=createApp({dataPath:':memory:',scenarioDir:dir});await new Promise(r=>app.server.listen(0,'127.0.0.1',r));
@@ -7,6 +7,10 @@ test('Studio Chat Lab: three mock turns update the side panel, export works and 
  let b;
  try{
   const p=fixture();p.gameProject.conversationStyle='continuous';p.modules['social.conversation']='0.1.0';
+  p.modules['social.relationships']='0.1.0';p.modules.goals='0.1.0';p.goalSettings={revealTrust:0};
+  const sheet=importCharacterSheet(p,'friend');sheet.personality.traits=['warm','dry'];
+  sheet.goal={id:'audition',title:'Nail the audition',why:'Opening night',steps:[{id:'lines',title:'Learn the lines',hint:'Run the lines',complete:{minTick:9999}},{id:'perform',title:'Perform',hint:'Take the stage',complete:'narrative'}]};
+  p.characterSheets=[sheet];
   const draft=await api('/api/studio/create',{});await api('/api/studio/save',{id:draft.id,pack:p});
   assert.equal((await api('/api/lab/build')).stale,false,'a fresh server is not stale');
   b=await browser('C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe');
@@ -34,6 +38,7 @@ test('Studio Chat Lab: three mock turns update the side panel, export works and 
    assert.match(await b.evaluate(`document.querySelector('#lab-panel').textContent`),/Stage —|Relationships/,'the side panel updates every turn');
   }
   assert.match(await b.evaluate(`document.querySelector('#lab-panel').textContent`),/Nerve/,'stats, hidden ones included, are shown');
+  assert.match(await b.evaluate(`document.querySelector('#lab-panel').textContent`),/Goals \(feature-detected\)[\s\S]*◆ Nail the audition · step 1\/2 · Run the lines/,'the goal feature-detects onto the live panel with its progress');
   await b.evaluate(`document.querySelector('#lab-controls').hidden=false;`);
   await b.evaluate(`document.querySelector('[data-skip="hour"]').click();`);
   await b.wait(`document.querySelector('#lab-status').textContent.includes('Skipped hour')`);
@@ -42,6 +47,7 @@ test('Studio Chat Lab: three mock turns update the side panel, export works and 
   await b.wait(`!document.querySelector('#lab-export-text').hidden`);
   const exported=await b.evaluate(`document.querySelector('#lab-export-text').value`);
   assert.match(exported,/## Transcript/);assert.match(exported,/Turn 3/);assert.match(exported,/glad I ran into you/);
+  assert.match(exported,/> goal ◆ Nail the audition · step 1\/2 · Run the lines/,'the export marks the turn that revealed the goal');
   writeFileSync(probe,'probe');
   try{
    assert.equal((await (await fetch(base+'/api/lab/build')).json()).stale,true,'a file touched under packages/ after server start marks the build stale');

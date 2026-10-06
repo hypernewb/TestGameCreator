@@ -46,11 +46,19 @@ export function classifyUtterance(input,names=[],{player=''}={}){
 
 // Third person, not quotes: a 9B model reads “my favorite color is teal” as its own line even inside quotation marks.
 const PRESENT=/\bI (love|like|hate|want|need|think|feel|know|live|work|prefer|miss|play|enjoy|believe|remember|mean|hope|wish|study|own|keep|promise|swear|vow)\b/gi;
+const thirdOf=v=>/(?:s|sh|ch|x|z|o)$/i.test(v)?`${v}es`:/[^aeiou]y$/i.test(v)?`${v.slice(0,-1)}ies`:`${v}s`;
+// Anything after "I" that is not a present-tense verb keeps the bare replacement: modals, auxiliaries, adverbs and
+// irregular pasts ("I went home") must not become "the player wents home".
+const NOT_VERB=new Set('will would can could should may might must shall am is are was were be been being have has had do does did done doing got get not no went made said told saw seen knew known thought felt found gave taken came left ran took held sat stood bought brought put led knelt wrote read met paid lost slept spoke heard began broke chose drove fell flew grew won wore spent kept ate drank sang swam taught threw understood'.split(' '));
+const ADVERBS='sometimes often always never usually actually really normally still also just only already again almost barely hardly rarely quite';
 function thirdPerson(text,player,listener){
  return text
   .replace(/\bI(?:'m| am)\b/gi,`${player} is`).replace(/\bI was\b/gi,`${player} was`).replace(/\bI(?:'ve| have)\b/gi,`${player} has`)
   .replace(/\bI'd\b/gi,`${player} would`).replace(/\bI'll\b/gi,`${player} will`).replace(/\bI do\b/g,`${player} does`)
-  .replace(PRESENT,(_,verb)=>`${player} ${verb}${/(?:s|sh|ch|x|o)$/i.test(verb)?'es':'s'}`)
+  .replace(PRESENT,(_,verb)=>`${player} ${thirdOf(verb)}`)
+  .replace(new RegExp(`\\bI\\s+(?:(${ADVERBS.split(' ').join('|')})\\s+)?(?!\\w+n['’]t\\b)(\\w+)\\b`,'gi'),(m,adv,v)=>{
+   const w=v.toLowerCase();if(NOT_VERB.has(w)||ADVERBS.split(' ').includes(w)||/ly$/.test(w)||/ed$/.test(w)&&!/eed$/.test(w))return m;
+   return `${player} ${adv?`${adv} `:''}${thirdOf(v)}`;})
   .replace(/\bI\b/g,player).replace(/\b(?:my|mine)\b/gi,`${player}’s`).replace(/\b(?:me|myself)\b/gi,player)
   .replace(/\byour\b/gi,`${listener}’s`).replace(/\byou\b/gi,listener);
 }
@@ -122,9 +130,12 @@ export function playerStatements(state,pack,actorId,{keep=40,statements=4,audien
  // Once this character has heard the player's name, later memories use it: "Mara promised Ada…" reads as a person.
  let known=player;
  return out.flatMap(m=>{const label=known;if(player==='the player'&&m.kind==='disclosure')known=disclosedName(m.said)||known;
-  const said=m.kept??m.said;return chosen.has(m)&&said?[{source:m.source,...(audience?{knownBy:m.knownBy}:{}),kind:m.kind,promise:m.kind==='promise',text:memoryText(m.kind,said,m.listener,label)}]:[];});
+  const said=m.kept??m.said;return chosen.has(m)&&said?[{source:m.source,...(audience?{knownBy:m.knownBy}:{}),kind:m.kind,promise:m.kind==='promise',text:memoryText(m.kind,said,m.listener,label)+outcomeOf(state,m)}]:[];});
 }
 const clauses=said=>String(said).split(/,\s*(?:(?:and|but)\s+)?|;\s*|\s+(?:and|but)\s+(?=(?:my|i|i'm|im|i've)\b)/iu).map(c=>c.trim()).filter(Boolean);
+// The same turn's first narrator line, clipped: how the moment landed ("…; she didn't pull away"). Read-time only.
+const clip80=s=>{const t=String(s||'').replace(/\s+/gu,' ').trim();if(t.length<=80)return t;const i=t.lastIndexOf(' ',79);return `${t.slice(0,i>40?i:80).trim()}…`;};
+const outcomeOf=(state,m)=>{if(m.kind!=='action'&&m.kind!=='statement')return '';const turn=state.turns?.[String(m.source).split('.')[0]],line=(turn?.sceneLines||[]).find(l=>!l.speaker&&l.text)?.text;return line?`; ${clip80(line)}`:'';};
 /** What a first-person clause states about the player ("favorite color", "name", "live"), or '' when it is not a restatable fact. */
 export function slotOf(clause){
  const c=String(clause).toLowerCase().replace(/[’]/g,"'").replace(/favourite/g,'favorite').replace(/colour/g,'color');

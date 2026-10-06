@@ -131,6 +131,29 @@ test('a corrected disclosure replaces the clause it corrects and keeps the rest'
  assert.deepEqual(playerStatements(state,p,'ada').map(m=>m.text),['the player told Ada: the player’s name is Mara, the player grew up by the harbor','Mara told Ada actually, Mara’s favorite color is red','Mara told Ada: Mara lives in Porto now']);
 });
 
+test('remembered actions and statements carry how the moment landed, clipped; disclosures do not',()=>{
+ const p=pack(),line='She turns the sketchbook toward the light and the margins fill with tiny lighthouses drawn in careful pencil strokes while the kettle warms.';
+ const turn=(id,input)=>({id,status:'complete',command:{type:'core.scene',args:{text:input}},input,sceneLines:[{speaker:'',text:line},{speaker:'ada',text:'Noted.'}],events:[{type:'core.sceneContinued',payload:{characters:['ada']},tick:0}]});
+ const state={turns:{t1:turn('t1','Touch her hand while flirting'),t2:turn('t2','Tell Ada the gallery opens tonight'),t3:turn('t3','Tell Ada my name is Mara')},modules:{'social.conversation':{memories:[]}}};
+ const by=Object.fromEntries(playerStatements(state,p,'ada').map(m=>[m.kind,m.text])),tail=t=>t.slice(t.indexOf('; ')+2);
+ assert.ok(by.action.startsWith('With Ada, the player touched her hand while flirting; ')&&by.action.endsWith('…'),by.action);
+ assert.ok(tail(by.action).startsWith('She turns the sketchbook')&&tail(by.action).length<=82,tail(by.action));
+ assert.ok(by.statement.startsWith('the player told Ada the gallery opens tonight; She turns the sketchbook')&&by.statement.endsWith('…'),by.statement);
+ assert.equal(by.disclosure,'the player told Ada: the player’s name is Mara');
+});
+
+test('third-person phrasing conjugates any regular verb and leaves past, modals and auxiliaries alone',()=>{
+ const said=(input,names=['Ada'])=>{const c=classifyUtterance(input,names);return memoryText(c.kind,c.said,'Ada');};
+ assert.equal(said('I watch anime a lot'),'the player told Ada: the player watches anime a lot');
+ assert.equal(said('I skip straight to the peak'),'the player told Ada: the player skips straight to the peak');
+ assert.equal(said('I study every night'),'the player told Ada: the player studies every night');
+ assert.equal(said('I go to the harbor often'),'the player told Ada: the player goes to the harbor often');
+ assert.equal(said('I really love jazz'),'the player told Ada: the player really loves jazz');
+ assert.equal(said('I walked home early'),'the player told Ada: the player walked home early');
+ assert.equal(said('I went home'),'the player told Ada: the player went home');
+ assert.equal(said('I can swim laps'),'the player told Ada: the player can swim laps');
+});
+
 test('a closed scene carries the question the player left unanswered',()=>{
  const turn=(id,over={})=>({id,sceneId:'s1',status:'complete',command:{type:'core.scene',args:{}},events:[{type:'core.sceneContinued',payload:{characters:['ada']},tick:5}],...over});
  const hanging=closedScenes({turns:{

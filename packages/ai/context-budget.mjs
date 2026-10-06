@@ -33,16 +33,18 @@ const sceneDigestOf=scenes=>[...new Set(scenes.flatMap(x=>(x.digest||'').split('
 import {SUB_TURNS} from '../../public/turn-presentation.mjs';
 export {SUB_TURNS};
 
-/** Every narrated turn of the current scene, oldest first; the allocator decides how much stays verbatim. */
-export function sceneTranscript(world,turn,cast,limit=120,audience=null){
+/** Every narrated turn of the current scene, oldest first; the allocator decides how much stays verbatim.
+ *  With `pack`, turns from an earlier daypart carry `daypart` so the prompt can mark them instead of re-anchoring the scene. */
+export function sceneTranscript(world,turn,cast,limit=120,audience=null,pack=null){
  if(turn.events.some(e=>['core.sceneStarted','core.moved','world.daypartStarted','world.hangoutStarted'].includes(e.type)))return [];
- const history=[];
+ const history=[],now=pack?calendarFor(world.tick,pack).daypart:null;
  for(const prior of Object.values(world.turns).filter(t=>t.id!==turn.id&&t.status==='complete').reverse()){
   if(prior.command.type==='world.nextDaypart'||prior.command.type==='core.endScene'||prior.sceneEnded||(prior.sceneId&&world.scene&&prior.sceneId!==world.scene.id))break;
   if(SUB_TURNS.has(prior.command.type))continue;
   const people=[...(prior.command.type==='social.speak'?[prior.command.args.target]:prior.events.find(e=>e.type==='core.sceneStarted'||e.type==='core.sceneContinued')?.payload.characters||[]),...(prior.sceneLines||[]).map(line=>line.speaker).filter(Boolean)];
   if(people.some(id=>!cast.includes(id)))break;
-  if(prior.narrative&&!prior.fallback)history.unshift({source:prior.id,input:prior.input||prior.command.args.text||'',text:prior.narrative,digest:turnDigest(prior,audience),digestKnownBy:digestOwners([prior],audience)});
+  if(prior.narrative&&!prior.fallback){const part=pack&&prior.events[0]?.tick!=null?calendarFor(prior.events[0].tick,pack).daypart:null;
+   history.unshift({source:prior.id,input:prior.input||prior.command.args.text||'',text:prior.narrative,digest:turnDigest(prior,audience),digestKnownBy:digestOwners([prior],audience),...(part&&part!==now?{daypart:part}:{})});}
   if(history.length>=limit||prior.events.some(e=>['core.moved','core.sceneStarted','world.hangoutStarted'].includes(e.type)))break;
  }
  return history;
@@ -131,7 +133,7 @@ export function budgetSceneContext(context,pack,world,turnId,{window=8192,reply=
  const focusNames=wideContext?cast.map(id=>pack.actors.find(a=>a.id===id)?.name).filter(Boolean):[];
  const tailWindow=wideContext?1500:700;
  const isCharLine=h=>wideContext&&focusNames.some(n=>n&&String(h.text+' '+(h.input||'')).includes(n));
- history.forEach((h,i)=>{const verbatimEligible=i>=history.length-verbatim;const charLine=isCharLine(h);add('sceneHistory',2,`history:${h.source}`,i,[...(verbatimEligible||charLine?[['full',{source:h.source,knownBy:h.knownBy,input:h.input,text:h.text}],['tail',{source:h.source,knownBy:h.knownBy,input:clip(h.input,200),text:h.text.length>tailWindow?'…'+h.text.slice(-tailWindow):h.text}]]:[]),['digest',{source:h.source,knownBy:intersectKnown([h.knownBy,h.digestKnownBy]),compact:true,text:h.digest||turnDigest({input:h.input,events:[]},audience)}]],{monotone:true});});
+ history.forEach((h,i)=>{const verbatimEligible=i>=history.length-verbatim;const charLine=isCharLine(h);add('sceneHistory',2,`history:${h.source}`,i,[...(verbatimEligible||charLine?[['full',{source:h.source,knownBy:h.knownBy,input:h.input,text:h.text,daypart:h.daypart}],['tail',{source:h.source,knownBy:h.knownBy,input:clip(h.input,200),text:h.text.length>tailWindow?'…'+h.text.slice(-tailWindow):h.text,daypart:h.daypart}]]:[]),['digest',{source:h.source,knownBy:intersectKnown([h.knownBy,h.digestKnownBy]),compact:true,text:h.digest||turnDigest({input:h.input,events:[]},audience),daypart:h.daypart}]],{monotone:true});});
  (context.generatedFacts||[]).forEach(f=>add('generatedFacts',3,`fact:${f.id}`,(f.score??(f.reason==='current scene'?10:8))+sticky(`fact:${f.id}`),[['full',f]]));
  (context.facts||[]).forEach((f,i)=>add('facts',3,`authored:${f.id}`,5-i/1000,[['full',f]]));
  // What the player disclosed or promised outranks model-written impressions; words shared with the current action

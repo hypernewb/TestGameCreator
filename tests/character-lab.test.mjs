@@ -4,7 +4,8 @@ import {tmpdir} from 'node:os';import {join} from 'node:path';
 import {createApp} from '../server.mjs';
 import {registry} from '../packages/modules/index.mjs';
 import {MockProvider} from '../packages/ai/providers.mjs';
-import {createLab,labCast,stagesOf,stagePatch,parseLabScript} from '../packages/testing/character-lab.mjs';
+import {createLab,labCast,stagesOf,stagePatch,parseLabScript,transcriptMarkdown} from '../packages/testing/character-lab.mjs';
+import {importCharacterSheet} from '../public/sheet-editor.mjs';
 import {runLabScript,loadScript,builtinScripts,providerFor} from '../scripts/character-lab.mjs';
 
 const dir=mkdtempSync(join(tmpdir(),'sf-character-lab-'));
@@ -119,6 +120,28 @@ test('headless runs of both builtin scripts produce transcripts and metrics on m
   assert.deepEqual(again.steps.map(r=>r.text),out.steps.map(r=>r.text),`${name} is deterministic on mock`);
   lab.store.close();twice.store.close();
  }
+});
+
+test('lab goals are feature-detected: hidden on stock packs, shown with progress when the pack enables them',async()=>{
+ for(const [pack,npc] of [[campus,campusNpc],[sample,sampleNpc]]){
+  const lab=createLab({pack,registry,npcId:npc,provider:new MockProvider(),seed:42});
+  await lab.turn('Hello there.');
+  assert.deepEqual(lab.snapshot().goals,[],`${pack.id} enables no goals`);
+  lab.store.close();
+ }
+ const p=structuredClone(sample),npc=sampleNpc;
+ p.modules.goals='0.1.0';p.goalSettings={revealTrust:0};
+ const sheet=importCharacterSheet(p,npc);sheet.personality.traits=['curious','practical'];sheet.goal={id:'song',title:'Write the song',why:'Finish the set',steps:[{id:'verse',title:'Write the verse',hint:'First verse',complete:{minTick:99999}},{id:'chorus',title:'Finish the chorus',hint:'The hook',complete:'narrative'}]};
+ p.characterSheets=[...(p.characterSheets||[]).filter(s=>s.actorId!==npc),sheet];
+ const lab=createLab({pack:p,registry,npcId:npc,provider:new MockProvider(),seed:42});
+ await lab.turn('Hello there.');
+ const goals=lab.snapshot().goals;
+ assert.equal(goals.length,1,'revealTrust 0 reveals the goal on the first lab turn');
+ assert.deepEqual(goals.map(g=>[g.title,g.step,g.total,g.hint,g.done]),[['Write the song',1,2,'First verse',false]]);
+ const md=transcriptMarkdown(lab);
+ assert.match(md,/- goal: ◆ Write the song · step 1\/2 · First verse/,'the summary lists the goal');
+ assert.match(md,/> goal ◆ Write the song · step 1\/2 · First verse/,'the turn that revealed it is marked');
+ lab.store.close();
 });
 
 test('lab turn ids stay unique across a forked second run of the same script',async()=>{

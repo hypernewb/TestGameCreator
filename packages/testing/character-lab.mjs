@@ -10,6 +10,8 @@ import {progressionRequirements} from '../modules/progression.mjs';
 import {traitsOf} from '../modules/arc.mjs';
 import {liveWants} from '../modules/wants.mjs';
 import {bondKey} from '../modules/bonds.mjs';
+import {goalProgress} from '../modules/goals.mjs';
+import {goalRows,goalMarker} from '../../public/goal-progress.mjs';
 import {randomUUID} from 'node:crypto';
 
 export const DATING_PHASES=['available','crush','dating','exclusive'];
@@ -92,6 +94,7 @@ export function labSnapshot(state,pack,npc){
   relationships:{trust:m['social.relationships']?.edges?.[`${npc}--${player}`]??null,like:tempo?.points??null,rank,lust:m['social.touch-ladder']?.characters?.[npc]?.lust??null,
    chemistry:m['social.dating']?.characters?.[npc]?.chemistry??null,phase:m['social.dating']?.characters?.[npc]?.phase??null,satisfaction:m['social.dating']?.characters?.[npc]?.satisfaction??null},
   stats,firsts,wants:liveWants(state,pack,npc).map(w=>({id:w.id,text:w.text})),
+  goals:goalRows(state,pack,npc),
   quests:questModule?(questModule.characters?.[npc]??questModule):null,
   verdict:verdictEvent?{type:verdictEvent.type,payload:verdictEvent.payload}:null,lastActs:acts,turns:Object.keys(state.turns||{}).length};
 }
@@ -209,6 +212,7 @@ function labSummary(lab){
  return {packId:lab.pack.id,packTitle:lab.pack.title,npc:lab.npcId,npcName:lab.pack.actors.find(a=>a.id===lab.npcId)?.name,
   turns:lab.rows.length,stage:last?.stage||null,stagePath:lab.metrics().stagePath,statChanges:stats,
   firsts:{completed:last?.firsts?.completed||[],active:last?.firsts?.active||null},
+  goals:goalProgress(lab.world,lab.pack,lab.npcId),
   moves:lab.rows.filter(r=>r.snapshot?.lastActs?.length).map(r=>({turn:r.turn+1,input:r.input,acts:r.snapshot.lastActs})),
   labPatches:lab.patches.map(p=>({turn:p.turn,label:p.label}))};
 }
@@ -218,8 +222,11 @@ export function transcriptMarkdown(lab){
   ...s.stagePath.map(p=>`- turn ${p.turn}: stage → ${p.to}`),
   ...s.statChanges.map(c=>`- ${c.character} ${c.stat}: ${c.from} → ${c.to}`),
   ...(s.firsts.completed.length?[`- firsts completed: ${s.firsts.completed.join(', ')}`]:[]),
+  ...(s.goals||[]).map(g=>`- goal: ${goalMarker(g)}`),
   ...s.labPatches.map(p=>`- turn ${p.turn}: ${p.label}`),'','## Transcript',''];
- for(const r of lab.rows){out.push(`### Turn ${r.turn+1} — player: ${r.input}`,'',r.text||'(no reply)');
+ for(const r of lab.rows){out.push(`### Turn ${r.turn+1} — player: ${r.input||r.command||''}`,'',r.text||'(no reply)');
+  const goals=r.snapshot?.goals||[],prior=r.turn?lab.rows[r.turn-1]?.snapshot?.goals||[]:[];
+  for(const g of goals)if(!prior.some(x=>x.title===g.title&&x.step===g.step&&x.done===g.done))out.push('',`> goal ${goalMarker(g)}`);
   for(const a of r.snapshot?.lastActs||[])out.push('',`> act ${a.act}${a.target?` → ${a.target}`:''}: ${a.verdict}${a.points?` (${a.points>0?'+':''}${a.points})`:''}${a.reason?` — ${a.reason}`:''}`);
   if(r.refusal)out.push('',`> refused: ${r.refusal.reason}`);out.push('');}
  return out.join('\n');

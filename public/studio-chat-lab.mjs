@@ -1,5 +1,6 @@
 // Character Chat Lab (T-107): chat with one character from stranger to the last route stage without playing the
 // game. Runs on an isolated lab campaign server-side; never touches saves, the draft or data/ai-settings.json.
+import {goalRows,goalMarker} from './goal-progress.mjs';
 const el=(tag,text)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;return n;};
 export function mountChatLab(section,{getPack,getDraftId=()=>'',api,onStatus=()=>{}}={}){
  const pack=()=>getPack()||null;
@@ -66,6 +67,8 @@ export function mountChatLab(section,{getPack,getDraftId=()=>'',api,onStatus=()=
   const f=s.firsts;
   if(f)bits.push(part('Firsts',[...(f.active?[`active: ${f.active.title} (checkpoint ${f.active.checkpoint+1})`]:[]),...(f.offers||[]).map(o=>`available: ${o.title}`),`completed: ${f.completed.length}${f.completed.length?` — ${f.completed.join(', ')}`:''}`]));
   if(s.wants?.length)bits.push(part('Wants',s.wants.map(w=>w.text)));
+  const goals=session?.npcId?goalRows(view?.state,view?.pack,session.npcId):[];
+  if(goals.length)bits.push(part('Goals (feature-detected)',goals.map(goalMarker)));
   if(s.quests)bits.push(part('Quests (feature-detected)',[JSON.stringify(s.quests).slice(0,300)]));
   if(s.verdict)bits.push(part('Delivery verdict (feature-detected)',[JSON.stringify(s.verdict).slice(0,300)]));
   bits.push(part('Acts priced on the last turn',(s.lastActs||[]).map(a=>`${a.act}${a.target?` → ${a.target}`:''}: ${a.verdict}${a.points?` (${a.points>0?'+':''}${a.points})`:''}${a.reason?` — ${a.reason}`:''}`).length?(s.lastActs||[]).map(a=>`${a.act}${a.target?` → ${a.target}`:''}: ${a.verdict}${a.points?` (${a.points>0?'+':''}${a.points})`:''}${a.reason?` — ${a.reason}`:''}`):['none']));
@@ -106,7 +109,7 @@ export function mountChatLab(section,{getPack,getDraftId=()=>'',api,onStatus=()=
   const body={npcId:npc.value,provider:provider.value};
   if(value==='draft'){if(!pack())throw Error('Open a draft first.');body.pack=pack();}else body.packId=value;
   const r=await call('/api/lab/start',body);
-  session=r;view=r.view;rows=[];patches=[];chat.replaceChildren();
+  session={...r,npcId:npc.value};view=r.view;rows=[];patches=[];chat.replaceChildren();
   renderBuild(r.build);refresh.hidden=false;controls.hidden=false;
   stage.replaceChildren(el('option','Jump to…'));
   for(const s of r.stages){const o=el('option',s.name);o.value=s.id;stage.append(o);}
@@ -153,6 +156,8 @@ export function mountChatLab(section,{getPack,getDraftId=()=>'',api,onStatus=()=
   const out=['# Character Chat Lab transcript','',`Project: ${source.selectedOptions[0].textContent} · character: ${npc.selectedOptions[0].textContent} · turns ${rows.length}`,'',
    ...patches.map(p=>`- turn ${p.turn}: ${p.label}`),'','## Transcript',''];
   for(const r of rows){out.push(`### Turn ${r.turn+1} — player: ${r.input||r.command||''}`,'',r.text||'(no reply)');
+   const goals=r.snapshot?.goals||[],prior=r.turn?rows[r.turn-1]?.snapshot?.goals||[]:[];
+   for(const g of goals)if(!prior.some(x=>x.title===g.title&&x.step===g.step&&x.done===g.done))out.push('',`> goal ${goalMarker(g)}`);
    for(const a of r.snapshot?.lastActs||[])out.push('',`> act ${a.act}: ${a.verdict}${a.points?` (${a.points>0?'+':''}${a.points})`:''}${a.reason?` — ${a.reason}`:''}`);
    out.push('');}
   exportText.value=out.join('\n');exportText.hidden=false;

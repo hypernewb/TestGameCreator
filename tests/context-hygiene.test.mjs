@@ -9,7 +9,8 @@ import {GameService} from '../packages/ai/service.mjs';
 import {contextFor} from '../packages/ai/context.mjs';
 import {classifyUtterance,memoryText,playerStatements} from '../packages/ai/memory.mjs';
 import {proseOf,awayFrom,timeLine,stablePrefix,firstProse,npcProse} from '../packages/ai/prompt-sections.mjs';
-import {scenePromptMessages} from '../vendor/venus/scenePrompt.mjs';
+import {scenePromptMessages,promptView} from '../vendor/venus/scenePrompt.mjs';
+import {sceneTranscript} from '../packages/ai/context-budget.mjs';
 // T-114: what reaches the narrator is prose from state, the scene line agrees with the scene, commands do not become
 // remembered speech, and the stable head of the prompt is byte-identical across a scene's turns (local KV-cache reuse).
 const campus=()=>JSON.parse(readFileSync(new URL('../packs/campus.json',import.meta.url),'utf8'));
@@ -40,7 +41,7 @@ test('a typed move is remembered as something the player did, and meta-commands 
   // End to end on the campus pack: the command turn reaches memory as an act, never as the raw imperative.
   const p=campus(),{state}=await scene(p,'hygiene-memory',['Touch her hand while you flirt with her','Go talk to jana']);
   const said=playerStatements(state,p,'jana').map(m=>m.text);
-  assert.ok(said.some(t=>/^With Jana\b.* touched her hand while flirting with her$/.test(t)),said.join(' | '));
+  assert.ok(said.some(t=>/^With Jana\b.* touched her hand while flirting with her; Rain ticks on the window\.$/.test(t)),said.join(' | '));
   assert.ok(!said.some(t=>/Touch her hand|Go talk/i.test(t)),'no raw imperative is remembered');
 });
 
@@ -68,6 +69,18 @@ test('the scene line comes from the scene, and nobody is away in the room the sc
   assert.equal(contextFor(s,p,'nova',null,'').location.id,s.actors.nova.location,'someone outside the scene stays where they are');
   const name=context.location.name;
   assert.deepEqual(awayFrom([{name:'Dilek',where:name},{name:'Nova',where:'Library'}],name),[{name:'Dilek',where:''},{name:'Nova',where:'Library'}]);
+});
+
+test('scene history from an earlier daypart is relabelled so the scene does not re-anchor to it',()=>{
+ const p=campus(),line=(id,tick,narrative)=>({id,status:'complete',command:{type:'core.scene',args:{text:id}},input:id,narrative,sceneLines:[{speaker:'',text:narrative}],events:[{type:'core.sceneContinued',payload:{characters:['jana']},tick}]});
+ const world={scene:{id:'s1'},tick:41,turns:{t1:line('t1',36,'The quad is loud with morning students.'),t2:line('t2',40,'She packs up her sketches.')}};
+ const history=sceneTranscript(world,{id:'t3',events:[]},['jana'],120,null,p);
+ assert.deepEqual(history.map(h=>h.daypart),['Morning',undefined],'only the turn from an earlier daypart is marked');
+ const [,user]=scenePromptMessages({stagedCast:['jana'],scenePhase:'continuation',sceneHistory:history,memories:[],playerAction:'Ask about the sketches.'},p);
+ assert.ok(user.content.includes('(earlier, Morning) The quad is loud with morning students.'),'the old-daypart line carries its label');
+ assert.ok(user.content.includes('Player: t2\nShe packs up her sketches.'),'same-daypart lines render exactly as before');
+ assert.equal(promptView.sceneHistory({input:'Hi',text:'She smiles.'}),'Player: Hi\nShe smiles.','no daypart: rendering is unchanged');
+ assert.equal(promptView.sceneHistory({compact:true,text:'Player: Hi → sketching.'}),'(earlier) Player: Hi → sketching.','no daypart: digests are unchanged');
 });
 
 test('the stable prompt head is byte-identical across turns of one scene',async()=>{

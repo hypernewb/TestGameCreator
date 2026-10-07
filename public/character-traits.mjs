@@ -1,0 +1,3 @@
+// Venus trait switches, shared by the generator and the Studio picker.
+export const CHARACTER_TRAITS=['Mood-swings','Disagreeable','Good-natured','Materialist','Terminally Online','Promiscuous','High Standards'];
+export const TRAIT_DESCRIPTIONS={'Mood-swings':'feels both good and bad emotions more strongly than most',Disagreeable:'hard to get along with','Good-natured':'easy to get along with',Materialist:'loves gifts and dislikes cheap presents','Terminally Online':'hooked on social media and online content',Promiscuous:'hooks up often and does not get jealous of partners','High Standards':'hard to impress'};

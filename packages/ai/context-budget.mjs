@@ -6,6 +6,8 @@ import {calendarFor} from '../../public/calendar.mjs';
 import {promptView} from '../../vendor/venus/scenePrompt.mjs';
 import {relevance} from './memory.mjs';
 import {proseOf} from './prompt-sections.mjs';
+import {sexStyleText} from '../../public/card-presets.mjs';
+import {interestCue} from '../../public/stat-gates.mjs';
 
 // Engine-authored digests come from committed events, so older history can shrink without the drift of a
 // model-written summary: the model's prose is flavor, the digest is the record.
@@ -97,8 +99,13 @@ const dailyMood=(a,c)=>{if(ordinaryConversation(c)&&!a.moods?.length)return c.mo
 // Pick 2 voice examples by relationship stage and mood tier
 const voiceExamplesByState=voiceExamplesOf;
 
-const profileOf=(a,stage='',mood='',strained=false)=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',description:a.description||'',personality:a.personality||'',behavior:a.behavior||{},behaviorCue:a.behaviorCue||'',relationshipStage:a.relationshipStage||'',traits:a.traits||[],moods:a.moods||[],voice:a.voice||'',fingerprint:a.fingerprint||'',style:a.style||'',examples:a.examples||[],goal:a.goal||'',backstory:a.backstory||'',likes:a.likes||[],dislikes:a.dislikes||[],neverSays:a.neverSays||[],voiceBlock:{fingerprint:a.fingerprint||'',examples:voiceExamplesByState(a,stage,mood,strained)}});
-const compactProfile=(a,stage='',mood='',strained=false)=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',personality:clip(a.personality||a.description||'',240),behaviorCue:a.behaviorCue||'',relationshipStage:a.relationshipStage||'',traits:a.traits||[],voice:a.voice||'',fingerprint:a.fingerprint||'',voiceBlock:{fingerprint:a.fingerprint||'',examples:voiceExamplesByState(a,stage,mood,strained)},examples:(a.examples||[]).slice(0,2),neverSays:a.neverSays||[]});
+// Venus sheet (owner 2026-10-07): love life only for an involved one-on-one scene; empty legacy voice fields are left out so new characters carry no speech rules.
+const INVOLVED=['crush','dating','exclusive'],LEGACY_VOICE=new Set(['voice','fingerprint','style','examples','neverSays','voiceBlock']);
+const loveLifeOf=(a,stage,solo)=>{if(!solo||!INVOLVED.includes(stage))return null;const l=Object.fromEntries([['history',a.datingHistory],['preference',a.datingPreference],['kinks',a.kinks],['virgin',a.isVirgin===true?'yes':''],['turnOns',(a.turnOns||[]).join(', ')],['turnOffs',(a.turnOffs||[]).join(', ')],['style',sexStyleText(a.sexStyle)],['inBed',a.inBed],['afterSex',a.afterSex]].filter(([,v])=>typeof v==='string'&&v.trim()));return Object.keys(l).length?l:null;};
+const filled=v=>Array.isArray(v)?v.length>0:v&&typeof v==='object'?Object.values(v).some(filled):!!v;
+const lean=o=>Object.fromEntries(Object.entries(o).filter(([k,v])=>!(LEGACY_VOICE.has(k)||k==='loveLife')||filled(v)));
+const profileOf=(a,stage='',mood='',strained=false,solo=false)=>lean({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',description:a.description||'',personality:a.personality||'',behavior:a.behavior||{},behaviorCue:a.behaviorCue||'',relationshipStage:a.relationshipStage||'',traits:a.traits||[],moods:a.moods||[],voice:a.voice||'',fingerprint:a.fingerprint||'',style:a.style||'',examples:a.examples||[],goal:a.goal||'',backstory:a.backstory||'',likes:a.likes||[],dislikes:a.dislikes||[],neverSays:a.neverSays||[],voiceBlock:{fingerprint:a.fingerprint||'',examples:voiceExamplesByState(a,stage,mood,strained)},loveLife:loveLifeOf(a,stage,solo)});
+const compactProfile=(a,stage='',mood='',strained=false,solo=false)=>lean({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',personality:clip(a.personality||a.description||'',240),behaviorCue:a.behaviorCue||'',relationshipStage:a.relationshipStage||'',traits:a.traits||[],voice:a.voice||'',fingerprint:a.fingerprint||'',voiceBlock:{fingerprint:a.fingerprint||'',examples:voiceExamplesByState(a,stage,mood,strained)},examples:(a.examples||[]).slice(0,2),neverSays:a.neverSays||[],loveLife:loveLifeOf(a,stage,solo)});
 
 /**
  * Fits a scene context into the model's window. `render(context)` must return the prompt messages so the fixed
@@ -117,7 +124,7 @@ export function budgetSceneContext(context,pack,world,turnId,{window=8192,reply=
  // Determine stage and mood for voice example selection
   const datingInfo=a=>(context.dating||[]).find(d=>d.character===a.id)||{};
   const currentMood=a=>dailyMood(a,context);
-  actors.forEach((a,i)=>{const d=datingInfo(a);const phase=relationshipStageOf(context,a,world.modules?.['social.relationships']?.edges?.[`${a.id}--${pack.playerId}`]??null);a={...a,relationshipStage:phase,behaviorCue:behaviorCueOf(a,phase)};const strained=d.strained||false;add('castProfiles',1,`cast:${a.id}`,100-i,[['full',profileOf(a,phase,currentMood(a),strained)],['compact',compactProfile(a,phase,currentMood(a),strained)],['cue',{id:a.id,name:a.name,pronouns:a.pronouns||'they/them',personality:clip(a.personality||a.description||'',80),voice:clip(a.voice||'',100),relationshipStage:phase}],['name',{id:a.id,name:a.name,pronouns:a.pronouns||'they/them'}]]);});
+  actors.forEach((a,i)=>{const d=datingInfo(a);const phase=relationshipStageOf(context,a,world.modules?.['social.relationships']?.edges?.[`${a.id}--${pack.playerId}`]??null);a={...a,relationshipStage:phase,behaviorCue:[behaviorCueOf(a,phase),interestCue(world,pack,a)].filter(Boolean).join(' ')};const strained=d.strained||false;add('castProfiles',1,`cast:${a.id}`,100-i,[['full',profileOf(a,phase,currentMood(a),strained,actors.length===1)],['compact',compactProfile(a,phase,currentMood(a),strained,actors.length===1)],['cue',lean({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',personality:clip(a.personality||a.description||'',80),voice:clip(a.voice||'',100),relationshipStage:phase})],['name',{id:a.id,name:a.name,pronouns:a.pronouns||'they/them'}]]);});
  const history=context.sceneHistory||[];
  // `verbatim` caps how many recent turns may stay word for word even when they fit: a small model given 25 full turns
   // loses track of which question it is answering, and does better with a short transcript plus one-line digests.

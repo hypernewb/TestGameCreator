@@ -129,6 +129,9 @@
       "signals": []
     }
   ],
+  "authoringVariety": {
+    "anachronisms": ["phone", "smartphone", "laptop", "computer", "car", "jeans", "sneakers", "t-shirt", "hoodie", "university", "college", "coffee shop", "selfie", "internet", "email", "texting", "electricity", "television", "camera"]
+  },
   "intimacySettings": {
     "difficulty": "easy",
     "contentLevel": "explicit",

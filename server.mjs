@@ -13,6 +13,7 @@ import {createLab,labCast,stagesOf} from './packages/testing/character-lab.mjs';
 import {createReiComparison} from './packages/testing/rei-comparison.mjs';
 import {validateImage,validateProjectMedia} from './packages/assets/project-media.mjs';
 import {assetAudit} from './packages/assets/asset-audit.mjs';
+import {comfyJobs} from './packages/assets/comfy-studio.mjs';
 import {createWorld,validatePack,actions,resolveModules,execute,assert,refusalFor,refusalCode,mechanicsDigest} from './packages/core/engine.mjs';
 import {runScenario,scenarioActions,validateScenario,scenarioSnapshotDigest} from './packages/testing/scenarios.mjs';
 import {compareSequences} from './packages/testing/activity-analysis.mjs';
@@ -40,8 +41,11 @@ import {bakeDirectorTemplates} from './packages/cards/director-templates.mjs';
 import {creatorTemplate} from './packages/cards/creator-template.mjs';
 import {readPack} from './packages/cards/director-library.mjs';
 import {reviewProposal,regenerateEntry,applyReviewed} from './packages/ai/proposal-review.mjs';
-import {characterMessages,normalizeCharacter,characterResponseFormat,profileSectionMessages,mergeProfileSections,PROFILE_SECTION_KEYS} from './packages/ai/character-authoring.mjs';
+import {characterMessages,normalizeCharacter,authorCharacter,characterResponseFormat,profileSectionMessages,mergeProfileSections,PROFILE_SECTION_KEYS} from './packages/ai/character-authoring.mjs';
 import {parseModelObject} from './packages/ai/json.mjs';
+import {fillBlanksMessages,fillBlanksResponseFormat,blanksPatch} from './packages/ai/fill-blanks.mjs';
+import {locationFillMessages,locationFillPatch} from './packages/ai/location-lint.mjs';
+import {BLANK_SECTIONS} from './public/card-presets.mjs';
 import {creatorRoutes} from './packages/cards/creator-routes.mjs';
 import {assemble} from './packages/cards/world-assembly.mjs';
 import {openRouterComplete} from './packages/cards/openrouter.mjs';
@@ -59,7 +63,7 @@ export function isFileWithin(base,file,pathApi={relative:pathRelative,isAbsolute
   const child=pathApi.relative(base,file);
   return child!=='' && child!=='..' && !child.startsWith('..'+pathApi.sep) && !pathApi.isAbsolute(child);
 }
-export function createApp({dataPath,scenarioDir,provider=new MockProvider(),drafter,startupAsk,comparisonEnabled=false}={}){
+export function createApp({dataPath,scenarioDir,provider=new MockProvider(),drafter,startupAsk,comparisonEnabled=false,comfy=comfyJobs()}={}){
   const root=fileURLToPath(new URL('.',import.meta.url));const packs={};for(const f of readdirSync(resolve(root,'packs')).filter(f=>f.endsWith('.json'))){const p=readPack(resolve(root,'packs',f));validatePack(p,registry);assert(!packs[p.id],'Duplicate pack ID');packs[p.id]=p;}
   const authorDir=scenarioDir||resolve(root,'data/scenarios'),draftDir=resolve(authorDir,'drafts'),publishedDir=resolve(authorDir,'published'),mediaDir=resolve(authorDir,'media');for(const dir of [draftDir,publishedDir,mediaDir])mkdirSync(dir,{recursive:true});
   const testDir=resolve(authorDir,'test-scenarios');mkdirSync(testDir,{recursive:true});
@@ -70,7 +74,9 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider(),draf
   const readDraft=id=>{const file=draftFile(id);assert(existsSync(file),'Draft not found');return JSON.parse(readFileSync(file,'utf8'));};
   const startups=new Map(),startup=id=>{const s=startups.get(id);assert(s,'Startup draft not found');return s;},startupCard=input=>{const png=typeof input==='string'&&input.match(/^data:image\/png;base64,([A-Za-z0-9+/=]+)$/);return readCard(png?Buffer.from(png[1],'base64'):input);};
   const startupPack=s=>applyReviewed(s.pack,{...s.proposal,...Object.fromEntries(KINDS.map(k=>[k,s.proposal[k].map(e=>({...e,status:'approved'}))]))});
-  const startupProvider=(messages,schema)=>{if(startupAsk)return startupAsk(messages,schema);assert(service.provider instanceof CompatibleProvider,'Connect an AI model in AI settings before generating');return service.provider.complete(messages,undefined,{type:'json_schema',json_schema:{name:'startup',strict:true,schema}});};
+  // Authoring calls return whole sheets, so they get a long output budget instead of the chat reply cap.
+  const authorProvider=()=>{const p=service.provider;return new CompatibleProvider({endpoint:p.endpoint,model:p.model,key:p.key,timeout:180000,maxRequests:10000,maxTokens:8000,contextWindow:p.contextWindow,wideContext:p.wideContext,fetchImpl:p.fetchImpl});};
+  const startupProvider=(messages,schema)=>{if(startupAsk)return startupAsk(messages,schema);assert(service.provider instanceof CompatibleProvider,'Connect an AI model in AI settings before generating');const p=service.provider,author=new CompatibleProvider({endpoint:p.endpoint,model:p.model,key:p.key,timeout:180000,maxRequests:10000,maxTokens:8000,contextWindow:p.contextWindow,wideContext:p.wideContext});return author.complete(messages,undefined,{type:'json_schema',json_schema:{name:'startup',strict:true,schema}});};
   const freshPack=()=>({schemaVersion:1,id:'draft',version:'0.1.0',title:'Untitled game',subtitle:'',calendar:'Day',accent:'#a9c59b',playerId:'player',gameProject:{ui:defaultProjectUi(),premise:'',setting:'',writingStyle:'Present tense; grounded character dialogue; describe only what the player can perceive.',presentation:'visual-novel',conversationStyle:'continuous',calendar:{startDate:'',startWeekday:'Monday'},ai:{intent:'Interpret the player’s words as a single supported intention. Use only listed actions and exact targets. Ask for clarification when needed; never invent results.',scene:'Narrate the committed result in a vivid but concise way. Use only supplied lore, character knowledge, and outcomes. Do not change mechanics.',daypart:'Write a daypart introduction as a short scene, then write one in-character meeting invitation for every eligible character. Do not make off-screen characters appear.'}},startOptions:[{id:'opening',title:'A New Beginning',description:'Start at the beginning of the story.',playerLocation:'start',tick:0}],worldEvents:[],scriptedScenes:[],schedules:[],initialRelationships:[],modules:{'social.conversation':'0.1.0','story.scenes':'0.1.0','story.facts':'0.1.0'},locations:[{id:'start',name:'Starting place',description:'Describe what the player sees here.',exits:[]}],actors:[{id:'player',name:'You',location:'start'}],items:[],objects:[],facts:[],lorebook:[]});
   const aiSettingsFile=dataPath===':memory:'?null:resolve(dataPath?dirname(resolve(dataPath)):resolve(root,'data'),'ai-settings.json');
   const connection=input=>{const preset=input.preset||'custom',p=CONNECTION_PRESETS[preset];assert(p,'Choose a provider');const endpoint=preset==='custom'?input.endpoint:p.endpoint,model=validateLocalModel(input.model||p.model);let url;try{url=new URL(endpoint);}catch{throw Error('Invalid endpoint');}assert(!url.username&&!url.password&&!url.search&&!url.hash,'Remove URL credentials');assert(url.protocol==='https:'||url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname),'Use HTTPS or local HTTP');const key=input.key===undefined&&aiSettings.endpoint===url.href?aiSettings.key||'':input.key||'';assert(typeof key==='string'&&key.length<=1000&&(!key||key.trim().length>4)&&!/[\r\n]/.test(key),'Invalid key');assert(preset==='lmstudio'||url.protocol==='http:'||key.trim(),'Enter a key');return {mode:preset==='lmstudio'?'local':'cloud',preset,endpoint:url.href,model,key:key.trim()};};
@@ -170,9 +176,23 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider(),draf
       if(path==='/api/studio/approve-character'&&req.method==='POST'){assert(body.pack&&body.character,'Project and character required');const proposal=createProposal(body.pack,{characters:[body.character]});proposal.characters[0].status='approved';return send({pack:applyProposal(body.pack,proposal)});}
       if(path==='/api/studio/ai-character'&&req.method==='POST'){
         assert(service.provider instanceof CompatibleProvider,'Connect a local AI model in AI settings before generating a character');assert(body.pack&&typeof body.pack==='object','Project data required');assert(typeof body.brief==='string'&&body.brief.trim()&&body.brief.length<=6000,'Enter a character brief (maximum 6,000 characters)');
-        const options={name:body.name,pronouns:body.pronouns,age:body.age,location:body.location},request=characterMessages(body.pack,body.brief,options);let raw,character;
-        for(let attempt=0;attempt<2;attempt++){raw=await service.provider.complete(request.messages,undefined,characterResponseFormat());try{character=normalizeCharacter(raw,body.pack,options);break;}catch(error){if(attempt)throw error;request.messages.push({role:'assistant',content:typeof raw==='string'?raw:JSON.stringify(raw)},{role:'user',content:`Return a complete corrected character JSON object. Validation failed: ${error.message}`});}}
-        return send({character,provider:service.provider.name});
+        const options={name:body.name,pronouns:body.pronouns,age:Number(body.age)||undefined,location:body.location},format=characterResponseFormat(body.pack),{actor:character,warnings,attempts}=await authorCharacter(messages=>authorProvider().complete(messages,undefined,format),body.pack,body.brief,options);
+        return send({character,warnings,attempts,provider:service.provider.name});
+      }
+      // Fill only the blank fields of one card fold, picking list fields from the project's pick lists; authored values are never sent back.
+      if(path==='/api/studio/ai-fill-location'&&req.method==='POST'){
+        assert(service.provider instanceof CompatibleProvider,'Connect an AI model in AI settings before filling blanks');assert(body.pack&&typeof body.pack==='object'&&!Array.isArray(body.pack),'Project data required');assert(body.location&&typeof body.location==='object'&&!Array.isArray(body.location),'Location required');
+        const request=locationFillMessages(body.pack,body.location);if(!request.blanks.length)return send({patch:{},filled:[]});let patch;
+        for(let attempt=0;attempt<2;attempt++){const raw=await authorProvider().complete(request.messages,undefined,fillBlanksResponseFormat(request.schema));try{patch=locationFillPatch(body.location,parseModelObject(raw),body.pack);break;}catch(error){if(attempt)throw error;request.messages.push({role:'assistant',content:typeof raw==='string'?raw:JSON.stringify(raw)},{role:'user',content:`Return the corrected JSON object only. ${error.message}`});}}
+        return send({patch,filled:Object.keys(patch),provider:service.provider.name});
+      }
+      if(path==='/api/studio/ai-fill-blanks'&&req.method==='POST'){
+        assert(service.provider instanceof CompatibleProvider,'Connect an AI model in AI settings before filling blanks');assert(body.pack&&typeof body.pack==='object'&&!Array.isArray(body.pack),'Project data required');
+        assert(body.actor&&typeof body.actor==='object'&&!Array.isArray(body.actor),'Character required');assert(Object.hasOwn(BLANK_SECTIONS,body.section),'Unknown card section');
+        const request=fillBlanksMessages(body.pack,body.actor,body.section);if(!request.blanks.length)return send({patch:{},filled:[]});
+        let raw,patch;
+        for(let attempt=0;attempt<2;attempt++){raw=await authorProvider().complete(request.messages,undefined,fillBlanksResponseFormat(request.schema));let retry;try{patch=blanksPatch(body.actor,parseModelObject(raw),body.section,body.pack);if(Object.keys(patch).length||attempt)break;retry='Nothing usable came back: every field was empty or every pick was off its list. Fill each requested field, choosing list picks exactly as spelled in the lists.';}catch(error){if(attempt)throw error;retry=`Return the corrected JSON object only. Parsing failed: ${error.message}`;}request.messages.push({role:'assistant',content:typeof raw==='string'?raw:JSON.stringify(raw)},{role:'user',content:retry});}
+        return send({patch,filled:Object.keys(patch),provider:service.provider.name});
       }
       // Regenerate chosen deep-profile sections of one character; every other field of the caller's actor is preserved.
       if(path==='/api/studio/ai-profile-sections'&&req.method==='POST'){
@@ -214,6 +234,10 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider(),draf
       if(path==='/api/studio/director/preview'&&req.method==='POST'){assert(body.pack&&body.template,'Project and director template required');assert(body.pack.modules?.['story.director']&&body.pack.modules?.['story.scenes'],'Enable Drama director and Scripted scenes first');const baked=bakeDirectorTemplates(body.pack,[body.template]);validatePack(baked,registry);return send({scenes:baked.scriptedScenes.filter(s=>s.template?.id===body.template.id).map(s=>({id:s.id,title:s.title,opening:s.opening,roles:s.template.roles,choices:s.choices||[]}))});}
       if(path==='/api/studio/validate'&&req.method==='POST'){validateProjectMedia(body.pack,{read:readAsset,media:body.media});validatePack(body.pack,registry);return send({ok:true});}
       if(path==='/api/studio/playtest'&&req.method==='POST'){validatePack(body.pack,registry);const turns=Math.max(5,Math.min(200,Number(body.turns)||50));return send(runPlaytestSuite(body.pack,registry,{turns}));}
+      if(path==='/api/studio/comfy'&&req.method==='GET')return send(await comfy.status());
+      if(path==='/api/studio/comfy/generate'&&req.method==='POST')return send(comfy.generate(body));
+      if(path==='/api/studio/comfy/batch'&&req.method==='POST')return send(comfy.batch(body));
+      if(path==='/api/studio/comfy/job'&&req.method==='GET')return send(comfy.job(url.searchParams.get('id')));
       if(path==='/api/studio/asset'&&req.method==='POST'){const {bytes,type}=validateImage(body.data,body.kind),ext=type==='jpeg'?'jpg':type,name=`scenario-media/${randomUUID()}.${ext}`;writeFileSync(assetFile(name),bytes,{flag:'wx'});return send({path:name});}
       if(path==='/api/studio/asset'&&req.method==='GET'){const name=url.searchParams.get('path'),data=readAsset(name),ext=extname(name).slice(1),mime=`image/${ext==='jpg'?'jpeg':ext}`;try{validateImage(`data:${mime};base64,${data.toString('base64')}`);}catch(e){throw Error(`Project image ${name}: ${e.message}`);}return send({path:name,mime,data:data.toString('base64')});}
       if(path==='/api/studio/assets/report'&&req.method==='POST'){const media=body.media&&typeof body.media==='object'&&!Array.isArray(body.media)?body.media:null,publicAssets=resolve(root,'public/assets');

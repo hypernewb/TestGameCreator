@@ -51,12 +51,11 @@ test('section regeneration merges only the chosen sections and validates them',(
  assert.deepEqual(mergeProfileSections(base,{},['voice']),base);
 });
 
-test('character generation demands the deep profile and supports Japanese names',()=>{
+test('character generation leaves the deep profile to section regeneration and supports Japanese names',()=>{
  const r=characterMessages(pack(),'A guarded harbour pilot.'),u=r.messages[1].content;
  assert.match(r.messages[0].content,/academics, tech specialists, therapists/);assert.match(r.messages[0].content,/Aihara Yuki/);
- assert.match(u,/EVERYDAY LIFE/);assert.match(u,/ROMANTIC BEHAVIOUR/);assert.match(u,/SCENE MATERIAL/);assert.match(u,/BOUNDARIES/);assert.match(u,/PROFILE VOCABULARY/);
- assert.ok(r.schema.required.includes('profile'));assert.ok(r.schema.properties.profile.properties.romance.properties.pace.enum.includes('slow'));
- const fmt=characterResponseFormat();assert.equal(fmt.json_schema.schema.properties.profile.type,'object');
+ assert.doesNotMatch(u,/PROFILE VOCABULARY|EVERYDAY LIFE/);assert.ok(!r.schema.required.includes('profile'));
+ const fmt=characterResponseFormat();assert.equal(fmt.json_schema.schema.properties.profile,undefined);
  const part=profileResponseFormat(['voice','romance']).json_schema.schema;
  assert.deepEqual(part.properties.profile.required,['voice','romance']);assert.ok(!part.properties.profile.properties.everyday);
  assert.equal(profileResponseFormat([]).json_schema.schema.properties.profile.required.length,6);

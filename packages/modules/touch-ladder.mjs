@@ -42,7 +42,7 @@ export const mapTouchText=text=>{const t=(text||'').toLowerCase();for(const [re,
 const trustOf=(state,pack,character)=>state.modules['social.relationships']?.edges[`${character}--${pack.playerId}`]||0;
 const runtimeOf=(state,character)=>state.modules['social.touch-ladder']?.characters?.[character];
 // Private = a listed private location with nobody else present (same witness idea as intimacy.mjs's privacy check, kept local so this module has no hard dependency on social.intimacy).
-const privacyOk=(state,pack,character)=>{const loc=state.actors[pack.playerId].location,priv=pack.touchLadder?.privateLocations||pack.intimacySettings?.privateLocations||[];if(!priv.includes(loc))return false;const others=pack.actors.filter(a=>![pack.playerId,character].includes(a.id)&&state.actors[a.id].location===loc);return others.length===0;};
+const privacyOk=(state,pack,character)=>{const loc=state.actors[pack.playerId].location,priv=pack.touchLadder?.privateLocations||pack.intimacySettings?.privateLocations||[];if(!priv.includes(loc)&&pack.locations.find(l=>l.id===loc)?.exposure!=='private')return false;const others=pack.actors.filter(a=>![pack.playerId,character].includes(a.id)&&state.actors[a.id].location===loc);return others.length===0;};
 
 // The one Lust writer for the baseline system: no ceiling of its own. The ladder step keeps its existing 100 clamp.
 export const setLust=(tx,character,value)=>{if(runtimeOf(tx.state,character))tx.set([...path,'characters',character,'lust'],Math.max(0,value));};

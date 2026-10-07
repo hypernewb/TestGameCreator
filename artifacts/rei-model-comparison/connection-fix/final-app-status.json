@@ -1,0 +1,11 @@
+{
+  "appRunning": true,
+  "model": "openrouter/free",
+  "preset": "openrouter",
+  "keyPresent": true,
+  "route": {
+    "enabled": false,
+    "spent": true
+  },
+  "settingsChanged": false
+}

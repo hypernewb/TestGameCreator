@@ -1,0 +1,298 @@
+TAP version 13
+# Subtest: existing relationship interpretation selects only the matching authored behavior
+ok 1 - existing relationship interpretation selects only the matching authored behavior
+  ---
+  duration_ms: 5.4558
+  type: 'test'
+  ...
+# Subtest: missing, legacy, custom, strained, rejected and broken data preserve absence fallback
+ok 2 - missing, legacy, custom, strained, rejected and broken data preserve absence fallback
+  ---
+  duration_ms: 1.5112
+  type: 'test'
+  ...
+# Subtest: selection uses each cast member engine relationship and survives compact profile
+ok 3 - selection uses each cast member engine relationship and survives compact profile
+  ---
+  duration_ms: 1.0124
+  type: 'test'
+  ...
+# Subtest: Apply maps edited narration fields, retains source/custom/legacy fields and roundtrips
+ok 4 - Apply maps edited narration fields, retains source/custom/legacy fields and roundtrips
+  ---
+  duration_ms: 2.0573
+  type: 'test'
+  ...
+# Subtest: unchanged Apply leaves actor byte stable; blank edits clear; invalid Apply is atomic
+ok 5 - unchanged Apply leaves actor byte stable; blank edits clear; invalid Apply is atomic
+  ---
+  duration_ms: 1.3256
+  type: 'test'
+  ...
+# Subtest: editor Apply/save/reopen updates runtime voice through the real button handler
+ok 6 - editor Apply/save/reopen updates runtime voice through the real button handler
+  ---
+  duration_ms: 2.4062
+  type: 'test'
+  ...
+# Subtest: narration edits leave deterministic outcomes and mechanics digest unchanged
+ok 7 - narration edits leave deterministic outcomes and mechanics digest unchanged
+  ---
+  duration_ms: 2.4689
+  type: 'test'
+  ...
+# Subtest: sceneTranscript skips score sub-turns between conversation turns
+ok 8 - sceneTranscript skips score sub-turns between conversation turns
+  ---
+  duration_ms: 1.0977
+  type: 'test'
+  ...
+# Subtest: score events never reach the model context as recent actions
+ok 9 - score events never reach the model context as recent actions
+  ---
+  duration_ms: 3.8908
+  type: 'test'
+  ...
+# Subtest: token estimate counts dense scripts per character and Latin text per four characters
+ok 10 - token estimate counts dense scripts per character and Latin text per four characters
+  ---
+  duration_ms: 0.124
+  type: 'test'
+  ...
+# Subtest: calibration moves the ratio toward reported prompt tokens and stays bounded
+ok 11 - calibration moves the ratio toward reported prompt tokens and stays bounded
+  ---
+  duration_ms: 0.1648
+  type: 'test'
+  ...
+# Subtest: allocator reserves floors so a huge transcript cannot starve lore and recaps
+ok 12 - allocator reserves floors so a huge transcript cannot starve lore and recaps
+  ---
+  duration_ms: 0.4921
+  type: 'test'
+  ...
+# Subtest: allocator degrades before cutting and keeps a transcript tail contiguous
+ok 13 - allocator degrades before cutting and keeps a transcript tail contiguous
+  ---
+  duration_ms: 0.2021
+  type: 'test'
+  ...
+# Subtest: hard ceiling keeps off-screen color from absorbing leftover budget
+ok 14 - hard ceiling keeps off-screen color from absorbing leftover budget
+  ---
+  duration_ms: 0.09
+  type: 'test'
+  ...
+# Subtest: a long chatty scene stays inside the model window, compacting old turns into engine digests
+ok 15 - a long chatty scene stays inside the model window, compacting old turns into engine digests
+  ---
+  duration_ms: 193.5703
+  type: 'test'
+  ...
+# Subtest: a tiny window shrinks cast profiles to names but never drops a cast member
+ok 16 - a tiny window shrinks cast profiles to names but never drops a cast member
+  ---
+  duration_ms: 0.6972
+  type: 'test'
+  ...
+# Subtest: turn digests come from committed events, not model prose
+ok 17 - turn digests come from committed events, not model prose
+  ---
+  duration_ms: 0.1489
+  type: 'test'
+  ...
+# Subtest: provider calibrates its token ratio from reported usage
+ok 18 - provider calibrates its token ratio from reported usage
+  ---
+  duration_ms: 0.7927
+  type: 'test'
+  ...
+# Subtest: context window detection reads llama.cpp, LM Studio, Ollama and /v1/models metadata
+ok 19 - context window detection reads llama.cpp, LM Studio, Ollama and /v1/models metadata
+  ---
+  duration_ms: 0.5974
+  type: 'test'
+  ...
+# Subtest: reply reserve shrinks to what the model actually writes once replies have been seen
+ok 20 - reply reserve shrinks to what the model actually writes once replies have been seen
+  ---
+  duration_ms: 0.0923
+  type: 'test'
+  ...
+# Subtest: provider re-detects the window after a reply loads a just-in-time model
+ok 21 - provider re-detects the window after a reply loads a just-in-time model
+  ---
+  duration_ms: 0.2505
+  type: 'test'
+  ...
+# Subtest: provider asks reasoning models not to think, and drops the parameter where a server rejects it
+ok 22 - provider asks reasoning models not to think, and drops the parameter where a server rejects it
+  ---
+  duration_ms: 0.2043
+  type: 'test'
+  ...
+# Subtest: BM25 ranks specific words above common ones and splits CJK into bigrams
+ok 23 - BM25 ranks specific words above common ones and splits CJK into bigrams
+  ---
+  duration_ms: 0.2327
+  type: 'test'
+  ...
+# Subtest: lore the player describes without its tag words is still selected, below tagged lore
+ok 24 - lore the player describes without its tag words is still selected, below tagged lore
+  ---
+  duration_ms: 0.778
+  type: 'test'
+  ...
+# Subtest: closed-scene recaps roll up by day this week and by week before that
+ok 25 - closed-scene recaps roll up by day this week and by week before that
+  ---
+  duration_ms: 0.7105
+  type: 'test'
+  ...
+# Subtest: context size presets cap the window without exceeding what the model reports
+ok 26 - context size presets cap the window without exceeding what the model reports
+  ---
+  duration_ms: 0.2735
+  type: 'test'
+  ...
+# Subtest: context size API switches the active provider and reports the window in use
+ok 27 - context size API switches the active provider and reports the window in use
+  ---
+  duration_ms: 84.8512
+  type: 'test'
+  ...
+# Subtest: wideContext preserves character lines that mention a cast member
+ok 28 - wideContext preserves character lines that mention a cast member
+  ---
+  duration_ms: 1.0664
+  type: 'test'
+  ...
+# Subtest: wideContext tail window is 1500 chars instead of 700
+ok 29 - wideContext tail window is 1500 chars instead of 700
+  ---
+  duration_ms: 0.5839
+  type: 'test'
+  ...
+# Subtest: short inputs have distinct conversational meanings
+ok 30 - short inputs have distinct conversational meanings
+  ---
+  duration_ms: 1.3347
+  type: 'test'
+  ...
+# Subtest: short refusals and emotional statements never introduce unrelated sheet topics
+ok 31 - short refusals and emotional statements never introduce unrelated sheet topics
+  ---
+  duration_ms: 2.9251
+  type: 'test'
+  ...
+# Subtest: encouragement develops the supplied thread without forced sheet-topic drift
+ok 32 - encouragement develops the supplied thread without forced sheet-topic drift
+  ---
+  duration_ms: 3.7663
+  type: 'test'
+  ...
+# Subtest: ordinary meaning and stage boundaries replace seeded personality moves without mutating context
+ok 33 - ordinary meaning and stage boundaries replace seeded personality moves without mutating context
+  ---
+  duration_ms: 2.495
+  type: 'test'
+  ...
+# Subtest: vulnerable replies stay on the feeling and disclosures do not force an interview or stock opinion
+ok 34 - vulnerable replies stay on the feeling and disclosures do not force an interview or stock opinion
+  ---
+  duration_ms: 2.5718
+  type: 'test'
+  ...
+# Subtest: an explicit refusal answers a hanging offer without re-asking it
+ok 35 - an explicit refusal answers a hanging offer without re-asking it
+  ---
+  duration_ms: 0.2208
+  type: 'test'
+  ...
+# Subtest: ordinary exchanges share one capped length policy in both writers and keep agency and JSON safeguards
+ok 36 - ordinary exchanges share one capped length policy in both writers and keep agency and JSON safeguards
+  ---
+  duration_ms: 0.8033
+  type: 'test'
+  ...
+# Subtest: ordinary groups keep the closed cast and profiles without forced participation quotas
+ok 37 - ordinary groups keep the closed cast and profiles without forced participation quotas
+  ---
+  duration_ms: 0.2629
+  type: 'test'
+  ...
+# Subtest: ordinary substantial replies have room to develop while authored checkpoints closing and solo retain their contracts
+ok 38 - ordinary substantial replies have room to develop while authored checkpoints closing and solo retain their contracts
+  ---
+  duration_ms: 1.1511
+  type: 'test'
+  ...
+# Subtest: question endings and agendas stay optional across ordinary project styles
+ok 39 - question endings and agendas stay optional across ordinary project styles
+  ---
+  duration_ms: 0.4752
+  type: 'test'
+  ...
+# Subtest: recap digests do not widen private event visibility to everyone in its source scene
+ok 40 - recap digests do not widen private event visibility to everyone in its source scene
+  ---
+  duration_ms: 0.3947
+  type: 'test'
+  ...
+# Subtest: mixed-speaker shared prompts exclude private truth before and after recipient-only reveal; explicit common reveal permits it
+ok 41 - mixed-speaker shared prompts exclude private truth before and after recipient-only reveal; explicit common reveal permits it
+  ---
+  duration_ms: 12.7938
+  type: 'test'
+  ...
+# Subtest: owner context repurposed as a mixed cast keeps knowledge provenance and cannot leak private facts
+ok 42 - owner context repurposed as a mixed cast keeps knowledge provenance and cannot leak private facts
+  ---
+  duration_ms: 1.1641
+  type: 'test'
+  ...
+# Subtest: output guard and normalization block explicit private truth for uninformed speakers and narrator until common reveal
+ok 43 - output guard and normalization block explicit private truth for uninformed speakers and narrator until common reveal
+  ---
+  duration_ms: 5.0404
+  type: 'test'
+  ...
+# Subtest: real narration service filters prompt, preview, final text, summary and generated claims without provider calls
+ok 44 - real narration service filters prompt, preview, final text, summary and generated claims without provider calls
+  ---
+  duration_ms: 9.9404
+  type: 'test'
+  ...
+# Subtest: inspector recognizes runtime ownership and actor-visible superseding facts while excluded truth stays out of prompts
+ok 45 - inspector recognizes runtime ownership and actor-visible superseding facts while excluded truth stays out of prompts
+  ---
+  duration_ms: 1.2152
+  type: 'test'
+  ...
+# Subtest: partial context turns retain committed cast privacy without requiring a command
+ok 46 - partial context turns retain committed cast privacy without requiring a command
+  ---
+  duration_ms: 0.5408
+  type: 'test'
+  ...
+# Subtest: a character sheet’s never-says list reaches both writers, and a group scene asks for distinct voices
+ok 47 - a character sheet’s never-says list reaches both writers, and a group scene asks for distinct voices
+  ---
+  duration_ms: 3.4281
+  type: 'test'
+  ...
+# Subtest: neverSays is validated as a short list
+ok 48 - neverSays is validated as a short list
+  ---
+  duration_ms: 2.4963
+  type: 'test'
+  ...
+1..48
+# tests 48
+# suites 0
+# pass 48
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 455.2385

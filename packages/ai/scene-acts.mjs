@@ -2,6 +2,7 @@
 // short slug targets, at most four per reply. See docs/handoffs/M0-CONTRACT.md §1.
 import {mapTouchText,touchTextRegion,touchRegion} from '../modules/touch-ladder.mjs';
 import {REGIONS} from '../core/character-sheet.mjs';
+import {playerInviteSource} from '../core/player-invite.mjs';
 export const ACT_KINDS=['flirt','compliment','gift','touch','insult','buy','invite','tease','listen','boast','pushy','ask'];
 // Only explicit performance requests are graded; questions and descriptions of preferences are ordinary talk.
 export function deliveryAct(text,pack){
@@ -11,15 +12,16 @@ export function deliveryAct(text,pack){
 }
 const SIZES=['small','medium','large'];
 export const actsEnabled=(context,pack)=>Boolean(pack.modules?.['social.acts']&&context.sceneBudget?.focus&&(pack.actProfiles||[]).some(p=>p.character===context.sceneBudget.focus));
-export function sceneActs(raw){
+export function sceneActs(raw,contribution){
  if(!Array.isArray(raw))return [];const out=[],seen=new Set();
  for(const a of raw){if(!a||typeof a!=='object'||!ACT_KINDS.includes(a.kind))continue;
   const target=String(a.target??'').toLowerCase().trim().replace(/\s+/g,'-').replace(/[^a-z0-9@:_-]/g,'').slice(0,40),key=`${a.kind}:${target}`;if(seen.has(key))continue;seen.add(key);
-  out.push({kind:a.kind,target,size:SIZES.includes(a.size)?a.size:'small',...(typeof a.landed==='boolean'?{landed:a.landed}:{}),...(REGIONS.includes(a.region)?{region:a.region}:{})});if(out.length>=4)break;}
+  const source=a.kind==='invite'&&contribution?playerInviteSource(contribution.text,contribution.lines,a.source):null;if(a.kind==='invite'&&contribution&&!source)continue;
+  out.push({kind:a.kind,target,size:SIZES.includes(a.size)?a.size:'small',...(typeof a.landed==='boolean'?{landed:a.landed}:{}),...(REGIONS.includes(a.region)?{region:a.region}:{}),...(source?{source}:{})});if(out.length>=4)break;}
  return out;
 }
-export const actsSchema={type:'array',maxItems:4,items:{type:'object',properties:{kind:{type:'string',enum:ACT_KINDS},target:{type:'string'},size:{type:'string',enum:SIZES},landed:{type:'boolean'},region:{type:'string',enum:REGIONS}},required:['kind','target']}};
-export const ACTS_RULE='In acts, tag what the player did to the focus character this turn, at most four: {kind,target,size,landed,region?}. Optional region names the touched sheet body region (face, lips, neck, arms_hands, chest, back, belly_waist, hips_butt, thighs_legs, intimate); it never supplies permission. kind is one of '+ACT_KINDS.join(', ')+'; ask means asking her what she wants or checking in (for example, "Is this okay?"). target is one or two words (looks, coffee); an invite to meet later is day-part@place (saturday-afternoon@cafe, tonight@bar); size is small, medium or large; landed is your read of whether it went over well. Tag only what the player action did, never the NPC. Do not supply scores, rewards, checkpoint verdicts, completion, or consent. Sharing something personal with her or picking up on what she just said is a small listen. Return [] only when the player does nothing toward her (travel, waiting, looking around).';
+export const actsSchema={type:'array',maxItems:4,items:{type:'object',properties:{kind:{type:'string',enum:ACT_KINDS},target:{type:'string'},size:{type:'string',enum:SIZES},landed:{type:'boolean'},source:{type:'string'},region:{type:'string',enum:REGIONS}},required:['kind','target']}};
+export const ACTS_RULE='In acts, tag what the player did to the focus character this turn, at most four: {kind,target,size,landed,region?}. Optional region names the touched sheet body region (face, lips, neck, arms_hands, chest, back, belly_waist, hips_butt, thighs_legs, intimate); it never supplies permission. kind is one of '+ACT_KINDS.join(', ')+'; ask means asking her what she wants or checking in (for example, "Is this okay?"). target is one or two words (looks, coffee); an invite to meet later is day-part@place (saturday-afternoon@cafe, tonight@bar); size is small, medium or large; landed is your read of whether it went over well. Tag only what the player action did, never the NPC. For invite, include source as the exact submitted player clause initiating the invitation. An NPC offer or the player accepting, refusing or merely discussing that offer is not a player invite tag; only committed player commands can accept plans. Do not supply scores, rewards, checkpoint verdicts, completion, or consent. Sharing something personal with her or picking up on what she just said is a small listen. Return [] only when the player does nothing toward her (travel, waiting, looking around).';
 // Deterministic floor (owner call 2026-09-29): a typed question that names one of her likes is a small listen even when a small model tags it as plain talk. Repeat decay in social.acts stops farming.
 const STOP=new Set(['the','and','for','old','being','about','asked','taken','seriously','good','with','that','your','their','her','back','people','who','anyone','dominik','told','what','she','wants','called']);
 const slug=x=>String(x).toLowerCase().trim().replace(/\s+/g,'-').replace(/[^a-z0-9@:_-]/g,'').slice(0,40);

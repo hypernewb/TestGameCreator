@@ -1,0 +1,150 @@
+{
+  "rows": [
+    {
+      "turn": 1,
+      "opening": {
+        "speaker": "",
+        "text": "You tease Dilek, claiming her margin notes occupy more space than the poem itself."
+      },
+      "displayedOpening": "You tease Dilek, claiming her margin notes occupy more space than the poem itself.",
+      "openingRepair": [
+        {
+          "check": "player-opening",
+          "message": "Missing first visible second-person player narration",
+          "targeted": true,
+          "resolved": true
+        }
+      ],
+      "endingRepair": [],
+      "sceneAfter": "vn-input-1",
+      "trust": 17,
+      "chemistry": 10,
+      "replayElapsedMs": 93,
+      "openingCalls": [
+        {
+          "origin": "recorded actual model output",
+          "ms": 0,
+          "originalGenerationMs": 3894,
+          "promptTokens": 413,
+          "completionTokens": 24
+        }
+      ],
+      "originalDraftHash": "213d36a7dd23ffa02c96cf764b8280fd93f201e8cee4294949740496e1141e60"
+    },
+    {
+      "turn": 2,
+      "opening": {
+        "speaker": "",
+        "text": "You ask Dilek if she is grading the conversation or if the pen is off duty."
+      },
+      "displayedOpening": "You ask Dilek if she is grading the conversation or if the pen is off duty.",
+      "openingRepair": [
+        {
+          "check": "player-opening",
+          "message": "Missing first visible second-person player narration",
+          "targeted": true,
+          "resolved": true
+        }
+      ],
+      "endingRepair": [],
+      "sceneAfter": "vn-input-1",
+      "trust": 17,
+      "chemistry": 12,
+      "replayElapsedMs": 53,
+      "openingCalls": [
+        {
+          "origin": "recorded actual model output",
+          "ms": 0,
+          "originalGenerationMs": 1940,
+          "promptTokens": 312,
+          "completionTokens": 24
+        }
+      ],
+      "originalDraftHash": "54cb48f087039523d904467ad6adc16f5c30d25d58eb0f60f06e16a52a20d1d8"
+    },
+    {
+      "turn": 3,
+      "opening": {
+        "speaker": "",
+        "text": "You lightly flirt with Dilek, telling her you stayed to enjoy her company rather than earn a good mark."
+      },
+      "displayedOpening": "You lightly flirt with Dilek, telling her you stayed to enjoy her company rather than earn a good mark.",
+      "openingRepair": [
+        {
+          "check": "player-opening",
+          "message": "Missing first visible second-person player narration",
+          "targeted": true,
+          "resolved": true
+        }
+      ],
+      "endingRepair": [],
+      "sceneAfter": "vn-input-1",
+      "trust": 17,
+      "chemistry": 11,
+      "replayElapsedMs": 2766,
+      "openingCalls": [
+        {
+          "origin": "live local opening-only generation",
+          "ms": 2715,
+          "promptTokens": 216,
+          "completionTokens": 28
+        }
+      ],
+      "originalDraftHash": "c854beff853601f5276d27d24024eafb46e44e26c26d28a34df6cb4cc84577ea"
+    },
+    {
+      "turn": 4,
+      "opening": {
+        "speaker": "",
+        "text": "You tell Dilek Şahin that no extra credit is needed, that you like her company, and that you would enjoy seeing her again when she is not working."
+      },
+      "displayedOpening": "You tell Dilek Şahin that no extra credit is needed, that you like her company, and that you would enjoy seeing her again when she is not working.",
+      "openingRepair": [
+        {
+          "check": "player-opening",
+          "message": "Missing first visible second-person player narration",
+          "targeted": true,
+          "resolved": true
+        }
+      ],
+      "endingRepair": [
+        {
+          "check": "scene-ending",
+          "reconciled": true,
+          "message": "Narrated NPC departure closes the encounter through the engine."
+        }
+      ],
+      "sceneAfter": null,
+      "trust": 17,
+      "chemistry": 13,
+      "replayElapsedMs": 2081,
+      "openingCalls": [
+        {
+          "origin": "live local opening-only generation",
+          "ms": 2021,
+          "promptTokens": 215,
+          "completionTokens": 40
+        }
+      ],
+      "originalDraftHash": "d46ba95c4d7513de89010613d833dcef50d10124f554c501d7b9e21598eed4ac"
+    }
+  ],
+  "newLiveOpeningCalls": 2,
+  "newLiveSceneCalls": 0,
+  "recordedNPCDraftsReused": 4,
+  "allOpeningRepairsResolved": true,
+  "serverStopped": true,
+  "sourceChangedDuringRun": false,
+  "sameInputThirdRepair": {
+    "oldPromptTokens": 316,
+    "newPromptTokens": 216,
+    "oldMs": 2411,
+    "newMs": 2715,
+    "note": "Uncontrolled observed samples; fewer prompt tokens, no claim of faster generation."
+  },
+  "firstScenePromptEstimate": {
+    "old": 2084,
+    "current": 2210,
+    "note": "Framework estimator on assembled prompts; current NPC draft replay was not submitted for new generation."
+  }
+}

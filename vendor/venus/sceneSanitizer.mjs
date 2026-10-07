@@ -7,6 +7,7 @@ import {parseAction,showAction} from './sceneActions.mjs';
 import {splitSentences,unquoteLine} from './sceneText.mjs';
 
 export function splitOverflow(line,maximum=260){
+ if(['playerSpeech','playerAction'].includes(line.type))return [line];
  if(line.text.length<=maximum)return [line];
  const sentences=splitSentences(line.text);if(sentences.length<2)return [line];
  const chunks=[];for(const sentence of sentences){const grown=chunks.length?`${chunks.at(-1)} ${sentence}`:sentence;if(chunks.length&&grown.length<=maximum)chunks[chunks.length-1]=grown;else chunks.push(sentence);}
@@ -22,7 +23,7 @@ export function sanitizeSceneResponse(raw,pack,state,cast,remote=[]){
   if(typeof entry.speaker==='string'&&entry.speaker&&!allowed.has(entry.speaker))continue;
   const text=unquoteLine(entry.text.trim());if(!text||text.length>1000)continue;
   let speaker=typeof entry.speaker==='string'&&allowed.has(entry.speaker)?entry.speaker:'';
-  const line={speaker,text},background=entry.background??entry.bg;
+  const line={speaker,text,...(entry.type?{type:entry.type}:{}),...(entry.source!==undefined?{source:entry.source}:{}),...(entry.pending!==undefined?{pending:entry.pending}:{})},background=entry.background??entry.bg;
   if(typeof background==='string'&&backgrounds.has(background))line.background=background;
   const stage=[];
   if(speaker&&!far.has(speaker)&&!visible.has(speaker)&&!seen.has(speaker)&&visible.size<4){visible.add(speaker);seen.add(speaker);stage.push(showAction('show',speaker));}

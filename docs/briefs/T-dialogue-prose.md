@@ -1,0 +1,8 @@
+# Focused ordinary dialogue/prose repair
+
+Owner-approved delegation 2026-10-06. Scope: vendor/venus/scenePrompt.mjs; packages/ai/{conversation,beats,character-context,context,service,providers,prompt-sections,context-budget,knowledge,narration-lint,untrusted-output}.mjs; packages/modules/director.mjs; scripts/prompt-ab.mjs; server.mjs; docs/briefs/T-secrets-knowledge.boundary-inventory.md; relevant focused tests, packages/testing/{character-lab,prompt-ab-runner}.mjs; isolated fixture helpers and temporary logs. Trace callers with rg and read only directly relevant caller/configuration code. Never read data/ai-settings.json. Preserve concurrent changes. No full suite, commits, push or real campaign writes.
+
+Acceptance: one consistent ordinary prose policy without entry minima, compulsory recap/gesture/move rotation; voice and per-NPC cues reach requests; authored checkpoints and authority preserved; focused regression tests; actual isolated local-model multi-turn chat if reachable, with readable transcript, raw outputs, prompts and settings/timings. Report blockers honestly.
+
+Owner follow-up authorizes replacing truly obsolete legacy assertions with the new ordinary contract, fixing genuine regressions, and delivering full verbatim transcript directly. No further real-model trials or broad tuning.
+Final evidence follow-up supersedes the earlier no-more-trials/config-read restriction: owner explicitly authorizes a safe read of existing configuration and exactly one seven-turn non-explicit demonstration on the configured local endpoint/model, with no substitution, prose changes or full suite. Settings remain read-only and credentials must not be output. Preserve old and current logs separately.

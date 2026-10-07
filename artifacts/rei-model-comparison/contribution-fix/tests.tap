@@ -1,0 +1,48 @@
+✔ saved DeepSeek indirect paraphrases normalize metadata without rewriting or contribution repair (23.4514ms)
+✔ source-owned paraphrase permits small staging and a sole addressee pronoun at a later position (0.75ms)
+✔ paraphrase allowance never authorizes decisions, spending, transfers, consent or close physical contact (0.8693ms)
+✔ exact quotes, negation, coverage and ordered after-response contributions remain enforced (1.1169ms)
+✔ offline service accepts saved prose without turning incidental biscuit staging into state (31.4129ms)
+✔ older saved response with an unowned leading action is still rejected (1.9524ms)
+✔ direct speech ownership survives quotes, filters, sanitizer and shared display at a later position (37.7405ms)
+✔ chosen tease and admission interweave beyond first sentence without extra player speech (9.9888ms)
+✔ mixed chosen physical action and spoken refusal preserve order and negative meaning (4.2808ms)
+✔ conditional action pauses after refusal instead of performing touch or inventing a decision (4.5932ms)
+✔ source attribution rejects invented, duplicate, omitted and reordered contributions (0.4182ms)
+✔ player quotation cannot be assigned to sole NPC; legacy indirect contributions survive anywhere (0.9927ms)
+✔ all chosen contributions survive stock and repeat filters and keep metadata after sanitation (0.2955ms)
+✔ bounded contribution repair inserts between body entries and leaves NPC text unchanged (0.8563ms)
+✔ invalid contribution repair cannot invent source or bypass agency (0.4722ms)
+✔ ordinary assembly specifies ordered ownership without a first-line contract (0.3586ms)
+✔ player quotation about an exit is not an NPC departure (0.2829ms)
+✔ explicit after-response instruction cannot collapse all chosen contributions into one recap (0.4123ms)
+✔ checkpoint and closing writers preserve typed contribution without changing checkpoint authority (0.7045ms)
+✔ full explicit speech wrapper is a safe source only for its exact quoted contents (2.9544ms)
+✔ explicit player quote with a You-say wrapper normalizes ownership without a repair or invented words (5.4945ms)
+✔ player invitations require submitted ownership; NPC offer, agreement, refusal and reported speech are not player invites (2.1336ms)
+✔ recorded biscuits response cannot award its NPC invitation, while unrelated player acts remain intact (0.5236ms)
+✔ pricing boundary rejects NPC-origin invite tags and their plan effects without altering valid invite scoring (10.3764ms)
+✔ service excludes a model-tagged NPC offer before pricing while retaining the submitted tease (24.4369ms)
+✔ original four inputs, direct speech, mixed action and refusal reach final service/display as faithful narrator openings (70.6888ms)
+✔ valid model opening needs no repair; a repeated requested opening survives every filter and display (1.449ms)
+✔ invalid targeted repair stops after one opening call without rewriting the NPC reply or bypassing agency (1.807ms)
+✔ negation, named referents and expressed gentle flirt cannot be silently discarded (0.4128ms)
+✔ ordinary prompt fixes the conflicting NPC-first example; authored, solo and checkpoint exceptions remain explicit (0.3571ms)
+✔ ordinary semantic repetition preserves negation, reciprocal quotation and connected answer clauses (0.6812ms)
+✔ affirmative NPC departure closes the encounter through the engine without inventing travel (4.7128ms)
+✔ model data cannot forge the identity marker or bypass untrusted state-syntax guarding (0.5529ms)
+✔ automatic closure ignores movement away from a desk (0.15ms)
+✔ automatic closure ignores hypothetical or conditional exit (0.1178ms)
+✔ automatic closure ignores temporary exit or return (0.1748ms)
+✔ a single NPC departure in a group never implies whole encounter closure (0.0755ms)
+✔ recorded unambiguous single-NPC door exit remains a positive match (0.0538ms)
+✔ ambiguous narration leaves engine scene active; explicit model end remains authoritative in a group (12.9614ms)
+✔ long player contribution and faithful opening use the existing entry bound, not an arbitrary 260-character cutoff (4.3217ms)
+ℹ tests 40
+ℹ suites 0
+ℹ pass 40
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 252.9815

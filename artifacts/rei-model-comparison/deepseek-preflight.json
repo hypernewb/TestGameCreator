@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-07T05:37:31.924Z",
+  "approval": "Sentinel_b09bc773893c81918b4b04253e4c9425; one call <= USD 0.10, no retries",
+  "publicAppConfig": {
+    "mode": "cloud",
+    "preset": "openrouter",
+    "model": "openrouter/free",
+    "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+    "keyPresent": true
+  },
+  "authFlow": "Existing Creator .env loader and CompatibleProvider transport; credentials never emitted or persisted by this task",
+  "creatorModel": "deepseek/deepseek-v4.1-flash",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+  "route": "fireworks",
+  "pricing": {
+    "prompt": "0.0000003",
+    "completion": "0.0000012",
+    "input_cache_read": "0.000000006",
+    "discount": 0
+  },
+  "messagesSha256": "e98c4ae985df4ab6de60d8a05daeb3034e1bc98c8beb00e23fb0c7c7be67d6b9",
+  "bodyBytes": 14981,
+  "inputTokenUpperBound": 65536,
+  "inputBoundBasis": "65536 tokens exceeds entire UTF-8 serialized source request plus 4096 overhead; byte-level tokenizer conservative bound, includes schema",
+  "outputTokenUpperBound": 1100,
+  "costUpperUsd": 0.0209808,
+  "requestDifferences": [
+    "Exact messages/schema/temp/output cap unchanged",
+    "Non-streaming transport for standalone capture rather than original streaming",
+    "Added provider only fireworks, no fallbacks, require_parameters and maximum unit pricing",
+    "Existing Creator connection used; newly selected app openrouter/free is untouched"
+  ]
+}

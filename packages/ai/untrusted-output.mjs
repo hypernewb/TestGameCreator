@@ -1,3 +1,6 @@
+import {ordinaryConversation,isQuestion} from './conversation.mjs';
+import {playerOpeningLine} from './player-opening.mjs';
+import {playerContributionLine} from './player-contribution.mjs';
 import {containsPrivateAuthoredFact} from './knowledge.mjs';
 // Model output is untrusted presentation text. The engine is the only writer of world state, so any
 // state-mutating syntax a model borrows from other front-ends (RisuAI/SillyTavern CBS variable macros,
@@ -12,6 +15,7 @@ export function stripStateSyntax(text){if(typeof text!=='string')return text;if(
 export function enforceSpeakers(lines,speakers,pack){
  const slate=new Set(speakers),voices=pack.actors.filter(a=>a.id!==pack.playerId).map(a=>({id:a.id,names:[a.name,a.name.split(' ')[0]].map(n=>n.toLowerCase())}));
  const out=[];for(const line of lines){
+  if(playerContributionLine(line)){out.push({...line,speaker:''});continue;}if(line.type==='narration'){out.push({...line,speaker:''});continue;}
   if(line.speaker){if(slate.has(line.speaker))out.push(unlabel(line,pack));continue;}
   const m=/^\s*\**([^:*\n]{1,40}?)\**\s*:\s*(\S[\s\S]*)$/u.exec(line.text),who=m&&voices.find(v=>v.names.includes(m[1].trim().toLowerCase()));
   if(!who){out.push(line);continue;}if(slate.has(who.id))out.push({...line,speaker:who.id,text:m[2].trim()});
@@ -37,9 +41,11 @@ const VERB='(?!(?:was|is|has|does)\\b)\\p{Ll}+s';
 const directions=(line,pack)=>{const name=pack.actors.find(a=>a.id===line.speaker)?.name.split(' ')[0]||'He',subject=new RegExp(`^(?:(?:Then|And|Now|Still|Finally|Slowly|Suddenly|Instead|After a (?:moment|beat|pause)|For a moment),?\\s+)?(?:(?:[Hh]e|[Ss]he|${escape(name)})\\s+${VERB}|(?:His|Her)\\s+\\p{Ll}+\\s+${VERB}|(?:His|Her|${escape(name)}'s)\\s+${BODY}\\s+\\p{Ll}+)\\b`,'u'),out=[];
  for(const t of line.text.split(/(?<=[.!?…])\s+/u)){const speaker=subject.test(t)&&!FIRST_PERSON.test(t)?'':line.speaker;if(out.length&&out.at(-1).speaker===speaker)out.at(-1).text+=' '+t;else out.push({speaker,text:t});}
  return out.map((p,i)=>i?p:{...line,...p});};
-export function splitRoleplay(lines,speakers,pack){
+const PLAYER_SPEECH=/\byou (?:say|ask|tell|reply|answer|whisper|shout|explain|admit|confess|tease|flirt|joke|compliment)\b/iu;
+export function splitRoleplay(lines,speakers,pack,context={}){
  const slate=pack.actors.filter(a=>speakers.includes(a.id)&&a.id!==pack.playerId),out=[];
- for(const line of lines){
+ for(const [i,line] of lines.entries()){
+  if(playerContributionLine(line)||line.type==='narration'||playerOpeningLine(line,context)||!line.speaker&&ordinaryConversation(context)&&PLAYER_SPEECH.test(line.text)){out.push(line);continue;}
   if(!/[*"“”]/u.test(line.text)){(line.speaker?directions(line,pack):[line]).forEach(p=>out.push(p));continue;}
   const parts=spans(line.text).map(p=>p.kind==='say'&&!spoken(p.text)?{kind:'bare',text:`"${p.text}"`}:p),quoted=parts.some(p=>p.kind==='say'),acted=parts.some(p=>p.kind==='act');
   const told=parts.filter(p=>p.kind!=='say').map(p=>p.text).join(' '),mentions=a=>new RegExp(`(?:^|[^\p{L}])${escape(a.name.split(' ')[0])}(?![\p{L}])`,'u').test(told),named=slate.find(mentions);
@@ -56,7 +62,8 @@ export function splitRoleplay(lines,speakers,pack){
 // One choke point for every model-written scene line (previews, JSON and plain answers) before sanitation.
 // A model that closes and reopens its JSON inside a string leaves `"} {"` at the end of the text.
 const JSON_TAIL=/["\s]*\}\s*,?\s*\{?\s*"?\s*$/u;
-export const guardSceneLines=(lines,speakers,pack,context={stagedCast:speakers})=>tidyLines(splitRoleplay(enforceSpeakers(splitLabels((lines||[]).filter(l=>l&&typeof l.text==='string').map(l=>({...l,text:stripStateSyntax(l.text).replace(JSON_TAIL,'')})).filter(l=>l.text.trim()&&!containsPrivateAuthoredFact(l.text,context,pack)),pack),speakers,pack),speakers,pack),pack);
+const ORPHAN_PLAYER_TAG=/^you (?:say|ask|reply|whisper|murmur|answer) (?:softly|quietly|gently|loudly|hesitantly)[.!]?$/iu;
+export const guardSceneLines=(lines,speakers,pack,context={stagedCast:speakers})=>tidyLines(splitRoleplay(enforceSpeakers(splitLabels((lines||[]).filter(l=>l&&typeof l.text==='string').map(l=>({...l,text:stripStateSyntax(l.text).replace(JSON_TAIL,'')})).filter(l=>l.text.trim()&&!containsPrivateAuthoredFact(l.text,context,pack)),pack),speakers,pack),speakers,pack,context).filter(l=>!ordinaryConversation(context)||!l.speaker||!ORPHAN_PLAYER_TAG.test(l.text.trim())),pack);
 // A label mid-narration ("She sets the cup down. Mina: Took you long enough.") starts that character's line.
 const labelNames=pack=>pack.actors.filter(a=>a.id!==pack.playerId).flatMap(a=>[a.name,a.name.split(' ')[0]]).filter(Boolean).map(escape).join('|');
 export function splitLabels(lines,pack){const names=labelNames(pack);if(!names)return lines;const at=new RegExp(`(?<=[.!?…”"])\\s+(?=\\**(?:${names})\\**\\s*:\\s*\\S)`,'u');
@@ -88,8 +95,8 @@ function freshLines(lines,earlier=[],input=''){
   if(kept.length&&!(whole[line.speaker]||[]).some(s=>alike(s,words(kept.join(' ')))))out.push({...line,text:kept.join(' ')});}
  return out;
 }
-export const onlyRepeats=(lines,earlier=[],input='')=>lines.some(l=>l.speaker)&&!freshLines(lines,earlier,input).some(l=>l.speaker);
-export function dropRepeats(lines,earlier=[],input=''){return onlyRepeats(lines,earlier,input)?lines:freshLines(lines,earlier,input);}
+export const onlyRepeats=(lines,earlier=[],input='',context={})=>{if(ordinaryConversation(context)){const plain=t=>t.trim().replace(/\s+/gu,' ').replaceAll('\u2019',"'").toLowerCase(),spoken=lines.filter(l=>l.speaker);if(/\b(?:quote|repeat)\b/iu.test(input))return false;return spoken.length>0&&spoken.every(l=>earlier.some(e=>e.speaker===l.speaker&&(!e.example||!isQuestion(input)&&!plain(input).includes(plain(e.text)))&&plain(e.text)===plain(l.text)));}return lines.some(l=>l.speaker)&&!freshLines(lines,earlier,input).some(l=>l.speaker);};
+export function dropRepeats(lines,earlier=[],input='',context={}){if(ordinaryConversation(context)){if(isQuestion(input)||/\b(?:repeat|quote|mean)\b/iu.test(input))return lines;const exact=t=>t.trim().replace(/\s+/gu,' ').toLowerCase(),samples=earlier.filter(e=>e.example),out=lines.flatMap(l=>{if(!l.speaker)return [l];const kept=l.text.split(/(?<=[.!?])\s+/u).filter(s=>!samples.some(e=>e.speaker===l.speaker&&exact(e.text)===exact(s)&&!exact(input).includes(exact(s))));return kept.length?[{...l,text:kept.join(' ')}]:[];});return out.some(l=>l.speaker)?out:lines;}return onlyRepeats(lines,earlier,input)?lines:freshLines(lines,earlier,input);}
 // Role-play fine-tunes escalate to kissing or groping on their own. Outside a pack with an intimacy module, a sentence
 // where someone kisses, gropes or grinds on the player is dropped unless the player's own action started it.
 const ADVANCE=/\b(?:kiss(?:es|ed|ing)?|grind(?:s|ing)?|grop(?:es?|ing)|straddl(?:es?|ing)|caress(?:es|ing)?|(?:lips|mouth)\s+(?:on|against|bites?|crush(?:es)?|finds?|meets?|claims?))\b|\b(?:grabs?|yank(?:s|ing)?|pull(?:s|ing)?|press(?:es|ing)?)\s+(?:you|your|herself|himself)\b(?:\s+\w+){0,4}\s+(?:into|against|close|closer)\b/iu;
@@ -101,9 +108,9 @@ const STOCK_SENTENCE=/^(?:(?:\p{Lu}\p{L}*[’']s|His|Her|Their)\s+)?(?:(?:a|an)\
 // avoid: the project's stock-phrase list; a narration sentence using one goes too, while anyone still speaks.
 // Narration that authors the player's feelings, thoughts or body ("your heart pounds"); the lint repairs it on strict models.
 export const PLAYER_INTERIOR=/\b(?:you (?:feel|realize|sense|think|wonder|hope|fear|want|need|remember|decide|resolve|brace yourself|steel yourself|can'?t quite place|find yourself)|your (?:heart|pulse) (?:pounds?|races?|quickens?)|(?:drawing|pulling|dragging|pulls?|draws?|drags?|lifts?) your (?:gaze|eyes|attention)|your (?:gaze|eyes) (?:being )?(?:drawn|pulled|dragged|drift(?:s|ing)?|travel(?:s|ling)?)|(?:anticipation|dread|excitement|nervous(?:ness| energy)?|relief|desire|longing) (?:courses?|washes?|floods?|surges?) (?:through|over) you|leaves? you feeling|(?:makes?|sends?) your (?:skin|spine|neck|ears|pulse) (?:prickl\w+|crawls?|tingl\w+|burn|ache)|your (?:skin|spine) (?:prickl\w+|crawls?|tingl\w+)|your (?:posture|stance|body language|breathing|breath) (?:\w+ ){0,2}(?:mirror\w*|match\w*|echo\w*|catch\w*|hitch\w*|quicken\w*|settle\w*|soften\w*|tense\w*|relax\w*|still\w*|deepen\w*|ease\w*|straighten\w*))\b/iu;
-export function dropStock(lines,avoid=[],{allowPlayerReactions=false}={}){
+export function dropStock(lines,avoid=[],{allowPlayerReactions=false,context={}}={}){
  const speaks=lines.some(l=>l.speaker&&l.text.trim()),out=[],flat=t=>t.toLowerCase().replace(/[’']/gu,"'"),bad=avoid.map(flat).filter(Boolean);
- for(const line of lines){if(line.speaker){out.push(line);continue;}
+ for(const [i,line] of lines.entries()){if(line.speaker||playerOpeningLine(line,context)){out.push(line);continue;}
   const kept=line.text.replace(STOCK_CLAUSE,'').split(/(?<=[.!?…])\s+/u).filter(t=>t&&(allowPlayerReactions||!PLAYER_INTERIOR.test(t))&&!(speaks&&(STOCK_SENTENCE.test(t)||bad.some(b=>flat(t).includes(b)))));
   if(kept.length)out.push({...line,text:kept.join(' ')});}
  return out.some(l=>l.speaker)||out.length?out:lines;

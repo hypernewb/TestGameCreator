@@ -1,0 +1,262 @@
+TAP version 13
+# Subtest: sceneTranscript skips score sub-turns between conversation turns
+ok 1 - sceneTranscript skips score sub-turns between conversation turns
+  ---
+  duration_ms: 1.1877
+  type: 'test'
+  ...
+# Subtest: score events never reach the model context as recent actions
+ok 2 - score events never reach the model context as recent actions
+  ---
+  duration_ms: 3.8711
+  type: 'test'
+  ...
+# Subtest: token estimate counts dense scripts per character and Latin text per four characters
+ok 3 - token estimate counts dense scripts per character and Latin text per four characters
+  ---
+  duration_ms: 0.1094
+  type: 'test'
+  ...
+# Subtest: calibration moves the ratio toward reported prompt tokens and stays bounded
+ok 4 - calibration moves the ratio toward reported prompt tokens and stays bounded
+  ---
+  duration_ms: 0.1496
+  type: 'test'
+  ...
+# Subtest: allocator reserves floors so a huge transcript cannot starve lore and recaps
+ok 5 - allocator reserves floors so a huge transcript cannot starve lore and recaps
+  ---
+  duration_ms: 0.4512
+  type: 'test'
+  ...
+# Subtest: allocator degrades before cutting and keeps a transcript tail contiguous
+ok 6 - allocator degrades before cutting and keeps a transcript tail contiguous
+  ---
+  duration_ms: 0.1775
+  type: 'test'
+  ...
+# Subtest: hard ceiling keeps off-screen color from absorbing leftover budget
+ok 7 - hard ceiling keeps off-screen color from absorbing leftover budget
+  ---
+  duration_ms: 0.0789
+  type: 'test'
+  ...
+# Subtest: a long chatty scene stays inside the model window, compacting old turns into engine digests
+ok 8 - a long chatty scene stays inside the model window, compacting old turns into engine digests
+  ---
+  duration_ms: 204.9515
+  type: 'test'
+  ...
+# Subtest: a tiny window shrinks cast profiles to names but never drops a cast member
+ok 9 - a tiny window shrinks cast profiles to names but never drops a cast member
+  ---
+  duration_ms: 0.7347
+  type: 'test'
+  ...
+# Subtest: turn digests come from committed events, not model prose
+ok 10 - turn digests come from committed events, not model prose
+  ---
+  duration_ms: 0.1291
+  type: 'test'
+  ...
+# Subtest: provider calibrates its token ratio from reported usage
+ok 11 - provider calibrates its token ratio from reported usage
+  ---
+  duration_ms: 0.8896
+  type: 'test'
+  ...
+# Subtest: context window detection reads llama.cpp, LM Studio, Ollama and /v1/models metadata
+ok 12 - context window detection reads llama.cpp, LM Studio, Ollama and /v1/models metadata
+  ---
+  duration_ms: 0.6789
+  type: 'test'
+  ...
+# Subtest: reply reserve shrinks to what the model actually writes once replies have been seen
+ok 13 - reply reserve shrinks to what the model actually writes once replies have been seen
+  ---
+  duration_ms: 0.0924
+  type: 'test'
+  ...
+# Subtest: provider re-detects the window after a reply loads a just-in-time model
+ok 14 - provider re-detects the window after a reply loads a just-in-time model
+  ---
+  duration_ms: 0.2605
+  type: 'test'
+  ...
+# Subtest: provider asks reasoning models not to think, and drops the parameter where a server rejects it
+ok 15 - provider asks reasoning models not to think, and drops the parameter where a server rejects it
+  ---
+  duration_ms: 0.218
+  type: 'test'
+  ...
+# Subtest: BM25 ranks specific words above common ones and splits CJK into bigrams
+ok 16 - BM25 ranks specific words above common ones and splits CJK into bigrams
+  ---
+  duration_ms: 0.4802
+  type: 'test'
+  ...
+# Subtest: lore the player describes without its tag words is still selected, below tagged lore
+ok 17 - lore the player describes without its tag words is still selected, below tagged lore
+  ---
+  duration_ms: 0.7494
+  type: 'test'
+  ...
+# Subtest: closed-scene recaps roll up by day this week and by week before that
+ok 18 - closed-scene recaps roll up by day this week and by week before that
+  ---
+  duration_ms: 0.7048
+  type: 'test'
+  ...
+# Subtest: context size presets cap the window without exceeding what the model reports
+ok 19 - context size presets cap the window without exceeding what the model reports
+  ---
+  duration_ms: 0.2721
+  type: 'test'
+  ...
+# Subtest: context size API switches the active provider and reports the window in use
+ok 20 - context size API switches the active provider and reports the window in use
+  ---
+  duration_ms: 89.6682
+  type: 'test'
+  ...
+# Subtest: wideContext preserves character lines that mention a cast member
+ok 21 - wideContext preserves character lines that mention a cast member
+  ---
+  duration_ms: 0.9025
+  type: 'test'
+  ...
+# Subtest: wideContext tail window is 1500 chars instead of 700
+ok 22 - wideContext tail window is 1500 chars instead of 700
+  ---
+  duration_ms: 0.5116
+  type: 'test'
+  ...
+# Subtest: recap digests do not widen private event visibility to everyone in its source scene
+ok 23 - recap digests do not widen private event visibility to everyone in its source scene
+  ---
+  duration_ms: 0.3845
+  type: 'test'
+  ...
+# Subtest: mixed-speaker shared prompts exclude private truth before and after recipient-only reveal; explicit common reveal permits it
+ok 24 - mixed-speaker shared prompts exclude private truth before and after recipient-only reveal; explicit common reveal permits it
+  ---
+  duration_ms: 13.4275
+  type: 'test'
+  ...
+# Subtest: owner context repurposed as a mixed cast keeps knowledge provenance and cannot leak private facts
+ok 25 - owner context repurposed as a mixed cast keeps knowledge provenance and cannot leak private facts
+  ---
+  duration_ms: 1.2558
+  type: 'test'
+  ...
+# Subtest: output guard and normalization block explicit private truth for uninformed speakers and narrator until common reveal
+ok 26 - output guard and normalization block explicit private truth for uninformed speakers and narrator until common reveal
+  ---
+  duration_ms: 4.3102
+  type: 'test'
+  ...
+# Subtest: real narration service filters prompt, preview, final text, summary and generated claims without provider calls
+ok 27 - real narration service filters prompt, preview, final text, summary and generated claims without provider calls
+  ---
+  duration_ms: 9.8852
+  type: 'test'
+  ...
+# Subtest: inspector recognizes runtime ownership and actor-visible superseding facts while excluded truth stays out of prompts
+ok 28 - inspector recognizes runtime ownership and actor-visible superseding facts while excluded truth stays out of prompts
+  ---
+  duration_ms: 1.7203
+  type: 'test'
+  ...
+# Subtest: partial context turns retain committed cast privacy without requiring a command
+ok 29 - partial context turns retain committed cast privacy without requiring a command
+  ---
+  duration_ms: 0.5195
+  type: 'test'
+  ...
+# Subtest: model-written variable macros and MVU patches are stripped, never interpreted
+ok 30 - model-written variable macros and MVU patches are stripped, never interpreted
+  ---
+  duration_ms: 0.9284
+  type: 'test'
+  ...
+# Subtest: scene plan exposes an authoritative speaker slate matching the committed cast
+ok 31 - scene plan exposes an authoritative speaker slate matching the committed cast
+  ---
+  duration_ms: 4.8036
+  type: 'test'
+  ...
+# Subtest: lines off the speaker slate are dropped and "Name:" narration is reattributed or removed
+ok 32 - lines off the speaker slate are dropped and "Name:" narration is reattributed or removed
+  ---
+  duration_ms: 2.2139
+  type: 'test'
+  ...
+# Subtest: daypart narration and invitations are stripped of state syntax before validation
+ok 33 - daypart narration and invitations are stripped of state syntax before validation
+  ---
+  duration_ms: 0.3141
+  type: 'test'
+  ...
+# Subtest: scene narration rejects environmental cues from the wrong daypart without blocking future plans in dialogue
+ok 34 - scene narration rejects environmental cues from the wrong daypart without blocking future plans in dialogue
+  ---
+  duration_ms: 4.6143
+  type: 'test'
+  ...
+# Subtest: scene narration leaves the playerΓÇÖs inner life to the player
+ok 35 - scene narration leaves the playerΓÇÖs inner life to the player
+  ---
+  duration_ms: 1.5061
+  type: 'test'
+  ...
+# Subtest: typed input becomes the spoken line itself, not narration about speaking
+ok 36 - typed input becomes the spoken line itself, not narration about speaking
+  ---
+  duration_ms: 0.2664
+  type: 'test'
+  ...
+# Subtest: ordinary gestures do not trigger forced replacement; authored gesture checks remain
+ok 37 - ordinary gestures do not trigger forced replacement; authored gesture checks remain
+  ---
+  duration_ms: 0.5265
+  type: 'test'
+  ...
+# Subtest: touch stays out of reach until the crush stage, but the player still owns their own hands
+ok 38 - touch stays out of reach until the crush stage, but the player still owns their own hands
+  ---
+  duration_ms: 2.1117
+  type: 'test'
+  ...
+# Subtest: a group scene never shows or stores an off-slate voice or model state syntax, in preview or final
+ok 39 - a group scene never shows or stores an off-slate voice or model state syntax, in preview or final
+  ---
+  duration_ms: 14.2755
+  type: 'test'
+  ...
+# Subtest: a player-named day, the playerΓÇÖs own words and a character repeating herself are not style failures
+ok 40 - a player-named day, the playerΓÇÖs own words and a character repeating herself are not style failures
+  ---
+  duration_ms: 0.8457
+  type: 'test'
+  ...
+# Subtest: a character sheetΓÇÖs never-says list reaches both writers, and a group scene asks for distinct voices
+ok 41 - a character sheetΓÇÖs never-says list reaches both writers, and a group scene asks for distinct voices
+  ---
+  duration_ms: 3.2641
+  type: 'test'
+  ...
+# Subtest: neverSays is validated as a short list
+ok 42 - neverSays is validated as a short list
+  ---
+  duration_ms: 2.3937
+  type: 'test'
+  ...
+1..42
+# tests 42
+# suites 0
+# pass 42
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 466.0397

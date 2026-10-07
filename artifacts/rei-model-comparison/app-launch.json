@@ -1,0 +1,7 @@
+{
+  "pid": 2492,
+  "launch": "node server.mjs",
+  "cwd": "C:\\Users\\ckx19\\story-framework",
+  "oneShotEnabled": true,
+  "stoppedProcesses": 0
+}

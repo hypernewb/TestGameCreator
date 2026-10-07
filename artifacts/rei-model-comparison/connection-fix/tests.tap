@@ -1,0 +1,21 @@
+✔ player invitations require submitted ownership; NPC offer, agreement, refusal and reported speech are not player invites (2.386ms)
+✔ recorded biscuits response cannot award its NPC invitation, while unrelated player acts remain intact (0.44ms)
+✔ pricing boundary rejects NPC-origin invite tags and their plan effects without altering valid invite scoring (8.4234ms)
+✔ service excludes a model-tagged NPC offer before pricing while retaining the submitted tease (18.7365ms)
+✔ comparison disabled by default and requires loopback same origin and fixed confirmation (1.7465ms)
+✔ fixed request uses live auth, temporary model, exact schema, bounded pricing and no fallback; second call blocked (2.6833ms)
+✔ tampered source, wrong auth endpoint or over-budget metadata never reaches completion (0.739ms)
+✔ failure consumes one shot without retries or exposing provider errors (0.8005ms)
+✔ safe provider diagnostics preserve recovery guidance and distinguish HTTP/body errors without secrets (1.7525ms)
+✔ concurrent invocation and explicit disable cannot dispatch additional requests (0.4866ms)
+✔ HTTP route defaults off, rejects foreign origins and arbitrary payloads, and disables before dispatch (135.3551ms)
+✔ canonical Rei ordinary cues and varied voice references agree after assembly; scores and other cast stay unchanged (37.0235ms)
+✔ modified comparison explicitly records different context and provenance without editing historical prompt or weakening agency (0.809ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 285.2082

@@ -1,0 +1,268 @@
+TAP version 13
+# Subtest: role-play narration with *actions* and quoted speech is split into narration and the NPC line
+ok 1 - role-play narration with *actions* and quoted speech is split into narration and the NPC line
+  ---
+  duration_ms: 4.2856
+  type: 'test'
+  ...
+# Subtest: unmarked stage directions filed under a speaker become narration
+ok 2 - unmarked stage directions filed under a speaker become narration
+  ---
+  duration_ms: 1.5475
+  type: 'test'
+  ...
+# Subtest: role-play splitting leaves signs, plain narration and unattributable speech alone
+ok 3 - role-play splitting leaves signs, plain narration and unattributable speech alone
+  ---
+  duration_ms: 0.1855
+  type: 'test'
+  ...
+# Subtest: the scene prompt carries a character rule, voiceBlock and example lines, and a speaker-ID example
+ok 4 - the scene prompt carries a character rule, voiceBlock and example lines, and a speaker-ID example
+  ---
+  duration_ms: 3.895
+  type: 'test'
+  ...
+# Subtest: the current turn is not recalled as a memory beside its own player action
+ok 5 - the current turn is not recalled as a memory beside its own player action
+  ---
+  duration_ms: 1.4629
+  type: 'test'
+  ...
+# Subtest: character example lines survive a card export and import
+ok 6 - character example lines survive a card export and import
+  ---
+  duration_ms: 0.7773
+  type: 'test'
+  ...
+# Subtest: mentioning an absent character mid-conversation is news for the present cast; calling out to them is not
+ok 7 - mentioning an absent character mid-conversation is news for the present cast; calling out to them is not
+  ---
+  duration_ms: 32.2283
+  type: 'test'
+  ...
+# Subtest: an NPC receives authored voice samples in the final prompt and exact sample recitation is still dropped
+ok 8 - an NPC receives authored voice samples in the final prompt and exact sample recitation is still dropped
+  ---
+  duration_ms: 2.5109
+  type: 'test'
+  ...
+# Subtest: an NPC does not repeat a sentence they already said this scene
+ok 9 - an NPC does not repeat a sentence they already said this scene
+  ---
+  duration_ms: 1.3984
+  type: 'test'
+  ...
+# Subtest: ordinary direction answers meaning with canonical grounding and memory while profiles carry authored voice
+ok 10 - ordinary direction answers meaning with canonical grounding and memory while profiles carry authored voice
+  ---
+  duration_ms: 2.4506
+  type: 'test'
+  ...
+# Subtest: an NPC does not hand the player their own words back
+ok 11 - an NPC does not hand the player their own words back
+  ---
+  duration_ms: 0.2238
+  type: 'test'
+  ...
+# Subtest: a body-part subject filed under a speaker is narration whatever its verb
+ok 12 - a body-part subject filed under a speaker is narration whatever its verb
+  ---
+  duration_ms: 0.1106
+  type: 'test'
+  ...
+# Subtest: an NPC does not kiss or grope the player unless the player started it, and the prompt says so outside intimacy packs
+ok 13 - an NPC does not kiss or grope the player unless the player started it, and the prompt says so outside intimacy packs
+  ---
+  duration_ms: 0.3974
+  type: 'test'
+  ...
+# Subtest: a question about an NPC is answered from the authored line it touches
+ok 14 - a question about an NPC is answered from the authored line it touches
+  ---
+  duration_ms: 0.2662
+  type: 'test'
+  ...
+# Subtest: a speech line never ends on a dangling comma, and a pronoun dialogue tag is dropped rather than renamed
+ok 15 - a speech line never ends on a dangling comma, and a pronoun dialogue tag is dropped rather than renamed
+  ---
+  duration_ms: 0.1149
+  type: 'test'
+  ...
+# Subtest: apologies preserve who apologized and miss questions do not invent irrelevant favorite grounding
+ok 16 - apologies preserve who apologized and miss questions do not invent irrelevant favorite grounding
+  ---
+  duration_ms: 0.346
+  type: 'test'
+  ...
+# Subtest: ordinary groups keep named targeting without mandatory alternate-turn interjections
+ok 17 - ordinary groups keep named targeting without mandatory alternate-turn interjections
+  ---
+  duration_ms: 0.9403
+  type: 'test'
+  ...
+# Subtest: a cast member without authored pronouns is given they/them rather than left for the model to guess
+ok 18 - a cast member without authored pronouns is given they/them rather than left for the model to guess
+  ---
+  duration_ms: 0.73
+  type: 'test'
+  ...
+# Subtest: an opening where the cast never speaks is repaired once, then shown as it is
+ok 19 - an opening where the cast never speaks is repaired once, then shown as it is
+  ---
+  duration_ms: 5.2785
+  type: 'test'
+  ...
+# Subtest: a reply that only repeats what was said is repaired once, and whole short lines count as repeats
+ok 20 - a reply that only repeats what was said is repaired once, and whole short lines count as repeats
+  ---
+  duration_ms: 3.5881
+  type: 'test'
+  ...
+# Subtest: stock RP reactions are trimmed from narration, concrete actions and speech are kept
+ok 21 - stock RP reactions are trimmed from narration, concrete actions and speech are kept
+  ---
+  duration_ms: 2.2929
+  type: 'test'
+  ...
+# Subtest: per-NPC relationship stages preserve boundaries without stock temperament or romance moves
+ok 22 - per-NPC relationship stages preserve boundaries without stock temperament or romance moves
+  ---
+  duration_ms: 0.95
+  type: 'test'
+  ...
+# Subtest: past disclosures and promises remain available without forced opening callbacks or invented fulfillment
+ok 23 - past disclosures and promises remain available without forced opening callbacks or invented fulfillment
+  ---
+  duration_ms: 0.7663
+  type: 'test'
+  ...
+# Subtest: authored mood cues remain available without invented ordinary daily moods
+ok 24 - authored mood cues remain available without invented ordinary daily moods
+  ---
+  duration_ms: 1.24
+  type: 'test'
+  ...
+# Subtest: ordinary filler and substantive input preserve author topics without compulsory topic switches
+ok 25 - ordinary filler and substantive input preserve author topics without compulsory topic switches
+  ---
+  duration_ms: 1.5852
+  type: 'test'
+  ...
+# Subtest: original four inputs, direct speech, mixed action and refusal reach final service/display as faithful narrator openings
+ok 26 - original four inputs, direct speech, mixed action and refusal reach final service/display as faithful narrator openings
+  ---
+  duration_ms: 49.7956
+  type: 'test'
+  ...
+# Subtest: valid model opening needs no repair; a repeated requested opening survives every filter and display
+ok 27 - valid model opening needs no repair; a repeated requested opening survives every filter and display
+  ---
+  duration_ms: 0.653
+  type: 'test'
+  ...
+# Subtest: invalid targeted repair stops after one opening call without rewriting the NPC reply or bypassing agency
+ok 28 - invalid targeted repair stops after one opening call without rewriting the NPC reply or bypassing agency
+  ---
+  duration_ms: 1.0325
+  type: 'test'
+  ...
+# Subtest: negation, named referents and expressed gentle flirt cannot be silently discarded
+ok 29 - negation, named referents and expressed gentle flirt cannot be silently discarded
+  ---
+  duration_ms: 0.2984
+  type: 'test'
+  ...
+# Subtest: ordinary prompt fixes the conflicting NPC-first example; authored, solo and checkpoint exceptions remain explicit
+ok 30 - ordinary prompt fixes the conflicting NPC-first example; authored, solo and checkpoint exceptions remain explicit
+  ---
+  duration_ms: 0.2966
+  type: 'test'
+  ...
+# Subtest: ordinary semantic repetition preserves negation, reciprocal quotation and connected answer clauses
+ok 31 - ordinary semantic repetition preserves negation, reciprocal quotation and connected answer clauses
+  ---
+  duration_ms: 0.4529
+  type: 'test'
+  ...
+# Subtest: affirmative NPC departure closes the encounter through the engine without inventing travel
+ok 32 - affirmative NPC departure closes the encounter through the engine without inventing travel
+  ---
+  duration_ms: 2.7715
+  type: 'test'
+  ...
+# Subtest: model-written variable macros and MVU patches are stripped, never interpreted
+ok 33 - model-written variable macros and MVU patches are stripped, never interpreted
+  ---
+  duration_ms: 0.9972
+  type: 'test'
+  ...
+# Subtest: scene plan exposes an authoritative speaker slate matching the committed cast
+ok 34 - scene plan exposes an authoritative speaker slate matching the committed cast
+  ---
+  duration_ms: 5.2099
+  type: 'test'
+  ...
+# Subtest: lines off the speaker slate are dropped and "Name:" narration is reattributed or removed
+ok 35 - lines off the speaker slate are dropped and "Name:" narration is reattributed or removed
+  ---
+  duration_ms: 2.1126
+  type: 'test'
+  ...
+# Subtest: daypart narration and invitations are stripped of state syntax before validation
+ok 36 - daypart narration and invitations are stripped of state syntax before validation
+  ---
+  duration_ms: 0.3045
+  type: 'test'
+  ...
+# Subtest: scene narration rejects environmental cues from the wrong daypart without blocking future plans in dialogue
+ok 37 - scene narration rejects environmental cues from the wrong daypart without blocking future plans in dialogue
+  ---
+  duration_ms: 4.3155
+  type: 'test'
+  ...
+# Subtest: scene narration leaves the playerΓÇÖs inner life to the player
+ok 38 - scene narration leaves the playerΓÇÖs inner life to the player
+  ---
+  duration_ms: 1.5193
+  type: 'test'
+  ...
+# Subtest: typed input becomes the spoken line itself, not narration about speaking
+ok 39 - typed input becomes the spoken line itself, not narration about speaking
+  ---
+  duration_ms: 0.2657
+  type: 'test'
+  ...
+# Subtest: ordinary gestures do not trigger forced replacement; authored gesture checks remain
+ok 40 - ordinary gestures do not trigger forced replacement; authored gesture checks remain
+  ---
+  duration_ms: 0.9492
+  type: 'test'
+  ...
+# Subtest: touch stays out of reach until the crush stage, but the player still owns their own hands
+ok 41 - touch stays out of reach until the crush stage, but the player still owns their own hands
+  ---
+  duration_ms: 2.1382
+  type: 'test'
+  ...
+# Subtest: a group scene never shows or stores an off-slate voice or model state syntax, in preview or final
+ok 42 - a group scene never shows or stores an off-slate voice or model state syntax, in preview or final
+  ---
+  duration_ms: 14.7004
+  type: 'test'
+  ...
+# Subtest: a player-named day, the playerΓÇÖs own words and a character repeating herself are not style failures
+ok 43 - a player-named day, the playerΓÇÖs own words and a character repeating herself are not style failures
+  ---
+  duration_ms: 0.8239
+  type: 'test'
+  ...
+1..43
+# tests 43
+# suites 0
+# pass 43
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 177.525

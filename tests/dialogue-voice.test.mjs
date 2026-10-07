@@ -10,6 +10,7 @@ import {registry} from '../packages/modules/index.mjs';
 import {Store} from '../packages/persistence/store.mjs';
 import {GameService} from '../packages/ai/service.mjs';
 import {CompatibleProvider} from '../packages/ai/providers.mjs';
+import {relationshipStageOf} from '../packages/ai/character-context.mjs';
 import {beatDirection,topicSeeds,groundFor} from '../packages/ai/beats.mjs';
 const pack=()=>JSON.parse(readFileSync(new URL('../packs/neutral.json',import.meta.url)));
 const cast={playerId:'you',actors:[{id:'you',name:'You'},{id:'rowan',name:'Rowan Hale'},{id:'mina',name:'Mina'}]};
@@ -46,7 +47,7 @@ test('the scene prompt carries a character rule, voiceBlock and example lines, a
  const p=pack(),ada=p.actors.find(a=>a.id==='ada');Object.assign(ada,{fingerprint:'Sharp and concise.',examples:['Hand me the spanner. No, the other one.']});
  const [system,user]=scenePromptMessages({stagedCast:['ada'],sceneHistory:[],playerAction:'Hi',location:p.locations[0]},p);
  assert.match(system.content,/CHARACTERS: Each NPC speaks from their own cast profile/);
- assert.match(system.content,/never invent news, letters, secrets/);
+ assert.match(system.content,/never invent news, letters, secrets/i);
  assert.match(system.content,/\{"speaker":"ada","text":"<Ada's exact words>"\}/);
  assert.match(user.content,/Sharp and concise/);assert.match(user.content,/No, the other one/);
  const {context}=budgetSceneContext({stagedCast:['ada'],sceneHistory:[],memories:[],playerAction:'Hi'},p,{turns:{}},'now',{window:32768,reply:500,render:c=>scenePromptMessages(c,p)});
@@ -79,12 +80,12 @@ test('mentioning an absent character mid-conversation is news for the present ca
  }finally{store.close();}
 });
 
-test('an NPC is directed toward their authored voice, and a sample recited word for word is dropped',async()=>{
- const p=pack();delete p.modules['world.schedule'];p.actors.find(a=>a.id==='ada').examples=['I need it finished, not perfect.'];const directions=[];
- const provider={name:'probe',async interpretScene(){return {location:'hub',characters:['ada'],activity:'talk'};},async generateScene(context){directions.push(context.direction);return {lines:[{speaker:'ada',text:'I need it finished, not perfect. Coffee first.'}]};},async generateLedger(){return [];}};
+test('an NPC receives authored voice samples in the final prompt and exact sample recitation is still dropped',async()=>{
+ const p=pack();delete p.modules['world.schedule'];p.actors.find(a=>a.id==='ada').examples=['I need it finished, not perfect.'];const contexts=[];
+ const provider={name:'probe',async interpretScene(){return {location:'hub',characters:['ada'],activity:'talk'};},async generateScene(context){contexts.push(context);return {lines:[{speaker:'ada',text:'I need it finished, not perfect. Coffee first.'}]};},async generateLedger(){return [];}};
  const store=new Store();store.insert(createWorld(p,registry,'voice'));const service=new GameService(store,{[p.id]:p},registry,provider);
  try{const r=await service.act('voice',{id:'open',expectedRevision:0,command:{type:'core.scene',args:{text:'Sit with Ada.',location:'hub',characters:['ada'],activity:'talk'}}});
-  assert.match(directions[0],/Sound like "I need it finished, not perfect\." \(the voice, not those words\)\.$/);
+  assert.match(scenePromptMessages(contexts[0],p)[1].content,/Sounds like: I need it finished, not perfect/);assert.doesNotMatch(contexts[0].direction,/Sound like/);
   assert.deepEqual(r.state.turns.open.sceneLines.filter(l=>l.speaker).map(l=>l.text),['Coffee first.']);
  }finally{store.close();}
 });
@@ -102,41 +103,23 @@ test('an NPC does not repeat a sentence they already said this scene',()=>{
  assert.deepEqual(dropRepeats([{speaker:'rowan',text:"Two years. I know this sucks, especially right now. But... maybe it's what we both need?"}],[{speaker:'rowan',text:"I know this sucks, especially right now. But... maybe it's what we both need?"}]),[{speaker:'rowan',text:'Two years.'}]);
 });
 
-test('the engine directs each NPC beat from the authored profile, deterministically',()=>{
+test('ordinary direction answers meaning with canonical grounding and memory while profiles carry authored voice',()=>{
  const p=JSON.parse(readFileSync(new URL('../packs/crossed-plans.json',import.meta.url))),mina=p.actors.find(a=>a.id==='mina');
- const at=(input,history=[],phase='continuation',cast=['mina'])=>beatDirection({stagedCast:cast,scenePhase:phase,playerAction:input,sceneHistory:history},p,'s1');
- assert.doesNotMatch(at('Go see Rowan',[],'opening',['rowan']),/disagree|dodge/);assert.match(at('Go see Rowan',[],'opening',['rowan']),/^Rowan \(Plain speech, quick jokes, then sudden honesty\.\): start on what they want \(Tell the player face to face about the two-year fellowship abroad that starts next month\), then .+\. Keep it to one brief narration entry, then four or five entries mostly in the character’s own spoken voice\./);
- const asked=at('What made you start drawing, anyway?');
- assert.match(asked,/^Mina \(Short modern sentences with dry warmth\.\): answer the question directly from what is true \(Started drawing on the backs of bus transfers during a two-hour commute\), then /);assert.doesNotMatch(asked,/dodge/);
- assert.match(at('Honestly that sucks. I will miss you.'),/respond to how the player feels/);assert.match(at('Tell me something dumb you will miss.'),/answer the question directly/);assert.match(at('Nice frames.'),/four or five entries mostly in the character’s own spoken voice\. Plain talk, no speeches; don't echo the player\..*Sound like "[^"]+" \(the voice, not those words\)\.$/);assert.match(at('Nice frames.'),/Stay on what the player brought up.*need not end on a question/);assert.doesNotMatch(at('Nice frames.'),/Find fresh physical business|ask the player something back/);assert.match(at('Nice frames.'),/never reuse a gesture or mannerism/);
- // The voice sample is one of the authored lines and rotates with the scene; no examples, no sample.
- const voices=new Set(Array.from({length:4},(_,i)=>/Sound like "([^"]+)"/.exec(at('Nice frames.',Array(i).fill({input:'',text:''})))[1]));assert.deepEqual([...voices].sort(),[...mina.examples].sort());
- // A question about the player is a memory check: answered from what they said, and without a voice sample to copy.
- for(const q of ['Ask Mina what my favorite color is','Ask Mina where I grew up','Do you remember the storm?']){const d=at(q);assert.match(d,/: answer from what the player has told them \(if the player never said, admit not knowing\), then /,q);assert.doesNotMatch(d,/Sound like/,q);}
- assert.match(at('What made you start drawing, anyway?'),/Sound like/);
- // With memories in context, the one the question is about is named in the direction, as memory.mjs phrases it, turned to "you".
- const mem=[{text:'Mara told Mina: Mara’s favorite color is teal, and Mara grew up by the harbor',kind:'disclosure'},{text:"Mara told Mina about the storm that sank Mara’s father's boat",kind:'statement'},{text:'the player told Mina: the player is nervous about the gallery opening',kind:'disclosure'}],withMem=q=>beatDirection({stagedCast:['mina'],scenePhase:'continuation',playerAction:q,sceneHistory:[],memories:mem},p,'s1');
- assert.match(withMem('Ask Mina where I grew up'),/remind the player of what they told them: "you grew up by the harbor", then /);
- // A model-written impression sharing the asked word loses to what the player actually said.
- const imp=[{text:'Mara told Mina: Mara grew up by the harbor',kind:'disclosure'},{text:'Mina impression: Mara wonders where Mina grew up'}];
- assert.match(beatDirection({stagedCast:['mina'],scenePhase:'continuation',playerAction:'Ask Mina where I grew up',sceneHistory:[],memories:imp},p,'s1'),/"you grew up by the harbor"/);
- assert.match(withMem("Ask Mina what happened to my father's boat"),/"you told me about the storm that sank your father's boat"/);
- assert.match(withMem('Ask Mina what I was nervous about'),/"you are nervous about the gallery opening"/);
- // A question the player walked away from outranks the routine beat, and only for the character who asked it.
- assert.match(beatDirection({stagedCast:['mina'],scenePhase:'continuation',playerAction:'Back again.',sceneHistory:[],hangingAsk:{by:'Mina',text:'What are you doing after shift?'}},p,'s1'),/call back their own unanswered question \("What are you doing after shift\?"\)/);
- assert.doesNotMatch(at('Back again.'),/unanswered/);
- assert.match(withMem('Ask Mina what my middle name is'),/if the player never said, admit not knowing/);assert.doesNotMatch(withMem('Nice frames.'),/remind the player|harbor/);
- assert.doesNotMatch(beatDirection({stagedCast:['mina'],scenePhase:'continuation',playerAction:'Hi',sceneHistory:[]},{...p,actors:p.actors.map(a=>({...a,examples:[]}))},'s1'),/Sound like/);
- // Same turn, same beat; the next turn of the scene plays a different one.
- assert.equal(at('Nice frames.'),at('Nice frames.'));
- const beats=new Set(Array.from({length:4},(_,i)=>at('Nice frames.',Array(i).fill({input:'',text:''})).split(', then ')[1]));assert.ok(beats.size>=3,[...beats].join('\n'));
- // A multi-NPC scene directs whoever the player names.
- assert.match(at('Rowan, did you get in?',[],'continuation',['mina','rowan']),/^Rowan /);
- // Topics come only from what the author wrote, and not ones the scene already covered.
- assert.ok(topicSeeds(mina).some(t=>/felt-tip pens/.test(t)));assert.ok(!topicSeeds(mina,'Mina loves her cheap felt-tip pens').some(t=>/felt-tip/.test(t)));
- assert.equal(at('Bye',[],'closing'),'');assert.equal(at('Look around',[],'solo',[]),'');
- const user=scenePromptMessages({stagedCast:['mina'],sceneHistory:[],playerAction:'Hi',location:p.locations[0],direction:at('Hi')},p)[1].content;
- assert.match(user,/YOUR TURN\n.+\nDIRECTION: Mina \(/);
+ const context=(input,history=[],phase='continuation',cast=['mina'])=>({stagedCast:cast,scenePhase:phase,playerAction:input,sceneHistory:history}),at=(...args)=>beatDirection(context(...args),p,'s1');
+ const opening=context('Go see Rowan',[],'opening',['rowan']),prompt=scenePromptMessages({...opening,direction:at('Go see Rowan',[],'opening',['rowan'])},p).map(m=>m.content).join('\n');
+ assert.match(prompt,/Plain speech, quick jokes, then sudden honesty/);assert.match(prompt,/Tell the player face to face about the two-year fellowship abroad/);assert.doesNotMatch(at('Go see Rowan',[],'opening',['rowan']),/disagree|dodge|four or five entries/);
+ const asked=at('What made you start drawing, anyway?');assert.match(asked,/answer the actual question/);assert.match(asked,/Started drawing on the backs of bus transfers during a two-hour commute/);assert.doesNotMatch(asked,/dodge/);
+ assert.match(at('Honestly that sucks. I will miss you.'),/respond to how the player feels/);assert.match(at('Tell me something dumb you will miss.'),/answer the actual question/);assert.doesNotMatch(at('Nice frames.'),/four or five entries|Sound like|never reuse a gesture|ask the player something back/);
+ const voicePrompt=scenePromptMessages(context('Nice frames.'),p).map(m=>m.content).join('\n');assert.ok(voicePrompt.includes(mina.voice||mina.fingerprint));for(const e of mina.examples)assert.ok(voicePrompt.includes(e));assert.match(voicePrompt,/Stay with the current subject/);assert.match(voicePrompt,/question is optional/);
+ for(const q of ['Ask Mina what my favorite color is','Ask Mina where I grew up','Do you remember the storm?']){const d=at(q);assert.match(d,/answer from what the player has told you; if they never said, admit not knowing/,q);assert.doesNotMatch(d,/Sound like/);}
+ const mem=[{text:"Mara told Mina: Mara's favorite color is teal, and Mara grew up by the harbor",kind:'disclosure'},{text:"Mara told Mina about the storm that sank Mara's father's boat",kind:'statement'},{text:'the player told Mina: the player is nervous about the gallery opening',kind:'disclosure'}],withMem=q=>beatDirection({...context(q),memories:mem},p,'s1');
+ assert.match(withMem('Ask Mina where I grew up'),/you grew up by the harbor/);
+ const imp=[{text:'Mara told Mina: Mara grew up by the harbor',kind:'disclosure'},{text:'Mina impression: Mara wonders where Mina grew up'}];assert.match(beatDirection({...context('Ask Mina where I grew up'),memories:imp},p,'s1'),/you grew up by the harbor/);
+ assert.match(withMem("Ask Mina what happened to my father's boat"),/you told me about the storm that sank your father's boat/);assert.match(withMem('Ask Mina what I was nervous about'),/you are nervous about the gallery opening/);assert.match(withMem('Ask Mina what my middle name is'),/if they never said, admit not knowing/);assert.doesNotMatch(withMem('Nice frames.'),/remind the player|harbor/);
+ const hung={...context('Back again.'),hangingAsk:{by:'Mina',text:'What are you doing after shift?'},openThreads:[{text:'Mina asked: What are you doing after shift?'}]};assert.doesNotMatch(beatDirection(hung,p,'s1'),/call back their own unanswered question/);assert.match(scenePromptMessages(hung,p)[1].content,/What are you doing after shift/);
+ assert.equal(at('Nice frames.'),at('Nice frames.',Array(4).fill({input:'',text:''})));assert.match(at('Rowan, did you get in?',[],'continuation',['mina','rowan']),/^Rowan:/);
+ assert.ok(topicSeeds(mina).some(t=>/felt-tip pens/.test(t)));assert.ok(!topicSeeds(mina,'Mina loves her cheap felt-tip pens').some(t=>/felt-tip/.test(t)));assert.equal(at('Bye',[],'closing'),'');assert.equal(at('Look around',[],'solo',[]),'');
+ const user=scenePromptMessages({...context('Hi'),location:p.locations[0],direction:at('Hi')},p)[1].content;assert.match(user,/DIRECTION: Mina:/);assert.match(user,/PLAYER ACTION\nHi/);
 });
 
 test('an NPC does not hand the player their own words back',()=>{
@@ -176,19 +159,15 @@ test('a speech line never ends on a dangling comma, and a pronoun dialogue tag i
  assert.deepEqual(guard('"Try not to miss me too much," she teases lightly.',['mina']),[{speaker:'mina',text:'Try not to miss me too much.'}]);
 });
 
-test('apologies and "what will you miss" questions get their own lead',()=>{
+test('apologies preserve who apologized and miss questions do not invent irrelevant favorite grounding',()=>{
  const p=JSON.parse(readFileSync(new URL('../packs/crossed-plans.json',import.meta.url))),at=input=>beatDirection({stagedCast:['rowan'],scenePhase:'continuation',playerAction:input,sceneHistory:[]},p,'s1');
- assert.match(at('Sorry I am late, I was with Mina.'),/accept or needle the player's apology their own way \(the player is the one who is sorry, not Rowan\)/);
- assert.match(at('Tell me something dumb you will miss about this city.'),/answer the question directly from what is true \(they love terrible vending-machine coffee\)/);
+ assert.match(at('Sorry I am late, I was with Mina.'),/the player is the one who is sorry, not Rowan/);assert.match(at('Tell me something dumb you will miss about this city.'),/answer the actual question/);assert.doesNotMatch(at('Tell me something dumb you will miss about this city.'),/terrible vending-machine coffee/);assert.match(at('Will you miss the vending-machine coffee?'),/terrible vending-machine coffee/);
 });
 
-test('in a group scene another cast member cuts in on alternate turns, never on openings or memory checks',()=>{
+test('ordinary groups keep named targeting without mandatory alternate-turn interjections',()=>{
  const p=JSON.parse(readFileSync(new URL('../packs/crossed-plans.json',import.meta.url))),at=(input,n,phase='continuation')=>beatDirection({stagedCast:['mina','rowan'],scenePhase:phase,playerAction:input,sceneHistory:Array(n).fill({input:'',text:''})},p,'s1');
- const runs=Array.from({length:6},(_,n)=>at('Nice frames.',n));
- assert.equal(runs.filter(d=>/ Rowan cuts in once, briefly, to [^.]+\./.test(d)).length,3);assert.ok(runs.every(d=>/^Mina /.test(d)&&!/Mina cuts in/.test(d)));
- // Addressing Rowan by name makes him lead and Mina the one who cuts in.
- assert.ok(Array.from({length:4},(_,n)=>at('Rowan, nice frames.',n)).some(d=>/^Rowan .* Mina cuts in once/.test(d)));
- for(let n=0;n<4;n++){assert.doesNotMatch(at('Hi.',n,'opening'),/cuts in/);assert.doesNotMatch(at('Ask Mina what my favorite color is',n),/cuts in/);}
+ const runs=Array.from({length:6},(_,n)=>at('Nice frames.',n));assert.ok(runs.every(d=>/^Mina:/.test(d)&&!/cuts in/.test(d)));assert.equal(new Set(runs).size,1);
+ for(let n=0;n<4;n++){assert.match(at('Rowan, nice frames.',n),/^Rowan:/);assert.doesNotMatch(at('Rowan, nice frames.',n),/cuts in/);assert.doesNotMatch(at('Hi.',n,'opening'),/cuts in/);assert.doesNotMatch(at('Ask Mina what my favorite color is',n),/cuts in/);}
  assert.doesNotMatch(beatDirection({stagedCast:['rowan'],scenePhase:'continuation',playerAction:'Nice.',sceneHistory:[]},p,'s1'),/cuts in/);
 });
 
@@ -211,10 +190,10 @@ test('an opening where the cast never speaks is repaired once, then shown as it 
 test('a reply that only repeats what was said is repaired once, and whole short lines count as repeats',async()=>{
  const p=pack(),provider=new CompatibleProvider({endpoint:'http://localhost:1234/v1/chat/completions',model:'test'}),said=[{speaker:'ada',text:"It's fine. It's a wall."}];
  const c={stagedCast:['ada'],scenePhase:'continuation',sceneHistory:[],location:p.locations[0],playerAction:'How is it going?',spokenBefore:said};let calls=0,sent;
- provider.complete=async messages=>{sent=messages;return JSON.stringify({lines:[{speaker:'ada',text:++calls===1?"It's fine. It's a wall.":'Slow. Two people so far.'}]});};
- let r=await provider.generateScene(c,p);assert.equal(calls,2);assert.equal(r.lintTrace[0].check,'repeat');assert.match(sent.at(-1).content,/Ada already said that: reply to "How is it going\?" with something new/);assert.equal(r.lines[0].text,'Slow. Two people so far.');
- calls=0;provider.complete=async()=>(++calls,JSON.stringify({lines:[{speaker:'ada',text:"It's fine. It's a wall."}]}));
- r=await provider.generateScene(c,p);assert.equal(calls,2);assert.equal(r.lines[0].text,"It's fine. It's a wall.",'the second answer stands');
+ provider.complete=async messages=>{sent=messages;return JSON.stringify({lines:[{speaker:'',text:'You ask Ada how things are going.'},{speaker:'ada',text:++calls===1?"It's fine. It's a wall.":'Slow. Two people so far.'}]});};
+ let r=await provider.generateScene(c,p);assert.equal(calls,2);assert.equal(r.lintTrace[0].check,'repeat');assert.match(sent.at(-1).content,/Ada already said that: reply to "How is it going\?" with something new/);assert.equal(r.lines.find(l=>l.speaker==='ada').text,'Slow. Two people so far.');
+ calls=0;provider.complete=async()=>(++calls,JSON.stringify({lines:[{speaker:'',text:'You ask Ada how things are going.'},{speaker:'ada',text:"It's fine. It's a wall."}]}));
+ r=await provider.generateScene(c,p);assert.equal(calls,2);assert.equal(r.lines.find(l=>l.speaker==='ada').text,"It's fine. It's a wall.",'the second answer stands');
  // A whole short line is dropped once other speech remains; its sentences alone are too short to count.
  assert.deepEqual(dropRepeats([{speaker:'ada',text:"It's fine. It's a wall."},{speaker:'ada',text:'Coffee?'}],said),[{speaker:'ada',text:'Coffee?'}]);
 });
@@ -230,48 +209,29 @@ test('stock RP reactions are trimmed from narration, concrete actions and speech
  assert.deepEqual(run([['','Her expression softens.']]),[':Her expression softens.']);
 });
 
-test('how close an NPC is to the player sets their tone and which beats they will play',()=>{
- const p=JSON.parse(readFileSync(new URL('../packs/crossed-plans.json',import.meta.url)));
- const at=(extra,i=0)=>beatDirection({stagedCast:['mina'],scenePhase:'continuation',playerAction:'Nice frames.',sceneHistory:Array(i).fill({input:'',text:''}),...extra},p,'s1');
- const all=extra=>Array.from({length:12},(_,i)=>at(extra,i)).join('\n'),actor=t=>({actor:{id:'mina',relationshipToPlayer:t}});
- assert.match(at(actor(0)),/^Mina \(Short modern sentences with dry warmth\.; just met the player: polite but quick to spar — banter and teasing pushback welcome, confiding not\): /);assert.doesNotMatch(all(actor(0)),/admit one small/);assert.match(all(actor(0)),/tease the player/);
- // Met before (memories) is not a stranger; middling trust is an explicit "familiar" stage with a hard physical
- // boundary (9B role-play models default to provocative behavior), while spark and banter stay in play.
- assert.match(at({...actor(0),memories:[{text:'x'}]}),/^Mina \(Short modern sentences with dry warmth\.; knows the player a little: warming up, easy banter, not close yet\): /);assert.match(at(actor(20)),/knows the player a little: warming up, easy banter, not close yet\): /);assert.match(at(actor(20)),/hands-off, no leaning in/);assert.match(at(actor(20)),/banter and charged looks are fair game/);assert.doesNotMatch(all(actor(20)),/admit one small/);
- assert.match(at(actor(45)),/; knows the player well: relaxed\)/);assert.match(all(actor(45)),/admit one small, true thing/);assert.match(at(actor(80)),/; close to the player: warm, at ease\)/);
- assert.match(at({}),/^Mina \(Short modern sentences with dry warmth\.\): /);assert.match(at({actor:{id:'rowan',relationshipToPlayer:90}}),/^Mina \(Short modern sentences with dry warmth\.[^;)]*\): /);
- // A dating phase outranks trust: a crush flirts, a rejection never does.
- const dating=(phase,x={})=>({...actor(80),dating:[{character:'mina',phase,...x}]});
- assert.match(at(dating('crush')),/; has a crush on the player: a little flustered, tries to hide it\)/);assert.match(all(dating('crush')),/flirt a little/);
- assert.match(at(dating('dating')),/; is dating the player: affectionate/);assert.match(at(dating('crush',{strained:true})),/; something with the player is unresolved/);assert.doesNotMatch(all(dating('crush',{strained:true})),/flirt/);
- for(const ph of ['rejected','broken'])assert.doesNotMatch(all(dating(ph)),/flirt|admit one small/,ph);
- assert.match(at(dating('available')),/; close to the player/);
+test('per-NPC relationship stages preserve boundaries without stock temperament or romance moves',()=>{
+ const p=JSON.parse(readFileSync(new URL('../packs/crossed-plans.json',import.meta.url))),mina=p.actors.find(a=>a.id==='mina'),c=extra=>({stagedCast:['mina'],scenePhase:'continuation',playerAction:'Nice frames.',sceneHistory:[],...extra}),at=extra=>beatDirection(c(extra),p,'s1'),actor=t=>({actor:{id:'mina',relationshipToPlayer:t}}),stage=extra=>relationshipStageOf(c(extra),mina);
+ assert.equal(stage(actor(0)),'stranger');assert.match(at(actor(0)),/no touching or leaning in/);assert.doesNotMatch(at(actor(0)),/quick to spar|tease the player|admit one small/);
+ assert.equal(stage({...actor(0),memories:[{text:'Met Mina',knownBy:[p.playerId,'mina']}]}),'familiar');assert.equal(stage({...actor(0),memories:[{text:'Met Rowan',knownBy:[p.playerId,'rowan']}]}),'stranger');assert.equal(stage(actor(20)),'familiar');assert.match(at(actor(20)),/no touching or leaning in/);assert.doesNotMatch(at(actor(20)),/banter and charged looks/);
+ for(const [trust,expected] of [[45,'friend'],[80,'close']]){assert.equal(stage(actor(trust)),expected);assert.match(scenePromptMessages(c(actor(trust)),p)[1].content,new RegExp('Relationship with player: '+expected));assert.doesNotMatch(at(actor(trust)),/admit one small|knows the player well: relaxed/);}
+ assert.equal(stage({}),'');assert.equal(stage({actor:{id:'rowan',relationshipToPlayer:90}}),'');
+ const dating=(phase,x={})=>({...actor(80),dating:[{character:'mina',phase,...x}]});for(const phase of ['crush','dating','exclusive']){assert.equal(stage(dating(phase)),phase);assert.doesNotMatch(at(dating(phase)),/flirt a little/);}
+ assert.equal(stage(dating('crush',{strained:true})),'strained');assert.match(at(dating('crush',{strained:true})),/physical distance/);for(const ph of ['rejected','broken']){assert.equal(stage(dating(ph)),ph);assert.match(at(dating(ph)),/no romantic or physical escalation/);assert.doesNotMatch(at(dating(ph)),/flirt a little|admit one small/);}assert.equal(stage(dating('available')),'close');
 });
 
-test('opening a later scene, an NPC follows up on what the player told or promised them before',()=>{
- const p=JSON.parse(readFileSync(new URL('../packs/crossed-plans.json',import.meta.url)));
- const mem=[{source:'t0',text:'the player told Mina: the player’s name is Mara',kind:'disclosure'},{source:'t1',text:'Mara told Mina: Mara is nervous about the gallery opening',kind:'disclosure'},{source:'t2',text:'Mara promised Mina to bring coffee tomorrow',kind:'promise',promise:true},{source:'scene:x',text:'Mina and Mara argued'}];
- const at=(seed,phase='opening',memories=mem)=>beatDirection({stagedCast:['mina'],scenePhase:phase,playerAction:'Go see Mina',sceneHistory:[],memories},p,seed);
- const seeds='abcdefghijklmnop'.split(''),openings=seeds.map(s=>at(s));
- assert.ok(openings.some(d=>d.includes('follow up on something the player told them last time ("you are nervous about the gallery opening")')));
- assert.ok(openings.some(d=>d.includes('ask whether the player kept their word ("you promised me to bring coffee tomorrow")')));
- // Every other scene or so, not every one; never the name, never mid-scene, never without memories.
- assert.ok(openings.some(d=>!/follow up|kept their word/.test(d)));assert.ok(openings.every(d=>!/name is/.test(d)));
- assert.equal(at('b'),at('b'));assert.ok(seeds.every(s=>!/follow up|kept their word/.test(at(s,'continuation'))&&!/follow up|kept their word/.test(at(s,'opening',[]))));
+test('past disclosures and promises remain available without forced opening callbacks or invented fulfillment',()=>{
+ const p=JSON.parse(readFileSync(new URL('../packs/crossed-plans.json',import.meta.url))),mem=[{source:'t0',text:"the player told Mina: the player's name is Mara",kind:'disclosure'},{source:'t1',text:'Mara told Mina: Mara is nervous about the gallery opening',kind:'disclosure'},{source:'t2',text:'Mara promised Mina to bring coffee tomorrow',kind:'promise',promise:true},{source:'scene:x',text:'Mina and Mara argued'}];
+ const c={stagedCast:['mina'],scenePhase:'opening',playerAction:'Go see Mina',sceneHistory:[],memories:mem},seeds='abcdefghijklmnop'.split(''),directions=seeds.map(seed=>beatDirection(c,p,seed));assert.equal(new Set(directions).size,1);assert.ok(directions.every(d=>!/follow up|kept their word|name is/.test(d)));
+ const user=scenePromptMessages(c,p)[1].content;assert.match(user,/Mara is nervous about the gallery opening/);assert.match(user,/Mara promised Mina to bring coffee tomorrow/);assert.doesNotMatch(user,/Mara kept|coffee was brought/);const empty=scenePromptMessages({...c,memories:[]},p)[1].content;assert.doesNotMatch(empty,/Mara promised|gallery opening/);
 });
 
-test('an NPC has a mood some days, the same all day, and authored moods replace the defaults',()=>{
- const p=JSON.parse(readFileSync(new URL('../packs/crossed-plans.json',import.meta.url)));
- const head=(day,x={},pack=p)=>/^Mina \(([^)]*)\)/.exec(beatDirection({stagedCast:['mina'],scenePhase:'continuation',playerAction:'Nice frames.',sceneHistory:[],day,...x},pack,'s'))[1];
- const days=Array.from({length:30},(_,i)=>head(i+1)),moody=days.filter(t=>/today$/.test(t));
- assert.ok(moody.length>=5&&moody.length<=20,`${moody.length}`);assert.equal(head(3),head(3));assert.ok(new Set(moody).size>=2);
- assert.ok(Array.from({length:30},(_,i)=>head(i+1,{scriptedScene:{id:'x'}})).every(t=>!/today$/.test(t)));assert.doesNotMatch(head(undefined),/today/);
- const authored={...p,actors:p.actors.map(a=>a.id==='mina'?{...a,moods:['humming under her breath']}:a)};
- assert.ok(Array.from({length:30},(_,i)=>head(i+1,{},authored)).filter(t=>/humming under her breath$/.test(t)).length===moody.length);
+test('authored mood cues remain available without invented ordinary daily moods',()=>{
+ const p=JSON.parse(readFileSync(new URL('../packs/crossed-plans.json',import.meta.url))),c={stagedCast:['mina'],scenePhase:'continuation',playerAction:'Nice frames.',sceneHistory:[],day:3},authored={...p,actors:p.actors.map(a=>a.id==='mina'?{...a,moods:['humming under her breath']}:a)};
+ for(let day=1;day<=30;day++)assert.doesNotMatch(beatDirection({...c,day},p,'s'),/good mood today|tired today|quieter than usual today|restless today|chattier than usual today/);
+ for(const source of [c,budgetSceneContext(c,authored,{turns:{}},'now',{window:8192,reply:512,render:x=>scenePromptMessages(x,authored)}).context])assert.match(scenePromptMessages(source,authored)[1].content,/Authored mood cues \(when appropriate\): humming under her breath/);assert.doesNotMatch(scenePromptMessages(c,p)[1].content,/Authored mood cues/);assert.equal(beatDirection(c,authored,'a'),beatDirection(c,authored,'b'));
 });
-test('mid-scene a sheet topic only comes up when the player gave nothing to follow',()=>{
- const p=JSON.parse(readFileSync(new URL('../packs/crossed-plans.json',import.meta.url))),at=(input,seed)=>beatDirection({stagedCast:['mina'],scenePhase:'continuation',playerAction:input,sceneHistory:[]},p,seed);
- const seeds=Array.from({length:40},(_,i)=>`t${i}`);
- assert.ok(seeds.some(s=>/then bring up /.test(at('Go on.',s))),'filler input can drift to a topic');
- assert.ok(!seeds.some(s=>/then bring up /.test(at('I spent the whole summer fixing my uncle\'s boat',s))),'a real subject is never swapped for a sheet topic');
+test('ordinary filler and substantive input preserve author topics without compulsory topic switches',()=>{
+ const p=JSON.parse(readFileSync(new URL('../packs/crossed-plans.json',import.meta.url))),c=input=>({stagedCast:['mina'],scenePhase:'continuation',playerAction:input,sceneHistory:[]});
+ for(const input of ['Go on.',"I spent the whole summer fixing my uncle's boat"])for(let n=0;n<40;n++)assert.doesNotMatch(beatDirection(c(input),p,'t'+n),/bring up /);
+ const user=scenePromptMessages(c("I spent the whole summer fixing my uncle's boat"),p)[1].content;assert.match(user,/fixing my uncle's boat/);assert.match(user,/felt-tip pens/);
 });

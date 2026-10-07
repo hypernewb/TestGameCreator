@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-07T06:16:13.883Z",
+  "requestValidation": "pass",
+  "newCompletionStatus": "blocked_http_429",
+  "newRawScene": null,
+  "newDisplayedScene": null,
+  "newAttributionValidation": "not available: no new model output",
+  "oldReplyRegression": {
+    "source": "corrected-response.json from previous paid run, never treated as new generation",
+    "removedNpcInviteTags": [
+      {
+        "kind": "invite",
+        "target": "saturday-evening@cinema",
+        "size": "medium",
+        "landed": true
+      }
+    ],
+    "retainedPlayerActs": [
+      {
+        "kind": "tease",
+        "target": "biscuits",
+        "size": "small",
+        "landed": true
+      },
+      {
+        "kind": "listen",
+        "target": "coffee",
+        "size": "small",
+        "landed": true
+      }
+    ],
+    "playerOwnershipStillFails": "Player opening adds an unsubmitted leading action"
+  },
+  "limits": [
+    "Invite recognition is conservative lexical evidence, not a semantic proof; unsupported phrasing/languages may be rejected",
+    "Typed/owned submitted contributions checked at interpretation; source-backed generated turns checked again at pricing",
+    "Legacy explicit engine price commands with no recorded source turn retain authored behavior; no generic score rebalance",
+    "Later authored kiss/night and ending content remains unchanged; only ordinary talk/date checkpoints reconciled"
+  ],
+  "appSelectedModel": "openrouter/free",
+  "newRequestCostUpperUsd": 0.0209808,
+  "cumulativeConservativeCostUpperUsd": 0.043869000000000005,
+  "reportedUsage": null,
+  "reportedCost": null
+}

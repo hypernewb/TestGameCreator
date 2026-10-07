@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-07T05:50:21.273Z",
+  "appRunning": true,
+  "model": "openrouter/free",
+  "preset": "openrouter",
+  "keyPresent": true,
+  "route": {
+    "enabled": false,
+    "spent": true
+  },
+  "settingsChanged": false
+}

@@ -2,7 +2,8 @@
 // continuation YOUR TURN), snapshot 79301df55bc39a0996229ccc6f12ccce422a80b2. AGPL-3.0-only; see LICENSE.
 // Same context and output schema as scenePromptMessages, but prose blocks and a persona instead of a rules list and a
 // state dump. Used by scripts/prompt-ab.mjs to compare the two shapes; the SFW persona (no sex direction) is used.
-import {soFarBlocks,calendarLine,awayLine,avoidLine,STAY_RULE,ECHO_RULE,PROP_RULE,CONTRAST_RULE,neverLine,INITIATIVE_HEAD} from './scenePrompt.mjs';
+import {scenePromptMessages,soFarBlocks,calendarLine,awayLine,avoidLine,STAY_RULE,ECHO_RULE,PROP_RULE,CONTRAST_RULE,neverLine,INITIATIVE_HEAD} from './scenePrompt.mjs';
+import {ordinaryConversation} from '../../packages/ai/conversation.mjs';
 const ordinal=n=>n+(['th','st','nd','rd'][n%100>10&&n%100<14?0:n%10]||'th');
 const list=a=>(a||[]).filter(Boolean).join(', ');
 export const VENUS_PERSONA=[
@@ -20,6 +21,7 @@ export const VENUS_PERSONA=[
 ].join('\n');
 const profileLine=a=>[`${a.name} (${a.id}, ${a.pronouns||'they/them'}): ${a.description||''}`,a.traits?.length&&`Personality: ${list(a.traits)}.${a.personality?' '+a.personality:''}`,a.voice&&`Voice: ${a.voice}`,a.style&&`Style: ${a.style}`,a.goal&&`Wants: ${a.goal}`,a.backstory&&`Backstory: ${a.backstory}`,a.likes?.length&&`Likes: ${list(a.likes)}.`,a.dislikes?.length&&`Dislikes: ${list(a.dislikes)}.`,a.examples?.length&&`Sounds like: ${a.examples.map(e=>typeof e==='string'?e:e.text).join(' / ')}`,neverLine(a)].filter(Boolean).join(' ');
 export function venusStyleMessages(context,pack){
+ if(ordinaryConversation(context))return scenePromptMessages({...context,sceneWriter:'venus'},pack);
  const cast=context.stagedCast||[],phase=context.scenePhase||'opening',speakers=context.speakers||cast;
  const profiles=context.castProfiles||pack.actors.filter(a=>cast.includes(a.id));
  const reader=pack.actors.find(a=>a.id===pack.playerId),action=context.playerAction||'';

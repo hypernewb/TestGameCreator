@@ -1,0 +1,13 @@
+{
+  "status": "failed",
+  "date": "2026-10-07T05:37:31.958Z",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+  "httpStatus": 401,
+  "calls": 1,
+  "latencyMs": 29,
+  "error": "Model request failed (401): {\"error\":{\"message\":\"Missing Authentication header\",\"code\":401}}",
+  "costUpperUsd": 0.0209808,
+  "settingsChanged": false,
+  "campaignMutated": false
+}

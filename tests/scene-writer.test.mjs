@@ -22,14 +22,17 @@ test('scene writer is fixed at creation and survives storage and export',()=>{
 test('Venus-inspired prompt keeps the shared contract and requests a full scene turn',()=>{
  const context={sceneWriter:'venus',stagedCast:['ada'],scenePhase:'continuation',sceneBudget:{budget:3,inputs:2,focus:'ada'},sceneHistory:[],playerAction:'How was your day?'};
  const [system,user]=scenePromptMessages(context,pack);
- assert.match(system.content,/VENUS SCENE STRUCTURE/);
- assert.match(system.content,/6–9 visual-novel entries/);
- assert.match(system.content,/at least four entries NPC dialogue/);
- assert.match(system.content,/End on something she does, says or wants; a question at most one reply in three/);
+ assert.match(system.content,/at most 12 entries, with no minimum or fixed balance/);
+ assert.doesNotMatch(system.content,/VENUS SCENE STRUCTURE|6[-\u2013]9 visual-novel entries|at least four entries NPC dialogue/);
+ const authored=scenePromptMessages({...context,scriptedScene:{id:'authored'}},pack)[0].content;
+ assert.match(authored,/VENUS SCENE STRUCTURE/);
+ assert.match(authored,/6[-\u2013]9 visual-novel entries/);
+ assert.match(authored,/at least four entries NPC dialogue/);
+ assert.match(authored,/End on something she does, says or wants; a question at most one reply in three/);
  assert.match(system.content,/OUTPUT CONTRACT: Return one JSON object/);
- assert.match(user.content,/Respond directly to the latest player words or action/);
+ assert.match(user.content,/Preserve the submitted words and actions across ordered scene beats/);
  assert.doesNotMatch(system.content,/Then 2–5 short entries/);
- const [original]=scenePromptMessages({...context,sceneWriter:'framework'},pack);
+ const [original]=scenePromptMessages({...context,sceneWriter:'framework',scriptedScene:{id:'authored'}},pack);
  assert.doesNotMatch(original.content,/VENUS SCENE STRUCTURE/);
  assert.match(original.content,/5–7 visual-novel entries/);
  assert.match(original.content,/pursue the beat direction/);

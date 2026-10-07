@@ -1,0 +1,251 @@
+{
+  "date": "2026-10-07T04:51:53.132Z",
+  "status": "partial",
+  "source": "artifacts/interwoven-cast/live/chat.json",
+  "sourceCallIndex": 3,
+  "sourceTransportIndex": 4,
+  "sourceTurn": 2,
+  "playerInput": "I tease Rei that even the biscuits probably need her approval, then after her response I admit that I stayed for her company rather than the coffee.",
+  "sourceFileSha256": "8de83697c90113334955c6e1b56b181cba0a9a3a374bfdbdb5eb741c6e2503d5",
+  "messagesJsonSha256": "e98c4ae985df4ab6de60d8a05daeb3034e1bc98c8beb00e23fb0c7c7be67d6b9",
+  "requestJsonSha256": "767397fa6693d6e59ee4ede7cf451d2a16c7f211a253e61f6e6dfcc2ab94de5d",
+  "requestFileSha256": "0a0f31db91518bfb470851021b588a07761b155b4e787782646a5202fa0022f4",
+  "baseline": {
+    "model": "qwen/qwen3.8-27b",
+    "endpoint": "http://127.0.0.1:1234/v1/chat/completions",
+    "temperature": 0.5,
+    "maxTokens": 1100,
+    "reasoningEffort": "none",
+    "stream": true,
+    "schema": "visual_novel_scene",
+    "latencyMs": 49359,
+    "wholeTurnMs": 55408,
+    "repairCalls": 1
+  },
+  "privacy": {
+    "credentialsIncluded": false,
+    "localPersonalIdentifiersIncluded": false,
+    "unrelatedCampaignRecordsIncluded": false,
+    "fictionalAttendanceAndSchemaRetained": true,
+    "redactions": []
+  },
+  "connectionCheck": {
+    "activeAppMode": "local",
+    "activeAppModel": "qwen/qwen3.8-27b",
+    "activeAppKeyPresent": false,
+    "existingEnvironmentFlow": "process.loadEnvFile(.env), identical loader to server.mjs; only presence booleans and validated model ID emitted",
+    "openrouterKeyPresent": true,
+    "openrouterModel": "deepseek/deepseek-v4.1-flash",
+    "geminiEnvironmentKeyPresent": false,
+    "deepseekEnvironmentKeyPresent": false,
+    "forbiddenSettingsFileAccessed": false,
+    "latestPublicAppConfig": {
+      "mode": "cloud",
+      "preset": "openrouter",
+      "model": "openrouter/free",
+      "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+      "keyPresent": true
+    }
+  },
+  "attempts": [
+    {
+      "provider": "OpenRouter",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+      "status": "completed_corrected_live_auth",
+      "generationCalls": 0,
+      "latencyMs": 6784,
+      "rawReply": null,
+      "pricingUsdPerMillionTokens": {
+        "input": 0.3,
+        "output": 1.2,
+        "cachedInput": 0.006
+      },
+      "freeBasis": "Paid call now explicitly approved up to USD 0.10; no free-tier claim",
+      "samplingDifferences": [
+        "Exact prompt/schema/temp 0.5/max_tokens 1100/reasoning none preserved",
+        "Nonstreaming rather than source streaming",
+        "Fixed Fireworks route, no fallback, required parameter support, price ceilings"
+      ],
+      "source": "https://openrouter.ai/api/v1/models",
+      "httpStatus": 401,
+      "completionHttpAttempts": 1,
+      "error": "Model request failed (401): {\"error\":{\"message\":\"Missing Authentication header\",\"code\":401}}",
+      "paidApproval": "Sentinel_b09bc773893c81918b4b04253e4c9425; one call <= USD 0.10, no retries",
+      "costUpperUsd": 0.0209808,
+      "pricing": {
+        "prompt": "0.0000003",
+        "completion": "0.0000012",
+        "input_cache_read": "0.000000006",
+        "discount": 0
+      },
+      "route": "fireworks",
+      "correctedHttpStatus": 200,
+      "correctedGenerationCalls": 1,
+      "rawReplyFile": "deepseek-live-raw.txt",
+      "displayFile": "deepseek-live-display.txt",
+      "returnedModel": "deepseek/deepseek-v4.1-flash",
+      "actualProvider": "Fireworks",
+      "usage": {
+        "prompt_tokens": 3442,
+        "completion_tokens": 729,
+        "total_tokens": 4171,
+        "cost": 0.0019074,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0019074,
+          "upstream_inference_prompt_cost": 0.0010326,
+          "upstream_inference_completions_cost": 0.0008748
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "combinedCostUpperUsd": 0.0419616,
+      "correctedApproval": "Sentinel_209cd6af4fd8819191201926da9f2842",
+      "ownershipError": "Player opening adds an unsubmitted leading action",
+      "normalizationError": null
+    },
+    {
+      "provider": "Google Gemini Developer API",
+      "model": null,
+      "presetModel": "gemini-2.5-flash",
+      "endpoint": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+      "status": "blocked_no_verified_saved_connection",
+      "generationCalls": 0,
+      "latencyMs": null,
+      "rawReply": null,
+      "freeBasis": "Google lists Standard gemini-2.5-flash free-tier input/output, but no saved authenticated Gemini connection or project billing tier was verified. Preset is not saved configuration.",
+      "samplingDifferences": "Not submitted; no schema/reasoning compatibility assumption made",
+      "sources": [
+        "https://ai.google.dev/gemini-api/docs/pricing",
+        "https://ai.google.dev/gemini-api/docs/billing"
+      ]
+    }
+  ],
+  "generationCalls": 2,
+  "chargesIncurred": null,
+  "settingsChanged": false,
+  "campaignMutated": false,
+  "server4317Changed": false,
+  "latestUpdate": "2026-10-07T06:48:10.841Z",
+  "completionHttpAttempts": 4,
+  "reportedCost": 0.0019074,
+  "costNote": "Corrected call reported cost only; prior rejected attempt has no reported cost; combined prior worst-case plus corrected reported cost is USD 0.0228882",
+  "restart": {
+    "pid": 2492,
+    "launch": "node server.mjs",
+    "cwd": "C:\\Users\\ckx19\\story-framework",
+    "oneShotEnabled": true,
+    "stoppedProcesses": 0,
+    "status": "running",
+    "routeDisabled": true
+  },
+  "focusedFix": {
+    "approval": "Sentinel_b1dcdeb00dbc819190ec44f20d83dcd2",
+    "status": "fixes_tested_new_context_generation_blocked_429",
+    "messagesSha256": "3d31b496050c1f001c22730a6c42805aa44ac53ea42f6db4dbe54386fdcfebb4",
+    "requestSha256": "289cbcdf786624a7cfeb2fa493bbe618154a3d530a7e10a2951d17dac7f40b92",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "provider": "https://openrouter.ai/api/v1/chat/completions",
+    "route": "fireworks",
+    "latencyMs": 906,
+    "completionRequests": 1,
+    "reportedUsage": null,
+    "reportedCost": null,
+    "requestCostUpperUsd": 0.0209808,
+    "cumulativeCostUpperUsd": 0.043869000000000005,
+    "routeDisabled": true,
+    "tests": {
+      "acceptance": {
+        "pass": 46,
+        "fail": 0
+      },
+      "expandedVoice": {
+        "pass": 90,
+        "fail": 5
+      }
+    },
+    "rawReply": null,
+    "display": null,
+    "priorReplyRegression": {
+      "source": "corrected-response.json from previous paid run, never treated as new generation",
+      "removedNpcInviteTags": [
+        {
+          "kind": "invite",
+          "target": "saturday-evening@cinema",
+          "size": "medium",
+          "landed": true
+        }
+      ],
+      "retainedPlayerActs": [
+        {
+          "kind": "tease",
+          "target": "biscuits",
+          "size": "small",
+          "landed": true
+        },
+        {
+          "kind": "listen",
+          "target": "coffee",
+          "size": "small",
+          "landed": true
+        }
+      ],
+      "playerOwnershipStillFails": "Player opening adds an unsubmitted leading action"
+    }
+  },
+  "connectionFix": {
+    "approval": "Sentinel_9d6f7dc20540819182e857be3e64c6ea",
+    "status": "connection_verified_scene_not_accepted",
+    "priorCause": "Upstream 429; precise cause unrecoverable because prior diagnostic body was discarded",
+    "fix": "Safe error/recovery diagnostics plus HTTP-200 error detection; no routing/auth settings change",
+    "httpStatus": 200,
+    "model": "deepseek/deepseek-v4.1-flash",
+    "provider": "Fireworks",
+    "latencyMs": 5147,
+    "completionRequests": 1,
+    "usage": {
+      "prompt_tokens": 3113,
+      "completion_tokens": 691,
+      "total_tokens": 3804,
+      "cost": 0.0017631,
+      "is_byok": false,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "cache_write_tokens": 0,
+        "audio_tokens": 0,
+        "video_tokens": 0
+      },
+      "cost_details": {
+        "upstream_inference_cost": 0.0017631,
+        "upstream_inference_prompt_cost": 0.0009339,
+        "upstream_inference_completions_cost": 0.0008292
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "image_tokens": 0,
+        "audio_tokens": 0
+      }
+    },
+    "reportedCostUsd": 0.0017631,
+    "costUpperUsd": 0.0209808,
+    "routeDisabled": true,
+    "savedModel": "openrouter/free",
+    "tests": {
+      "pass": 13,
+      "fail": 0
+    },
+    "raw": "connection-fix/raw.txt",
+    "display": "connection-fix/display.txt",
+    "ownershipError": "Player speech must use the submitted spoken words exactly"
+  }
+}

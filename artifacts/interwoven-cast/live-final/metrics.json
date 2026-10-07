@@ -1,0 +1,226 @@
+{
+  "fresh": true,
+  "recordedNPCDrafts": 0,
+  "model": "qwen/qwen3.8-27b",
+  "endpoint": "http://127.0.0.1:1234/v1/chat/completions",
+  "temperature": 0.5,
+  "maxTokens": 1800,
+  "contextSize": "default",
+  "applicationContextWindow": 8192,
+  "rows": [
+    {
+      "scene": "rei",
+      "turn": 4,
+      "input": "I flirt with Rei, telling her I would enjoy a relaxed film evening with her, with no pressure to decide tonight.",
+      "ms": 48559,
+      "error": null,
+      "playerEntries": [
+        {
+          "index": 0,
+          "speaker": "",
+          "text": "You flirt with Rei, telling her you would enjoy a relaxed film evening with her, with no pressure to decide tonight.",
+          "type": "playerAction",
+          "source": "I flirt with Rei, telling her I would enjoy a relaxed film evening with her, with no pressure to decide tonight.",
+          "pending": false
+        }
+      ],
+      "repairTrace": [
+        {
+          "check": "player-contribution",
+          "message": "Player opening adds an unsubmitted leading action",
+          "targeted": true,
+          "resolved": true
+        },
+        {
+          "attempt": 0,
+          "check": "echo",
+          "message": "Echoed 8+ words of the player: \"would enjoy a relaxed film evening with her\"",
+          "warned": true
+        }
+      ],
+      "sceneAfter": "rei-input-1",
+      "trustBefore": 19,
+      "trustAfter": 19,
+      "chemistryBefore": 21,
+      "chemistryAfter": 21,
+      "phase": "crush",
+      "agreement": "uncommitted",
+      "calls": [
+        {
+          "format": "visual_novel_scene",
+          "ms": 40698,
+          "usage": {
+            "prompt_tokens": 3780,
+            "completion_tokens": 593,
+            "total_tokens": 4373,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "raw": true,
+          "error": null
+        },
+        {
+          "format": "player_contributions",
+          "ms": 7719,
+          "usage": {
+            "prompt_tokens": 432,
+            "completion_tokens": 70,
+            "total_tokens": 502,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "raw": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "scene": "mika",
+      "turn": 1,
+      "input": "I compliment Mika's recipe notebook and ask what she likes to bake on a quiet evening.",
+      "ms": 38228,
+      "error": null,
+      "playerEntries": [
+        {
+          "index": 0,
+          "speaker": "",
+          "text": "You compliment Mika's recipe notebook and ask what she likes to bake on a quiet evening.",
+          "type": "playerAction",
+          "source": "I compliment Mika's recipe notebook and ask what she likes to bake on a quiet evening.",
+          "pending": false
+        }
+      ],
+      "repairTrace": [
+        {
+          "check": "player-contribution",
+          "message": "Player opening adds an unsubmitted leading action",
+          "targeted": true,
+          "resolved": true
+        },
+        {
+          "attempt": 0,
+          "check": "echo",
+          "message": "Echoed 8+ words of the player: \"compliment mika's recipe notebook and ask what she\"",
+          "warned": true
+        }
+      ],
+      "sceneAfter": "mika-input-1",
+      "trustBefore": 25,
+      "trustAfter": 27,
+      "chemistryBefore": 10,
+      "chemistryAfter": 12,
+      "phase": "available",
+      "agreement": "uncommitted",
+      "calls": [
+        {
+          "format": "scene_intent",
+          "ms": 3921,
+          "usage": {
+            "prompt_tokens": 867,
+            "completion_tokens": 78,
+            "total_tokens": 945,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "raw": true,
+          "error": null
+        },
+        {
+          "format": "visual_novel_scene",
+          "ms": 28736,
+          "usage": {
+            "prompt_tokens": 2343,
+            "completion_tokens": 249,
+            "total_tokens": 2592,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "raw": true,
+          "error": null
+        },
+        {
+          "format": "player_contributions",
+          "ms": 5511,
+          "usage": {
+            "prompt_tokens": 467,
+            "completion_tokens": 58,
+            "total_tokens": 525,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "raw": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "scene": "mika",
+      "turn": 2,
+      "input": "I say, \"A cake that tastes good counts as a success to me.\"",
+      "ms": 28181,
+      "error": "API refusal: model_reply",
+      "playerEntries": [],
+      "repairTrace": [
+        {
+          "check": "player-contribution",
+          "message": "Player opening adds an unsubmitted leading action",
+          "targeted": true,
+          "resolved": false,
+          "repairFailure": "Player speech must use the submitted spoken words exactly"
+        }
+      ],
+      "sceneAfter": "mika-input-1",
+      "trustBefore": 27,
+      "trustAfter": 27,
+      "chemistryBefore": 12,
+      "chemistryAfter": 12,
+      "phase": "available",
+      "agreement": "uncommitted",
+      "calls": [
+        {
+          "format": "visual_novel_scene",
+          "ms": 23139,
+          "usage": {
+            "prompt_tokens": 2472,
+            "completion_tokens": 256,
+            "total_tokens": 2728,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "raw": true,
+          "error": null
+        },
+        {
+          "format": "player_contributions",
+          "ms": 4980,
+          "usage": {
+            "prompt_tokens": 388,
+            "completion_tokens": 51,
+            "total_tokens": 439,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "raw": true,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "modelCalls": 7,
+  "transportCalls": 8,
+  "contributionRepairCalls": 3,
+  "unresolvedContributionRepairs": 1,
+  "fallbacks": 1,
+  "refusals": 1,
+  "blocker": "API refusal: model_reply",
+  "serverStopped": true,
+  "sourceChangedDuringRun": false,
+  "note": "Fresh API/shared-renderer run, not browser. Timings are observed, not a controlled performance comparison."
+}

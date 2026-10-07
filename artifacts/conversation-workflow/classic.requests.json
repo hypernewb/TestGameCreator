@@ -2,99 +2,99 @@
   {
     "playerAction": "How are things going?",
     "stagedCast": [
-      "dilek-sahin"
+      "friend"
     ],
     "scenePhase": "opening",
     "continuationStyle": "calm",
     "history": [],
     "persona": [
       {
-        "id": "dilek-sahin",
-        "name": "Dilek Şahin",
-        "voice": "Fast, dry and needling, sincerity smuggled in under a joke: \"You're staring at my margin notes again. Say something clever or buy me coffee.\"",
-        "personality": "",
-        "description": "A twenty-seven-year-old literature lecturer with cropped dark hair, ink-stained fingers and a coat that never quite dries, who argues about scansion the way other people flirt."
+        "id": "friend",
+        "name": "Friend",
+        "voice": "",
+        "personality": "Patient and particular about books.",
+        "description": ""
       }
     ]
   },
   {
     "playerAction": "I am worried about the presentation.",
     "stagedCast": [
-      "dilek-sahin"
+      "friend"
     ],
     "scenePhase": "continuation",
     "continuationStyle": "calm",
     "history": [
       {
         "input": "How are things going?",
-        "text": "She moves book 1 aside.\nDilek Şahin: I was thinking about point 1. There is more to it than it first seemed.\nDilek Şahin: We can take our time with detail 1."
+        "text": "She moves book 1 aside.\nFriend: I was thinking about point 1. There is more to it than it first seemed.\nFriend: We can take our time with detail 1."
       }
     ],
     "persona": [
       {
-        "id": "dilek-sahin",
-        "name": "Dilek Şahin",
-        "voice": "Fast, dry and needling, sincerity smuggled in under a joke: \"You're staring at my margin notes again. Say something clever or buy me coffee.\"",
-        "personality": "",
-        "description": "A twenty-seven-year-old literature lecturer with cropped dark hair, ink-stained fingers and a coat that never quite dries, who argues about scansion the way other people flirt."
+        "id": "friend",
+        "name": "Friend",
+        "voice": "",
+        "personality": "Patient and particular about books.",
+        "description": ""
       }
     ]
   },
   {
     "playerAction": "It went better than I expected. Were you worried about me?",
     "stagedCast": [
-      "dilek-sahin"
+      "friend"
     ],
     "scenePhase": "continuation",
     "continuationStyle": "calm",
     "history": [
       {
         "input": "How are things going?",
-        "text": "She moves book 1 aside.\nDilek Şahin: I was thinking about point 1. There is more to it than it first seemed.\nDilek Şahin: We can take our time with detail 1."
+        "text": "She moves book 1 aside.\nFriend: I was thinking about point 1. There is more to it than it first seemed.\nFriend: We can take our time with detail 1."
       },
       {
         "input": "I am worried about the presentation.",
-        "text": "She moves book 2 aside.\nDilek Şahin: I was thinking about point 2."
+        "text": "She moves book 2 aside.\nFriend: I was thinking about point 2. There is more to it than it first seemed.\nFriend: We can take our time with detail 2."
       }
     ],
     "persona": [
       {
-        "id": "dilek-sahin",
-        "name": "Dilek Şahin",
-        "voice": "Fast, dry and needling, sincerity smuggled in under a joke: \"You're staring at my margin notes again. Say something clever or buy me coffee.\"",
-        "personality": "",
-        "description": "A twenty-seven-year-old literature lecturer with cropped dark hair, ink-stained fingers and a coat that never quite dries, who argues about scansion the way other people flirt."
+        "id": "friend",
+        "name": "Friend",
+        "voice": "",
+        "personality": "Patient and particular about books.",
+        "description": ""
       }
     ]
   },
   {
     "playerAction": "I meant the part about listening to people.",
     "stagedCast": [
-      "dilek-sahin"
+      "friend"
     ],
     "scenePhase": "continuation",
     "continuationStyle": "calm",
     "history": [
       {
         "input": "How are things going?",
-        "text": "She moves book 1 aside.\nDilek Şahin: I was thinking about point 1. There is more to it than it first seemed.\nDilek Şahin: We can take our time with detail 1."
+        "text": "She moves book 1 aside.\nFriend: I was thinking about point 1. There is more to it than it first seemed.\nFriend: We can take our time with detail 1."
       },
       {
         "input": "I am worried about the presentation.",
-        "text": "She moves book 2 aside.\nDilek Şahin: I was thinking about point 2."
+        "text": "She moves book 2 aside.\nFriend: I was thinking about point 2. There is more to it than it first seemed.\nFriend: We can take our time with detail 2."
       },
       {
         "input": "It went better than I expected. Were you worried about me?",
-        "text": "She moves book 3 aside.\nDilek Şahin: I was thinking about point 3."
+        "text": "She moves book 3 aside.\nFriend: I was thinking about point 3. There is more to it than it first seemed.\nFriend: We can take our time with detail 3."
       }
     ],
     "persona": [
       {
-        "id": "dilek-sahin",
-        "name": "Dilek Şahin",
-        "voice": "Fast, dry and needling, sincerity smuggled in under a joke: \"You're staring at my margin notes again. Say something clever or buy me coffee.\"",
-        "personality": "",
-        "description": "A twenty-seven-year-old literature lecturer with cropped dark hair, ink-stained fingers and a coat that never quite dries, who argues about scansion the way other people flirt."
+        "id": "friend",
+        "name": "Friend",
+        "voice": "",
+        "personality": "Patient and particular about books.",
+        "description": ""
       }
     ]
   }

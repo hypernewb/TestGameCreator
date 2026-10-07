@@ -6,7 +6,7 @@ import {assert,safeKey} from '../core/engine.mjs';
 import {stripPlaceholders} from '../ai/memory.mjs';
 import {stripStateSyntax} from '../ai/untrusted-output.mjs';
 
-const EXT='story-framework',PROFILE=['pronouns','traits','voice','goal','backstory','likes','dislikes','style','examples'],LORE_EXTRA=['when','sticky','cooldown','delay','knownBy'];
+const EXT='story-framework',PROFILE=['pronouns','traits','voice','goal','backstory','likes','dislikes','style','examples','profile'],LORE_EXTRA=['when','sticky','cooldown','delay','knownBy'];
 const PNG_SIG=Buffer.from([137,80,78,71,13,10,26,10]);
 const CARD_ONLY=['scenario','first_mes','mes_example','alternate_greetings','group_only_greetings','system_prompt','post_history_instructions','creator_notes','tags','creator','character_version','nickname','source','creation_date','modification_date'];
 

@@ -1,0 +1,37 @@
+{
+  "worldPath": "data/scenarios/worlds/the-counsellors-semester-d0a64e8e.json",
+  "packPath": "data/scenarios/published/e7bed17c-7b65-4ac6-8ec4-c447120cf55a.json",
+  "worldOriginal": "artifacts/interwoven-cast/world.original.json",
+  "packOriginal": "artifacts/interwoven-cast/pack.original.json",
+  "mapping": [
+    {
+      "id": "player",
+      "old": "Ari Kesler",
+      "name": "Haru Mizuno"
+    },
+    {
+      "id": "selma-aydn",
+      "old": "Selma Aydın",
+      "name": "Mika Aoyama"
+    },
+    {
+      "id": "rebecca-osei",
+      "old": "Rebecca Osei",
+      "name": "Sayuri Tachibana"
+    },
+    {
+      "id": "dilek-sahin",
+      "old": "Dilek Şahin",
+      "name": "Rei Kurosawa"
+    },
+    {
+      "id": "priya-raman",
+      "old": "Priya Raman",
+      "name": "Natsumi Mori"
+    }
+  ],
+  "hashes": {
+    "data/scenarios/worlds/the-counsellors-semester-d0a64e8e.json": "1306dc20e11c1cb15559f29935cd5306630382b632e838d9c31461d2a62c21c7",
+    "data/scenarios/published/e7bed17c-7b65-4ac6-8ec4-c447120cf55a.json": "6f9cfaf6bf8862872e0c2a5b961ecdf5af5d8f77ae0a60fbe10195765d316c03"
+  }
+}

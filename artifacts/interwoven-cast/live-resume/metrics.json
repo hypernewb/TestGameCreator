@@ -1,0 +1,74 @@
+{
+  "fresh": true,
+  "recordedNPCDrafts": 0,
+  "model": "qwen/qwen3.8-27b",
+  "endpoint": "http://127.0.0.1:1234/v1/chat/completions",
+  "temperature": 0.5,
+  "maxTokens": 1800,
+  "contextSize": "default",
+  "applicationContextWindow": 8192,
+  "rows": [
+    {
+      "scene": "rei",
+      "turn": 4,
+      "input": "I flirt with Rei, telling her I would enjoy a relaxed film evening with her, with no pressure to decide tonight.",
+      "ms": 98975,
+      "error": "API refusal: model_reply",
+      "playerEntries": [],
+      "repairTrace": [],
+      "sceneAfter": "rei-input-1",
+      "trustBefore": 19,
+      "trustAfter": 19,
+      "chemistryBefore": 21,
+      "chemistryAfter": 21,
+      "phase": "crush",
+      "agreement": "uncommitted",
+      "calls": [
+        {
+          "format": "visual_novel_scene",
+          "ms": 69227,
+          "usage": {
+            "prompt_tokens": 3780,
+            "completion_tokens": 652,
+            "total_tokens": 4432,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "raw": true,
+          "error": null
+        },
+        {
+          "format": "player_contributions",
+          "ms": 8462,
+          "usage": {
+            "prompt_tokens": 494,
+            "completion_tokens": 70,
+            "total_tokens": 564,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "raw": true,
+          "error": null
+        },
+        {
+          "format": "visual_novel_scene",
+          "ms": 21149,
+          "raw": false,
+          "error": "Model ran out of output tokens before finishing."
+        }
+      ]
+    }
+  ],
+  "modelCalls": 3,
+  "transportCalls": 4,
+  "contributionRepairCalls": 1,
+  "unresolvedContributionRepairs": 0,
+  "fallbacks": 1,
+  "refusals": 1,
+  "blocker": "API refusal: model_reply",
+  "serverStopped": true,
+  "sourceChangedDuringRun": false,
+  "note": "Fresh API/shared-renderer run, not browser. Timings are observed, not a controlled performance comparison."
+}

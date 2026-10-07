@@ -1,0 +1,60 @@
+{
+  "lines": [
+    {
+      "speaker": "",
+      "text": "You lean back in the chair, gesturing vaguely at the biscuit tin on the desk. Even the biscuits probably need her approval before they can be eaten.",
+      "type": "playerAction",
+      "source": "I tease Rei that even the biscuits probably need her approval"
+    },
+    {
+      "speaker": "dilek-sahin",
+      "text": "The biscuits are merely a formality. If they are slightly dry, I will note it. If they are soggy, I will simply not eat them. It is a very efficient system."
+    },
+    {
+      "speaker": "dilek-sahin",
+      "text": "But you are deflecting. You are not here for the biscuits. You are not here for the coffee, despite your earlier insistence that the temperature was the only variable that mattered."
+    },
+    {
+      "speaker": "",
+      "text": "You admit that you stayed for her company rather than the coffee.",
+      "type": "playerSpeech",
+      "source": "I admit that I stayed for her company rather than the coffee"
+    },
+    {
+      "speaker": "dilek-sahin",
+      "text": "She pauses, the rhythm of her tapping fingers stopping against the armrest. Her gaze softens, just slightly, as she processes the shift in the conversation."
+    },
+    {
+      "speaker": "dilek-sahin",
+      "text": "Good. I was hoping you would, though I was not going to make a speech about it. It is a relief to have someone who does not treat my presence as a mandatory administrative task."
+    },
+    {
+      "speaker": "dilek-sahin",
+      "text": "So. We are done with the coffee critique. Shall we discuss the film, or do you have another list of grievances regarding my biscuit selection?"
+    }
+  ],
+  "summary": "The player teases Rei about her strict standards for biscuits, then admits they stayed for her company rather than the coffee. Rei reacts with quiet approval and shifts the conversation back to their shared interest in old films.",
+  "end_scene": false,
+  "memories": [
+    {
+      "charKey": "dilek-sahin",
+      "type": "liked",
+      "desc": "Player admitted staying for Rei's company rather than the coffee, which Rei appreciated."
+    }
+  ],
+  "facts": [],
+  "acts": [
+    {
+      "kind": "tease",
+      "target": "biscuits",
+      "size": "small",
+      "landed": true
+    },
+    {
+      "kind": "listen",
+      "target": "company",
+      "size": "medium",
+      "landed": true
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-07T06:12:18.971Z",
+  "clientLatencyMs": 1026,
+  "localHttpStatus": 200,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+  "route": "fireworks",
+  "messagesSha256": "3d31b496050c1f001c22730a6c42805aa44ac53ea42f6db4dbe54386fdcfebb4",
+  "pricing": {
+    "prompt": "0.0000003",
+    "completion": "0.0000012",
+    "input_cache_read": "0.000000006",
+    "discount": 0
+  },
+  "inputTokenUpperBound": 65536,
+  "outputTokenUpperBound": 1100,
+  "priorCostUpperUsd": 0.0228882,
+  "costUpperUsd": 0.0209808,
+  "combinedCostUpperUsd": 0.043869000000000005,
+  "completionRequests": 1,
+  "settingsChanged": false,
+  "status": "failed",
+  "httpStatus": 429,
+  "latencyMs": 906,
+  "error": "Provider rejected comparison; no retry"
+}

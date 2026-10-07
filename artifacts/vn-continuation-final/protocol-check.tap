@@ -1,0 +1,16 @@
+TAP version 13
+# Subtest: isolated saved-pack free-text requests commit a continuous scene with correct IDs and revisions, without model calls
+ok 1 - isolated saved-pack free-text requests commit a continuous scene with correct IDs and revisions, without model calls
+  ---
+  duration_ms: 246.9453
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 381.3782

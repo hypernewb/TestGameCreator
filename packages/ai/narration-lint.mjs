@@ -2,6 +2,9 @@
 // before it's shown: attendance, knowledge leaks, and content-level overflow.
 import {lintFacts,lintHistory,sharedAuthoredFact} from './knowledge.mjs';
 import {assertSceneBoundaries} from './scene-boundaries.mjs';
+import {ordinaryConversation} from './conversation.mjs';
+import {playerOpeningLine} from './player-opening.mjs';
+import {requiresPlayerContribution} from './player-contribution.mjs';
 import {speechOf} from './character-context.mjs';
 import {onlyRepeats,PLAYER_INTERIOR} from './untrusted-output.mjs';
 // A fact's quote is how facts.mjs proves a fact happened in narration; the same quote in a line spoken by
@@ -47,7 +50,7 @@ function assertCastSpeaks(value,context,pack){
  const who=pack.actors.filter(a=>cast.includes(a.id)),hint=`${who.map(a=>a.name).join(' and ')} must speak: add their words as ${who.map(a=>`{"speaker":"${a.id}","text":"..."}`).join(' or ')}, after at most one line of narration`;throw Object.assign(Error(hint),{soft:true,safeRepair:hint});
 }
 function assertFresh(value,context,pack){
- if(!lintHistory(context)||!onlyRepeats(value.lines,lintHistory(context),context.playerAction))return;
+ if(!lintHistory(context)||!onlyRepeats(value.lines,lintHistory(context),context.playerAction,context))return;
  const who=pack.actors.filter(a=>(context.stagedCast||[]).includes(a.id)&&value.lines.some(l=>l.speaker===a.id)).map(a=>a.name),hint=`${who.join(' and ')} already said that: reply to "${context.playerAction||''}" with something new`;throw Object.assign(Error(hint),{soft:true,safeRepair:hint});
 }
 // Local models contradict the calendar the context supplies ("a quiet Tuesday" on a Wednesday). Only narration
@@ -68,8 +71,8 @@ const gramsOf=text=>{const words=String(text||'').toLowerCase().replace(/[^a-z\s
 const gramOverlap=(a,b)=>{if(!a||!b)return 0;let shared=0;for(const gram of a)if(b.has(gram))shared++;return shared/(a.size+b.size-shared);};
 function assertFreshNarration(value,context){
  const prior=(context.sceneHistory||[]).map(entry=>entry.text).filter(Boolean).slice(-6);if(!prior.length)return;
- for(const line of value.lines){
-  if(line.speaker)continue;const grams=gramsOf(line.text);if(!grams)continue;
+ for(const [i,line] of value.lines.entries()){
+  if(line.speaker||playerOpeningLine(line,context))continue;const grams=gramsOf(line.text);if(!grams)continue;
   for(const old of prior)if(gramOverlap(grams,gramsOf(old))>=0.7)throw Object.assign(Error('This narration repeats what was already shown: write what happens now, in new words and new beats'),{soft:true});
  }
 }
@@ -90,6 +93,7 @@ function assertStageTouch(value,context,pack){
 // A recycled mannerism ("amused glint in her eye" every other turn) is shorter than the paraphrase check's sentences
 // and reads as stock animation. Any 5-word run of text already used in this scene asks for fresh business. Soft.
 function assertFreshBeats(value,context){
+ if(ordinaryConversation(context))return;
  const seen=new Set();const shingles=text=>{const words=String(text||'').toLowerCase().replace(/[^a-z\s]/g,' ').split(/\s+/).filter(Boolean);const out=[];for(let i=0;i+5<=words.length;i++)out.push(words.slice(i,i+5).join(' '));return out;};
  // Narration only (a spoken line keeps just its present-tense stage business, "She watches…"): characters may repeat themselves, and the player's own phrasing ("the beach on Sunday") is fair to echo back.
  const own=new Set([context.playerAction,...(context.sceneHistory||[]).map(entry=>entry.input)].filter(Boolean).flatMap(shingles));
@@ -140,7 +144,7 @@ export function lintScene(value,context,pack,{lenient=false}={}){
  const warnings=[];
  for(const line of value.lines.filter(l=>l.speaker))for(const owner of pack.characterSheets||[]){if(owner.actorId===line.speaker)continue;const own=speechOf(pack,line.speaker),mine=[...(own?.tics||[]),...(own?.petPhrases||[])].map(x=>x.trim().toLowerCase());for(const phrase of [...(owner.speech?.tics||[]),...(owner.speech?.petPhrases||[])]){const tic=phrase.trim().toLowerCase(),text=line.text.toLowerCase();if(tic&&!mine.includes(tic)&&phraseIn(text,tic))warnings.push({check:'speech-owner',message:line.speaker+' used '+owner.actorId+'’s speech phrase: '+phrase});}}
  for(const [check,run] of CHECKS){
-  try{run(value,context,pack);}
+  try{run(['player-agency','player-decisions','player-person','player-transactions'].includes(check)?{...value,lines:value.lines.filter(l=>l.type!=='playerSpeech')}:value,context,pack);}
   catch(error){if(lenient&&STYLE_CHECKS.has(check)){warnings.push({check,message:String(error.message).slice(0,200)});continue;}throw Object.assign(Error(error.message),{lintCheck:check,soft:!!error.soft,safeRepair:error.safeRepair});}
  }
  // Warn only, never repair: in a group scene someone who gets no line or beat reads as a prop.
@@ -152,17 +156,18 @@ export function lintScene(value,context,pack,{lenient=false}={}){
  if(echo)warnings.push({check:'echo',message:`Echoed ${echoWords}+ words of the player: "${echo}"`});
  return warnings;
 }
+export function lintPlayerOpening(line,context,pack){if(line.type==='playerSpeech')return;const value={lines:[line]};for(const run of [assertPlayerInterior,assertPlayerPerson,assertPlayerDecisions,assertPlayerTransactions])run(value,context,pack);}
 
 
 const phraseIn=(text,phrase)=>{let at=text.indexOf(phrase);while(at>=0){if(!/[\p{L}\p{N}]/u.test(text[at-1]||'')&&!/[\p{L}\p{N}]/u.test(text[at+phrase.length]||''))return true;at=text.indexOf(phrase,at+1);}return false;};
 export const questionEnding=lines=>/\?["”’'\s]*$/u.test((lines||[]).filter(l=>l.speaker).at(-1)?.text||'');
 function assertQuestionEnding(value,context,pack){
- if(context.first?.required||!questionEnding(value.lines))return;
+ if(requiresPlayerContribution(context)||ordinaryConversation(context)||context.first?.required||!questionEnding(value.lines))return;
  const names=pack.actors.filter(a=>(context.stagedCast||[]).includes(a.id)).map(a=>a.name+': '),prior=(context.sceneHistory||[]).slice(-2).map(h=>h.lines?questionEnding(h.lines):/\?["”’'\s]*$/u.test(String(h.text||'').split('\n').filter(l=>names.some(n=>l.startsWith(n))).at(-1)||String(h.text||'')));
  if(prior.some(Boolean))throw Object.assign(Error('Question endings: more than one in the last three replies. End on something she does, says or wants instead.'),{soft:true});
 }
 function assertPlayerDecisions(value,context){
- if(!context.allowPlayerReactions)return;
+ if(!context.allowPlayerReactions&&!requiresPlayerContribution(context))return;
  const decision=/\byou (?:accept|agree to|consent|promise|swear|buy|purchase|pay|spend|travel|leave for|head to)\b/iu;
  for(const line of value.lines)if(!line.speaker&&decision.test(line.text)){const verb=line.text.match(decision)[0].replace(/^you /iu,'');if(!String(context.playerAction||'').toLowerCase().includes(verb)||!(context.outcomes||[]).length)throw Error('Leave player decisions about accepting, consent, promises, travel and spending open; narrate reactions or committed outcomes instead.');}
 }

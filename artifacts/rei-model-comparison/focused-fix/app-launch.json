@@ -1,0 +1,8 @@
+{
+  "oldPid": 2492,
+  "pid": 88652,
+  "launch": "node server.mjs",
+  "oneShotEnabled": true,
+  "approval": "Sentinel_b1dcdeb00dbc819190ec44f20d83dcd2",
+  "stoppedOnlyVerifiedStory": true
+}

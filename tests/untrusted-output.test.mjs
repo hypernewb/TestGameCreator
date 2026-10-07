@@ -62,9 +62,9 @@ test('typed input becomes the spoken line itself, not narration about speaking',
  assert.equal(spokenLine('  How is the shift going?  '),'How is the shift going?');
 });
 
-test('a mannerism reused in the same scene is asked for fresh, once',()=>{
+test('ordinary gestures do not trigger forced replacement; authored gesture checks remain',()=>{
  const p=pack(),context={daypart:'Afternoon',scenePhase:'continuation',stagedCast:['ada'],knownFacts:[],spokenBefore:[],playerAction:'Keep talking.',sceneHistory:[{text:'She considers you with an amused glint in her eye.'}]};
- assert.throws(()=>lintScene({lines:[{speaker:'ada',text:'You learn fast. She watches you with an amused glint in her eye.'}]},context,p),error=>error.lintCheck==='beats'&&/already used in this scene/.test(error.message));
+ const value={lines:[{speaker:'ada',text:'You learn fast. She watches you with an amused glint in her eye.'}]};assert.doesNotThrow(()=>lintScene(value,context,p));assert.throws(()=>lintScene(value,{...context,scriptedScene:{id:'authored'}},p),error=>error.lintCheck==='beats'&&/already used in this scene/.test(error.message));
  assert.doesNotThrow(()=>lintScene({lines:[{speaker:'ada',text:'She flicks a bottle cap across the counter and catches it.'}]},context,p));
 });
 

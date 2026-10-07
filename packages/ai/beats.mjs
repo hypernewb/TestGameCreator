@@ -1,10 +1,10 @@
-import {relationshipStageOf} from './character-context.mjs';
+import {relationshipStageOf,exampleTexts} from './character-context.mjs';
 // Drama management in the spirit of Façade and Versu: the engine, not the model, picks the kind of beat an NPC plays next
 // (answer, tease, push back, confide, ask back, raise something of their own) from the authored profile. A small model left
 // to improvise flattens every character into the same agreeable voice; given one concrete instruction it only has to voice it.
 import {relevance} from './memory.mjs';
 import {briefOf} from '../modules/director.mjs';
-import {conversationCue,exchangePolicy,isQuestion} from './conversation.mjs';
+import {conversationCue,exchangePolicy,isQuestion,ordinaryConversation} from './conversation.mjs';
 const MOVES={flirt:'flirt a little, their own way',ask:'show curiosity through a specific observation; a question is optional',opinion:'give their own opinion, even one the player may not share',notice:'point out one concrete detail around them',tease:'tease the player lightly',deflect:'dodge with a dry aside before giving a little ground',confide:'admit one small, true thing about themselves',challenge:'disagree with something the player said, with a reason'};
 const TEMPERAMENT=[[/teas|joke|wry|dry|playful|sarcas|wit|funny/i,['tease','deflect']],[/guarded|careful|reserved|shy|self-reliant|private|afraid|proud/i,['deflect','challenge']],[/curious|observant|perceptive|nosy/i,['notice','ask']],[/direct|blunt|honest|sincere|impulsive|restless/i,['opinion','challenge']],[/warm|kind|sentimental|gentle|loyal|patient/i,['confide','ask']]];
 const FEELING=/\b(?:sorry|miss|love|sad|scared|afraid|hurt|thank|thanks|proud|happy|excited|nervous|worried|sucks)\b/i;
@@ -22,7 +22,7 @@ const content=t=>(t.toLowerCase().match(/\p{L}{5,}/gu)||[]),STOP=new Set(['about
 // matched on 5-letter stems, so a small model answers from canon instead of inventing a past.
 export function groundFor(actor,input){
  const stems=new Set(content(input).filter(w=>!STOP.has(w)).map(w=>w.slice(0,5)));
- return [...String(actor.backstory||'').split(/(?<=[.!?])\s+/u),...[].concat(actor.likes||[]).map(x=>`they love ${x}.`),...[].concat(actor.dislikes||[]).map(x=>`they can't stand ${x}.`)].find(t=>content(t).some(w=>stems.has(w.slice(0,5))))||(/\b(?:miss|like|love|favou?rite|enjoy)\b/i.test(input)&&[].concat(actor.likes||[]).length?`they love ${[].concat(actor.likes)[0]}.`:'');
+ return [...String(actor.backstory||'').split(/(?<=[.!?])\s+/u),...[].concat(actor.likes||[]).map(x=>`they love ${x}.`),...[].concat(actor.dislikes||[]).map(x=>`they can't stand ${x}.`)].find(t=>content(t).some(w=>stems.has(w.slice(0,5))))||'';
 }
 // Something of their own to raise, taken only from what the author wrote and not yet touched on this scene.
 export function topicSeeds(actor,said=''){
@@ -45,9 +45,10 @@ export function beatDirection(context,pack,seed=''){
  const cast=context.stagedCast||[],phase=context.scenePhase||'opening',input=String(context.playerAction||'');
  if(!cast.length||phase==='closing'||phase==='solo')return '';
  const actors=cast.map(id=>pack.actors.find(a=>a.id===id)).filter(Boolean),named=actors.find(a=>new RegExp(`\\b${a.name.split(' ')[0].replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`,'i').test(input)),actor=named||actors[0];if(!actor)return '';
+
  const history=context.sceneHistory||[],said=history.map(h=>`${h.input||''} ${h.text||''}`).join(' ')+' '+input,seeds=topicSeeds(actor,said),ground=groundFor(actor,input);
  // "What's my favourite colour?" is a memory check about the player: answered from what they said, never invented.
- const question=isQuestion(input),aboutPlayer=question&&/\b(?:my|mine|remember)\b|\b(?:what|where|when|who|how|why)\s+I\b/i.test(input),responsive=phase==='continuation'&&!context.scriptedScene,cue=responsive?conversationCue(input):'neutral',policy=exchangePolicy(context);
+ const question=isQuestion(input),aboutPlayer=question&&/\b(?:my|mine|remember)\b|\b(?:what|where|when|who|how|why)\s+(?:did\s+)?I\b/i.test(input),responsive=phase==='continuation'&&!context.scriptedScene,cue=responsive?conversationCue(input):'neutral',policy=exchangePolicy(context);
  // How close they are shapes how they talk, as in Persona's ranks or Venus University's trust: a stranger is polite and keeps
  // their secrets, a friend teases and confides, a crush gets flustered and flirts. A dating phase outranks raw trust.
  const stageOf=a=>relationshipStageOf(context,a);
@@ -56,11 +57,16 @@ export function beatDirection(context,pack,seed=''){
  // The one memory the question is about, picked here rather than left to a 9B model scanning a dozen of them.
  // The player's own words (m.kind) beat a model-written impression that shares the same word, and of "name is Mara, favorite
  // color is teal, and grew up by the harbor" only the clause asked about is passed on.
- const names=pack.actors.map(a=>a.name),focus=t=>{const [,head='',body]=/^(.*?\btold [^:]+:\s*)?(.*)$/su.exec(t),parts=body.split(/,\s*(?:and\s+)?|;\s*/u),hit=parts.filter(x=>relevance(x,input,names));return hit.length&&hit.length<parts.length?head+hit.join(', '):t;};
+ const memoryQuery=aboutPlayer?input.replace(/\bgrow up\b/iu,'grew up'):input,names=pack.actors.map(a=>a.name),focus=t=>{const [,head='',body]=/^(.*?\btold [^:]+:\s*)?(.*)$/su.exec(t),parts=body.split(/,\s*(?:and\s+)?|;\s*/u),hit=parts.filter(x=>relevance(x,memoryQuery,names));return hit.length&&hit.length<parts.length?head+hit.join(', '):t;};
  // Handed back in second person: shown "Mara grew up by the harbor" beside "where I grew up", a 9B model claims that past as its own.
  const toYou=t=>{const who=/^(.+?) (?:told|promised) /u.exec(t)?.[1];if(!who)return t;const w=who.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
   return t.replace(new RegExp(`^${w} told [^:]+:\\s*`,'u'),'').replace(new RegExp(`^${w} told .+? about\\b`,'u'),'you told me about').replace(new RegExp(`\\b${w}[’']s\\b`,'gu'),'your').replace(new RegExp(`\\b${w} (is|was|has)\\b`,'gu'),(_,v)=>({is:'you are',was:'you were',has:'you have'})[v]).replace(new RegExp(`\\b${w}\\b`,'gu'),'you');};
- const recalled=aboutPlayer?toYou(focus((context.memories||[]).reduce((best,m)=>{const r=relevance(m.text,input,names);return r&&r+(m.kind?1:0)>=best[0]?[r+(m.kind?1:0),m.text]:best;},[0,''])[1])):'';
+ const recalled=aboutPlayer?toYou(focus((context.memories||[]).reduce((best,m)=>{const r=relevance(m.text,memoryQuery,names);return r&&r+(m.kind?1:0)>=best[0]?[r+(m.kind?1:0),m.text]:best;},[0,''])[1])):'';
+ if(ordinaryConversation(context)){
+  const ground=groundFor(actor,input),stage=relationshipStageOf(context,actor),boundary={stranger:'They just met the player: no touching or leaning in.',familiar:'Physical moves wait for a closer bond: no touching or leaning in.',strained:'Keep physical distance until the unresolved tension is resolved.',rejected:'Respect the rejection; no romantic or physical escalation.',broken:'Respect the ended relationship; no romantic or physical escalation.'}[stage],cue=conversationCue(input);
+  const lead=cue==='refuse'?'acknowledge what the player declined without pressure or repeating the offer':cue==='ack'?'give a natural brief reaction on this same subject; take the acknowledgement at face value, without treating it as cryptic or demanding an explanation':cue==='encourage'?'develop the last conversational point using the supplied exchange':aboutPlayer?(recalled?`remind the player of what they told you: ${recalled}`:'answer from what the player has told you; if they never said, admit not knowing'):isQuestion(input)?'answer the actual question; distinguish questions about the player from questions about yourself, and admit when the supplied information does not answer it':/\b(?:sorry|apologi[sz]e)\b/i.test(input)?`respond to the player's apology in your own voice (the player is the one who is sorry, not ${actor.name.split(' ')[0]})`:cue==='emotion'?'respond to how the player feels on this same subject':'respond to what the player means in the supplied exchange';
+  return [actor.name+': '+lead+'.',!aboutPlayer&&ground&&'Relevant authored detail: '+ground,boundary,context.repeatAsk&&'If the player is clarifying or repeating a question, explain the answer more clearly; do not dismiss the request.',briefOf(context.director)].filter(Boolean).join(' ');
+ }
  // Encouragement continues the existing thread; sheet topics fill an empty conversation only.
  const threaded=history.some(h=>h.input||h.text),drift=responsive&&cue==='encourage'&&!threaded;
  // An opening is one thread. Until they know the player well it is a greeting and a reaction to the moment, not their life goal plus a topic from their sheet.
@@ -82,7 +88,7 @@ export function beatDirection(context,pack,seed=''){
  const size=calm?'one connected reply mostly in direct dialogue, with brief meaningful actions only as needed':policy.quick?`${policy.range} visual-novel entries total, one brief narration entry and concise character replies`:context.sceneWriter==='venus'?`${policy.range} visual-novel entries total, with brief narration and substantial character replies`:'one brief narration entry, then four or five entries mostly in the character’s own spoken voice';
  // One authored line, rotating per turn, placed where the model reads last: small models copy a voice, not adjectives.
  // Left out of memory checks, where the model copies the sample's opener instead of recalling.
- const sample=[].concat(actor.examples||[]).filter(Boolean),voice=sample.length&&!aboutPlayer&&!reaction?` Sound like "${sample[turn%sample.length]}" (the voice, not those words).`:'';
+ const sample=exampleTexts(actor.examples),voice=sample.length&&!aboutPlayer&&!reaction?` Sound like "${sample[turn%sample.length]}" (the voice, not those words).`:'';
  // A group scene where only the addressed NPC ever talks reads as a string of one-on-ones: every other turn, someone else cuts in.
  const others=actors.filter(a=>a!==actor),other=others[Math.floor(turn/2)%Math.max(1,others.length)],om=other&&movesOf(other),chime=other&&!calm&&!reaction&&!policy.quick&&phase!=='opening'&&!aboutPlayer&&turn%2===0?` ${other.name} cuts in once, briefly, to ${MOVES[om[turn%om.length]]}.`:'';
  // Like Tokimeki Memorial's daily condition, some days a character is in a mood (authored `moods`, or a mild default), the

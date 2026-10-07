@@ -1,0 +1,38 @@
+{
+  "turns": 7,
+  "calls": 7,
+  "repairs": 0,
+  "fallbacks": 0,
+  "timingsMs": [
+    60266,
+    22425,
+    35487,
+    31139,
+    52326,
+    53797,
+    29310
+  ],
+  "meanMs": 40679,
+  "promptTokens": [
+    1794,
+    1963,
+    2208,
+    2505,
+    2739,
+    3058,
+    3241
+  ],
+  "completionTokens": [
+    330,
+    267,
+    527,
+    392,
+    680,
+    604,
+    219
+  ],
+  "finalRawEndScene": true,
+  "finalActiveScene": null,
+  "sourceChangedDuringRun": false,
+  "serverStopped": true
+}

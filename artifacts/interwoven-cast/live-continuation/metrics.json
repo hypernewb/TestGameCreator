@@ -1,0 +1,76 @@
+{
+  "fresh": true,
+  "recordedNPCDrafts": 0,
+  "model": "qwen/qwen3.8-27b",
+  "endpoint": "http://127.0.0.1:1234/v1/chat/completions",
+  "temperature": 0.5,
+  "maxTokens": 1800,
+  "contextSize": "default",
+  "applicationContextWindow": 8192,
+  "rows": [
+    {
+      "scene": "mika",
+      "turn": 2,
+      "input": "I say, \"A cake that tastes good counts as a success to me.\"",
+      "ms": 30284,
+      "error": "API refusal: model_reply",
+      "playerEntries": [],
+      "repairTrace": [
+        {
+          "check": "player-contribution",
+          "message": "Player speech must use the submitted spoken words exactly",
+          "targeted": true,
+          "resolved": false,
+          "repairFailure": "Player opening must be indirect narrator wording in one entry"
+        }
+      ],
+      "sceneAfter": "mika-input-1",
+      "trustBefore": 27,
+      "trustAfter": 27,
+      "chemistryBefore": 12,
+      "chemistryAfter": 12,
+      "phase": "available",
+      "agreement": "uncommitted",
+      "calls": [
+        {
+          "format": "visual_novel_scene",
+          "ms": 25012,
+          "usage": {
+            "prompt_tokens": 2472,
+            "completion_tokens": 451,
+            "total_tokens": 2923,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "raw": true,
+          "error": null
+        },
+        {
+          "format": "player_contributions",
+          "ms": 5174,
+          "usage": {
+            "prompt_tokens": 388,
+            "completion_tokens": 57,
+            "total_tokens": 445,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "raw": true,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "modelCalls": 2,
+  "transportCalls": 3,
+  "contributionRepairCalls": 1,
+  "unresolvedContributionRepairs": 1,
+  "fallbacks": 1,
+  "refusals": 1,
+  "blocker": "API refusal: model_reply",
+  "serverStopped": true,
+  "sourceChangedDuringRun": false,
+  "note": "Fresh API/shared-renderer run, not browser. Timings are observed, not a controlled performance comparison."
+}

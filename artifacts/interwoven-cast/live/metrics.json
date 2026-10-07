@@ -1,0 +1,280 @@
+{
+  "fresh": true,
+  "recordedNPCDrafts": 0,
+  "model": "qwen/qwen3.8-27b",
+  "endpoint": "http://127.0.0.1:1234/v1/chat/completions",
+  "temperature": 0.5,
+  "maxTokens": 1800,
+  "contextSize": "default",
+  "applicationContextWindow": 8192,
+  "rows": [
+    {
+      "scene": "rei",
+      "turn": 1,
+      "input": "I tease Rei that her coffee rules could fill a whole menu.",
+      "ms": 123679,
+      "error": null,
+      "playerEntries": [
+        {
+          "index": 0,
+          "speaker": "",
+          "text": "You tease Rei that her coffee rules could fill a whole menu.",
+          "type": "playerAction",
+          "source": "I tease Rei that her coffee rules could fill a whole menu.",
+          "pending": false
+        }
+      ],
+      "repairTrace": [
+        {
+          "check": "player-contribution",
+          "message": "Player action instruction is not spoken dialogue",
+          "targeted": true,
+          "resolved": true
+        },
+        {
+          "attempt": 0,
+          "check": "echo",
+          "message": "Echoed 8+ words of the player: \"tease rei that her coffee rules could fill\"",
+          "warned": true
+        }
+      ],
+      "sceneAfter": "rei-input-1",
+      "trustBefore": 15,
+      "trustAfter": 17,
+      "chemistryBefore": 8,
+      "chemistryAfter": 10,
+      "phase": "available",
+      "agreement": "uncommitted",
+      "calls": [
+        {
+          "format": "scene_intent",
+          "ms": 52804,
+          "usage": {
+            "prompt_tokens": 862,
+            "completion_tokens": 79,
+            "total_tokens": 941,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "raw": true,
+          "error": null
+        },
+        {
+          "format": "visual_novel_scene",
+          "ms": 63777,
+          "usage": {
+            "prompt_tokens": 2398,
+            "completion_tokens": 736,
+            "total_tokens": 3134,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "raw": true,
+          "error": null
+        },
+        {
+          "format": "player_contributions",
+          "ms": 6991,
+          "usage": {
+            "prompt_tokens": 781,
+            "completion_tokens": 57,
+            "total_tokens": 838,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "raw": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "scene": "rei",
+      "turn": 2,
+      "input": "I tease Rei that even the biscuits probably need her approval, then after her response I admit that I stayed for her company rather than the coffee.",
+      "ms": 55408,
+      "error": null,
+      "playerEntries": [
+        {
+          "index": 0,
+          "speaker": "",
+          "text": "You tease Rei that even the biscuits probably need her approval.",
+          "type": "playerAction",
+          "source": "I tease Rei that even the biscuits probably need her approval",
+          "pending": false
+        },
+        {
+          "index": 4,
+          "speaker": "",
+          "text": "You admit that you stayed for her company rather than the coffee.",
+          "type": "playerAction",
+          "source": "then after her response I admit that I stayed for her company rather than the coffee",
+          "pending": false
+        }
+      ],
+      "repairTrace": [
+        {
+          "check": "player-contribution",
+          "message": "Player opening adds an unsubmitted leading action",
+          "targeted": true,
+          "resolved": true
+        },
+        {
+          "attempt": 0,
+          "check": "echo",
+          "message": "Echoed 8+ words of the player: \"tease rei that even the biscuits probably need\"",
+          "warned": true
+        }
+      ],
+      "sceneAfter": "rei-input-1",
+      "trustBefore": 17,
+      "trustAfter": 19,
+      "chemistryBefore": 10,
+      "chemistryAfter": 14,
+      "phase": "available",
+      "agreement": "uncommitted",
+      "calls": [
+        {
+          "format": "visual_novel_scene",
+          "ms": 49359,
+          "usage": {
+            "prompt_tokens": 2736,
+            "completion_tokens": 657,
+            "total_tokens": 3393,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "raw": true,
+          "error": null
+        },
+        {
+          "format": "player_contributions",
+          "ms": 5989,
+          "usage": {
+            "prompt_tokens": 531,
+            "completion_tokens": 93,
+            "total_tokens": 624,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "raw": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "scene": "rei",
+      "turn": 3,
+      "input": "I lightly flirt with Rei, telling her that I like her smile more than any perfect cup of coffee.",
+      "ms": 55332,
+      "error": null,
+      "playerEntries": [
+        {
+          "index": 0,
+          "speaker": "",
+          "text": "You lightly flirt with Rei, telling her that you like her smile more than any perfect cup of coffee.",
+          "type": "playerAction",
+          "source": "I lightly flirt with Rei, telling her that I like her smile more than any perfect cup of coffee.",
+          "pending": false
+        }
+      ],
+      "repairTrace": [
+        {
+          "check": "player-contribution",
+          "message": "Player speech must use the submitted spoken words exactly",
+          "targeted": true,
+          "resolved": true
+        },
+        {
+          "attempt": 0,
+          "check": "echo",
+          "message": "Echoed 8+ words of the player: \"like her smile more than any perfect cup\"",
+          "warned": true
+        }
+      ],
+      "sceneAfter": "rei-input-1",
+      "trustBefore": 19,
+      "trustAfter": 19,
+      "chemistryBefore": 14,
+      "chemistryAfter": 21,
+      "phase": "crush",
+      "agreement": "uncommitted",
+      "calls": [
+        {
+          "format": "visual_novel_scene",
+          "ms": 47588,
+          "usage": {
+            "prompt_tokens": 2556,
+            "completion_tokens": 661,
+            "total_tokens": 3217,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "raw": true,
+          "error": null
+        },
+        {
+          "format": "player_contributions",
+          "ms": 7671,
+          "usage": {
+            "prompt_tokens": 578,
+            "completion_tokens": 73,
+            "total_tokens": 651,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "raw": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "scene": "rei",
+      "turn": 4,
+      "input": "I flirt with Rei, telling her I would enjoy a relaxed film evening with her, with no pressure to decide tonight.",
+      "ms": 54076,
+      "error": "Missing submitted player contribution",
+      "playerEntries": [],
+      "repairTrace": [],
+      "sceneAfter": "rei-input-1",
+      "trustBefore": 19,
+      "trustAfter": 19,
+      "chemistryBefore": 21,
+      "chemistryAfter": 21,
+      "phase": "crush",
+      "agreement": "uncommitted",
+      "calls": [
+        {
+          "format": "visual_novel_scene",
+          "ms": 54000,
+          "usage": {
+            "prompt_tokens": 2630,
+            "completion_tokens": 619,
+            "total_tokens": 3249,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "raw": true,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "modelCalls": 8,
+  "transportCalls": 9,
+  "contributionRepairCalls": 3,
+  "unresolvedContributionRepairs": 0,
+  "fallbacks": 0,
+  "refusals": 0,
+  "blocker": "Missing submitted player contribution",
+  "serverStopped": true,
+  "sourceChangedDuringRun": false,
+  "note": "Fresh API/shared-renderer run, not browser. Timings are observed, not a controlled performance comparison."
+}

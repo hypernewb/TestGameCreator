@@ -1,0 +1,45 @@
+{
+  "exactCorrectedMessages": true,
+  "messagesSha256": "3d31b496050c1f001c22730a6c42805aa44ac53ea42f6db4dbe54386fdcfebb4",
+  "schemaEqual": true,
+  "samplingEqual": true,
+  "completionRequests": 1,
+  "normalizationError": null,
+  "ownershipError": "Player speech must use the submitted spoken words exactly",
+  "rawActs": [
+    {
+      "kind": "tease",
+      "target": "biscuits",
+      "size": "small",
+      "landed": true
+    },
+    {
+      "kind": "listen",
+      "target": "company",
+      "size": "medium",
+      "landed": true
+    }
+  ],
+  "filteredActs": [
+    {
+      "kind": "tease",
+      "target": "biscuits",
+      "size": "small",
+      "landed": true
+    },
+    {
+      "kind": "listen",
+      "target": "company",
+      "size": "medium",
+      "landed": true
+    }
+  ],
+  "acceptedPlan": false,
+  "limitations": [
+    "Invented prior player biscuit purchase from shop below is not source-backed",
+    "Short interview/references/shortlist/manuscript imagery remains",
+    "Successful single response is not a reliability or writing-acceptance benchmark"
+  ],
+  "requestCostUpperUsd": 0.0209808,
+  "reportedCostUsd": 0.0017631
+}

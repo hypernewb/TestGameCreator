@@ -1,0 +1,448 @@
+TAP version 13
+# Subtest: named checkpoints are labeled and survive routine commit churn
+ok 1 - named checkpoints are labeled and survive routine commit churn
+  ---
+  duration_ms: 2.3934
+  type: 'test'
+  ...
+# Subtest: checkpoint pool is capped separately from the auto-backup pool
+ok 2 - checkpoint pool is capped separately from the auto-backup pool
+  ---
+  duration_ms: 1.9338
+  type: 'test'
+  ...
+# Subtest: scene end and daypart turns create automatic checkpoints
+ok 3 - scene end and daypart turns create automatic checkpoints
+  ---
+  duration_ms: 0.5876
+  type: 'test'
+  ...
+# Subtest: branch clones a checkpoint into a new campaign without touching the source
+ok 4 - branch clones a checkpoint into a new campaign without touching the source
+  ---
+  duration_ms: 0.5572
+  type: 'test'
+  ...
+# Subtest: previewRestore reports what an in-place restore would discard without changing state
+ok 5 - previewRestore reports what an in-place restore would discard without changing state
+  ---
+  duration_ms: 0.3925
+  type: 'test'
+  ...
+# Subtest: sceneTranscript skips score sub-turns between conversation turns
+ok 6 - sceneTranscript skips score sub-turns between conversation turns
+  ---
+  duration_ms: 1.1242
+  type: 'test'
+  ...
+# Subtest: score events never reach the model context as recent actions
+ok 7 - score events never reach the model context as recent actions
+  ---
+  duration_ms: 3.6301
+  type: 'test'
+  ...
+# Subtest: token estimate counts dense scripts per character and Latin text per four characters
+ok 8 - token estimate counts dense scripts per character and Latin text per four characters
+  ---
+  duration_ms: 0.1088
+  type: 'test'
+  ...
+# Subtest: calibration moves the ratio toward reported prompt tokens and stays bounded
+ok 9 - calibration moves the ratio toward reported prompt tokens and stays bounded
+  ---
+  duration_ms: 0.1485
+  type: 'test'
+  ...
+# Subtest: allocator reserves floors so a huge transcript cannot starve lore and recaps
+ok 10 - allocator reserves floors so a huge transcript cannot starve lore and recaps
+  ---
+  duration_ms: 0.4613
+  type: 'test'
+  ...
+# Subtest: allocator degrades before cutting and keeps a transcript tail contiguous
+ok 11 - allocator degrades before cutting and keeps a transcript tail contiguous
+  ---
+  duration_ms: 0.1837
+  type: 'test'
+  ...
+# Subtest: hard ceiling keeps off-screen color from absorbing leftover budget
+ok 12 - hard ceiling keeps off-screen color from absorbing leftover budget
+  ---
+  duration_ms: 0.0828
+  type: 'test'
+  ...
+# Subtest: a long chatty scene stays inside the model window, compacting old turns into engine digests
+ok 13 - a long chatty scene stays inside the model window, compacting old turns into engine digests
+  ---
+  duration_ms: 195.3308
+  type: 'test'
+  ...
+# Subtest: a tiny window shrinks cast profiles to names but never drops a cast member
+ok 14 - a tiny window shrinks cast profiles to names but never drops a cast member
+  ---
+  duration_ms: 0.6773
+  type: 'test'
+  ...
+# Subtest: turn digests come from committed events, not model prose
+ok 15 - turn digests come from committed events, not model prose
+  ---
+  duration_ms: 0.1394
+  type: 'test'
+  ...
+# Subtest: provider calibrates its token ratio from reported usage
+ok 16 - provider calibrates its token ratio from reported usage
+  ---
+  duration_ms: 0.7895
+  type: 'test'
+  ...
+# Subtest: context window detection reads llama.cpp, LM Studio, Ollama and /v1/models metadata
+ok 17 - context window detection reads llama.cpp, LM Studio, Ollama and /v1/models metadata
+  ---
+  duration_ms: 0.6065
+  type: 'test'
+  ...
+# Subtest: reply reserve shrinks to what the model actually writes once replies have been seen
+ok 18 - reply reserve shrinks to what the model actually writes once replies have been seen
+  ---
+  duration_ms: 0.0905
+  type: 'test'
+  ...
+# Subtest: provider re-detects the window after a reply loads a just-in-time model
+ok 19 - provider re-detects the window after a reply loads a just-in-time model
+  ---
+  duration_ms: 0.2527
+  type: 'test'
+  ...
+# Subtest: provider asks reasoning models not to think, and drops the parameter where a server rejects it
+ok 20 - provider asks reasoning models not to think, and drops the parameter where a server rejects it
+  ---
+  duration_ms: 0.2041
+  type: 'test'
+  ...
+# Subtest: BM25 ranks specific words above common ones and splits CJK into bigrams
+ok 21 - BM25 ranks specific words above common ones and splits CJK into bigrams
+  ---
+  duration_ms: 0.2223
+  type: 'test'
+  ...
+# Subtest: lore the player describes without its tag words is still selected, below tagged lore
+ok 22 - lore the player describes without its tag words is still selected, below tagged lore
+  ---
+  duration_ms: 0.7071
+  type: 'test'
+  ...
+# Subtest: closed-scene recaps roll up by day this week and by week before that
+ok 23 - closed-scene recaps roll up by day this week and by week before that
+  ---
+  duration_ms: 0.6743
+  type: 'test'
+  ...
+# Subtest: context size presets cap the window without exceeding what the model reports
+ok 24 - context size presets cap the window without exceeding what the model reports
+  ---
+  duration_ms: 0.2674
+  type: 'test'
+  ...
+# Subtest: context size API switches the active provider and reports the window in use
+ok 25 - context size API switches the active provider and reports the window in use
+  ---
+  duration_ms: 86.5864
+  type: 'test'
+  ...
+# Subtest: wideContext preserves character lines that mention a cast member
+ok 26 - wideContext preserves character lines that mention a cast member
+  ---
+  duration_ms: 0.81
+  type: 'test'
+  ...
+# Subtest: wideContext tail window is 1500 chars instead of 700
+ok 27 - wideContext tail window is 1500 chars instead of 700
+  ---
+  duration_ms: 0.5241
+  type: 'test'
+  ...
+# Subtest: ordinary opening and continuation interpret direct speech and intent under one continuing-scene policy
+ok 28 - ordinary opening and continuation interpret direct speech and intent under one continuing-scene policy
+  ---
+  duration_ms: 4.295
+  type: 'test'
+  ...
+# Subtest: ordinary conversation has one prose policy across both writers and reply kinds
+ok 29 - ordinary conversation has one prose policy across both writers and reply kinds
+  ---
+  duration_ms: 2.3642
+  type: 'test'
+  ...
+# Subtest: free beat direction does not rotate personality moves with seeds and admits clarification
+ok 30 - free beat direction does not rotate personality moves with seeds and admits clarification
+  ---
+  duration_ms: 0.1849
+  type: 'test'
+  ...
+# Subtest: voice examples and speech sheets reach direct and budgeted final messages without object coercion
+ok 31 - voice examples and speech sheets reach direct and budgeted final messages without object coercion
+  ---
+  duration_ms: 1.8986
+  type: 'test'
+  ...
+# Subtest: per-NPC stages do not borrow another NPC memory or trust
+ok 32 - per-NPC stages do not borrow another NPC memory or trust
+  ---
+  duration_ms: 0.1167
+  type: 'test'
+  ...
+# Subtest: authored scenes checkpoints and closing keep their explicit direction and boundaries
+ok 33 - authored scenes checkpoints and closing keep their explicit direction and boundaries
+  ---
+  duration_ms: 0.4957
+  type: 'test'
+  ...
+# Subtest: real service caller keeps per-cast stages and safe object examples in the assembled request
+ok 34 - real service caller keeps per-cast stages and safe object examples in the assembled request
+  ---
+  duration_ms: 6.1511
+  type: 'test'
+  ...
+# Subtest: ordinary questions are optional without a runtime ending quota and invented reactions still fail
+ok 35 - ordinary questions are optional without a runtime ending quota and invented reactions still fail
+  ---
+  duration_ms: 4.634
+  type: 'test'
+  ...
+# Subtest: ordinary player memory checks retain relevant recall without NPC-like grounding
+ok 36 - ordinary player memory checks retain relevant recall without NPC-like grounding
+  ---
+  duration_ms: 0.5821
+  type: 'test'
+  ...
+# Subtest: an ordinary opening attributed to the player cannot become the sole NPC quoted speech
+ok 37 - an ordinary opening attributed to the player cannot become the sole NPC quoted speech
+  ---
+  duration_ms: 3.4288
+  type: 'test'
+  ...
+# Subtest: faithful input interpretation and meaningful intervening action survive repeat and stock filters
+ok 38 - faithful input interpretation and meaningful intervening action survive repeat and stock filters
+  ---
+  duration_ms: 3.5544
+  type: 'test'
+  ...
+# Subtest: recorded orphan player speech tag is removed without rewriting legitimate NPC dialogue
+ok 39 - recorded orphan player speech tag is removed without rewriting legitimate NPC dialogue
+  ---
+  duration_ms: 0.2258
+  type: 'test'
+  ...
+# Subtest: ordinary brief gesture recurrence leaves full narration-repeat and agency safeguards intact
+ok 40 - ordinary brief gesture recurrence leaves full narration-repeat and agency safeguards intact
+  ---
+  duration_ms: 0.7976
+  type: 'test'
+  ...
+# Subtest: a typed kiss goes from opening to completion with one narrator call per input and recorded pricing before scoring
+ok 41 - a typed kiss goes from opening to completion with one narrator call per input and recorded pricing before scoring
+  ---
+  duration_ms: 137.4471
+  type: 'test'
+  ...
+# Subtest: a hub first opening has a focused narrator brief, and missing tags still resolve every checkpoint after two inputs
+ok 42 - a hub first opening has a focused narrator brief, and missing tags still resolve every checkpoint after two inputs
+  ---
+  duration_ms: 67.0832
+  type: 'test'
+  ...
+# Subtest: the prompt keeps firsts private and gives ask its meaning; peak is only briefed after the engine resolves check-in
+ok 43 - the prompt keeps firsts private and gives ask its meaning; peak is only briefed after the engine resolves check-in
+  ---
+  duration_ms: 123.7899
+  type: 'test'
+  ...
+# Subtest: a typed stop withdraws consent without invoking the narrator or scoring another checkpoint
+ok 44 - a typed stop withdraws consent without invoking the narrator or scoring another checkpoint
+  ---
+  duration_ms: 16.7653
+  type: 'test'
+  ...
+# Subtest: a failed narrator reply does not consume a checkpoint input
+ok 45 - a failed narrator reply does not consume a checkpoint input
+  ---
+  duration_ms: 20.4173
+  type: 'test'
+  ...
+# Subtest: direct speech ownership survives quotes, filters, sanitizer and shared display at a later position
+ok 46 - direct speech ownership survives quotes, filters, sanitizer and shared display at a later position
+  ---
+  duration_ms: 28.5526
+  type: 'test'
+  ...
+# Subtest: chosen tease and admission interweave beyond first sentence without extra player speech
+ok 47 - chosen tease and admission interweave beyond first sentence without extra player speech
+  ---
+  duration_ms: 8.4769
+  type: 'test'
+  ...
+# Subtest: mixed chosen physical action and spoken refusal preserve order and negative meaning
+ok 48 - mixed chosen physical action and spoken refusal preserve order and negative meaning
+  ---
+  duration_ms: 3.1305
+  type: 'test'
+  ...
+# Subtest: conditional action pauses after refusal instead of performing touch or inventing a decision
+ok 49 - conditional action pauses after refusal instead of performing touch or inventing a decision
+  ---
+  duration_ms: 3.1884
+  type: 'test'
+  ...
+# Subtest: source attribution rejects invented, duplicate, omitted and reordered contributions
+ok 50 - source attribution rejects invented, duplicate, omitted and reordered contributions
+  ---
+  duration_ms: 0.2347
+  type: 'test'
+  ...
+# Subtest: player quotation cannot be assigned to sole NPC; legacy indirect contributions survive anywhere
+ok 51 - player quotation cannot be assigned to sole NPC; legacy indirect contributions survive anywhere
+  ---
+  duration_ms: 0.8917
+  type: 'test'
+  ...
+# Subtest: all chosen contributions survive stock and repeat filters and keep metadata after sanitation
+ok 52 - all chosen contributions survive stock and repeat filters and keep metadata after sanitation
+  ---
+  duration_ms: 0.2088
+  type: 'test'
+  ...
+# Subtest: bounded contribution repair inserts between body entries and leaves NPC text unchanged
+ok 53 - bounded contribution repair inserts between body entries and leaves NPC text unchanged
+  ---
+  duration_ms: 0.5966
+  type: 'test'
+  ...
+# Subtest: invalid contribution repair cannot invent source or bypass agency
+ok 54 - invalid contribution repair cannot invent source or bypass agency
+  ---
+  duration_ms: 0.3971
+  type: 'test'
+  ...
+# Subtest: ordinary assembly specifies ordered ownership without a first-line contract
+ok 55 - ordinary assembly specifies ordered ownership without a first-line contract
+  ---
+  duration_ms: 0.2979
+  type: 'test'
+  ...
+# Subtest: player quotation about an exit is not an NPC departure
+ok 56 - player quotation about an exit is not an NPC departure
+  ---
+  duration_ms: 0.2566
+  type: 'test'
+  ...
+# Subtest: explicit after-response instruction cannot collapse all chosen contributions into one recap
+ok 57 - explicit after-response instruction cannot collapse all chosen contributions into one recap
+  ---
+  duration_ms: 0.2563
+  type: 'test'
+  ...
+# Subtest: checkpoint and closing writers preserve typed contribution without changing checkpoint authority
+ok 58 - checkpoint and closing writers preserve typed contribution without changing checkpoint authority
+  ---
+  duration_ms: 0.5534
+  type: 'test'
+  ...
+# Subtest: original four inputs, direct speech, mixed action and refusal reach final service/display as faithful narrator openings
+ok 59 - original four inputs, direct speech, mixed action and refusal reach final service/display as faithful narrator openings
+  ---
+  duration_ms: 50.9806
+  type: 'test'
+  ...
+# Subtest: valid model opening needs no repair; a repeated requested opening survives every filter and display
+ok 60 - valid model opening needs no repair; a repeated requested opening survives every filter and display
+  ---
+  duration_ms: 0.6477
+  type: 'test'
+  ...
+# Subtest: invalid targeted repair stops after one opening call without rewriting the NPC reply or bypassing agency
+ok 61 - invalid targeted repair stops after one opening call without rewriting the NPC reply or bypassing agency
+  ---
+  duration_ms: 1.0096
+  type: 'test'
+  ...
+# Subtest: negation, named referents and expressed gentle flirt cannot be silently discarded
+ok 62 - negation, named referents and expressed gentle flirt cannot be silently discarded
+  ---
+  duration_ms: 0.3256
+  type: 'test'
+  ...
+# Subtest: ordinary prompt fixes the conflicting NPC-first example; authored, solo and checkpoint exceptions remain explicit
+ok 63 - ordinary prompt fixes the conflicting NPC-first example; authored, solo and checkpoint exceptions remain explicit
+  ---
+  duration_ms: 0.2975
+  type: 'test'
+  ...
+# Subtest: ordinary semantic repetition preserves negation, reciprocal quotation and connected answer clauses
+ok 64 - ordinary semantic repetition preserves negation, reciprocal quotation and connected answer clauses
+  ---
+  duration_ms: 0.4977
+  type: 'test'
+  ...
+# Subtest: affirmative NPC departure closes the encounter through the engine without inventing travel
+ok 65 - affirmative NPC departure closes the encounter through the engine without inventing travel
+  ---
+  duration_ms: 2.9931
+  type: 'test'
+  ...
+# Subtest: model data cannot forge the identity marker or bypass untrusted state-syntax guarding
+ok 66 - model data cannot forge the identity marker or bypass untrusted state-syntax guarding
+  ---
+  duration_ms: 0.3651
+  type: 'test'
+  ...
+# Subtest: automatic closure ignores movement away from a desk
+ok 67 - automatic closure ignores movement away from a desk
+  ---
+  duration_ms: 0.1047
+  type: 'test'
+  ...
+# Subtest: automatic closure ignores hypothetical or conditional exit
+ok 68 - automatic closure ignores hypothetical or conditional exit
+  ---
+  duration_ms: 0.0979
+  type: 'test'
+  ...
+# Subtest: automatic closure ignores temporary exit or return
+ok 69 - automatic closure ignores temporary exit or return
+  ---
+  duration_ms: 0.2071
+  type: 'test'
+  ...
+# Subtest: a single NPC departure in a group never implies whole encounter closure
+ok 70 - a single NPC departure in a group never implies whole encounter closure
+  ---
+  duration_ms: 0.0842
+  type: 'test'
+  ...
+# Subtest: recorded unambiguous single-NPC door exit remains a positive match
+ok 71 - recorded unambiguous single-NPC door exit remains a positive match
+  ---
+  duration_ms: 0.0562
+  type: 'test'
+  ...
+# Subtest: ambiguous narration leaves engine scene active; explicit model end remains authoritative in a group
+ok 72 - ambiguous narration leaves engine scene active; explicit model end remains authoritative in a group
+  ---
+  duration_ms: 11.0416
+  type: 'test'
+  ...
+# Subtest: long player contribution and faithful opening use the existing entry bound, not an arbitrary 260-character cutoff
+ok 73 - long player contribution and faithful opening use the existing entry bound, not an arbitrary 260-character cutoff
+  ---
+  duration_ms: 2.7328
+  type: 'test'
+  ...
+1..73
+# tests 73
+# suites 0
+# pass 73
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 492.9921

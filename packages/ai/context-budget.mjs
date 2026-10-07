@@ -1,5 +1,6 @@
 import {narrationContext,authoredAudience,intersectKnown,visibleToAudience} from './knowledge.mjs';
-import {relationshipStageOf,behaviorCueOf} from './character-context.mjs';
+import {ordinaryConversation} from './conversation.mjs';
+import {relationshipStageOf,behaviorCueOf,voiceExamplesOf} from './character-context.mjs';
 import {allocate,lods,messageTokens,DEFAULT_TIERS} from './budget.mjs';
 import {calendarFor} from '../../public/calendar.mjs';
 import {promptView} from '../../vendor/venus/scenePrompt.mjs';
@@ -91,21 +92,13 @@ export function recentlySurfaced(world,turnId,window=8){
 
 const MOODS=['in a good mood today','a little tired today','quieter than usual today','restless today','chattier than usual today'];
 const moodHash=s=>[...String(s)].reduce((h,c)=>Math.imul(h^c.charCodeAt(0),16777619)>>>0,2166136261);
-const dailyMood=(a,c)=>{if(c.day==null)return c.mood||'';const moods=[].concat(a.moods||MOODS),h=moodHash(`${a.id}:day${c.day}`);return !c.scriptedScene&&h%3===0?moods[(h>>>2)%moods.length]||'':'';};
+const dailyMood=(a,c)=>{if(ordinaryConversation(c)&&!a.moods?.length)return c.mood||'';if(c.day==null)return c.mood||'';const moods=[].concat(a.moods||MOODS),h=moodHash(`${a.id}:day${c.day}`);return !c.scriptedScene&&h%3===0?moods[(h>>>2)%moods.length]||'':'';};
 
 // Pick 2 voice examples by relationship stage and mood tier
-function voiceExamplesByState(a,stage,mood,strained){
-  const ex=a.voiceExamples||{};
-  const moodTier=mood?mood.includes('good')||mood.includes('chattier')?'welcoming':mood.includes('tired')||mood.includes('quieter')?'dodging':'declining':'welcoming';
-  const pick=(cat)=>[].concat(ex[cat]||[]).slice(0,2);
-  // Stage priority: dating/exclusive -> welcoming, strained/rejected/broken -> declining, else mood-based
-  if(['dating','exclusive','crush'].includes(stage))return pick('welcoming');
-  if(strained||['rejected','broken'].includes(stage))return pick('declining');
-  return pick(moodTier);
-}
+const voiceExamplesByState=voiceExamplesOf;
 
-const profileOf=(a,stage='',mood='',strained=false)=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',description:a.description||'',personality:a.personality||'',behavior:a.behavior||{},behaviorCue:a.behaviorCue||'',traits:a.traits||[],voice:a.voice||'',fingerprint:a.fingerprint||'',style:a.style||'',examples:a.examples||[],goal:a.goal||'',backstory:a.backstory||'',likes:a.likes||[],dislikes:a.dislikes||[],neverSays:a.neverSays||[],voiceBlock:{fingerprint:a.fingerprint||'',examples:voiceExamplesByState(a,stage,mood,strained)}});
-const compactProfile=(a,stage='',mood='',strained=false)=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',personality:clip(a.personality||a.description||'',240),behaviorCue:a.behaviorCue||'',traits:a.traits||[],voice:a.voice||'',fingerprint:a.fingerprint||'',voiceBlock:{fingerprint:a.fingerprint||'',examples:voiceExamplesByState(a,stage,mood,strained)},examples:(a.examples||[]).slice(0,2),neverSays:a.neverSays||[]});
+const profileOf=(a,stage='',mood='',strained=false)=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',description:a.description||'',personality:a.personality||'',behavior:a.behavior||{},behaviorCue:a.behaviorCue||'',relationshipStage:a.relationshipStage||'',traits:a.traits||[],moods:a.moods||[],voice:a.voice||'',fingerprint:a.fingerprint||'',style:a.style||'',examples:a.examples||[],goal:a.goal||'',backstory:a.backstory||'',likes:a.likes||[],dislikes:a.dislikes||[],neverSays:a.neverSays||[],voiceBlock:{fingerprint:a.fingerprint||'',examples:voiceExamplesByState(a,stage,mood,strained)}});
+const compactProfile=(a,stage='',mood='',strained=false)=>({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',personality:clip(a.personality||a.description||'',240),behaviorCue:a.behaviorCue||'',relationshipStage:a.relationshipStage||'',traits:a.traits||[],voice:a.voice||'',fingerprint:a.fingerprint||'',voiceBlock:{fingerprint:a.fingerprint||'',examples:voiceExamplesByState(a,stage,mood,strained)},examples:(a.examples||[]).slice(0,2),neverSays:a.neverSays||[]});
 
 /**
  * Fits a scene context into the model's window. `render(context)` must return the prompt messages so the fixed
@@ -124,7 +117,7 @@ export function budgetSceneContext(context,pack,world,turnId,{window=8192,reply=
  // Determine stage and mood for voice example selection
   const datingInfo=a=>(context.dating||[]).find(d=>d.character===a.id)||{};
   const currentMood=a=>dailyMood(a,context);
-  actors.forEach((a,i)=>{const d=datingInfo(a);const phase=d.phase||'';a={...a,behaviorCue:behaviorCueOf(a,relationshipStageOf(context,a,world.modules?.['social.relationships']?.edges?.[`${a.id}--${pack.playerId}`]??null))};const strained=d.strained||false;add('castProfiles',1,`cast:${a.id}`,100-i,[['full',profileOf(a,phase,currentMood(a),strained)],['compact',compactProfile(a,phase,currentMood(a),strained)],['name',{id:a.id,name:a.name,pronouns:a.pronouns||'they/them'}]]);});
+  actors.forEach((a,i)=>{const d=datingInfo(a);const phase=relationshipStageOf(context,a,world.modules?.['social.relationships']?.edges?.[`${a.id}--${pack.playerId}`]??null);a={...a,relationshipStage:phase,behaviorCue:behaviorCueOf(a,phase)};const strained=d.strained||false;add('castProfiles',1,`cast:${a.id}`,100-i,[['full',profileOf(a,phase,currentMood(a),strained)],['compact',compactProfile(a,phase,currentMood(a),strained)],['cue',{id:a.id,name:a.name,pronouns:a.pronouns||'they/them',personality:clip(a.personality||a.description||'',80),voice:clip(a.voice||'',100),relationshipStage:phase}],['name',{id:a.id,name:a.name,pronouns:a.pronouns||'they/them'}]]);});
  const history=context.sceneHistory||[];
  // `verbatim` caps how many recent turns may stay word for word even when they fit: a small model given 25 full turns
   // loses track of which question it is answering, and does better with a short transcript plus one-line digests.

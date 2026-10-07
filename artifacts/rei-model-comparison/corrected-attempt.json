@@ -1,0 +1,51 @@
+{
+  "status": "completed",
+  "localHttpStatus": 200,
+  "date": "2026-10-07T05:48:37.039Z",
+  "clientLatencyMs": 7010,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+  "route": "fireworks",
+  "messagesSha256": "e98c4ae985df4ab6de60d8a05daeb3034e1bc98c8beb00e23fb0c7c7be67d6b9",
+  "pricing": {
+    "prompt": "0.0000003",
+    "completion": "0.0000012",
+    "input_cache_read": "0.000000006",
+    "discount": 0
+  },
+  "inputTokenUpperBound": 65536,
+  "outputTokenUpperBound": 1100,
+  "priorCostUpperUsd": 0.0209808,
+  "costUpperUsd": 0.0209808,
+  "combinedCostUpperUsd": 0.0419616,
+  "completionRequests": 1,
+  "settingsChanged": false,
+  "httpStatus": 200,
+  "latencyMs": 6784,
+  "returnedModel": "deepseek/deepseek-v4.1-flash",
+  "actualProvider": "Fireworks",
+  "usage": {
+    "prompt_tokens": 3442,
+    "completion_tokens": 729,
+    "total_tokens": 4171,
+    "cost": 0.0019074,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.0019074,
+      "upstream_inference_prompt_cost": 0.0010326,
+      "upstream_inference_completions_cost": 0.0008748
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "finishReason": "stop"
+}

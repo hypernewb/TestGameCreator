@@ -14,7 +14,7 @@ The owner played two chats (the second on a restarted 4317) and conversation sti
   - [T-108](T-108.md) Scene voice. planned: codex
   - [T-109](T-109.md) Delivery verdict (after T-108). planned: codex
   - [T-112](T-112.md) Reaction flash + scene summary. planned: codex; owner to confirm it is compatible with the Game UI redesign pause.
-- **Wave C:** [T-113](T-113.md) Generated depth. planned: codex
+- **Wave C:** [T-113](T-113.md) Generated depth. model: codex; landed 8e0cc46 ([report](T-113.report.md)). Main 2026-10-07: npm test 1976 pass/0 fail/10 skip. Open: owner-approved cloud generation sample (acceptance item; not yet run).
 - **Later:** CQ6 (more random encounters, walk-ins, two heroines), plus the CQ7 leftovers.
 
 ## Current priority (2026-10-04)

@@ -1,0 +1,5 @@
+const offer=s=>{const t=String(s).trim().replace(/^["“]|["”]$/gu,'').replace(/^I\s+(?:say|tell\s+(?:her|him|them|[\p{L} -]+))\s*[, :]\s*["“]?/iu,'').trim();if(/\b(?:not|never|don['’]t|won['’]t|wouldn['’]t|decline|refuse|accept|agree|accepted|agreed)\b/iu.test(t)||/\b(?:if|unless|provided|only when|as long as)\b/iu.test(t))return false;return /^(?:I\s+(?:invite\b|ask\s+.{1,45}?\s+(?:out\b|for\s+a\s+date\b|to\s+(?:join|meet|come|go|watch|have|walk|see)\b))|(?:would|do)\s+you\s+(?:like|want)\s+to\b|(?:shall|can|could)\s+we\b|let['’]?s\b|join\s+me\b|come\s+with\s+me\b)/iu.test(t);};
+export function playerInviteSource(text,lines=[],requested){
+ const input=String(text||''),owned=lines.filter(l=>!l.speaker&&['playerSpeech','playerAction'].includes(l.type)&&!l.pending&&typeof l.source==='string'&&input.includes(l.source)),candidates=requested?[requested]:owned.length?owned.map(l=>l.source):[input];
+ return candidates.find(s=>typeof s==='string'&&input.includes(s)&&(!lines.some(l=>l.type==='playerSpeech'||l.type==='playerAction')||owned.some(l=>l.source.includes(s)))&&s.split(/\b(?:then|but)\b|[.;]/iu).some(offer))||null;
+}

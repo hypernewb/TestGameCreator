@@ -1,6 +1,7 @@
 import {buildContentPackage,reviewContentPackage,applyContentPackage,commitContentPackage} from './packages/cards/content-package.mjs';
 import {memorySnapshot,memoryPreview} from './packages/ai/memory-controls.mjs';
 import {inspectSceneRequest} from './packages/ai/inspect.mjs';
+import {turnComparisons} from './packages/ai/turn-compare.mjs';
 import http from 'node:http';
 import {readFileSync,readdirSync,existsSync,mkdirSync,writeFileSync,realpathSync,rmSync,statSync} from 'node:fs';
 import {diagnoseScenes} from './packages/modules/scenes.mjs';
@@ -9,6 +10,7 @@ import {fileURLToPath} from 'node:url';
 import {resolve,dirname,extname,relative as pathRelative,isAbsolute,sep} from 'node:path';
 import {randomUUID,randomInt,createHash} from 'node:crypto';
 import {createLab,labCast,stagesOf} from './packages/testing/character-lab.mjs';
+import {createReiComparison} from './packages/testing/rei-comparison.mjs';
 import {validateImage,validateProjectMedia} from './packages/assets/project-media.mjs';
 import {assetAudit} from './packages/assets/asset-audit.mjs';
 import {createWorld,validatePack,actions,resolveModules,execute,assert,refusalFor,refusalCode,mechanicsDigest} from './packages/core/engine.mjs';
@@ -38,7 +40,8 @@ import {bakeDirectorTemplates} from './packages/cards/director-templates.mjs';
 import {creatorTemplate} from './packages/cards/creator-template.mjs';
 import {readPack} from './packages/cards/director-library.mjs';
 import {reviewProposal,regenerateEntry,applyReviewed} from './packages/ai/proposal-review.mjs';
-import {characterMessages,normalizeCharacter,characterResponseFormat} from './packages/ai/character-authoring.mjs';
+import {characterMessages,normalizeCharacter,characterResponseFormat,profileSectionMessages,mergeProfileSections,PROFILE_SECTION_KEYS} from './packages/ai/character-authoring.mjs';
+import {parseModelObject} from './packages/ai/json.mjs';
 import {creatorRoutes} from './packages/cards/creator-routes.mjs';
 import {assemble} from './packages/cards/world-assembly.mjs';
 import {openRouterComplete} from './packages/cards/openrouter.mjs';
@@ -56,7 +59,7 @@ export function isFileWithin(base,file,pathApi={relative:pathRelative,isAbsolute
   const child=pathApi.relative(base,file);
   return child!=='' && child!=='..' && !child.startsWith('..'+pathApi.sep) && !pathApi.isAbsolute(child);
 }
-export function createApp({dataPath,scenarioDir,provider=new MockProvider(),drafter,startupAsk}={}){
+export function createApp({dataPath,scenarioDir,provider=new MockProvider(),drafter,startupAsk,comparisonEnabled=false}={}){
   const root=fileURLToPath(new URL('.',import.meta.url));const packs={};for(const f of readdirSync(resolve(root,'packs')).filter(f=>f.endsWith('.json'))){const p=readPack(resolve(root,'packs',f));validatePack(p,registry);assert(!packs[p.id],'Duplicate pack ID');packs[p.id]=p;}
   const authorDir=scenarioDir||resolve(root,'data/scenarios'),draftDir=resolve(authorDir,'drafts'),publishedDir=resolve(authorDir,'published'),mediaDir=resolve(authorDir,'media');for(const dir of [draftDir,publishedDir,mediaDir])mkdirSync(dir,{recursive:true});
   const testDir=resolve(authorDir,'test-scenarios');mkdirSync(testDir,{recursive:true});
@@ -76,6 +79,7 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider(),draf
   let aiSettings={mode:'offline',endpoint:LOCAL_PRESETS.lmstudio,model:'',contextSize:'default'};
   if(aiSettingsFile&&existsSync(aiSettingsFile)){try{const saved=JSON.parse(readFileSync(aiSettingsFile,'utf8'));if(saved.contextSize)aiSettings.contextSize=validateContextSize(saved.contextSize);if(saved.mode==='local'){aiSettings={...aiSettings,mode:'local',endpoint:normalizeLocalEndpoint(saved.endpoint),model:validateLocalModel(saved.model)};provider=new CompatibleProvider({endpoint:aiSettings.endpoint,model:aiSettings.model,timeout:120000,maxRequests:10000,maxTokens:1800});}else if(saved.mode==='cloud'){aiSettings={...connection(saved),contextSize:aiSettings.contextSize};provider=connected(aiSettings);}}catch{console.warn('Ignoring invalid AI settings');}}
   const store=new Store(dataPath||resolve(root,'data/campaigns.sqlite')),service=new GameService(store,packs,registry,sizeContextWindow(provider,aiSettings.contextSize));const active=new Map(),memoryAccess=new Map();
+  const reiComparison=createReiComparison({enabled:comparisonEnabled,provider:()=>service.provider,readRequest:()=>JSON.parse(readFileSync(resolve(root,'artifacts/rei-model-comparison/focused-fix/modified-request.json'),'utf8'))});
   // Character Chat Lab (T-107): isolated one-NPC campaigns on throwaway :memory: stores. The real campaigns DB is
   // never written, and data/ai-settings.json is never read here: local/cloud providers reuse the settings in memory.
   const labStartedAt=Date.now(),labs=new Map();
@@ -99,6 +103,9 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider(),draf
         const mime={'.html':'text/html','.mjs':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json'}[extname(file)],policy="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'"+(path==='/vn_game_ui_wizard.html'?" data:":'')+"; script-src 'self'; connect-src 'self'; frame-ancestors "+(path==='/vn_game_ui_wizard.html'&&url.searchParams.get('embedded')==='1'?"'self'":"'none'")+"; object-src 'none'";res.writeHead(200,{'Content-Type':mime,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':policy});res.end(readFileSync(file));return;
       }
       let body={};if(req.method==='POST'){assert(req.headers['content-type']?.startsWith('application/json'),'Expected JSON');let text='';for await(const chunk of req){text+=chunk;assert(text.length<=5000000,'Request too large');}body=JSON.parse(text||'{}');}
+      if(path==='/api/ai/rei-comparison/status'&&req.method==='GET')return send(reiComparison.status());
+      if(path==='/api/ai/rei-comparison'&&req.method==='POST'){assert(!active.size,'Wait for active game actions');return send(await reiComparison.complete(req,body));}
+      if(path==='/api/ai/rei-comparison/disable'&&req.method==='POST')return send(reiComparison.disable(req,body));
       if(path==='/api/bootstrap')return send({packs:Object.values(packs).filter(p=>!p.publishedFrom||!Object.values(packs).some(q=>q.publishedFrom===p.publishedFrom&&q.publishedAt>p.publishedAt)).sort((a,b)=>b.version.localeCompare(a.version)).map(p=>({id:p.id,title:p.title,subtitle:p.subtitle,starts:p.startOptions||[]})),modules:moduleCatalog,campaigns:store.list(),provider:service.provider.name,ai:publicSettings()});
       if(path==='/api/ai/config'&&req.method==='GET')return send({provider:service.provider.name,...publicSettings(),connectionPresets:CONNECTION_PRESETS,presets:LOCAL_PRESETS,contextWindow:service.provider.contextWindow||null,detectedWindow:service.provider.detectedWindow||null,contextSource:service.provider.contextSource||null,contextSizes:Object.entries(CONTEXT_SIZES).map(([id,x])=>({id,label:x.label,hint:x.hint,cap:Number.isFinite(x.cap)?x.cap:null})),tokenRatio:service.provider.calibration?.ratio??null});
       if(path==='/api/ai/connect-test'&&req.method==='POST'){
@@ -167,6 +174,17 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider(),draf
         for(let attempt=0;attempt<2;attempt++){raw=await service.provider.complete(request.messages,undefined,characterResponseFormat());try{character=normalizeCharacter(raw,body.pack,options);break;}catch(error){if(attempt)throw error;request.messages.push({role:'assistant',content:typeof raw==='string'?raw:JSON.stringify(raw)},{role:'user',content:`Return a complete corrected character JSON object. Validation failed: ${error.message}`});}}
         return send({character,provider:service.provider.name});
       }
+      // Regenerate chosen deep-profile sections of one character; every other field of the caller's actor is preserved.
+      if(path==='/api/studio/ai-profile-sections'&&req.method==='POST'){
+        assert(service.provider instanceof CompatibleProvider,'Connect a local AI model in AI settings before regenerating profile sections');
+        assert(body.pack&&typeof body.pack==='object'&&!Array.isArray(body.pack),'Project data required');validatePack(body.pack,registry);
+        assert(body.actor&&typeof body.actor==='object'&&!Array.isArray(body.actor),'Actor required');
+        assert(Array.isArray(body.sections)&&body.sections.length&&body.sections.length<=6&&body.sections.every(s=>PROFILE_SECTION_KEYS.includes(s)),'Choose 1-6 profile sections to regenerate: '+PROFILE_SECTION_KEYS.join(', '));
+        const request=profileSectionMessages(body.pack,body.actor,body.sections,typeof body.brief==='string'?body.brief.slice(0,4000):'');
+        let raw,profile;
+        for(let attempt=0;attempt<2;attempt++){raw=await service.provider.complete(request.messages,undefined,{type:'json_schema',json_schema:{name:'profile',strict:true,schema:request.schema}});try{profile=mergeProfileSections(body.actor.profile,parseModelObject(raw).profile,body.sections);break;}catch(error){if(attempt)throw error;request.messages.push({role:'assistant',content:typeof raw==='string'?raw:JSON.stringify(raw)},{role:'user',content:`Return corrected profile JSON: {"profile":{...}}. Validation failed: ${error.message}`});}}
+        return send({profile,provider:service.provider.name});
+      }
       if(path==='/api/studio/ai-scene'&&req.method==='POST'){
         assert(service.provider instanceof CompatibleProvider,'Connect a local AI model in AI settings before drafting a scene');
         assert(body.pack&&typeof body.pack==='object'&&!Array.isArray(body.pack),'Project data required');validatePack(body.pack,registry);
@@ -218,6 +236,7 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider(),draf
       if(path==='/api/creator/memory/access'&&req.method==='POST'){assert(body.scope==='creator-debug','Creator/debug scope required');for(const [key,expires] of memoryAccess)if(expires<=Date.now())memoryAccess.delete(key);assert(memoryAccess.size<100,'Too many creator memory sessions; retry after sessions expire');const token=randomUUID();memoryAccess.set(token,Date.now()+3600000);return send({token});}
       if(path.startsWith('/api/creator/memory/')){const token=req.headers['x-story-memory'];assert(memoryAccess.get(token)>Date.now(),'Open memory controls from the Builder first');const id=req.method==='GET'?url.searchParams.get('id'):body.campaignId,s=store.load(id),p=packs[s.packId];assert(p,'Missing pack');if(path==='/api/creator/memory/list'&&req.method==='GET')return send(memorySnapshot(s,p));if(path==='/api/creator/memory/preview'&&req.method==='POST')return send(memoryPreview(s,p,body.actorId,body.query));if(path==='/api/creator/memory/edit'&&req.method==='POST'){assert(!active.has(id),'Wait for the current action to finish');return send(memorySnapshot(store.editMemory(id,body,p),p));}return send({error:'Not found'},404);}
       if(path==='/api/creator/context/inspect'&&req.method==='POST'){const token=req.headers['x-story-memory'];assert(memoryAccess.get(token)>Date.now(),'Open memory controls from the Builder first');const s=store.load(body.campaignId),p=packs[s.packId];assert(p,'Missing pack');return send(await inspectSceneRequest(s,p,body.actorId,body.query,service.provider));}
+      if(path==='/api/creator/turns/compare'&&req.method==='GET'){const token=req.headers['x-story-memory'];assert(memoryAccess.get(token)>Date.now(),'Open memory controls from the Builder first');const s=store.load(url.searchParams.get('id')),p=packs[s.packId];assert(p,'Missing pack');return send({campaignId:s.campaignId,packId:s.packId,title:p.title,turns:turnComparisons(s,p,{limit:Math.max(1,Math.min(200,Number(url.searchParams.get('limit'))||60))})});}
       if(path==='/api/facts'&&req.method==='GET'){const s=store.load(url.searchParams.get('id')),p=packs[s.packId];assert(p&&s.modules['story.facts'],'Fact ledger is disabled');return send({facts:allGeneratedFacts(s),edits:s.factEdits||[],count:(s.factEdits||[]).length});}
       if(path==='/api/facts/search'&&req.method==='POST'){const s=store.load(body.campaignId),p=packs[s.packId];assert(p&&s.modules['story.facts'],'Fact ledger is disabled');assert(typeof body.query==='string'&&body.query.length<=200,'Search text is too long');return send(selectGeneratedFacts(s,p,p.playerId,body.query));}
       if(path==='/api/facts/edit'&&req.method==='POST'){assert(!active.has(body.campaignId),'Wait for the current action to finish');const s=store.load(body.campaignId),p=packs[s.packId];assert(p&&s.modules['story.facts'],'Fact ledger is disabled');const edit={id:randomUUID(),factId:body.factId,action:body.action,...(body.action==='correct'?{text:body.text?.trim()}:{}),...(body.action==='merge'?{targetId:body.targetId}:{}),at:new Date().toISOString()};validateFactEdits([...(s.factEdits||[]),edit],s,p);return send(view(store.editFact(body.campaignId,edit,body.expectedCount)));}
@@ -303,5 +322,5 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider(),draf
 if(process.argv[1]===fileURLToPath(import.meta.url)){
   if(!process.env.OPENROUTER_API_KEY&&existsSync('.env'))process.loadEnvFile('.env');
   const provider=process.env.STORY_ENDPOINT?new CompatibleProvider({endpoint:process.env.STORY_ENDPOINT,model:process.env.STORY_MODEL,key:process.env.STORY_API_KEY||'',maxRequests:Number(process.env.STORY_MAX_REQUESTS||1000)}):new MockProvider();
-  const {server,service}=createApp({provider,dataPath:process.env.STORY_DATA_PATH||undefined});const port=Number(process.env.PORT||4317);server.listen(port,'127.0.0.1',()=>console.log(`Story Framework: http://127.0.0.1:${port}\nProvider: ${service.provider.name}\nKeep this window open. Press Ctrl+C to stop.`));
+  const {server,service}=createApp({provider,dataPath:process.env.STORY_DATA_PATH||undefined,comparisonEnabled:process.env.STORY_REI_COMPARISON_ONCE==='Sentinel_9d6f7dc20540819182e857be3e64c6ea'});const port=Number(process.env.PORT||4317);server.listen(port,'127.0.0.1',()=>console.log(`Story Framework: http://127.0.0.1:${port}\nProvider: ${service.provider.name}\nKeep this window open. Press Ctrl+C to stop.`));
 }

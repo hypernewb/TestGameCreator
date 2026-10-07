@@ -1,0 +1,169 @@
+{
+  "model": "qwen/qwen3.8-27b",
+  "serverStopped": true,
+  "sourceChangedDuringRun": false,
+  "rows": [
+    {
+      "turn": 1,
+      "ms": 37507,
+      "calls": 2,
+      "repairs": 0,
+      "fallback": false,
+      "entries": 4,
+      "narrationWords": 54,
+      "dialogueWords": 68,
+      "rawFirstLine": {
+        "speaker": "",
+        "text": "Dilek looks up from the page, her dark eyes sharpening as she processes the observation. She taps a stained fingernail against the desk, a rhythmic click that matches her internal tempo."
+      },
+      "shownFirstLine": {
+        "speaker": "",
+        "text": "Dilek looks up from the page, her dark eyes sharpening as she processes the observation. She taps a stained fingernail against the desk, a rhythmic click that matches her internal tempo."
+      },
+      "lastNPCLine": "Look at the margin. This isn't clutter, it's the actual argument. The poem is just the skeleton. If you want to read the meat, you read my notes. Are you going to sit there judging my handwriting, or are you going to try to keep up?",
+      "removedNPCSentences": [],
+      "trust": 17,
+      "chemistry": 10,
+      "phase": "available",
+      "sceneId": "vn-input-1",
+      "usage": [
+        {
+          "model": "qwen/qwen3.8-27b",
+          "latencyMs": 31594,
+          "tokens": {
+            "prompt_tokens": 1851,
+            "completion_tokens": 385,
+            "total_tokens": 2236,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "turn": 2,
+      "ms": 28675,
+      "calls": 1,
+      "repairs": 0,
+      "fallback": false,
+      "entries": 4,
+      "narrationWords": 81,
+      "dialogueWords": 69,
+      "rawFirstLine": {
+        "speaker": "",
+        "text": "Dilek’s finger stops tracing the margin. She lets out a short, dry exhale through her nose, the kind that usually precedes a correction. She pulls the book back to her side of the desk, closing it with a definitive snap that echoes in the small flat."
+      },
+      "shownFirstLine": {
+        "speaker": "",
+        "text": "Dilek’s finger stops tracing the margin. She lets out a short, dry exhale through her nose, the kind that usually precedes a correction. She pulls the book back to her side of the desk, closing it with a definitive snap that echoes in the small flat."
+      },
+      "lastNPCLine": "The lecturer is not. So unless you are about to misread a couplet, I suggest you stop worrying about the grade and start worrying about whether you can actually keep up with the argument.",
+      "removedNPCSentences": [
+        "The pen is off duty."
+      ],
+      "trust": 17,
+      "chemistry": 12,
+      "phase": "available",
+      "sceneId": "vn-input-1",
+      "usage": [
+        {
+          "model": "qwen/qwen3.8-27b",
+          "latencyMs": 28612,
+          "tokens": {
+            "prompt_tokens": 2078,
+            "completion_tokens": 386,
+            "total_tokens": 2464,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "turn": 3,
+      "ms": 37115,
+      "calls": 1,
+      "repairs": 0,
+      "fallback": false,
+      "entries": 6,
+      "narrationWords": 52,
+      "dialogueWords": 90,
+      "rawFirstLine": {
+        "speaker": "",
+        "text": "Dilek’s jaw tightens. She does not look away, but the tension in her shoulders shifts, a silent rejection of the softening tone."
+      },
+      "shownFirstLine": {
+        "speaker": "",
+        "text": "Dilek’s jaw tightens. She does not look away, but the tension in her shoulders shifts, a silent rejection of the softening tone."
+      },
+      "lastNPCLine": "So. Are you going to tell me why you are actually here, or are we going to stand in this awkward, rain-soaked silence until I decide to leave?",
+      "removedNPCSentences": [],
+      "trust": 17,
+      "chemistry": 11,
+      "phase": "available",
+      "sceneId": "vn-input-1",
+      "usage": [
+        {
+          "model": "qwen/qwen3.8-27b",
+          "latencyMs": 37062,
+          "tokens": {
+            "prompt_tokens": 2332,
+            "completion_tokens": 528,
+            "total_tokens": 2860,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "turn": 4,
+      "ms": 49706,
+      "calls": 1,
+      "repairs": 0,
+      "fallback": false,
+      "entries": 6,
+      "narrationWords": 177,
+      "dialogueWords": 47,
+      "rawFirstLine": {
+        "speaker": "",
+        "text": "Dilek stops turning the pen. The motion halts mid-rotation, the ink-stained tip pointing at the desk surface. She stares at the object as if it has just offered an incorrect scansion, then looks up. Her expression does not soften, but the defensive set of her shoulders drops a fraction of an inch. She does not smile. She simply waits, the silence in the flat stretching until the hum of the laundry machines below becomes the only sound."
+      },
+      "shownFirstLine": {
+        "speaker": "",
+        "text": "Dilek stops turning the pen. The motion halts mid-rotation, the ink-stained tip pointing at the desk surface. She stares at the object as if it has just offered an incorrect scansion, then looks up."
+      },
+      "lastNPCLine": "The library tower is open until six. The coffee is terrible, but the acoustics are better than here. If you are serious about the company, bring a text I can argue with. If you are not, I will assume you were joking and forget this conversation happened.",
+      "removedNPCSentences": [
+        "When you are not working."
+      ],
+      "trust": 17,
+      "chemistry": 13,
+      "phase": "available",
+      "sceneId": "vn-input-1",
+      "usage": [
+        {
+          "model": "qwen/qwen3.8-27b",
+          "latencyMs": 49639,
+          "tokens": {
+            "prompt_tokens": 2642,
+            "completion_tokens": 586,
+            "total_tokens": 3228,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "policyOnlyEstimatedTokens": {
+    "prior": 305,
+    "current": 450,
+    "delta": 145,
+    "method": "Framework model-agnostic character estimator, not model tokenization or a matched model A/B comparison; policy block only."
+  }
+}

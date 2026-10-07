@@ -1,0 +1,53 @@
+{
+  "before": {
+    "turns": 2,
+    "calls": 2,
+    "ms": [
+      1181,
+      2774
+    ],
+    "promptTokensFirstRequest": [
+      2079,
+      2161
+    ],
+    "fallbacks": 0,
+    "repairs": 0,
+    "displayWords": [
+      24,
+      44
+    ]
+  },
+  "after": {
+    "turns": 7,
+    "calls": 10,
+    "ms": [
+      2542,
+      2614,
+      922,
+      6687,
+      3608,
+      5167,
+      2561
+    ],
+    "promptTokensFirstRequest": [
+      1794,
+      1907,
+      2103,
+      2197,
+      2320,
+      2505,
+      2546
+    ],
+    "fallbacks": 0,
+    "repairs": 3,
+    "displayWords": [
+      102,
+      86,
+      19,
+      19,
+      116,
+      48,
+      37
+    ]
+  }
+}

@@ -80,8 +80,8 @@ async function draftRun(){
  say(stop?'Stopped. Draft the rest when ready.':S.batches.length?`${S.batches.length} cards still have blanks: draft again, or fill them by hand in review.`:'Every card is drafted.');
  if(!stop&&!S.batches.length)go(6);
 }
-const cardName=id=>{if(id==='world')return 'World';if(id.startsWith('director:'))return `Director · ${id.slice(9)}`;const [hid,r]=id.split(':'),mode=r&&getPath(S.spec,`heroines.${hid}.rungs.${r}.mode`),eff=mode||S.spec?.world?.firsts||(r?'authored':'');
- return `${getPath(S.spec,`heroines.${hid}.actor.name`)||hid} · ${r}${eff==='free'?' (free)':''}${mode==='authored'&&S.spec?.world?.firsts==='free'?' (authored)':''}`;};
+const cardName=id=>{if(id==='world')return 'World';if(id.startsWith('director:'))return `Director · ${id.slice(9)}`;const [hid,r]=id.split(':');return `${getPath(S.spec,`heroines.${hid}.actor.name`)||hid} · ${r}`;};
+const cardTitle=id=>{const n=cardName(id),hid=id.split(':')[0],name=getPath(S.spec,`heroines.${hid}.actor.name`)||hid;return id.includes(':')&&!id.startsWith('director:')?n.slice(name.length+3).replace(/^./,c=>c.toUpperCase()):n;};
 const draftLabel=()=>{const p=Object.values(S.progress||{}),bad=p.filter(v=>v==='bad').length;return bad?`Retry ${bad} failed card${bad>1?'s':''}`:p.includes('ok')&&S.batches?.length?'Draft what is left':'Draft everything';};
 function stepDraft(){
  const cards=S.cards||[];
@@ -93,7 +93,7 @@ function stepDraft(){
 }
 
 // Review: one card per scene; every field editable; choices show their tone; Redraft rewrites just that card.
-const pretty=rel=>rel.replace(/(\w+?)s?\.(\d+)(?=\.|$)/g,(_,k,n)=>`${k} ${+n+1}`).replace(/\.(text|label)$/,'').replace(/\.result$/,'.what happens').replace(/checkIn/g,'check-in').replace(/checkpoints\.([\w-]+)$/,'cue ($1)').replaceAll('.',' › ');
+const pretty=rel=>rel.replace(/^reasons\.(.+)$/,(_,k)=>`her reaction to “${k}”`).replace(/^fallback\.name$/,'ending title if nobody is chosen').replace(/^fallback\.text$/,'ending text if nobody is chosen').replace(/(\w+?)s?\.(\d+)(?=\.|$)/g,(_,k,n)=>`${k} ${+n+1}`).replace(/\.(text|label)$/,'').replace(/\.result$/,'.what happens').replace(/checkIn/g,'check-in').replace(/checkpoints\.([\w-]+)(?:\.cue)?$/,'cue at “$1”').replaceAll('.',' › ');
 const blankCount=()=>(S.cards||[]).reduce((n,c)=>n+c.paths.filter(p=>!String(getPath(S.spec,p)??'').trim()).length,0);
 function card(c){
  const base=c.id==='world'?'':c.id.startsWith('director:')?'director.beats.':`heroines.${c.id.split(':')[0]}.${c.id.endsWith(':profile')?'':`rungs.${c.id.split(':')[1]}.`}`;
@@ -103,18 +103,18 @@ function card(c){
   wrap.append(h('label',{},pretty(rel),tone?h('span',{class:`tone ${tone}`},tone):null),short?h('input',{value:v,placeholder:'AI improvises',oninput:mark}):h('textarea',{value:v,placeholder:'Blank: the AI improvises this while you play',rows:Math.min(8,Math.ceil(v.length/110)+1),oninput:mark}));return wrap;});
  // O1: a rung card can flip its first between free (typed, checkpoint cues) and authored (choice scenes); the card set is re-derived.
  const rung=c.id.includes(':')&&!c.id.startsWith('director:')&&!c.id.endsWith(':profile')?c.id.split(':')[1]:null;
- const modeSel=rung?h('select',{title:'How this first plays',onchange:e=>busy(e.target,'Switching…',async()=>{setPath(S.spec,`${base}mode`,e.target.value);keep();const r=await api('check',{spec:S.spec});Object.assign(S,{cards:r.cards,batches:r.batches});render();say('');})},
-  [['','world setting'],['free','free'],['authored','authored']].map(([v,t])=>h('option',{value:v,selected:(getPath(S.spec,`${base}mode`)??'')===v},t))):null;
- const el=h('div',{class:'card'},h('header',{},h('h3',{},cardName(c.id)),modeSel,h('button',{onclick:e=>busy(e.target,`Redrafting ${cardName(c.id)}…`,async()=>{const r=await api('fill',{spec:S.spec,batches:[c.id],redo:true,style:S.style});S.spec=r.spec;keep();el.replaceWith(card(c));foot();say(r.errors.length?r.errors.join('; '):'Redrafted.',r.errors.length);})},'Redraft')),fields);
+ const modeSel=rung?h('select',{title:'How this first plays','aria-label':`How ${cardName(c.id)} plays`,onchange:e=>busy(e.target,'Switching…',async()=>{setPath(S.spec,`${base}mode`,e.target.value);keep();const r=await api('check',{spec:S.spec});Object.assign(S,{cards:r.cards,batches:r.batches});render();say('');})},
+  [['','world setting (default)'],['free','free: typed, checkpoint cues'],['authored','authored: choice scenes']].map(([v,t])=>h('option',{value:v,selected:(getPath(S.spec,`${base}mode`)??'')===v},t))):null;
+ const el=h('div',{class:'card'},h('header',{},h('h3',{},cardTitle(c.id)),modeSel,h('button',{onclick:e=>busy(e.target,`Redrafting ${cardName(c.id)}…`,async()=>{const r=await api('fill',{spec:S.spec,batches:[c.id],redo:true,style:S.style});S.spec=r.spec;keep();el.replaceWith(card(c));foot();say(r.errors.length?r.errors.join('; '):'Redrafted.',r.errors.length);})},'Redraft')),fields);
  if(c.id.endsWith(':profile')){const actor=getPath(S.spec,base+'actor'),spec=S.spec;mountPortrait(el,{actor,candidates:()=>spec.heroines.map(x=>x.actor.portrait),active:()=>S.spec===spec&&spec.heroines.some(x=>x.actor===actor),onChange:()=>{keep();render();},onStatus:say});}return el;
 }
 let footEl;
-const foot=()=>{const n=blankCount();footEl?.replaceChildren(h('button',{onclick:()=>go(3)},'Back to drafting'),h('button',{onclick:()=>go(5)},'Back to Game UI'),h('span',{class:'muted'},n?`${n} blank field${n>1?'s':''}: the AI improvises these`:'No blanks'),h('button',{disabled:!!S.uiDesigner?.designerDirty,onclick:e=>busy(e.target,'Saving…',async()=>{const r=await api('save',{spec:S.spec,proposal:S.proposal,from:S.from||undefined});S.saved=r;S.from=r.from;keep();say('');render();})},'Save and start a campaign'));};
+const foot=()=>{const n=blankCount();footEl?.replaceChildren(h('button',{onclick:()=>go(3)},'Back to drafting'),h('button',{onclick:()=>go(5)},'Back to Game UI'),h('span',{class:'muted'},n?`${n} blank field${n>1?'s':''}: the AI improvises these`:'No blanks'),S.uiDesigner?.designerDirty?h('span',{class:'errs'},'Save waits until pending Game UI edits are applied or cancelled.'):null,h('button',{disabled:!!S.uiDesigner?.designerDirty,title:S.uiDesigner?.designerDirty?'Apply or cancel the pending Game UI edits first':'',onclick:e=>busy(e.target,'Saving…',async()=>{const r=await api('save',{spec:S.spec,proposal:S.proposal,from:S.from||undefined});S.saved=r;S.from=r.from;keep();say('');render();})},'Save and start a campaign'));};
 function stepReview(){
  if(S.saved)return [h('section',{},h('h2',{},`Saved: ${S.saved.title}`),h('p',{},`It is a new campaign now. Open Campaigns on the Play page to start it.${S.saved.improvised?` ${S.saved.improvised} blank fields are left for the AI to improvise.`:''}`),h('div',{class:'bar'},h('a',{class:'button',href:'/play.html?campaign='+encodeURIComponent(S.saved.campaignId)},'Play this saved campaign'),h('button',{onclick:()=>{S.saved=null;keep();render();}},'Keep editing'),h('button',{onclick:()=>{S={step:1,premise:'',heroines:4,style:''};go(1);}},'Start a new world')))];
  const groups=new Map();for(const c of S.cards||[]){const g=c.id==='world'?'World':c.id.startsWith('director:')?'Director beats (any love interest can play {lead} or {rival})':getPath(S.spec,`heroines.${c.id.split(':')[0]}.actor.name`)||c.id;if(!groups.has(g))groups.set(g,[]);groups.get(g).push(c);}
  footEl=h('div',{class:'foot'});foot();
- return [h('section',{},h('h2',{},'Review / Save'),S.uiDesigner?.designerDirty?h('p',{class:'errs'},'Game UI edits are pending. Return to Game UI and Apply or Cancel before saving.'):null),startingStats(),...[...groups].map(([g,cs])=>[h('div',{class:'group'},g),...cs.map(card)]).flat(),footEl];
+ return [h('section',{},h('h2',{},'Review / Save'),S.uiDesigner?.designerDirty?h('p',{class:'errs'},'Game UI edits are pending. Return to Game UI and Apply or Cancel before saving.'):null),startingStats(),...[...groups].map(([g,cs],i)=>h('details',{class:'group',open:i===0},h('summary',{},`${g} · ${cs.length} card${cs.length>1?'s':''}`),...cs.map(card))),footEl];
 }
 function startingStats(){
  const w=S.spec.world,defs=(w?.statDefinitions||[]).filter(d=>!d.derived);if(!defs.length||S.spec.modules&&!S.spec.modules['character.stats'])return null;

@@ -5,7 +5,7 @@ import {createWorld,validatePack} from '../packages/core/engine.mjs';
 import {registry} from '../packages/modules/index.mjs';
 import {assemble,specFromPack} from '../packages/cards/world-assembly.mjs';
 import {sceneDraftMessages} from '../packages/ai/scene-draft.mjs';
-import {intimacyEligibility,categoriesOf} from '../packages/modules/intimacy.mjs';
+import {intimacyEligibility,categoriesOf,intimacyContext} from '../packages/modules/intimacy.mjs';
 import {INTIMACY_CATEGORIES} from '../packages/cards/beat-library.mjs';
 
 const campus=()=>JSON.parse(readFileSync(new URL('../packs/campus.json',import.meta.url)));
@@ -30,4 +30,8 @@ test('a pack with no intimacyCategories gets the default set and rejects unknown
  assert.ok(!intimacyEligibility(w,p,'ada','fling').reasons?.includes('unknown intimacy profile or category'));
  const bad=neutralWithIntimacy();bad.intimacyProfiles[0].allowedCategories=['nope'];
  assert.throws(()=>validatePack(bad,registry),/intimacy allowed categories invalid/);
+});
+test('an intimacy profile without interests validates, runs and shows no interests',()=>{
+ const p=neutralWithIntimacy();delete p.intimacyProfiles[0].interests;validatePack(p,registry);
+ const st=createWorld(p,registry,'no-interests');assert.deepEqual(intimacyContext(st,p,'player')[0].interests,[]);
 });

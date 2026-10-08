@@ -12,7 +12,7 @@ const probe={id:'test.director-signals',version:'0.1.0',coreApi:'0.1.0',requires
 const mods={...registry,[probe.id]:probe};
 const template=(id,kind,delivery,tone=1,extra={})=>({id,kind,delivery,tone,roles:{lead:{pool:['ada']}},focusRole:'lead',scene:{title:`${kind} for {lead}`,opening:`{lead} brings a ${kind}.`,choices:[{id:'answer',label:'Respond',result:'You respond.'}]},...extra});
 const base=()=>{const p=JSON.parse(readFileSync(new URL('../packs/neutral.json',import.meta.url),'utf8'));delete p.modules['world.schedule'];p.modules['story.scenes']='0.1.0';p.modules['story.director']='0.1.0';p.modules[probe.id]='0.1.0';p.scriptedScenes=[];p.directorProfile={firstTick:0,quietDayparts:1,jitter:0,decayPerTick:20,maxPerDay:3,opportunityChancePercent:0,interruptionChancePercent:0};return p;};
-// A hand-edited pack can carry a non-positive missed cost; the template path only ever bakes costs of 1-20.
+// A hand-edited pack can carry a non-positive missed cost; validatePack rejects it (tests/missed-cost-validation.test.mjs).
 function goalPack({flagged=true,trust=10,cost=3}={}){
  const p=base();if(!flagged)delete p.progression;
  p.initialRelationships=[{character:'ada',trust}];p.romanceTempoProfiles=[{character:'ada'}];
@@ -23,21 +23,21 @@ function goalPack({flagged=true,trust=10,cost=3}={}){
 const missed=(p)=>{validatePack(p,mods);const s=createWorld(p,mods,'director-trust',42);const planId=p.directorProfile.opportunities[0].goal.planId;return execute(s,{id:'m1',actorId:p.playerId,type:'test.miss',args:{id:planId},expectedRevision:s.revision},p,mods);};
 const edgeOf=s=>s.modules['social.relationships'].edges['ada--player'];
 
-test('a flagged director goal gain is capped like any Trust gain (daily cap, shared writer)',()=>{
- const r=missed(goalPack({trust:10,cost:-20}));
- assert.equal(edgeOf(r.state),16,'the director write must not bypass the 6-per-day gain cap');
+test('a flagged director goal miss costs Trust through the shared writer',()=>{
+ const r=missed(goalPack({trust:10,cost:3}));
+ assert.equal(edgeOf(r.state),7);
  const ev=r.turn.events.find(e=>e.type==='social.relationshipChanged');
- assert.equal(ev.payload.delta,6);assert.equal(ev.payload.capped,true);
+ assert.equal(ev.payload.delta,-3);
 });
 
-test('a flagged director goal gain cannot push Trust past 100',()=>{
- const r=missed(goalPack({trust:98,cost:-20}));
- assert.equal(edgeOf(r.state),100);
+test('a flagged director goal miss clamps Trust at 0',()=>{
+ const r=missed(goalPack({trust:2,cost:3}));
+ assert.equal(edgeOf(r.state),0);
 });
 
 test('an unflagged save keeps the legacy director write (no progression rules; GC2.2)',()=>{
- const r=missed(goalPack({flagged:false,trust:10,cost:-20}));
- assert.equal(edgeOf(r.state),30);
+ const r=missed(goalPack({flagged:false,trust:10,cost:3}));
+ assert.equal(edgeOf(r.state),7);
  assert.equal(r.state.progression,undefined);
 });
 

@@ -20,7 +20,7 @@ export function expandDirectorTemplate(pack,template){
    const goal=template.goal||{},choice=(scene.choices||[]).find(x=>x.id===(goal.acceptChoice||scene.choices?.[0]?.id)),character=roles[template.focusRole||Object.keys(roles)[0]],planId=`m3.${id}`;
    assert(choice&&safeKey(planId)&&Number.isInteger(goal.deadlineTicks??12)&&(goal.deadlineTicks??12)>=1&&(goal.deadlineTicks??12)<=1000,'Director goal needs a choice and a deadline of 1–1000 ticks');
    const missed=goal.missed||{kind:pack.modules?.['social.relationships']||pack.modules?.['social.romance-tempo']&&(pack.romanceTempoProfiles||[]).some(x=>x.character===character)?'relationship':'opportunity',cost:3};
-   assert(['relationship','opportunity'].includes(missed.kind)&&Number.isInteger(missed.cost)&&missed.cost>=1&&missed.cost<=20,'Director goal missed cost invalid');
+   assert(['none','relationship','opportunity'].includes(missed.kind)&&(missed.kind==='none'||Number.isInteger(missed.cost)&&missed.cost>=1&&missed.cost<=20),'Director goal missed cost invalid');
    assert(missed.kind!=='relationship'||pack.modules?.['social.relationships']||pack.modules?.['social.romance-tempo']&&(pack.romanceTempoProfiles||[]).some(x=>x.character===character),'Director relationship cost needs a relationship module for the goal character');
    const plan=fill(goal.description||scene.title,roles,pack);choice.effects=[...(choice.effects||[]),{type:'plan',id:planId,character,plan,deadlineTicks:goal.deadlineTicks??12}];
    common.goal={planId,character,missed};

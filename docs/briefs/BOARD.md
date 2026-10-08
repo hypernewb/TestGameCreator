@@ -26,7 +26,7 @@ Ancestry confirms weekly authoring `5d5fc8c`, packages `645bfa9`, creator/recove
 - **GC3.1 gaps:** no intimacy-specific scene budget, no player-facing aftercare text, no creator ladder or region-limit editor.
 - **Branches awaiting merge:** `missed-cost` (`be39ef6`, positive-integer penalty costs with explicit `kind: "none"`; review its change to three `director-trust-changetrust` tests that now assert a loss at cost 3); `g2g3-prompt` (`1b674d8`, facts selected before budgeting and a budgeted player profile; touches `vendor/venus/scenePrompt.mjs`, so confirm ownership); `gc22-doc` (`39d7b3b`, `6e78e75`, flag decision and U1–U8 tests). `gc22-doc` edits `docs/NEXT-MILESTONES.md`, which has an uncommitted rewrite in the main checkout; merge it after that rewrite lands.
 - **Owner decisions recorded (2026-10-08):** keep `pack.progression.version` out of `mechanicsDigest` only with per-turn rule versions and the five compatibility guarantees (CP2 updated in the `gc22-doc` branch); T3 save allows incomplete drafts with visible errors and blocks publish until valid; T5 adds Ignore / Must be true / Must be false; T6 adds bounded nested All/Any with flat conditions read as implicit All, engine grammar before visual editor; T7 adds location selectors with missing-reference errors and reuses the condition editor for quests; G2 relevance before budgeting; G3 concise budgeted player profile; `missed.cost` must be a positive integer with explicit no-consequence form. T3, T5, T6, T7 are not yet dispatched.
-- **Open investigation:** the recurring `gc5-5-recovery-guarantees` trace is under diagnosis (`recovery-trace` worktree). Final baseline acceptance is held until it is diagnosed as expected todo output or fixed.
+- **Resolved investigation:** the recurring `gc5-5-recovery-guarantees` trace is expected output from four `{todo}` cases (`tests/gc5-5-recovery-guarantees.test.mjs` L68, L80, L87, L95), not a failure. Deterministic in 9 of 9 runs across isolated, serial and concurrent modes, with `fail 0`. Report: `docs/research/gc5-5-recovery-trace-2026-10-08.md` on branch `recovery-trace` (`a0eb33a`, not merged). Watch one latent risk: the Studio save revision uses `new Date().toISOString()` (`server.mjs` L174), so two saves in the same millisecond could collide.
 - **Studio follow-up:** `public/studio.mjs` line 96 offers only relationship and opportunity for `missed.kind`; a hand-authored `none` can reset on save.
 
 ## Next work packages
@@ -42,6 +42,18 @@ Ancestry confirms weekly authoring `5d5fc8c`, packages `645bfa9`, creator/recove
 ## Game Creator Completion Plan tasks (GC0–GC11)
 
 Source: [Game Creator Completion Plan](../GAME-CREATOR-COMPLETION-PLAN.md) (task IDs are planning references, not dispatch tickets). Every task starts **planned**. Use planned / in progress / implemented pending verification / verified / accepted; a source file, partial report or old test total does not complete a task. Exit gates are in the plan.
+
+### Current status (2026-10-08, plan vocabulary)
+
+No milestone is accepted or verified yet. Statuses: planned / in progress / implemented pending verification / verified / accepted.
+
+| Milestone | Status | Done so far | Still left |
+|---|---|---|---|
+| GC0 | in progress | Reconciliation and ancestry recorded; combined non-browser suite green on `228f863` (2420 tests, 0 fail, 21 todo); GC2.2 contract decided; capability audits GC6.1, GC6.2 and GC3.1 merged | GC0.2 dispositions of Stage2, T-101 and fix-wave; browser suite not run on merged main; GC0.4 full capability matrix; GC0.5 contracts (CP2 wording lives in unmerged `gc22-doc`) |
+| GC1 | provisionally accepted; regression gate not re-run | Examples frozen with manifest (`15a6af5`); continuous paging browser checks reported earlier | Re-run reading-loop and input/retry checks on merged main (GC1.2–GC1.4); GC1.5 quality gate for any prompt change |
+| GC2 | in progress (partial) | CP0 trace accepted; speech rules v3 behind versioned marker (`aa1220f`); GC2.4 and GC2.5 audits merged, showing gaps | GC2.2 compatibility contract (`gc22-doc` unmerged; mixed/tampered cases U3, U6–U8 are todo); GC2.4 caps and default for flagged packs; GC2.5 authored stage not wired to `relationshipStageOf`; GC2.6 memories/promises; GC2.7 friendship vs attraction; GC2.8 owner review of three encounters (not started) |
+
+Everything else (GC3–GC11) is planned, except audits that are merged and documented but not accepted: GC3.1 inventory (`4033b75`), GC4.1 time/presence (`dbcb9df`), GC6.2 relationship audit (`506f370`), GC7.1 source inventory (`0647892`).
 
 ### Milestones
 

@@ -67,26 +67,5 @@ async function smoke(pack){
 // The brief's pack.dating/pack.recap/pack.endings/pack.director/pack.phone name these namespaces;
 // dayRecap and directorProfile are absent here because recap/director are not enabled in these packs.
 const optionalKeys=['items','schedules','quests','facts','durations','initialMoney','economySettings','services','wageRules','datingProfiles','intimacySettings','intimacyCategories','intimacyProfiles','phoneContacts','phoneMessages','feedPosts','timedEvents','endings'];
-// Modules that crash when an optional pack option is absent: recorded as skips, each named in T-071.report.md.
-const knownCrashes={
-  'fantasy-town':{
-    datingProfiles:'datingContext maps pack.datingProfiles with no default',
-    intimacySettings:'intimacy.validate requires intimacySettings',
-    intimacyCategories:'intimacy.validate requires intimacyCategories',
-    intimacyProfiles:'intimacy.validate iterates p.intimacyProfiles with no default',
-    phoneContacts:'phone.validate reads p.phoneContacts with no default'
-  },
-  'template-bar':{
-    datingProfiles:'datingContext maps pack.datingProfiles with no default',
-    intimacySettings:'intimacy.validate requires intimacySettings',
-    intimacyCategories:'intimacy.validate requires intimacyCategories',
-    intimacyProfiles:'intimacy.validate iterates p.intimacyProfiles with no default',
-    phoneContacts:'phone.validate reads p.phoneContacts with no default'
-  }
-};
 for(const [name,pack] of Object.entries(packs))test(`bare pack smoke: ${name}`,async()=>{await smoke(pack);});
-for(const [name,pack] of Object.entries(packs))for(const key of optionalKeys.filter(k=>k in pack)){
-  const crash=knownCrashes[name]?.[key];
-  if(crash)test.skip(`bare pack smoke: ${name} without ${key} (known crash: ${crash})`);
-  else test(`bare pack smoke: ${name} without ${key}`,async()=>{const p=clone(pack);delete p[key];await smoke(p);});
-}
+for(const [name,pack] of Object.entries(packs))for(const key of optionalKeys.filter(k=>k in pack))test(`bare pack smoke: ${name} without ${key}`,async()=>{const p=clone(pack);delete p[key];await smoke(p);});

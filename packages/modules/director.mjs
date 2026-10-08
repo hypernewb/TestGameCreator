@@ -55,14 +55,16 @@ function missedGoal(tx,current,profile,event){
  const entry=[...(profile.complications||[]),...(profile.opportunities||[])].find(c=>c.goal?.planId===event.payload?.id);
  if(!entry)return current;
  const {character,missed}=entry.goal,name=tx.state.actors[character]?.name||character;
- if(missed.kind==='relationship'){
+ // kind "none": the deadline still breaks and is announced, but no Trust, points or offer block follows.
+ if(missed.kind==='none');
+ else if(missed.kind==='relationship'){
   const edge=`${character}--${tx.pack.playerId}`,relationships=tx.state.modules['social.relationships'];
   // Flagged saves use the shared Trust writer (daily cap, clamp); unflagged saves keep the legacy write (GC2.2).
   if(relationships&&tx.state.progression)changeTrust(tx,character,-missed.cost,{reaction:'director:missed-goal',keepPatch:true});
   else if(relationships){const old=relationships.edges[edge]||0,value=Math.max(0,old-missed.cost);tx.set(['modules','social.relationships','edges',edge],value);tx.emit('social.relationshipChanged',{actor:character,toward:tx.pack.playerId,old,value,delta:value-old,reaction:'director:missed-goal',text:`${name}: Trust ${old} → ${value}`},[tx.pack.playerId,character]);}
   else if(tx.state.modules['social.romance-tempo']?.characters?.[character])addPoints(tx,character,-missed.cost,'director:missed-goal');
  }else current={...current,offerBlockedUntilTick:Math.max(current.offerBlockedUntilTick||0,tx.state.tick+missed.cost)};
- tx.emit('story.goalMissed',{template:entry.template||null,entry:entry.id,planId:entry.goal.planId,character,consequence:missed.kind,cost:missed.cost,text:missed.kind==='relationship'?`Missing the deadline strains things with ${name}.`:`Missing the deadline closes off new opportunities for ${missed.cost} ticks.`},[tx.pack.playerId,character]);
+ tx.emit('story.goalMissed',{template:entry.template||null,entry:entry.id,planId:entry.goal.planId,character,consequence:missed.kind,cost:missed.cost??0,text:missed.kind==='none'?'The deadline passed.':missed.kind==='relationship'?`Missing the deadline strains things with ${name}.`:`Missing the deadline closes off new opportunities for ${missed.cost} ticks.`},[tx.pack.playerId,character]);
  return current;
 }
 function eligible(tx,entries,settings,cal,tier,deck,recycle=false){
@@ -299,6 +301,7 @@ export const director={id:'story.director',version:'0.1.0',coreApi:'0.1.0',requi
    assert(c.text===undefined||typeof c.text==='string'&&c.text.length<=200,`director complication ${c.id}.text: up to 200 characters`);
    assert(c.tease===undefined||typeof c.tease==='string'&&c.tease.trim()&&c.tease.length<=200,`director complication ${c.id}.tease: up to 200 characters`);
   }
+  for(const c of [...(profile.complications||[]),...(profile.opportunities||[])]){const m=c.goal?.missed;if(!m)continue;assert(['none','relationship','opportunity'].includes(m.kind),`director ${c.id}.goal.missed.kind: expected none, relationship or opportunity`);assert(m.kind==='none'||Number.isInteger(m.cost)&&m.cost>=1,`director ${c.id}.goal.missed.cost: expected an integer of 1 or more (use kind "none" for no consequence)`);}
   assert(Array.isArray(profile.opportunities||[])&&(profile.opportunities||[]).length<=(profile.adaptive?200:30),`directorProfile.opportunities: expected up to ${profile.adaptive?200:30}`);
   for(const c of profile.opportunities||[]){
    assert(safeKey(c.id)&&!ids.has(c.id),`director opportunity ${c.id}: invalid or duplicate ID`);ids.add(c.id);

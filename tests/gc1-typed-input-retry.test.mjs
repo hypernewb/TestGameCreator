@@ -133,3 +133,14 @@ test('GC1.2 typed speech is paged verbatim and never folded into the NPC reply',
   assert.ok(lines.some(l=>l.speaker==='ada'&&l.text==='I hear you.'),JSON.stringify(lines));
  }finally{h.store.close();}
 });
+
+test('GC1.4 null memory and fact entries in deferred metadata keep the prose and do not fail the turn',async()=>{
+ const meta={summary:'',end_scene:false,memories:[null,{charKey:'ada',type:'neutral',desc:'To Player, Ada said: "I hear you."'}],facts:[null],metadataEvidence:{memories:[],facts:[]}};
+ const provider={name:'probe',bundlesSceneMetadata:true,async generateScene(){return {...reply(),finalizeMetadata:async()=>meta};}};
+ const h=setup(provider);try{
+  const r=await h.service.act('probe',turnRequest('meta',typed));const t=r.state.turns.meta;
+  assert.equal(t.fallback,false,t.failureReason);
+  assert.ok(t.sceneLines.some(l=>l.speaker==='ada'&&l.text==='I hear you.'),JSON.stringify(t.sceneLines));
+  assert.ok(t.ledger.some(m=>m.desc.includes('I hear you.')),JSON.stringify(t.ledger));
+ }finally{h.store.close();}
+});

@@ -1,10 +1,10 @@
 {
   "task": "GC1.1 freeze accepted conversation examples",
   "date": "2026-10-08",
-  "status": "no_files_frozen",
-  "frozen_file_count": 0,
+  "status": "recovered_files_frozen",
+  "frozen_file_count": 8,
   "prose_only_count": 7,
-  "summary": "No accepted transcript, request trace, input list, profile record or displayed-reply file exists on disk for the owner-accepted warm Montgomery sample or the Leonard/Parker references. Each accepted sample survives only as short quoted excerpts inside briefs. Those excerpts are recorded below verbatim as prose-only. Nothing was reconstructed or invented.",
+  "summary": "Eight recovered originals (traces, results, summaries, references) are frozen in docs/research/gc1-recovered/ with SHA-256 entries. The seven prose-only excerpts remain as recorded. Items listed under raw_outputs_referenced_but_missing are still absent and were not reconstructed.",
   "evidence_location_note": "The accepted briefs and BOARD/NEXT-MILESTONES text are in the shared main checkout working tree and are not committed at 9535347. T-chatting-gate-accepted.report.md, T-temporary-author-reference.report.md, T-persona-author-wordplay.report.md, T-chat-author-style.report.md and T-author-persona-mapping.report.md are untracked or modified there. This worktree is on e0f2a05, an older base.",
   "raw_outputs_referenced_but_missing": [
     "task-local work/author-tests/ (run.mjs, analyze.mjs, personas.mjs, verify-adoption.mjs, npm-test logs)",
@@ -15,7 +15,48 @@
     "outputs/chatting-gate-accepted.txt",
     "outputs/rei-three-fixes-* (T-chat-three-fixes.report.md)"
   ],
-  "frozen_files": [],
+  "frozen_files": [
+    {
+      "path": "docs/research/gc1-recovered/chatting-gate-accepted.txt",
+      "sha256": "05790d4f1fa8c6441d215b5fce3bdac7612d4676c11535a279675b359a2dca75",
+      "source": "recovered original, outside repo; checked against recovery-manifest.json 2026-10-08"
+    },
+    {
+      "path": "docs/research/gc1-recovered/temporary-author-reference.txt",
+      "sha256": "b2092fed417fb561299ed47ab29b960ce37e920fa9fb2e75ccb65d4392bff3f3",
+      "source": "recovered original, outside repo; checked against recovery-manifest.json 2026-10-08"
+    },
+    {
+      "path": "docs/research/gc1-recovered/chat-author-style-results.txt",
+      "sha256": "438a3ed6e2dda93bae992da1bca71d10a6b5344cdf19382ca3b9101cde2502e0",
+      "source": "recovered original, outside repo; checked against recovery-manifest.json 2026-10-08"
+    },
+    {
+      "path": "docs/research/gc1-recovered/chat-author-style-summary.json",
+      "sha256": "3111f0b37d32c5750b55eadde5ccf5de869a53204937ff3211a58ca394005e2c",
+      "source": "recovered original, outside repo; checked against recovery-manifest.json 2026-10-08"
+    },
+    {
+      "path": "docs/research/gc1-recovered/persona-author-warm-author-trace.json",
+      "sha256": "689e4d1a410beda23f77099f6541e52908d088f5aca84db16c90b24758e7a6a2",
+      "source": "recovered original, outside repo; checked against recovery-manifest.json 2026-10-08"
+    },
+    {
+      "path": "docs/research/gc1-recovered/persona-author-warm-author-results.txt",
+      "sha256": "c212295359ed3929965d83cf8d3169bb73f5e3790e343a3e8840015a8fed1622",
+      "source": "recovered original, outside repo; checked against recovery-manifest.json 2026-10-08"
+    },
+    {
+      "path": "docs/research/gc1-recovered/rei-author-leonard-trace.json",
+      "sha256": "1ff4a1819b6b1215b5f19f5f1116e20b14a65769e56d5390e6273fe617ead169",
+      "source": "recovered original, outside repo; checked against recovery-manifest.json 2026-10-08"
+    },
+    {
+      "path": "docs/research/gc1-recovered/rei-author-parker-trace.json",
+      "sha256": "c65a742e35a17998cebfc0bc83d9da02dc3bd71bc0171612e2b22eb8ed12f79b",
+      "source": "recovered original, outside repo; checked against recovery-manifest.json 2026-10-08"
+    }
+  ],
   "prose_only": [
     {
       "id": "warm-montgomery-accepted",

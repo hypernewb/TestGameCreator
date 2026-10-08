@@ -1,0 +1,27 @@
+Temporary character author references
+
+Owner reviewed the full exchanges and preferred both author-reference versions to baseline. That preference supersedes the earlier recommendation against adopting them. Leonard is now the temporary default for the tested local solo-chat prose path.
+
+To choose per character, retain their normal Voice text and add one separate line:
+
+AUTHOR REFERENCE: Dorothy Parker
+
+or:
+
+AUTHOR REFERENCE: Elmore Leonard
+
+To disable the temporary author reference for a character:
+
+AUTHOR REFERENCE: none
+
+This uses the existing Voice text, without a new character schema or creator UI control. Saved character profiles have not been modified. The reference shapes scene prose while the prompt retains the authored personality, voice, contemporary language and reader perspective. It does not guarantee the model follows every instruction.
+
+Suggested future tag mappings, not implemented automatic assignments:
+- Plainspoken, understated, observant persona/voice: Elmore Leonard.
+- Witty, dry, socially guarded persona/voice: Dorothy Parker.
+
+An explicit author selection should override any future trait-based suggestion. Personality and voice remain the character definition; an author tag is a writing reference. Mixed scenes and other generation paths have not been changed by this temporary solo-chat patch.
+
+Verification: 19 focused tests passed, including default selection, Parker override, opt-out, cast-profile override, preserved authored profile and prose-only injection. The production default's initial prompt messages exactly match the owner-reviewed Leonard experiment. The earlier experiment measured +39 initial prompt tokens for Leonard and +38 for Parker.
+
+Full regression suite: 2195 total, 2185 passed, 0 failed, 10 skipped.

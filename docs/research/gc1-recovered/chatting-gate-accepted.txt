@@ -1,0 +1,19 @@
+Owner decision — 2026-10-08 (Asia/Singapore)
+
+The warm conversation reads decent enough to retain temporarily. Chatting no longer blocks moving to other systems. The quiet persona is not satisfactory and remains deferred; this is not a claim that every character voice is solved or Venus parity is proven.
+
+Retained behavior in the tested local solo-chat prose path:
+- warm-socialite personas use L. M. Montgomery, without the extra wordplay clause.
+- explicit Voice selection can choose Elmore Leonard, Dorothy Parker, L. M. Montgomery, or none.
+- explicit selection takes precedence over the warm-socialite default.
+- other personas retain the existing Leonard fallback. Mansfield has not been promoted.
+
+No saved character cards or creator UI/schema fields were changed. This does not copy the synthetic test personality into existing characters. Existing characters keep their authored personality; Montgomery is only a writing reference. A free-text description that merely mentions warmth does not trigger the structured warm-socialite selection.
+
+Next priority: fun character progression. Trace how interactions and shared activities affect remembered events, relationship changes and subsequent opportunities. Use existing systems and judge the result through a coherent playable sequence. After progression, the established order is erotic scenes, game elements, then others.
+
+AGENTS.md, NEXT-MILESTONES.md and the board now record the owner's provisional acceptance and next priority. Quiet-persona refinement will not reopen the chatting gate by itself. Existing creator ownership, shared-file coordination and unrelated holds remain in force.
+
+Verification: 21 focused tests passed. Production warm-socialite initial prompt messages exactly match the owner-reviewed Montgomery test. No additional model calls or settings changes were made for adoption.
+
+Full regression suite: 2197 total, 2187 passed, 0 failed, 10 skipped.

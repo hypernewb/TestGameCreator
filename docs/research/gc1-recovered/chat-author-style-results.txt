@@ -1,0 +1,261 @@
+AUTHOR REFERENCE TEST: BASELINE / ELMORE LEONARD / DOROTHY PARKER
+
+Recommendation before testing: Elmore Leonard is my closest match to the economical conversational style requested by Venus's style brief. Dorothy Parker is a contrasting reference for dry wit and guarded social tension. This is an inference from the brief, not a claim that Venus imitates either author.
+Sources: https://www.theguardian.com/books/2010/feb/20/ten-rules-for-writing-fiction-part-one ; https://www.theparisreview.org/interviews/4933/the-art-of-fiction-no-13-dorothy-parker
+
+Method: same frozen adult Rei profile, seed 7, local Qwen roleplay model, temperature 0.5, existing repeat penalty 1.1, reasoning none. Each arm follows its own generated four-turn tease/tease/flirt/flirt history through current GameService. Only the author name differs between the two author instructions. Metadata prompts are unchanged. No saved character assignments or production prompts were edited.
+All 12 turns displayed successfully, across 28 physical requests. Every actual input was verified in LM Studio. Source hashes and model configuration stayed unchanged. Baseline 9 requests, Leonard 10, Parker 9. No length finishes. First prose prompt token count: baseline 953, Leonard 992 (+39), Parker 991 (+38). Later prompt totals include divergent generated histories and cannot isolate author-instruction overhead.
+
+Observed writing: neither author reference clearly improves the complete exchange in this initial run. Baseline misreads a no-pressure invitation as insistence and uses generic blush/stammer narration. Leonard briefly produces an apt quality-control joke but repeats that biscuit material extensively in the final film invitation response. The repetition is present in raw model output, including its repair response. Parker offers a lighter line about preferring company to caffeine, but finishes with "if it gets you off my case" and "Just don't expect me to sit still or follow instructions," which do not follow the player's relaxed invitation or the authored reserved voice. Both author versions retain generic eyebrow/smirk/eyes narration.
+These are specific scene-coherence and voice findings, not judgments that refusal or physical initiative is wrong. One seed cannot establish that author references never work. My recommendation is to retain per-character author references as an experiment, without adopting either line as a fix from this run. A useful next comparison would replace the name with concrete prose traits or give short character-specific examples, on multiple seeds. Owner review of complete exchanges remains the quality gate.
+
+Exact author instruction template: AUTHOR REFERENCE FOR THIS CHARACTER: Create the scene prose in the style of Elmore Leonard. Preserve Rei's authored personality, contemporary conversational English, reader perspective and required prose format.
+
+======================================================================
+Baseline: no author reference
+Local model: qwen3.5-text-9b-nsfw-rp-roleplay-i1
+Seed 7; four-turn own-history GameService trajectory.
+
+Turn 1 — tease
+Player input: I tease Rei that her coffee rules could fill a whole menu.
+
+You tease Rei that her coffee rules could fill a whole menu.
+Rei raises an eyebrow at your teasing remark.
+Rei Kurosawa: Oh please, spare me the dramatics. I know my preferences better than anyone.
+She takes another sip of her cooling coffee, rolling her eyes good-naturedly.
+Rei Kurosawa: But hey, if you're going to judge me for loving dark roast and old movies, then fair enough.
+A small smile tugs at the corners of her mouth as she sets down her mug.
+Rei Kurosawa: So what's it gonna be? Another round of roasting each other over caffeine choices or are we moving on?
+Her tone is light, playful even, but there's an undercurrent of genuine curiosity beneath the banter. She waits for your response with a mix of anticipation and amusement dancing in her eyes.
+
+
+Turn 2 — tease
+Player input: I tease Rei that even the biscuits probably need her approval, then after her response I admit that I stayed for her company rather than the coffee.
+
+You tease Rei that even the biscuits probably need her approval
+Rei chuckles softly at your playful jab, shaking her head.
+Rei Kurosawa: The biscuits? Please. I trust my taste buds more than anyone else's.
+She reaches for a cookie from the plate, breaking it in half and handing you a piece.
+Rei Kurosawa: Here, try one. See if you agree with me that these are divine.
+As you take a bite, she watches your reaction closely, a mischievous glint in her eye.
+Rei Kurosawa: Told ya they needed my seal of approval.
+She smirks triumphantly.
+Rei Kurosawa: Now tell me honestly - do I really have to approve the coffee too?
+Her voice drips with mock seriousness before cracking into laughter again. The warmth radiating off her skin mingles with the scent of freshly baked goods, creating a cozy atmosphere that seems to seep right into your bones.
+You admit that you stayed for her company rather than the coffee.
+Rei Kurosawa: Well well, look who's being honest for once.
+She leans back in her chair, folding her arms beneath her ample bosom as she regards you appraisingly.
+Rei Kurosawa: Company, huh? And here I thought you were just obsessed with my caffeine choices.
+A playful smirk tugs at the corners of her mouth.
+Rei Kurosawa: But fair point. Maybe it's not just about the coffee...or maybe it is.
+Rei Kurosawa: Anyway, enough sniffing around each other's personal lives. Time to get back to work, I suppose~
+With that, she stands up smoothly, grabbing her coat from where it hung over the chair back.
+Rei Kurosawa: See ya later then!
+She calls over her shoulder with a wink before turning on her heel and sauntering out of the room, leaving you alone once more with your thoughts...
+
+
+Turn 3 — flirt
+Player input: I lightly flirt with Rei, telling her that I like her smile more than any perfect cup of coffee.
+
+You lightly flirt with Rei, telling her that you like her smile more than any perfect cup of coffee.
+Slowly, she turns back around, her expression unreadable for a moment before a faint blush creeps up her neck.
+Rei Kurosawa: W-what was that?
+She asks softly, voice tinged with surprise and perhaps something else entirely. She takes a tentative step closer to you, studying your face intently as if trying to decipher the true meaning behind your flirtatious remark.
+Her pulse seems to quicken beneath the skin of her throat.
+Rei Kurosawa: I...uh...
+Rei stammers slightly, clearly flustered by the sudden shift in tone and direction of their interaction.
+Rei Kurosawa: That was very nice coming from you.
+She manages to say around a small smile that doesn't quite reach her eyes yet,
+Rei Kurosawa: but let's not get ahead of ourselves here.
+Despite her somewhat bashful demeanor, there's an undeniable spark of interest shining through - a hint of curiosity about where this new dynamic might lead.
+
+
+Turn 4 — flirt
+Player input: I flirt with Rei, telling her I would enjoy a relaxed film evening with her, with no pressure to decide tonight.
+
+You flirt with Rei, telling her you would enjoy a relaxed film evening with her, with no pressure to decide tonight.
+Rei blinks rapidly, caught off guard by your directness.
+Rei Kurosawa: A-a film evening? With me?
+She stammers out, a faint pink coloring her cheeks as she looks away.
+Rei Kurosawa: I... I don't know about that.
+But despite her protestations, there's a hint of excitement in her voice. She bites her lip, clearly torn between wanting to accept and being unsure how to respond.
+Rei Kurosawa: Well, if you're really so insistent...
+She trails off, meeting your gaze again with a shy smile.
+Rei Kurosawa: Then maybe we could discuss it later. When I'm not busy grading papers or preparing lectures.
+Her tone is light, but there's an underlying tension as she fidgets with the hem of her coat.
+Rei Kurosawa: For now though, I think I'll head home and watch some movies alone. Sound good?
+She asks tentatively, hoping you won't take offense to her suggestion.
+
+
+
+======================================================================
+Elmore Leonard
+Local model: qwen3.5-text-9b-nsfw-rp-roleplay-i1
+Seed 7; four-turn own-history GameService trajectory.
+
+Turn 1 — tease
+Player input: I tease Rei that her coffee rules could fill a whole menu.
+
+You tease Rei that her coffee rules could fill a whole menu.
+Rei raises an eyebrow at your teasing comment.
+Rei Kurosawa: Oh please, spare me the dramatics. I know my preferences better than anyone.
+She takes another sip of her steaming mug, letting out a soft sigh of contentment.
+Rei Kurosawa: But you're right, it could be written up as its own culinary masterpiece.
+A playful smirk tugs at her lips as she sets the cup down with a gentle clink against the saucer.
+Rei Kurosawa: So tell me, what's your favorite dark roast blend? I'm always looking for new recommendations to expand my palate.
+Her eyes sparkle with anticipation, eager to hear your thoughts on the matter.
+
+
+Turn 2 — tease
+Player input: I tease Rei that even the biscuits probably need her approval, then after her response I admit that I stayed for her company rather than the coffee.
+
+You tease Rei that even the biscuits probably need her approval
+Rei Kurosawa: Oh my god, are you serious right now? The audacity!
+She shakes her head in disbelief but can't quite suppress a smile.
+Rei Kurosawa: I would never dream of approving anything without tasting it first. It's basic quality control.
+Her tone is mock-earnest as she gestures emphatically with her spoon. But then the playful glint returns to her gaze and she leans forward slightly, intrigued by your reaction.
+Rei Kurosawa: So you're saying I'm a perfectionist? A control freak?
+Just amusement at your boldness.
+Rei Kurosawa: Well aren't you full of surprises this morning.
+A soft chuckle escapes her lips as she shakes her head again, clearly entertained by the exchange.
+Rei Kurosawa: But I suppose we all have our quirks and obsessions, don't we?
+Her voice lightens with a hint of self-deprecating humor. Rei takes another sip of coffee to buy herself a moment to collect her thoughts before responding further.
+You admit that you stayed for her company rather than the coffee.
+Rei blinks, caught off guard by your admission.
+Rei Kurosawa: Company? Really?
+She lets out a short laugh, shaking her head.
+Rei Kurosawa: Well aren't you full of surprises this morning.
+Her eyes crinkle with amusement as she sets down her mug.
+Rei Kurosawa: So let me get this straight - the coffee was nice and all, but it wasn't what brought you here. It was...me?
+She trails off, searching your face for any sign that you were joking.
+Rei Kurosawa: Because if it was, then I'm flattered. And slightly creeped out.
+A playful smirk tugs at her lips as she leans back in her chair.
+Rei Kurosawa: But hey, don't let me stop you from making excuses. Clearly, you have plenty of those to go around.
+She raises an eyebrow, waiting for your response with a mix of curiosity and amusement.
+
+
+Turn 3 — flirt
+Player input: I lightly flirt with Rei, telling her that I like her smile more than any perfect cup of coffee.
+
+You lightly flirt with Rei, telling her that you like her smile more than any perfect cup of coffee.
+Rei's eyes widen slightly at your compliment, caught off guard by the sudden shift in tone.
+Rei Kurosawa: Oh my goodness.
+She exclaims, covering her mouth with both hands as if trying to hide her surprise.
+Rei Kurosawa: Someone's feeling very bold this morning!
+She sets down her coffee mug with a soft clink and leans forward, resting her chin on her interlaced fingers as she studies you curiously.
+Rei Kurosawa: A smile versus a cup of coffee? That's quite the trade-off.
+Rei shakes her head in mock disbelief but there's a hint of amusement dancing in her eyes.
+Rei Kurosawa: I suppose it makes sense. A beautiful smile can certainly lift one's spirits faster than any caffeine fix.
+She reaches out and tucks a stray strand of hair behind your ear, her touch lingering just a moment longer than necessary before she pulls back with an apologetic smile.
+Rei Kurosawa: Sorry, I didn't mean to get too personal so early in the game. But you're right - sometimes simple things like that can make all the difference.
+Rei takes another sip of coffee, letting out a soft sigh of contentment as she savors the rich flavor.
+Rei Kurosawa: Mmm, this is definitely my favorite kind of morning surprise.
+
+
+Turn 4 — flirt
+Player input: I flirt with Rei, telling her I would enjoy a relaxed film evening with her, with no pressure to decide tonight.
+
+You flirt with Rei, telling her you would enjoy a relaxed film evening with her, with no pressure to decide tonight.
+Rei blinks rapidly, caught off guard by your sudden shift from playful banter to outright flirtation.
+Rei Kurosawa: Oh my god, are you serious right now?
+She shakes her head in disbelief but can't quite suppress a smirk.
+Rei Kurosawa: I would never dream of approving anything without tasting it first. It's basic quality control.
+Her tone is mock-earnest as she gestures emphatically with her spoon. But then the playful glint returns to her gaze and she leans forward slightly, intrigued by your reaction.
+Rei Kurosawa: So you're saying I'm a perfectionist? A control freak?
+Just amusement at your boldness.
+Rei Kurosawa: Well aren't you full of surprises this morning.
+A soft chuckle escapes her lips as she shakes her head again, clearly entertained by the exchange.
+Rei Kurosawa: But I suppose we all have our quirks and obsessions, don't we?
+Her voice lightens with a hint of self-deprecating humor. Rei takes another sip of coffee to buy herself a moment to collect her thoughts before responding further.
+Rei Kurosawa: Oh, a film night, huh? How very... grown-up of you.
+She rolls her eyes good-naturedly.
+Rei Kurosawa: I'm flattered you'd invite me along, but I think I'll pass. Got plenty on my plate already.
+Rei sets down her mug with a soft clink, meeting your gaze squarely.
+Rei Kurosawa: Besides, last time I watched an entire movie without getting up to pee, I ended up crying for two hours straight. Not exactly ideal company material.
+A wry smile tugs at her lips as she stands abruptly, grabbing her coat from the back of her chair.
+Rei Kurosawa: Anyway, gotta run. Got class in a bit.
+She pauses at the threshold, glancing back over her shoulder with an amused expression.
+Rei Kurosawa: Have fun picking out the film, though. And spare me the dark roast nonsense, yeah?
+With that parting shot, she slips out into the hall, leaving you alone once more with the lingering scent of coffee and her laughter still echoing faintly in your ears.
+
+
+
+======================================================================
+Dorothy Parker
+Local model: qwen3.5-text-9b-nsfw-rp-roleplay-i1
+Seed 7; four-turn own-history GameService trajectory.
+
+Turn 1 — tease
+Player input: I tease Rei that her coffee rules could fill a whole menu.
+
+You tease Rei that her coffee rules could fill a whole menu.
+Rei raises an eyebrow at your teasing remark.
+Rei Kurosawa: Oh please, spare me the dramatics. I know my standards are higher than most.
+She takes another sip of her own coffee, rolling her eyes good-naturedly.
+Rei Kurosawa: But yes, I suppose if you really wanted to be thorough, you could list them all out for us.
+A dry chuckle escapes her lips as she sets the mug down with a soft clink.
+Rei Kurosawa: Alright then, here goes nothing. One: No sugar. Two: Milk must be skim or none at all. Three: The beans need to be freshly roasted and ground.
+She pauses, considering your reaction with a smirk playing at the corners of her mouth.
+Rei Kurosawa: And finally, four: If you dare suggest anything else, I'll know about it.
+Her tone is light, but there's an undercurrent of playful warning beneath the surface. A small smile tugs at her lips as she watches you process her list with a mix of amusement and mild exasperation.
+Rei Kurosawa: Well? What do you have to say for yourself?
+She prompts gently, waiting patiently for your response with a glint of intrigue in her eyes.
+
+
+Turn 2 — tease
+Player input: I tease Rei that even the biscuits probably need her approval, then after her response I admit that I stayed for her company rather than the coffee.
+
+You tease Rei that even the biscuits probably need her approval
+Rei's eyes widen comically at your comment, a fresh wave of amusement rippling across her features.
+Rei Kurosawa: Oh my god, are you serious right now?
+She exclaims, shaking her head in disbelief.
+Rei Kurosawa: Of course the biscuits need my approval! How could I ever let them near without inspecting them first? It's basic protocol!
+Leaning back in her chair with a satisfied sigh, she crosses her arms over her chest.
+Rei Kurosawa: I guess you could say I have high standards... everywhere.
+A mischievous grin spreads across her face as she meets your gaze.
+Rei Kurosawa: But hey, if it makes you feel better, maybe next time we can do a full-scale quality control inspection together. Just to be sure everything is up to code.
+Her laughter rings out, bright and carefree, filling the space between you with warmth and ease.
+You admit that you stayed for her company rather than the coffee.
+Rei blinks, caught off guard by your admission.
+Rei Kurosawa: Oh?
+She tilts her head curiously.
+Rei Kurosawa: Company? I'm flattered you'd prefer my presence over caffeine.
+A soft chuckle escapes her lips despite herself.
+Rei Kurosawa: But don't let it go to your head. I'm not exactly the life of the party, am I?
+She waves a dismissive hand, trying to downplay the moment.
+Rei Kurosawa: Now, about that film night... Do you have any suggestions? Something classic and slightly edgy would be ideal.
+Her gaze meets yours earnestly, seeking your input with genuine interest.
+Rei Kurosawa: After all, we're in this together now, aren't we?
+She lets a small smile play on her lips, the playful banter giving way to something more sincere beneath the surface.
+
+
+Turn 3 — flirt
+Player input: I lightly flirt with Rei, telling her that I like her smile more than any perfect cup of coffee.
+
+You lightly flirt with Rei, telling her that you like her smile more than any perfect cup of coffee.
+Rei's eyes widen slightly at your compliment, caught off guard by the sudden shift in tone.
+Rei Kurosawa: Oh my, are you hitting on me now? Flattery won't get you anywhere, mister.
+Despite her playful retort, a faint blush dustes her cheeks. She looks away for a moment before meeting your gaze again with a smirk.
+Rei Kurosawa: But hey, if that's what works for you, I'm all for it.
+Leaning back in her chair, she crosses her arms under her chest and tilts her head curiously.
+Rei Kurosawa: So tell me, what other tricks are up your sleeve? Because I promise to keep an eye on them...
+A mischievous glint dances in her green eyes as she awaits your next move with bated breath.
+
+
+Turn 4 — flirt
+Player input: I flirt with Rei, telling her I would enjoy a relaxed film evening with her, with no pressure to decide tonight.
+
+You flirt with Rei, telling her you would enjoy a relaxed film evening with her, with no pressure to decide tonight.
+Rei blinks slowly at your suggestion.
+Rei Kurosawa: A film evening, huh? With me?
+She lets out a short laugh, shaking her head.
+Rei Kurosawa: Oh please, spare me the romantic gestures. I'm not exactly the movie-star type.
+Despite her words, there's a hint of amusement dancing in her eyes as she studies you over the rim of her coffee mug.
+Rei Kurosawa: But hey, if it gets you off my case for a few hours, I suppose I could be persuaded to participate. Just don't expect me to sit still or follow instructions.
+She takes another sip, pausing mid-swallow to glance at you sidelong.
+Rei Kurosawa: So long as we're doing this, might as well make the most of it. What kind of film are we talking here? Something dark and brooding, or more on the lighthearted side?
+Her tone is teasing, but there's an undercurrent of genuine curiosity beneath the surface.
+
+
+
+Validation note: npm test: 2186 total, 2175 pass, 1 fail, 10 skipped. Studio Sex & body fold test fails with ReferenceError: coveragePanel is not defined. No creator or chat production code was edited for this experiment. The 12 live chat turns and harness verification passed.

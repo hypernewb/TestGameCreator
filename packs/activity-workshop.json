@@ -1,5 +1,7 @@
 {
   "schemaVersion": 1,
+
+  "progression": {"version": 1},
   "id": "sample.activity-workshop",
   "version": "0.2.0",
   "title": "The Workshop \u2014 Activities",

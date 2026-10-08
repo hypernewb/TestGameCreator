@@ -1,5 +1,7 @@
 {
   "schemaVersion": 1,
+
+  "progression": {"version": 1},
   "id": "sample.bedroom-vertical-slice",
   "version": "0.1.0",
   "title": "Bedroom — UI Vertical Slice",

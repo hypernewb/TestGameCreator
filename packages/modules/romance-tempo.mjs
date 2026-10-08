@@ -2,7 +2,7 @@ import {assert,safeKey} from '../core/engine.mjs';
 import {changeChemistry,changeSatisfaction} from './dating.mjs';
 import {giftTaste,GIFT_CATEGORIES} from '../core/character-sheet.mjs';
 import {calendarFor} from '../../public/calendar.mjs';
-import {cappedGain,dailyGainOf,dayOf,validateRomanceStats,validateLustBaseline,lustBaselineOf} from './romance-stats.mjs';
+import {cappedGain,dailyGainOf,dayOf,markRules,validateRomanceStats,validateLustBaseline,lustBaselineOf} from './romance-stats.mjs';
 import {raiseBaseline} from './touch-ladder.mjs';
 
 const path=['modules','social.romance-tempo','characters'];
@@ -45,9 +45,9 @@ export const jealousyOf=profile=>profile.jealousy?{preset:'secure',events:['soci
 
 export function addPoints(tx,character,amount,reason){
  const profile=profileOf(tx.pack,character),runtime=runtimeOf(tx.state,character);if(!profile||!amount)return 0;
- const day=dayOf(tx.state,tx.pack),used=runtime.gained?.day===day?runtime.gained.amount:0;amount=cappedGain(tx.pack,character,amount,used);if(!amount)return 0;
+ const day=dayOf(tx.state,tx.pack),used=runtime.gained?.day===day?runtime.gained.amount:0;markRules(tx,character,amount);amount=cappedGain(tx.pack,character,amount,used,tx.state);if(!amount)return 0;
  const ceiling=currentRank(profile,runtime).ceiling,from=runtime.points,to=Math.max(0,Math.min(ceiling,from+amount)),delta=to-from;
- if(delta>0&&dailyGainOf(tx.pack))tx.set([...path,character,'gained'],{day,amount:used+delta});if(delta){tx.set([...path,character,'points'],to);tx.emit('social.romancePointsChanged',{character,from,to,delta,reason,text:`Your bond with ${tx.state.actors[character].name} ${delta>0?'deepened':'weakened'}.`},[tx.pack.playerId,character]);}
+ if(delta>0&&dailyGainOf(tx.pack,tx.state))tx.set([...path,character,'gained'],{day,amount:used+delta});if(delta){tx.set([...path,character,'points'],to);tx.emit('social.romancePointsChanged',{character,from,to,delta,reason,text:`Your bond with ${tx.state.actors[character].name} ${delta>0?'deepened':'weakened'}.`},[tx.pack.playerId,character]);}
  const next=nextRank(profile,runtime),fresh=runtimeOf(tx.state,character);if(next&&fresh.points<next.points&&fresh.ready)tx.set([...path,character,'ready'],null);else if(next&&fresh.points>=next.points&&fresh.ready!==next.id){tx.set([...path,character,'ready'],next.id);tx.emit('social.romanceRankReady',{character,rank:next.id,points:fresh.points,scene:next.scene||null,automatic:profile.advancement==='automatic',text:`A defining moment with ${tx.state.actors[character].name} is ready.`},[tx.pack.playerId,character]);if(profile.advancement==='automatic')advanceRomanceRank(tx,character,next.id);}
  return delta;
 }

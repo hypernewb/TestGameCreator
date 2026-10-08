@@ -1,0 +1,97 @@
+{
+ "00-illustrated-workshop.json": {
+  "id": "sample.illustrated-workshop",
+  "digest": "a8d626db",
+  "social": true
+ },
+ "activity-workshop.json": {
+  "id": "sample.activity-workshop",
+  "digest": "385d73dd",
+  "social": true
+ },
+ "badge-bond.json": {
+  "id": "sample.badge-bond",
+  "digest": "7f9a9697",
+  "social": true
+ },
+ "bedroom-vertical-slice.json": {
+  "id": "sample.bedroom-vertical-slice",
+  "digest": "e9044801",
+  "social": true
+ },
+ "campus-trio.json": {
+  "id": "campus.ashford-trio",
+  "digest": "2f80d222",
+  "social": true
+ },
+ "campus.json": {
+  "id": "campus.ashford",
+  "digest": "28ed8452",
+  "social": true
+ },
+ "crossed-plans.json": {
+  "id": "sample.crossed-plans",
+  "digest": "ad2a5e74",
+  "social": true
+ },
+ "economy.json": {
+  "id": "sample.economy",
+  "digest": "f5936a78",
+  "social": true
+ },
+ "event-chain.json": {
+  "id": "sample.event-chain",
+  "digest": "d213d35f",
+  "social": true
+ },
+ "living-world.json": {
+  "id": "sample.living-world",
+  "digest": "68419c44",
+  "social": true
+ },
+ "neutral.json": {
+  "id": "sample.neutral",
+  "digest": "218b0246",
+  "social": true
+ },
+ "npc-social.json": {
+  "id": "sample.npc-social",
+  "digest": "c54d8be6",
+  "social": true
+ },
+ "other-world.json": {
+  "id": "sample.other-world",
+  "digest": "1cba23c9",
+  "social": false
+ },
+ "scripted-workshop.json": {
+  "id": "sample.scripted-workshop",
+  "digest": "18f466ba",
+  "social": true
+ },
+ "template-bar.json": {
+  "id": "template.after-hours-bar",
+  "digest": "cb24922a",
+  "social": true
+ },
+ "template-campus.json": {
+  "id": "template.campus-adult",
+  "digest": "2c71a87c",
+  "social": true
+ },
+ "template-fantasy-town.json": {
+  "id": "template.fantasy-town-adult",
+  "digest": "7c752a51",
+  "social": true
+ },
+ "threshold.json": {
+  "id": "sample.threshold",
+  "digest": "502ea485",
+  "social": false
+ },
+ "weekly-stage.json": {
+  "id": "sample.weekly-stage",
+  "digest": "cc934efa",
+  "social": true
+ }
+}

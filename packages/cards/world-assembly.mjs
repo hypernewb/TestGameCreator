@@ -1,6 +1,7 @@
 // M2 assembler: a world spec (world data + one short spec per love interest) -> a playable pack. The structure comes from the beat
 // library; the spec only fills text slots. Anything left blank becomes a visible [[slot]] placeholder and is listed in `missing`.
 import {withDirector} from './director-library.mjs';
+import {withProgression} from '../core/progression.mjs';
 import {TEMPERAMENTS,PACES,SHARED_ACTS,RANK_POINTS,THRESHOLDS,WANT_WEIGHTS,INTIMACY_CATEGORIES,RUNGS,FIRST_CHECKPOINTS,TONES,NIGHT,STOP_LABEL,STOP_TRUST,ENDING_PRIORITY,slug,idOf,AI_GUIDANCE,DEFAULT_CHOICE_TONES} from './beat-library.mjs';
 
 const MODULES=['social.conversation','social.relationships','world.schedule','items.inventory','world.economy','character.stats','world.calendar','world.moments','social.dating','social.romance-tempo','social.intimacy','social.acts','character.arc','character.sobriety','social.phone','story.endings','story.scenes'];
@@ -50,7 +51,7 @@ function build(spec,text,skip){
   endings:[...parts.flatMap(x=>x.endings),{id:run.defaultEnding,name:text(spec.fallback?.name,'fallback.name'),priority:ENDING_PRIORITY.fallback,requires:{flags:{[overFlag]:true}},text:text(spec.fallback?.text,'fallback.text')}],
   scriptedScenes:parts.flatMap(x=>x.scenes),...(firsts.length?{firsts}:{})};
  // M3: the director library over every love interest; its text slots go through the same blank-tracking filler.
- return {pack:spec.director?withDirector(pack,{beats:spec.director.beats,tone:spec.director.tone,text,skip}):pack,missing};
+ return {pack:withProgression(spec.director?withDirector(pack,{beats:spec.director.beats,tone:spec.director.tone,text,skip}):pack),missing};
 }
 
 function heroine(h,spec,text){

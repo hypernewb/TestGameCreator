@@ -1,5 +1,7 @@
 {
   "schemaVersion": 1,
+
+  "progression": {"version": 1},
   "id": "sample.badge-bond",
   "version": "0.1.0",
   "title": "The Maker Badge",

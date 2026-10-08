@@ -21,12 +21,12 @@ export const validateLustBaseline=p=>{const c=p.lustBaseline,bad=key=>{throw new
 export const easeLust=(lust,floor,steps,perDaypart)=>{let value=Number(lust)||0;for(let i=0;i<steps;i++)value+=(floor-value)*perDaypart;const closed=Math.round(value*100)/100;return Math.abs(closed-floor)<Math.max(1,floor)/100?floor:closed;};
 // used = gain already banked today; returns how much of amount may land.
 export const cappedGain=(pack,character,amount,used,s)=>{const cap=dailyGainOf(pack,s);return amount<=0||!Number.isInteger(cap)||!(pack.romanceTempoProfiles||[]).some(x=>x.character===character)?amount:Math.max(0,Math.min(amount,cap-used));};
-// The one Trust writer: clamps 0..100, applies the daily cap and emits social.relationshipChanged. Returns the applied delta.
+// The one Trust writer: clamps 0..100, applies the daily cap and emits social.relationshipChanged. Returns the applied delta. keepPatch also writes an unchanged edge: old director saves replay that patch.
 export function changeTrust(tx,character,delta,extra={}){
  const {state:s,pack:p}=tx,m=s.modules['social.relationships'];if(!m)return 0;
  const edge=`${character}--${p.playerId}`,old=m.edges[edge]||0,day=dayOf(s,p),key=`${edge}--gain--d${day}`,used=m.rewarded[key]||0,want=cappedGain(p,character,delta,used,s),value=Math.max(0,Math.min(100,old+want)),applied=value-old,capped=delta>0&&want<delta;
  markRules(tx,character,delta);
- if(applied)tx.set(['modules','social.relationships','edges',edge],value);if(applied>0&&dailyGainOf(p,s))tx.set(['modules','social.relationships','rewarded',key],used+applied);
- if(applied||!extra.quiet)tx.emit('social.relationshipChanged',{actor:character,toward:p.playerId,old,value,delta:applied,...(capped?{capped:true}:{}),...Object.fromEntries(Object.entries(extra).filter(([k])=>!['quiet','note'].includes(k))),text:`${s.actors[character].name}: Trust ${old} → ${value}${extra.note||''}`},[p.playerId,character]);
+ if(applied||extra.keepPatch)tx.set(['modules','social.relationships','edges',edge],value);if(applied>0&&dailyGainOf(p,s))tx.set(['modules','social.relationships','rewarded',key],used+applied);
+ if(applied||!extra.quiet)tx.emit('social.relationshipChanged',{actor:character,toward:p.playerId,old,value,delta:applied,...(capped?{capped:true}:{}),...Object.fromEntries(Object.entries(extra).filter(([k])=>!['quiet','note','keepPatch'].includes(k))),text:`${s.actors[character].name}: Trust ${old} → ${value}${extra.note||''}`},[p.playerId,character]);
  return applied;
 }

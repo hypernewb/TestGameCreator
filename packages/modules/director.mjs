@@ -2,6 +2,7 @@ import {assert,safeKey} from '../core/engine.mjs';
 import {calendarFor} from '../../public/calendar.mjs';
 import {conditionReasons,validateConditions} from './conditions.mjs';
 import {addPoints} from './romance-tempo.mjs';
+import {changeTrust} from './romance-stats.mjs';
 import {LEAVING} from '../../vendor/venus/scenePrompt.mjs';
 
 // F8 drama director, in the spirit of the Left 4 Dead AI Director and RimWorld storytellers: the engine, not
@@ -56,7 +57,9 @@ function missedGoal(tx,current,profile,event){
  const {character,missed}=entry.goal,name=tx.state.actors[character]?.name||character;
  if(missed.kind==='relationship'){
   const edge=`${character}--${tx.pack.playerId}`,relationships=tx.state.modules['social.relationships'];
-  if(relationships){const old=relationships.edges[edge]||0,value=Math.max(0,old-missed.cost);tx.set(['modules','social.relationships','edges',edge],value);tx.emit('social.relationshipChanged',{actor:character,toward:tx.pack.playerId,old,value,delta:value-old,reaction:'director:missed-goal',text:`${name}: Trust ${old} → ${value}`},[tx.pack.playerId,character]);}
+  // Flagged saves use the shared Trust writer (daily cap, clamp); unflagged saves keep the legacy write (GC2.2).
+  if(relationships&&tx.state.progression)changeTrust(tx,character,-missed.cost,{reaction:'director:missed-goal',keepPatch:true});
+  else if(relationships){const old=relationships.edges[edge]||0,value=Math.max(0,old-missed.cost);tx.set(['modules','social.relationships','edges',edge],value);tx.emit('social.relationshipChanged',{actor:character,toward:tx.pack.playerId,old,value,delta:value-old,reaction:'director:missed-goal',text:`${name}: Trust ${old} → ${value}`},[tx.pack.playerId,character]);}
   else if(tx.state.modules['social.romance-tempo']?.characters?.[character])addPoints(tx,character,-missed.cost,'director:missed-goal');
  }else current={...current,offerBlockedUntilTick:Math.max(current.offerBlockedUntilTick||0,tx.state.tick+missed.cost)};
  tx.emit('story.goalMissed',{template:entry.template||null,entry:entry.id,planId:entry.goal.planId,character,consequence:missed.kind,cost:missed.cost,text:missed.kind==='relationship'?`Missing the deadline strains things with ${name}.`:`Missing the deadline closes off new opportunities for ${missed.cost} ticks.`},[tx.pack.playerId,character]);

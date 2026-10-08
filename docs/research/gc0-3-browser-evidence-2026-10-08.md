@@ -1,5 +1,7 @@
 # GC0.3 and GC1.3 browser evidence (2026-10-08)
 
+Status: historical browser evidence for revision `4dabfd7` only. The tested revision and the skipped live-backend case below are kept as recorded; a different working tree cannot inherit these results.
+
 Scope: GC0.3 "establish current test health" (browser part) and GC1.3 "verify the reading loop" from `docs/GAME-CREATOR-COMPLETION-PLAN.md`. Evidence only; no product code or tests were changed.
 
 ## Run

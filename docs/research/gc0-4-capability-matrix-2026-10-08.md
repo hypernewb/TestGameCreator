@@ -87,6 +87,8 @@ Answer: the engine accepts one flat AND object plus OR inside a few array keys a
 
 ## GC0.5 shared contracts
 
+Labels: **approved** = decided by the owner and recorded in BOARD; **proposed** = contract text not yet approved or merged. Observed gaps (U3, U4, CP1/CP3/CP6) are kept as found.
+
 ### Progression versioning
 - Where: `pack.progression.version` (value 1), per-turn stamp `state.progression.cutover`, marker event `social.progressionRules`. Decision: the flag stays out of `mechanicsDigest` (owner-approved option 1, gc22 section 9).
 - Owner file: `packages/core/progression.mjs` on main (header states the contract). Writers: `packages/modules/romance-stats.mjs:markRules`, `packages/core/engine.mjs` (cutover stamp).

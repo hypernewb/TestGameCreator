@@ -16,6 +16,19 @@ See [Current Work Reconciliation](../research/current-work-reconciliation-2026-1
 
 Ancestry confirms weekly authoring `5d5fc8c`, packages `645bfa9`, creator/recovery/Wizard `9f275eb`, and memory expansion `566c96c` are integrated. The running preview route is available. `integrate/fix-wave` at inspected `8b52aa6` remains separate: 44 changed paths, mostly overlapping local main work. Its head is now `494d724`, which adds T-127 row 8 (`e361c8e`, calm one-reply size on the ordinary calm sentence; no reordering; checkpoint test untouched). Its own non-browser run is 2,123 tests: 2,111 pass, 0 fail, 10 skipped, 2 todo. Keep main's passing intimate-scene test active; do not import the candidate TODO or restore obsolete global touch restrictions. Callback/calm behaviour still needs a scoped comparison against main's local code. No merge or code change was made by this reconciliation.
 
+## Status 2026-10-08 (audit wave and owner decisions)
+
+- **Merged to main (audit/test additions, no product code):** GC2.4 `gc24-trust-policy` (`8957c2a`), GC2.5 `gc25-stage` (`322d668`), GC3.1 `gc31-intimacy-trace` (`4033b75`), GC4.1 `gc41-time` (`dbcb9df`), GC6.2 `gc62-rel-audit` (`506f370`), GC7.1 `gc71-sources` (`0647892`). Each keeps its documented gaps and todos; none of these completes its milestone.
+- **Combined non-browser suite on `0647892` (temp worktree):** 2408 tests, 2387 pass, 0 fail, 21 todo.
+- **Open GC2 gaps from the audits:** trust/daily cap has no default for flagged packs without `romanceTempoProfiles`; the unflagged director missed-goal path writes edges directly (owner call needed); authored stage in `social.progression` does not reach `relationshipStageOf` (GC2.5); refusal/boundary text reaches the stage prompt.
+- **GC6.2 gaps:** no control for initial bonds; romance ranks, hard limits and signal cooldowns are JSON-only in `studio.mjs`; no shared event or stage selector.
+- **GC7.1 gaps:** plans and relationship secrets have no creator correction path; promises have no kept/missed outcome record; scene memories are append-only.
+- **GC3.1 gaps:** no intimacy-specific scene budget, no player-facing aftercare text, no creator ladder or region-limit editor.
+- **Branches awaiting merge:** `missed-cost` (`be39ef6`, positive-integer penalty costs with explicit `kind: "none"`; review its change to three `director-trust-changetrust` tests that now assert a loss at cost 3); `g2g3-prompt` (`1b674d8`, facts selected before budgeting and a budgeted player profile; touches `vendor/venus/scenePrompt.mjs`, so confirm ownership); `gc22-doc` (`39d7b3b`, `6e78e75`, flag decision and U1–U8 tests). `gc22-doc` edits `docs/NEXT-MILESTONES.md`, which has an uncommitted rewrite in the main checkout; merge it after that rewrite lands.
+- **Owner decisions recorded (2026-10-08):** keep `pack.progression.version` out of `mechanicsDigest` only with per-turn rule versions and the five compatibility guarantees (CP2 updated in the `gc22-doc` branch); T3 save allows incomplete drafts with visible errors and blocks publish until valid; T5 adds Ignore / Must be true / Must be false; T6 adds bounded nested All/Any with flat conditions read as implicit All, engine grammar before visual editor; T7 adds location selectors with missing-reference errors and reuses the condition editor for quests; G2 relevance before budgeting; G3 concise budgeted player profile; `missed.cost` must be a positive integer with explicit no-consequence form. T3, T5, T6, T7 are not yet dispatched.
+- **Open investigation:** the recurring `gc5-5-recovery-guarantees` trace is under diagnosis (`recovery-trace` worktree). Final baseline acceptance is held until it is diagnosed as expected todo output or fixed.
+- **Studio follow-up:** `public/studio.mjs` line 96 offers only relationship and opportunity for `missed.kind`; a hand-authored `none` can reset on save.
+
 ## Next work packages
 
 | Order | Scope | Required result |

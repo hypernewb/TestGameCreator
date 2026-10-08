@@ -8,6 +8,7 @@ import {validateCardPresets} from '../../public/card-presets.mjs';
 import {validateStatGates} from '../../public/stat-gates.mjs';
 import {validateArtStyle} from '../../public/art-prompt.mjs';
 import {spokenLine} from '../../vendor/venus/sceneText.mjs';
+import {isRepeat} from '../modules/scene-dialogue.mjs';
 import {changeMoney} from '../modules/economy.mjs';
 import {changeStat} from '../modules/stats.mjs';
 import {changeTrust} from '../modules/romance-stats.mjs';
@@ -309,7 +310,7 @@ export function execute(world,command,pack,registry,packChecked=false) {
       else if(args.activity!=='continue'){const budget=activity?.inputBudget??pack.gameProject?.sceneBudget;tx.set(['scene'],{id:command.id,location:to,characters:present,activity:args.activity,startedTick:world.tick,...(present.length?{focus:activity?.character||present[0]}:{}),...(!continuous&&budget&&present.length?{budget,inputs:1}:{})});}
       else if(tx.state.scene.budget)tx.set(['scene','inputs'],tx.state.scene.inputs+1);
       tx.emit(args.activity==='continue'?'core.sceneContinued':'core.sceneStarted',{activity:args.activity,location:to,characters:present,text:args.text},[pack.playerId,...present]);
-      if(args.activity==='talk'&&present.length===1&&pack.modules['social.conversation']){const utterance=spokenLine(args.text);tx.emit('social.spoke',{actor:pack.playerId,target:present[0],location:to,utterance,promise:/\bpromise\b/i.test(args.text),source:'scene',text:`You talk to ${tx.state.actors[present[0]].name}: ${utterance}`},[pack.playerId,present[0]]);}
+      if(args.activity==='talk'&&present.length===1&&pack.modules['social.conversation']){const utterance=spokenLine(args.text),v3=registry?.['social.relationships']?.speechVersion===3;tx.emit('social.spoke',{actor:pack.playerId,target:present[0],location:to,utterance,promise:/\bpromise\b/i.test(args.text),...(v3?{repeat:isRepeat(utterance,(tx.state.modules['social.conversation'].memories||[]).filter(m=>m.knownBy.includes(present[0])).map(m=>m.topic))}:{}),source:'scene',text:`You talk to ${tx.state.actors[present[0]].name}: ${utterance}`},[pack.playerId,present[0]]);}
       if(activity){
         if(!tx.state.activityUses)tx.set(['activityUses'],{});
         tx.set(['activityUses',activity.id],((tx.state.activityUses||{})[activity.id]||0)+1);

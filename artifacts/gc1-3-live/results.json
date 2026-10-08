@@ -1,0 +1,59 @@
+{
+  "model": "qwen/qwen3.8-27b",
+  "endpoint": "localhost:1234",
+  "date": "2026-10-08",
+  "requests": 6,
+  "rows": [
+    {
+      "turn": "live-1",
+      "input": "I say \"Don't go yet, Ada — are you okay? 🙂\"",
+      "ms": 43745,
+      "fallback": false,
+      "failureReason": null,
+      "failureCode": null,
+      "typedLineText": "Don't go yet, Ada — are you okay? 🙂",
+      "typedLineExact": true,
+      "typedLineSpeaker": "",
+      "playerPageIndex": 1,
+      "npcLines": [
+        "I am fine. I was simply leaving for the Meeting Room to discuss the missing notebook. The delay is a logistical issue, not a personal one.",
+        "If you have the notebook, you can hand it to me here. If you do not, we need to agree on a revised timeline for its return. Which is it?"
+      ]
+    },
+    {
+      "turn": "live-2",
+      "input": "I tell her quietly: \"I missed you, you know.\"",
+      "ms": 11164,
+      "fallback": false,
+      "failureReason": null,
+      "failureCode": null,
+      "typedLineText": "I missed you, you know.",
+      "typedLineExact": true,
+      "typedLineSpeaker": "",
+      "playerPageIndex": 0,
+      "npcLines": [
+        "I'm here. I'm not going anywhere right now.",
+        "That's not the issue, though. The notebook is still missing, and the project timeline isn't going to wait for sentiment.",
+        "Do you have it, or do we need to sit down and map out the delay?"
+      ]
+    },
+    {
+      "turn": "live-3",
+      "input": "I ask, \"Do you want to get coffee after class?\"",
+      "ms": 14786,
+      "fallback": false,
+      "failureReason": null,
+      "failureCode": null,
+      "typedLineText": "Do you want to get coffee after class?",
+      "typedLineExact": true,
+      "typedLineSpeaker": "",
+      "playerPageIndex": 0,
+      "npcLines": [
+        "The late light slants across the desk, catching the edge of the message card. Ada’s pen hovers over the paper, the tip dry.",
+        "Class is over. It is Monday morning.",
+        "I do not have class. I am here because the notebook is missing and the deadline is not moving.",
+        "If you have it, bring it to me. If you do not, we sit in the Meeting Room and I write the revised plan. Which is it?"
+      ]
+    }
+  ]
+}

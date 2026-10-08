@@ -144,3 +144,47 @@ test('GC1.4 null memory and fact entries in deferred metadata keep the prose and
   assert.ok(t.ledger.some(m=>m.desc.includes('I hear you.')),JSON.stringify(t.ledger));
  }finally{h.store.close();}
 });
+
+test('GC1.2 typed speech on a later page of a long continuous reply keeps its owner and words',async()=>{
+ const long={lines:[1,2,3,4].map(i=>({speaker:'ada',text:`Ada line ${i} fills a page with enough ordinary words.`})).concat([{speaker:'',type:'playerSpeech',sourceId:'player-1',text:spoken},{speaker:'ada',text:'I hear you.'}]),memories:[],facts:[]};
+ const h=setup(compatible(async()=>json(long)));try{
+  const r=await h.service.act('probe',turnRequest('later',typed));const pack=h.p;pack.gameProject={conversationStyle:'continuous'};
+  const lines=playerLines({state:r.state,pack}),idx=lines.findIndex(l=>l.type==='playerSpeech');
+  assert.ok(idx>=4,JSON.stringify(lines));assert.equal(lines[idx].speaker,pack.playerId);assert.equal(lines[idx].text,spoken);
+  assert.ok(lines.every((l,i)=>i===idx||!l.text.includes(spoken)),JSON.stringify(lines));
+ }finally{h.store.close();}
+});
+
+test('GC1.4 a network error after partial streamed deltas, not an abort, keeps input and saves no partial prose',async()=>{
+ let calls=0;const provider=compatible(async()=>{calls++;if(calls>1)return json(clean);const enc=new TextEncoder();return new Response(new ReadableStream({start(c){c.enqueue(enc.encode(`data: ${JSON.stringify({choices:[{delta:{content:'{"lines":[{"speaker":"ada","text":"Half a sent'}}]})}\n\n`));setTimeout(()=>c.error(new TypeError('socket reset')),5);}}),{status:200,headers:{'Content-Type':'text/event-stream'}});});
+ const h=setup(provider);try{
+  const first=await h.service.act('probe',turnRequest('netdrop',typed)),t=first.state.turns.netdrop;
+  assert.equal(calls,1,'a mid-stream error is not silently re-sent');assert.equal(t.fallback,true,t.failureReason);assert.equal(t.input,typed);
+  assert.ok(!/Half a sent/.test(t.narrative+JSON.stringify(t.sceneLines)));assert.match(t.narrative,/Retry this turn/);
+  const revision=first.state.revision,r=await h.service.retry('probe','netdrop');
+  assert.equal(r.state.revision,revision);assert.equal(r.state.turns.netdrop.fallback,false);assert.equal(r.state.turns.netdrop.input,typed);assert.equal(calls,2);
+ }finally{h.store.close();}
+});
+
+test('GC1.4 a timeout and a mid-stream cancel show the same Retry this turn text as a dropped connection',async()=>{
+ for(const mode of ['timeout','cancel']){
+  const ctl=new AbortController();let calls=0;
+  const provider=compatible(async(url,opts)=>{calls++;if(calls>1)return json(clean);if(mode==='timeout')return hang(url,opts);
+   const enc=new TextEncoder();return new Response(new ReadableStream({start(c){c.enqueue(enc.encode(`data: ${JSON.stringify({choices:[{delta:{content:'{"lines":[{"speaker":"ada","text":"Half a sent'}}]})}\n\n`));opts.signal.addEventListener('abort',()=>c.error(Object.assign(new Error('aborted'),{name:'AbortError'})),{once:true});setTimeout(()=>ctl.abort(),5);}}),{status:200,headers:{'Content-Type':'text/event-stream'}});});
+  if(mode==='timeout')provider.timeout=5;
+  const h=setup(provider);try{
+   const first=await h.service.act('probe',turnRequest(mode,typed),mode==='cancel'?ctl.signal:undefined),t=first.state.turns[mode];
+   assert.equal(t.fallback,true,mode);assert.match(t.narrative,/Retry this turn/,mode);
+  }finally{h.store.close();}
+ }
+});
+
+test('GC1.4 a completed turn after malformed metadata applies its events once and cannot be retried',async()=>{
+ const bad={lines:clean.lines,memories:'several things happened',facts:[null,7,{text:42}]};let n=0;
+ const h=setup(compatible(async()=>json(++n===1?bad:clean)));try{
+  const first=await h.service.act('probe',turnRequest('mretry',typed)),t=first.state.turns.mretry;
+  assert.equal(t.fallback,false,t.failureReason);const events=structuredClone(t.events),revision=first.state.revision;
+  await assert.rejects(h.service.retry('probe','mretry'),/Only a failed generated turn can be retried/);
+  const saved=h.store.load('probe');assert.equal(saved.revision,revision);assert.deepEqual(saved.turns.mretry.events,events);
+ }finally{h.store.close();}
+});

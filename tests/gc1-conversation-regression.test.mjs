@@ -25,10 +25,10 @@ const pins=[
 ['GC1.4 malformed metadata','tests/gc1-typed-input-retry.test.mjs','GC1.4 malformed metadata keeps validated prose and records no invented memory or fact'],
 ['GC1.4 duplicate submit','tests/gc1-typed-input-retry.test.mjs','GC1.4 a completed turn cannot be retried or re-sent into a second effect'],
 ['GC1.4 null metadata entries','tests/gc1-typed-input-retry.test.mjs','GC1.4 null memory and fact entries in deferred metadata keep the prose and do not fail the turn'],
+['GC1.2 later page','tests/gc1-typed-input-retry.test.mjs','GC1.2 typed speech on a later page of a long continuous reply keeps its owner and words'],
+['GC1.4 mid-stream network error','tests/gc1-typed-input-retry.test.mjs','GC1.4 a network error after partial streamed deltas, not an abort, keeps input and saves no partial prose'],
+['GC1.4 timeout and cancel retry text','tests/gc1-typed-input-retry.test.mjs','GC1.4 a timeout and a mid-stream cancel show the same Retry this turn text as a dropped connection'],
+['GC1.4 malformed metadata completed turn','tests/gc1-typed-input-retry.test.mjs','GC1.4 a completed turn after malformed metadata applies its events once and cannot be retried'],
 ];
 for(const [id,file,title] of pins)test(`${id} pin: ${file} proves "${title}"`,()=>assert.ok(proves(file,title),title));
-
-test.todo('GC1.2 gap: typed speech on a later page of a long continuous reply keeps its owner'); // continuous-paging covers short pages; the paging pin has two lines
-test.todo('GC1.4 gap: a network error after partial streamed deltas, not an abort, keeps input and saves no partial prose'); // drop test throws before any stream; cancel uses abort
-test.todo('GC1.4 gap: timeout and cancel show the same Retry this turn text as a dropped connection'); // only the dropped-connection test asserts that text
-test.todo('GC1.4 gap: retry after malformed metadata on the first attempt applies events once'); // malformed-metadata test never calls retry
+// The old "retry after malformed metadata" gap cannot occur: malformed metadata does not fail a turn, and only failed turns can be retried. The pin above proves the reachable case instead.

@@ -1,0 +1,226 @@
+{
+  "summary": [
+    {
+      "id": "baseline",
+      "author": null,
+      "calls": 9,
+      "proseCalls": 5,
+      "verifiedInputs": 9,
+      "completedTurns": 4,
+      "errors": [],
+      "sourceChangedDuringRun": false,
+      "firstPromptTokens": 953,
+      "totalPromptTokens": 9982,
+      "totalCompletionTokens": 1611,
+      "latencyMs": 17337,
+      "lengthFinishes": 0,
+      "firstPromptTokenDelta": 0
+    },
+    {
+      "id": "leonard",
+      "author": "Elmore Leonard",
+      "calls": 10,
+      "proseCalls": 6,
+      "verifiedInputs": 10,
+      "completedTurns": 4,
+      "errors": [],
+      "sourceChangedDuringRun": false,
+      "firstPromptTokens": 992,
+      "totalPromptTokens": 13501,
+      "totalCompletionTokens": 2283,
+      "latencyMs": 23289,
+      "lengthFinishes": 0,
+      "firstPromptTokenDelta": 39
+    },
+    {
+      "id": "parker",
+      "author": "Dorothy Parker",
+      "calls": 9,
+      "proseCalls": 5,
+      "verifiedInputs": 9,
+      "completedTurns": 4,
+      "errors": [],
+      "sourceChangedDuringRun": false,
+      "firstPromptTokens": 991,
+      "totalPromptTokens": 10650,
+      "totalCompletionTokens": 1646,
+      "latencyMs": 17746,
+      "lengthFinishes": 0,
+      "firstPromptTokenDelta": 38
+    }
+  ],
+  "runtimeAfter": {
+    "after": {
+      "model": {
+        "type": "llm",
+        "modelKey": "qwen3.5-text-9b-nsfw-rp-roleplay-i1",
+        "format": "gguf",
+        "displayName": "Qwen3.5 Text 9B NSFW RP RolePlay I1",
+        "publisher": "mradermacher",
+        "path": "mradermacher/Qwen3.5-text-9B-NSFW-RP-RolePlay-i1-GGUF/Qwen3.5-text-9B-NSFW-RP-RolePlay.i1-Q4_K_S.gguf",
+        "sizeBytes": 5351629088,
+        "indexedModelIdentifier": "mradermacher/Qwen3.5-text-9B-NSFW-RP-RolePlay-i1-GGUF/Qwen3.5-text-9B-NSFW-RP-RolePlay.i1-Q4_K_S.gguf",
+        "deviceIdentifier": null,
+        "paramsString": "9B",
+        "architecture": "qwen35",
+        "quantization": {
+          "name": "Q4_K_S",
+          "bits": 4
+        },
+        "identifier": "qwen3.5-text-9b-nsfw-rp-roleplay-i1",
+        "instanceReference": "36EpIy54SBU2ib4bHV1hKHxI",
+        "ttlMs": 3600000,
+        "lastUsedTime": 1791414369745,
+        "vision": false,
+        "trainedForToolUse": true,
+        "maxContextLength": 262144,
+        "contextLength": 216832
+      },
+      "prediction": {
+        "maxTokens": false,
+        "reasoningBudget": 8192,
+        "temperature": 0.8,
+        "stopStrings": [],
+        "toolCallStopStrings": [],
+        "contextOverflowPolicy": "truncateMiddle",
+        "structured": {
+          "type": "none"
+        },
+        "rawTools": {
+          "type": "none"
+        },
+        "toolChoice": {
+          "type": "generic",
+          "mode": "auto"
+        },
+        "toolNaming": "removeSpecial",
+        "topKSampling": 40,
+        "repeatPenalty": 1.1,
+        "presencePenalty": false,
+        "minPSampling": 0.05,
+        "topPSampling": 0.95,
+        "xtcProbability": false,
+        "xtcThreshold": false,
+        "logProbs": false,
+        "cpuThreads": 10,
+        "enableThinking": true,
+        "promptTemplate": {
+          "type": "jinja",
+          "jinjaPromptTemplate": {
+            "template": "{%- macro render_content(content, do_vision_count, is_system_content=false) %}\n    {%- if content is string %}\n        {{- content }}\n    {%- elif content is iterable and content is not mapping %}\n        {%- for item in content %}\n            {%- if 'text' in item %}\n                {{- item.text }}\n            {%- else %}\n                {{- raise_exception('Unexpected item type in content.') }}\n            {%- endif %}\n        {%- endfor %}\n    {%- elif content is none or content is undefined %}\n        {{- '' }}\n    {%- else %}\n        {{- raise_exception('Unexpected content type.') }}\n    {%- endif %}\n{%- endmacro %}\n{%- if not messages %}\n    {{- raise_exception('No messages provided.') }}\n{%- endif %}\n{%- if tools and tools is iterable and tools is not mapping %}\n    {{- '<|im_start|>system\\n' }}\n    {{- \"# Tools\\n\\nYou have access to the following functions:\\n\\n<tools>\" }}\n    {%- for tool in tools %}\n        {{- \"\\n\" }}\n        {{- tool | tojson }}\n    {%- endfor %}\n    {{- \"\\n</tools>\" }}\n    {{- '\\n\\nIf you choose to call a function ONLY reply in the following format with NO suffix:\\n\\n<tool_call>\\n<function=example_function_name>\\n<parameter=example_parameter_1>\\nvalue_1\\n</parameter>\\n<parameter=example_parameter_2>\\nThis is the value for the second parameter\\nthat can span\\nmultiple lines\\n</parameter>\\n</function>\\n</tool_call>\\n\\n<IMPORTANT>\\nReminder:\\n- Function calls MUST follow the specified format: an inner <function=...></function> block must be nested within <tool_call></tool_call> XML tags\\n- Required parameters MUST be specified\\n- You may provide optional reasoning for your function call in natural language BEFORE the function call, but NOT after\\n- If there is no function call available, answer the question like normal with your current knowledge and do not tell the user about function calls\\n</IMPORTANT>' }}\n    {%- if messages[0].role == 'system' %}\n        {%- set content = render_content(messages[0].content, false, true)|trim %}\n        {%- if content %}\n            {{- '\\n\\n' + content }}\n        {%- endif %}\n    {%- endif %}\n    {{- '<|im_end|>\\n' }}\n{%- else %}\n    {%- if messages[0].role == 'system' %}\n        {%- set content = render_content(messages[0].content, false, true)|trim %}\n        {{- '<|im_start|>system\\n' + content + '<|im_end|>\\n' }}\n    {%- endif %}\n{%- endif %}\n{%- set ns = namespace(multi_step_tool=true, last_query_index=messages|length - 1) %}\n{%- for message in messages[::-1] %}\n    {%- set index = (messages|length - 1) - loop.index0 %}\n    {%- if ns.multi_step_tool and message.role == \"user\" %}\n        {%- set content = render_content(message.content, false)|trim %}\n        {%- if not(content.startswith('<tool_response>') and content.endswith('</tool_response>')) %}\n            {%- set ns.multi_step_tool = false %}\n            {%- set ns.last_query_index = index %}\n        {%- endif %}\n    {%- endif %}\n{%- endfor %}\n{%- if ns.multi_step_tool %}\n    {{- raise_exception('No user query found in messages.') }}\n{%- endif %}\n{%- for message in messages %}\n    {%- set content = render_content(message.content, true)|trim %}\n    {%- if message.role == \"system\" %}\n        {%- if not loop.first %}\n            {{- raise_exception('System message must be at the beginning.') }}\n        {%- endif %}\n    {%- elif message.role == \"user\" %}\n        {{- '<|im_start|>' + message.role + '\\n' + content + '<|im_end|>' + '\\n' }}\n    {%- elif message.role == \"assistant\" %}\n        {%- set reasoning_content = '' %}\n        {%- if message.reasoning_content is string %}\n            {%- set reasoning_content = message.reasoning_content %}\n        {%- else %}\n            {%- if '</think>' in content %}\n                {%- set reasoning_content = content.split('</think>')[0].rstrip('\\n').split('<think>')[-1].lstrip('\\n') %}\n                {%- set content = content.split('</think>')[-1].lstrip('\\n') %}\n            {%- endif %}\n        {%- endif %}\n        {%- set reasoning_content = reasoning_content|trim %}\n        {%- if loop.index0 > ns.last_query_index %}\n            {{- '<|im_start|>' + message.role + '\\n<think>\\n' + reasoning_content + '\\n</think>\\n\\n' + content }}\n        {%- else %}\n            {{- '<|im_start|>' + message.role + '\\n' + content }}\n        {%- endif %}\n        {%- if message.tool_calls and message.tool_calls is iterable and message.tool_calls is not mapping %}\n            {%- for tool_call in message.tool_calls %}\n                {%- if tool_call.function is defined %}\n                    {%- set tool_call = tool_call.function %}\n                {%- endif %}\n                {%- if loop.first %}\n                    {%- if content|trim %}\n                        {{- '\\n\\n<tool_call>\\n<function=' + tool_call.name + '>\\n' }}\n                    {%- else %}\n                        {{- '<tool_call>\\n<function=' + tool_call.name + '>\\n' }}\n                    {%- endif %}\n                {%- else %}\n                    {{- '\\n<tool_call>\\n<function=' + tool_call.name + '>\\n' }}\n                {%- endif %}\n                {%- if tool_call.arguments is mapping %}\n                    {%- for args_name in tool_call.arguments %}\n                        {%- set args_value = tool_call.arguments[args_name] %}\n                        {{- '<parameter=' + args_name + '>\\n' }}\n                        {%- set args_value = args_value | tojson if args_value is mapping or (args_value is iterable and args_value is not string) else args_value | string %}\n                        {{- args_value }}\n                        {{- '\\n</parameter>\\n' }}\n                    {%- endfor %}\n                {%- endif %}\n                {{- '</function>\\n</tool_call>' }}\n            {%- endfor %}\n        {%- endif %}\n        {{- '<|im_end|>\\n' }}\n    {%- elif message.role == \"tool\" %}\n        {%- if loop.previtem and loop.previtem.role != \"tool\" %}\n            {{- '<|im_start|>user' }}\n        {%- endif %}\n        {{- '\\n<tool_response>\\n' }}\n        {{- content }}\n        {{- '\\n</tool_response>' }}\n        {%- if not loop.last and loop.nextitem.role != \"tool\" %}\n            {{- '<|im_end|>\\n' }}\n        {%- elif loop.last %}\n            {{- '<|im_end|>\\n' }}\n        {%- endif %}\n    {%- else %}\n        {{- raise_exception('Unexpected message role.') }}\n    {%- endif %}\n{%- endfor %}\n{%- if add_generation_prompt %}\n    {{- '<|im_start|>assistant\\n' }}\n    {%- if enable_thinking is defined and enable_thinking is true %}\n        {{- '<think>\\n' }}\n    {%- else %}\n        {{- '<think>\\n\\n</think>\\n\\n' }}\n    {%- endif %}\n{%- endif %}"
+          },
+          "stopStrings": []
+        },
+        "draftModel": "",
+        "speculativeDecodingNumDraftTokensExact": 2,
+        "speculativeDecodingMinContinueDraftingProbability": 0.75,
+        "speculativeDecodingMinDraftLengthToConsider": 0,
+        "reasoningParsing": {
+          "enabled": true,
+          "startString": "<think>",
+          "endString": "</think>"
+        },
+        "userMaxImageDimensionPixels": 1024,
+        "ignoreModelPreferredMaxImageDimension": false,
+        "raw": {
+          "fields": [
+            {
+              "key": "llm.prediction.reasoning.budgetTokens",
+              "value": {
+                "checked": true,
+                "value": 8192
+              }
+            },
+            {
+              "key": "llm.prediction.promptTemplate",
+              "value": {
+                "type": "jinja",
+                "jinjaPromptTemplate": {
+                  "template": "{%- macro render_content(content, do_vision_count, is_system_content=false) %}\n    {%- if content is string %}\n        {{- content }}\n    {%- elif content is iterable and content is not mapping %}\n        {%- for item in content %}\n            {%- if 'text' in item %}\n                {{- item.text }}\n            {%- else %}\n                {{- raise_exception('Unexpected item type in content.') }}\n            {%- endif %}\n        {%- endfor %}\n    {%- elif content is none or content is undefined %}\n        {{- '' }}\n    {%- else %}\n        {{- raise_exception('Unexpected content type.') }}\n    {%- endif %}\n{%- endmacro %}\n{%- if not messages %}\n    {{- raise_exception('No messages provided.') }}\n{%- endif %}\n{%- if tools and tools is iterable and tools is not mapping %}\n    {{- '<|im_start|>system\\n' }}\n    {{- \"# Tools\\n\\nYou have access to the following functions:\\n\\n<tools>\" }}\n    {%- for tool in tools %}\n        {{- \"\\n\" }}\n        {{- tool | tojson }}\n    {%- endfor %}\n    {{- \"\\n</tools>\" }}\n    {{- '\\n\\nIf you choose to call a function ONLY reply in the following format with NO suffix:\\n\\n<tool_call>\\n<function=example_function_name>\\n<parameter=example_parameter_1>\\nvalue_1\\n</parameter>\\n<parameter=example_parameter_2>\\nThis is the value for the second parameter\\nthat can span\\nmultiple lines\\n</parameter>\\n</function>\\n</tool_call>\\n\\n<IMPORTANT>\\nReminder:\\n- Function calls MUST follow the specified format: an inner <function=...></function> block must be nested within <tool_call></tool_call> XML tags\\n- Required parameters MUST be specified\\n- You may provide optional reasoning for your function call in natural language BEFORE the function call, but NOT after\\n- If there is no function call available, answer the question like normal with your current knowledge and do not tell the user about function calls\\n</IMPORTANT>' }}\n    {%- if messages[0].role == 'system' %}\n        {%- set content = render_content(messages[0].content, false, true)|trim %}\n        {%- if content %}\n            {{- '\\n\\n' + content }}\n        {%- endif %}\n    {%- endif %}\n    {{- '<|im_end|>\\n' }}\n{%- else %}\n    {%- if messages[0].role == 'system' %}\n        {%- set content = render_content(messages[0].content, false, true)|trim %}\n        {{- '<|im_start|>system\\n' + content + '<|im_end|>\\n' }}\n    {%- endif %}\n{%- endif %}\n{%- set ns = namespace(multi_step_tool=true, last_query_index=messages|length - 1) %}\n{%- for message in messages[::-1] %}\n    {%- set index = (messages|length - 1) - loop.index0 %}\n    {%- if ns.multi_step_tool and message.role == \"user\" %}\n        {%- set content = render_content(message.content, false)|trim %}\n        {%- if not(content.startswith('<tool_response>') and content.endswith('</tool_response>')) %}\n            {%- set ns.multi_step_tool = false %}\n            {%- set ns.last_query_index = index %}\n        {%- endif %}\n    {%- endif %}\n{%- endfor %}\n{%- if ns.multi_step_tool %}\n    {{- raise_exception('No user query found in messages.') }}\n{%- endif %}\n{%- for message in messages %}\n    {%- set content = render_content(message.content, true)|trim %}\n    {%- if message.role == \"system\" %}\n        {%- if not loop.first %}\n            {{- raise_exception('System message must be at the beginning.') }}\n        {%- endif %}\n    {%- elif message.role == \"user\" %}\n        {{- '<|im_start|>' + message.role + '\\n' + content + '<|im_end|>' + '\\n' }}\n    {%- elif message.role == \"assistant\" %}\n        {%- set reasoning_content = '' %}\n        {%- if message.reasoning_content is string %}\n            {%- set reasoning_content = message.reasoning_content %}\n        {%- else %}\n            {%- if '</think>' in content %}\n                {%- set reasoning_content = content.split('</think>')[0].rstrip('\\n').split('<think>')[-1].lstrip('\\n') %}\n                {%- set content = content.split('</think>')[-1].lstrip('\\n') %}\n            {%- endif %}\n        {%- endif %}\n        {%- set reasoning_content = reasoning_content|trim %}\n        {%- if loop.index0 > ns.last_query_index %}\n            {{- '<|im_start|>' + message.role + '\\n<think>\\n' + reasoning_content + '\\n</think>\\n\\n' + content }}\n        {%- else %}\n            {{- '<|im_start|>' + message.role + '\\n' + content }}\n        {%- endif %}\n        {%- if message.tool_calls and message.tool_calls is iterable and message.tool_calls is not mapping %}\n            {%- for tool_call in message.tool_calls %}\n                {%- if tool_call.function is defined %}\n                    {%- set tool_call = tool_call.function %}\n                {%- endif %}\n                {%- if loop.first %}\n                    {%- if content|trim %}\n                        {{- '\\n\\n<tool_call>\\n<function=' + tool_call.name + '>\\n' }}\n                    {%- else %}\n                        {{- '<tool_call>\\n<function=' + tool_call.name + '>\\n' }}\n                    {%- endif %}\n                {%- else %}\n                    {{- '\\n<tool_call>\\n<function=' + tool_call.name + '>\\n' }}\n                {%- endif %}\n                {%- if tool_call.arguments is mapping %}\n                    {%- for args_name in tool_call.arguments %}\n                        {%- set args_value = tool_call.arguments[args_name] %}\n                        {{- '<parameter=' + args_name + '>\\n' }}\n                        {%- set args_value = args_value | tojson if args_value is mapping or (args_value is iterable and args_value is not string) else args_value | string %}\n                        {{- args_value }}\n                        {{- '\\n</parameter>\\n' }}\n                    {%- endfor %}\n                {%- endif %}\n                {{- '</function>\\n</tool_call>' }}\n            {%- endfor %}\n        {%- endif %}\n        {{- '<|im_end|>\\n' }}\n    {%- elif message.role == \"tool\" %}\n        {%- if loop.previtem and loop.previtem.role != \"tool\" %}\n            {{- '<|im_start|>user' }}\n        {%- endif %}\n        {{- '\\n<tool_response>\\n' }}\n        {{- content }}\n        {{- '\\n</tool_response>' }}\n        {%- if not loop.last and loop.nextitem.role != \"tool\" %}\n            {{- '<|im_end|>\\n' }}\n        {%- elif loop.last %}\n            {{- '<|im_end|>\\n' }}\n        {%- endif %}\n    {%- else %}\n        {{- raise_exception('Unexpected message role.') }}\n    {%- endif %}\n{%- endfor %}\n{%- if add_generation_prompt %}\n    {{- '<|im_start|>assistant\\n' }}\n    {%- if enable_thinking is defined and enable_thinking is true %}\n        {{- '<think>\\n' }}\n    {%- else %}\n        {{- '<think>\\n\\n</think>\\n\\n' }}\n    {%- endif %}\n{%- endif %}"
+                },
+                "stopStrings": []
+              }
+            },
+            {
+              "key": "llm.prediction.llama.cpuThreads",
+              "value": 10
+            }
+          ]
+        }
+      },
+      "load": {
+        "autoFit": false,
+        "gpu": {
+          "splitStrategy": "evenly",
+          "disabledGpus": [],
+          "ratio": 1,
+          "numCpuExpertLayersRatio": "off"
+        },
+        "gpuStrictVramCap": false,
+        "maxParallelPredictions": 1,
+        "useUnifiedKvCache": true,
+        "offloadKVCacheToGpu": true,
+        "contextLength": 216832,
+        "promptTemplate": {
+          "type": "jinja",
+          "jinjaPromptTemplate": {
+            "template": "{%- macro render_content(content, do_vision_count, is_system_content=false) %}\n    {%- if content is string %}\n        {{- content }}\n    {%- elif content is iterable and content is not mapping %}\n        {%- for item in content %}\n            {%- if 'text' in item %}\n                {{- item.text }}\n            {%- else %}\n                {{- raise_exception('Unexpected item type in content.') }}\n            {%- endif %}\n        {%- endfor %}\n    {%- elif content is none or content is undefined %}\n        {{- '' }}\n    {%- else %}\n        {{- raise_exception('Unexpected content type.') }}\n    {%- endif %}\n{%- endmacro %}\n{%- if not messages %}\n    {{- raise_exception('No messages provided.') }}\n{%- endif %}\n{%- if tools and tools is iterable and tools is not mapping %}\n    {{- '<|im_start|>system\\n' }}\n    {{- \"# Tools\\n\\nYou have access to the following functions:\\n\\n<tools>\" }}\n    {%- for tool in tools %}\n        {{- \"\\n\" }}\n        {{- tool | tojson }}\n    {%- endfor %}\n    {{- \"\\n</tools>\" }}\n    {{- '\\n\\nIf you choose to call a function ONLY reply in the following format with NO suffix:\\n\\n<tool_call>\\n<function=example_function_name>\\n<parameter=example_parameter_1>\\nvalue_1\\n</parameter>\\n<parameter=example_parameter_2>\\nThis is the value for the second parameter\\nthat can span\\nmultiple lines\\n</parameter>\\n</function>\\n</tool_call>\\n\\n<IMPORTANT>\\nReminder:\\n- Function calls MUST follow the specified format: an inner <function=...></function> block must be nested within <tool_call></tool_call> XML tags\\n- Required parameters MUST be specified\\n- You may provide optional reasoning for your function call in natural language BEFORE the function call, but NOT after\\n- If there is no function call available, answer the question like normal with your current knowledge and do not tell the user about function calls\\n</IMPORTANT>' }}\n    {%- if messages[0].role == 'system' %}\n        {%- set content = render_content(messages[0].content, false, true)|trim %}\n        {%- if content %}\n            {{- '\\n\\n' + content }}\n        {%- endif %}\n    {%- endif %}\n    {{- '<|im_end|>\\n' }}\n{%- else %}\n    {%- if messages[0].role == 'system' %}\n        {%- set content = render_content(messages[0].content, false, true)|trim %}\n        {{- '<|im_start|>system\\n' + content + '<|im_end|>\\n' }}\n    {%- endif %}\n{%- endif %}\n{%- set ns = namespace(multi_step_tool=true, last_query_index=messages|length - 1) %}\n{%- for message in messages[::-1] %}\n    {%- set index = (messages|length - 1) - loop.index0 %}\n    {%- if ns.multi_step_tool and message.role == \"user\" %}\n        {%- set content = render_content(message.content, false)|trim %}\n        {%- if not(content.startswith('<tool_response>') and content.endswith('</tool_response>')) %}\n            {%- set ns.multi_step_tool = false %}\n            {%- set ns.last_query_index = index %}\n        {%- endif %}\n    {%- endif %}\n{%- endfor %}\n{%- if ns.multi_step_tool %}\n    {{- raise_exception('No user query found in messages.') }}\n{%- endif %}\n{%- for message in messages %}\n    {%- set content = render_content(message.content, true)|trim %}\n    {%- if message.role == \"system\" %}\n        {%- if not loop.first %}\n            {{- raise_exception('System message must be at the beginning.') }}\n        {%- endif %}\n    {%- elif message.role == \"user\" %}\n        {{- '<|im_start|>' + message.role + '\\n' + content + '<|im_end|>' + '\\n' }}\n    {%- elif message.role == \"assistant\" %}\n        {%- set reasoning_content = '' %}\n        {%- if message.reasoning_content is string %}\n            {%- set reasoning_content = message.reasoning_content %}\n        {%- else %}\n            {%- if '</think>' in content %}\n                {%- set reasoning_content = content.split('</think>')[0].rstrip('\\n').split('<think>')[-1].lstrip('\\n') %}\n                {%- set content = content.split('</think>')[-1].lstrip('\\n') %}\n            {%- endif %}\n        {%- endif %}\n        {%- set reasoning_content = reasoning_content|trim %}\n        {%- if loop.index0 > ns.last_query_index %}\n            {{- '<|im_start|>' + message.role + '\\n<think>\\n' + reasoning_content + '\\n</think>\\n\\n' + content }}\n        {%- else %}\n            {{- '<|im_start|>' + message.role + '\\n' + content }}\n        {%- endif %}\n        {%- if message.tool_calls and message.tool_calls is iterable and message.tool_calls is not mapping %}\n            {%- for tool_call in message.tool_calls %}\n                {%- if tool_call.function is defined %}\n                    {%- set tool_call = tool_call.function %}\n                {%- endif %}\n                {%- if loop.first %}\n                    {%- if content|trim %}\n                        {{- '\\n\\n<tool_call>\\n<function=' + tool_call.name + '>\\n' }}\n                    {%- else %}\n                        {{- '<tool_call>\\n<function=' + tool_call.name + '>\\n' }}\n                    {%- endif %}\n                {%- else %}\n                    {{- '\\n<tool_call>\\n<function=' + tool_call.name + '>\\n' }}\n                {%- endif %}\n                {%- if tool_call.arguments is mapping %}\n                    {%- for args_name in tool_call.arguments %}\n                        {%- set args_value = tool_call.arguments[args_name] %}\n                        {{- '<parameter=' + args_name + '>\\n' }}\n                        {%- set args_value = args_value | tojson | safe if args_value is mapping or (args_value is sequence and args_value is not string) else args_value | string %}\n                        {{- args_value }}\n                        {{- '\\n</parameter>\\n' }}\n                    {%- endfor %}\n                {%- endif %}\n                {{- '</function>\\n</tool_call>' }}\n            {%- endfor %}\n        {%- endif %}\n        {{- '<|im_end|>\\n' }}\n    {%- elif message.role == \"tool\" %}\n        {%- if loop.previtem and loop.previtem.role != \"tool\" %}\n            {{- '<|im_start|>user' }}\n        {%- endif %}\n        {{- '\\n<tool_response>\\n' }}\n        {{- content }}\n        {{- '\\n</tool_response>' }}\n        {%- if not loop.last and loop.nextitem.role != \"tool\" %}\n            {{- '<|im_end|>\\n' }}\n        {%- elif loop.last %}\n            {{- '<|im_end|>\\n' }}\n        {%- endif %}\n    {%- else %}\n        {{- raise_exception('Unexpected message role.') }}\n    {%- endif %}\n{%- endfor %}\n{%- if add_generation_prompt %}\n    {{- '<|im_start|>assistant\\n' }}\n    {%- if enable_thinking is defined and enable_thinking is true %}\n        {{- '<think>\\n' }}\n    {%- else %}\n        {{- '<think>\\n\\n</think>\\n\\n' }}\n    {%- endif %}\n{%- endif %}"
+          }
+        },
+        "ropeFrequencyBase": false,
+        "ropeFrequencyScale": false,
+        "evalBatchSize": 2048,
+        "physicalBatchSize": 512,
+        "flashAttention": true,
+        "contextCheckpoints": 32,
+        "reasoningBudgetMessage": "I have to answer now.",
+        "speculativeDraftMtp": false,
+        "speculativeDraftSimple": false,
+        "speculativeDraftModel": "",
+        "speculativeDraftMaxTokens": 3,
+        "speculativeDraftMinTokens": 0,
+        "speculativeDraftMinContinueProbability": 0,
+        "keepModelInMemory": true,
+        "seed": false,
+        "useFp16ForKVCache": true,
+        "tryMmap": true,
+        "tryDirectIO": false,
+        "llamaCppArgumentsOverride": {
+          "enabled": false,
+          "disabledParameters": [],
+          "overrideParameters": [],
+          "excludeAllConfig": false
+        },
+        "numExperts": 0,
+        "llamaKCacheQuantizationType": "q4_0",
+        "llamaVCacheQuantizationType": "q4_0"
+      }
+    },
+    "predictionUnchanged": true,
+    "loadUnchanged": true
+  },
+  "verification": "All 28 actual model inputs verified. Same frozen pack, first pre-injection request and source hashes across arms. Only author prose line plus common seed added at transport boundary. No settings changes or truncated completions.",
+  "repairs": [
+    {
+      "id": "baseline",
+      "attempts": []
+    },
+    {
+      "id": "leonard",
+      "attempts": [
+        {
+          "turn": 4,
+          "attempt": 0,
+          "part": "player-1",
+          "format": "roleplay-prose",
+          "raw": "*Rei blinks rapidly, caught off guard by your sudden shift from playful banter to outright flirtation.* \"Oh my god, are you serious right now?\" *She shakes her head in disbelief but can't quite suppress a smirk.* \"I would never dream of approving anything without tasting it first. It's basic quality control.\" *Her tone is mock-earnest as she gestures emphatically with her spoon. But then the playful glint returns to her gaze and she leans forward slightly, intrigued by your reaction.* \"So you're saying I'm a perfectionist? A control freak?\" *Just amusement at your boldness.* \"Well aren't you full of surprises this morning.\" *A soft chuckle escapes her lips as she shakes her head again, clearly entertained by the exchange.* \"But I suppose we all have our quirks and obsessions, don't we?\" *Her voice lightens with a hint of self-deprecating humor. Rei takes another sip of coffee to buy herself a moment to collect her thoughts before responding further.* \"Oh, a film night, huh? How very... grown-up of you.\" *She rolls her eyes good-naturedly.* \"I'm flattered you'd invite me along, but I think I'll pass. Got plenty on my plate already.\" *Rei sets down her mug with a soft clink, meeting your gaze squarely.* \"Besides, last time I watched an entire movie without getting up to pee, I ended up crying for two hours straight. Not exactly ideal company material.\" *A wry smile tugs at her lips as she stands abruptly, grabbing her coat from the back of her chair.* \"Anyway, gotta run. Got class in a bit.\" *She pauses at the threshold, glancing back over her shoulder with an amused expression.* \"Have fun picking out the film, though. And spare me the dark roast nonsense, yeah?\" *With that parting shot, she slips out into the hall, leaving you alone once more with the lingering scent of coffee and her laughter still echoing faintly in your ears.*",
+          "rejected": "You already asked Oh my god, are you serious right now? / So you're saying I'm a perfectionist? / A control freak? / But I suppose we all have our quirks and obsessions, don't we?. Respond to the current contribution without asking that question again."
+        }
+      ]
+    },
+    {
+      "id": "parker",
+      "attempts": []
+    }
+  ]
+}

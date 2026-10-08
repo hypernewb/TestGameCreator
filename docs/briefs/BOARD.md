@@ -53,6 +53,8 @@ No milestone is accepted or verified yet. Statuses: planned / in progress / impl
 | GC1 | provisionally accepted; regression gate not re-run | Examples frozen with manifest (`15a6af5`); continuous paging browser checks reported earlier | Re-run reading-loop and input/retry checks on merged main (GC1.2–GC1.4); GC1.5 quality gate for any prompt change |
 | GC2 | in progress (partial) | CP0 trace accepted; speech rules v3 behind versioned marker (`aa1220f`); GC2.4 and GC2.5 audits merged, showing gaps | GC2.2 compatibility contract (`gc22-doc` unmerged; mixed/tampered cases U3, U6–U8 are todo); GC2.4 caps and default for flagged packs; GC2.5 authored stage not wired to `relationshipStageOf`; GC2.6 memories/promises; GC2.7 friendship vs attraction; GC2.8 owner review of three encounters (not started) |
 
+**Dispatched 2026-10-08 to close GC0 and GC1 (worktrees off `4dabfd7`; none merged yet):** `gc0-baseline` (GC0.1–GC0.2 ledger and dispositions); `gc0-browser` (GC0.3 serial browser run and reading-loop suite map); `gc0-matrix` (GC0.4 capability matrix and GC0.5 contracts); `gc1-verify` (GC1.1, GC1.2, GC1.4 pins and todos). GC1.5 is not triggered because no prompt change is planned.
+
 Everything else (GC3–GC11) is planned, except audits that are merged and documented but not accepted: GC3.1 inventory (`4033b75`), GC4.1 time/presence (`dbcb9df`), GC6.2 relationship audit (`506f370`), GC7.1 source inventory (`0647892`).
 
 ### Milestones

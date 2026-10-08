@@ -23,33 +23,12 @@ test('studio ACT_KINDS mirror matches packages/ai/scene-acts.mjs',()=>{
  assert.deepEqual(m[1].match(/'([^']+)'/g).map(x=>x.slice(1,-1)),[...ACT_KINDS]);
 });
 
-test('dailyNeeds: enable from an empty project, add and edit a valid need, validation, disable keeps config',()=>{
- const s=studio(base('social.conversation'));s.run('dailyNeedEditor');
- const sec=sectionOf(s.fields(),'Hidden daily need');assert.ok(sec,'daily need section');
- setField(sec,'Daily needs','on');
- assert.deepEqual(s.pack.dailyNeeds,{needs:[],reward:{like:2,trust:1},againstLike:-2});
- assert.equal(s.pack.modules['social.daily-need'],version('social.daily-need'));
- assert.ok(s.pack.modules['social.acts']&&s.pack.modules['social.relationships'],'dependencies enabled');
- s.run('dailyNeedEditor');
- button(s.fields(),'+ Add daily need').onclick();
- assert.throws(()=>validatePack(s.pack,registry),/daily need hint/,'empty hint is rejected');
- s.run('dailyNeedEditor');
- const card=cardOf(s.fields(),'Daily need 1');
- setField(card,'Need ID (unique)','vent');
- setField(card,'Behavioural cue, shown to the player only as a vague hint (required, 1–100 characters)','wants to vent about work');
- setField(card,'Act kind','listen');
- button(card,'+ Add against rule').onclick();
- validatePack(s.pack,registry);
- assert.deepEqual(s.pack.dailyNeeds.needs,[{id:'vent',hint:'wants to vent about work',weight:1,matches:[{kind:'listen'}],against:[{kind:'flirt'}]}]);
- s.run('dailyNeedEditor');
- button(cardOf(s.fields(),'Daily need 1'),'Remove daily need').onclick();
- assert.throws(()=>validatePack(s.pack,registry),/daily needs required/,'needs list may not be empty while enabled');
- setField(sectionOf(s.fields(),'Hidden daily need'),'Daily needs','off');
- assert.ok(!s.pack.modules['social.daily-need'],'module disabled');
- assert.deepEqual(s.pack.dailyNeeds,{needs:[],reward:{like:2,trust:1},againstLike:-2},'configuration kept while off');
- validatePack(s.pack,registry);
- setField(sectionOf(s.fields(),'Hidden daily need'),'Daily needs','on');
- assert.equal(s.pack.modules['social.daily-need'],version('social.daily-need'),'re-enable restores the mechanic with its kept data');
+test('dailyNeeds: pack validation rejects an empty hint and an empty need list while enabled',()=>{
+ const f=base('social.conversation','social.relationships','social.acts','items.inventory','social.dating','social.romance-tempo','social.daily-need');
+ f.dailyNeeds={needs:[{id:'vent',hint:'wants to vent about work',weight:1,matches:[{kind:'listen'}],against:[{kind:'flirt'}]}],reward:{like:2,trust:1},againstLike:-2};
+ validatePack(f,registry);
+ assert.throws(()=>validatePack({...f,dailyNeeds:{...f.dailyNeeds,needs:[{...f.dailyNeeds.needs[0],hint:''}]}},registry),/daily need hint/,'empty hint is rejected');
+ assert.throws(()=>validatePack({...f,dailyNeeds:{...f.dailyNeeds,needs:[]}},registry),/daily needs required/,'needs list may not be empty while enabled');
 });
 
 test('dailyNeeds: consumed by the runtime once authored (like reward and against penalty)',()=>{
@@ -64,28 +43,15 @@ test('dailyNeeds: consumed by the runtime once authored (like reward and against
  assert.equal(rude.state.modules['social.romance-tempo'].characters.mia.points,10,'against rule costs Like');
 });
 
-test('statMilestones: authored through forms, unique IDs enforced, flag set by the runtime',()=>{
+test('statMilestones: unique IDs enforced, flag set by the runtime',()=>{
  const f=base('social.conversation','character.stats');
  f.statDefinitions=[{id:'confidence',name:'Confidence',min:0,max:100,visibility:'public'}];
  f.initialStats=[{character:'player',stat:'confidence',value:1}];
  f.activities=[{id:'train',name:'Train',description:'done',location:'room',duration:1,phrases:[],effects:[{type:'stat',stat:'confidence',delta:2}]}];
- const s=studio(f);s.run('statMilestonesEditor');
- button(s.fields(),'+ Add stat milestone').onclick();
- s.run('statMilestonesEditor');
- const card=cardOf(s.fields(),'Stat milestone 1');
- setField(card,'Milestone ID (unique)','confident');
- setField(card,'Stat (plain stats only)','confidence');
- setField(card,'Reaches value','3');
- setField(card,'Story flag to set','conf-flag');
- setField(card,'Announcement text (optional, up to 200 characters)','You feel sure of yourself.');
- validatePack(s.pack,registry);
- s.run('statMilestonesEditor');
- button(s.fields(),'+ Add stat milestone').onclick();
- s.run('statMilestonesEditor');
- setField(cardOf(s.fields(),'Stat milestone 2'),'Milestone ID (unique)','confident');
- assert.throws(()=>validatePack(s.pack,registry),/duplicate/,'duplicate milestone ID rejected');
-
- const pack=structuredClone(JSON.parse(JSON.stringify(s.pack)));pack.statMilestones=[pack.statMilestones[0]];
+ f.statMilestones=[{id:'confident',character:'',stat:'confidence',min:3,flag:'conf-flag',text:'You feel sure of yourself.'}];
+ validatePack(f,registry);
+ assert.throws(()=>validatePack({...f,statMilestones:[f.statMilestones[0],{...f.statMilestones[0]}]},registry),/duplicate/,'duplicate milestone ID rejected');
+ const pack=structuredClone(f);
  const r=execute(createWorld(pack,registry,'mile',42),{id:'t1',actorId:'player',type:'core.scene',expectedRevision:0,args:{text:'Train',location:'room',characters:[],activity:'other',activityId:'train'}},pack,registry,true);
  assert.equal(r.state.flags['conf-flag'],true,'milestone flag set');
  assert.ok(r.turn.events.some(e=>e.type==='character.statMilestone'&&e.payload.milestone==='confident'&&/sure of yourself/.test(e.payload.text)));

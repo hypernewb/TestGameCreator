@@ -3,7 +3,7 @@ import {ordinaryConversation} from './conversation.mjs';
 import {relationshipStageOf,behaviorCueOf,voiceExamplesOf,experienceCueOf} from './character-context.mjs';
 import {allocate,lods,messageTokens,DEFAULT_TIERS} from './budget.mjs';
 import {calendarFor} from '../../public/calendar.mjs';
-import {promptView} from '../../vendor/venus/scenePrompt.mjs';
+import {promptView,aboutScene} from '../../vendor/venus/scenePrompt.mjs';
 import {relevance} from './memory.mjs';
 import {proseOf} from './prompt-sections.mjs';
 import {sexStyleText} from '../../public/card-presets.mjs';
@@ -134,8 +134,12 @@ export function budgetSceneContext(context,pack,world,turnId,{window=8192,reply=
  const tailWindow=wideContext?1500:700;
  const isCharLine=h=>wideContext&&focusNames.some(n=>n&&String(h.text+' '+(h.input||'')).includes(n));
  history.forEach((h,i)=>{const verbatimEligible=i>=history.length-verbatim;const charLine=isCharLine(h);add('sceneHistory',2,`history:${h.source}`,i,[...(verbatimEligible||charLine?[['full',{source:h.source,knownBy:h.knownBy,input:h.input,text:h.text,daypart:h.daypart}],['tail',{source:h.source,knownBy:h.knownBy,input:clip(h.input,200),text:h.text.length>tailWindow?'…'+h.text.slice(-tailWindow):h.text,daypart:h.daypart}]]:[]),['digest',{source:h.source,knownBy:intersectKnown([h.knownBy,h.digestKnownBy]),compact:true,text:h.digest||turnDigest({input:h.input,events:[]},audience),daypart:h.daypart}]],{monotone:true});});
- (context.generatedFacts||[]).forEach(f=>add('generatedFacts',3,`fact:${f.id}`,(f.score??(f.reason==='current scene'?10:8))+sticky(`fact:${f.id}`),[['full',f]]));
- (context.facts||[]).forEach((f,i)=>add('facts',3,`authored:${f.id}`,5-i/1000,[['full',f]]));
+ // Relevance selection happens before budgeting (G2): the renderer shows exactly what is allocated, with no second gate.
+ const factNames=cast.map(id=>pack.actors.find(a=>a.id===id)?.name).filter(Boolean),playerName=pack.actors.find(a=>a.id===pack.playerId)?.name||'',factQuery=`${context.playerAction||''} ${history.map(h=>h.input||'').join(' ')}`;
+ const knownAll=[...(context.facts||[]).map(f=>({key:`authored:${f.id}`,text:f.text})),...(context.generatedFacts||[]).map(f=>({key:`fact:${f.id}`,text:f.text}))];
+ const knownOn=new Set(knownAll.filter(x=>aboutScene(x.text,factNames,playerName,factQuery)).slice(-6).map(x=>x.key)),knownSkipped=knownAll.filter(x=>!knownOn.has(x.key)).map(x=>[x.key,'prompt relevance or section cap']);
+ (context.generatedFacts||[]).forEach(f=>knownOn.has(`fact:${f.id}`)&&add('generatedFacts',3,`fact:${f.id}`,(f.score??(f.reason==='current scene'?10:8))+sticky(`fact:${f.id}`),[['full',f]]));
+ (context.facts||[]).forEach((f,i)=>knownOn.has(`authored:${f.id}`)&&add('facts',3,`authored:${f.id}`,5-i/1000,[['full',f]]));
  // What the player disclosed or promised outranks model-written impressions; words shared with the current action
  // lift the memory being asked about ("where did I grow up?") above the rest, so it survives a tight window.
  const KIND={promise:9,disclosure:9,statement:4};
@@ -166,6 +170,6 @@ export function budgetSceneContext(context,pack,world,turnId,{window=8192,reply=
   pastScenes:keep(recaps,g=>g.key),
   npcRelationships:keep(context.npcRelationships||[],r=>`npc:${r.characters.join('|')}`)};
  const report={v:1,window,reply,ratio,budget,base,poolBudget,used:base+result.used,overBudget:overBudget||base+result.used>budget,
-  included:result.included.map(x=>[x.key,x.level,x.cost]),cut:result.cut.map(x=>[x.key,x.reason])};
+  included:result.included.map(x=>[x.key,x.level,x.cost]),cut:[...result.cut.map(x=>[x.key,x.reason]),...knownSkipped]};
  return {context:out,report};
 }

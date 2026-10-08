@@ -65,7 +65,7 @@ test('report endpoint scans uploads, animated media and static assets without ch
  p.actors[1].idleStill=await upload(f.api,png(1024,1536));
  delete p.scriptedScenes;p.firsts=[];
  p.actors[1].poses=[{id:'happy',image:'scenario-media/00000000-0000-0000-0000-000000000042.png'}];
- await f.api('/api/studio/save',{id:created.id,pack:p});
+ await f.api('/api/studio/save',{id:created.id,pack:p,revision:created.updated});
  const before={drafts:files(f.dir,'drafts'),published:files(f.dir,'published'),media:files(f.dir,'media')};
  const r=await f.api('/api/studio/assets/report',{pack:p});
  assert.equal(r.status,200);

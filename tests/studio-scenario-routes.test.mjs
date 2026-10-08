@@ -35,7 +35,7 @@ test('scenario CRUD saves and reopens fixtures, action order and assertions',asy
  try{
   validatePack(pack(),registry);
   const draft=await call('/api/studio/create',{});assert.equal(draft.status,200);
-  const savedDraft=await call('/api/studio/save',{id:draft.data.id,pack:pack()});assert.equal(savedDraft.status,200);
+  const savedDraft=await call('/api/studio/save',{id:draft.data.id,pack:pack(),revision:draft.data.updated});assert.equal(savedDraft.status,200);
   const s=await call('/api/studio/scenario/save',{...scenario,target:{draftId:draft.data.id,title:'T'}});
   assert.equal(s.status,200);assert.equal(s.data.rev,1);
   assert.equal((await call('/api/studio/scenario/save',{...scenario,id:s.data.id,rev:0})).status,400,'a stale save is refused');
@@ -59,7 +59,7 @@ test('a run is deterministic, persists its project identity, and never touches s
  const {app,call,cleanup}=await boot();
  try{
   const draft=await call('/api/studio/create',{}),p=pack(),pBefore=structuredClone(p);
-  await call('/api/studio/save',{id:draft.data.id,pack:p});
+  await call('/api/studio/save',{id:draft.data.id,pack:p,revision:draft.data.updated});
   const s=await call('/api/studio/scenario/save',{...scenario,target:{draftId:draft.data.id,title:'T'}});
   const run=await call('/api/studio/scenario/run',{...scenario,id:s.data.id,rev:s.data.rev,pack:p});
   assert.equal(run.status,200);assert.equal(run.data.result.ok,true,JSON.stringify(run.data.result.firstFailure));
@@ -77,7 +77,7 @@ test('a run is deterministic, persists its project identity, and never touches s
 test('a stale run cannot overwrite a newer scenario revision; a wrong assertion fails usefully',async()=>{
  const {app,call,cleanup}=await boot();
  try{
-  const draft=await call('/api/studio/create',{});await call('/api/studio/save',{id:draft.data.id,pack:pack()});
+  const draft=await call('/api/studio/create',{});await call('/api/studio/save',{id:draft.data.id,pack:pack(),revision:draft.data.updated});
   const s=await call('/api/studio/scenario/save',{...scenario,target:{draftId:draft.data.id,title:'T'}});
   const failing={...scenario,assertions:[{kind:'flag',flag:'studied',value:false}]};
   const bad=await call('/api/studio/scenario/run',{...failing,id:s.data.id,rev:s.data.rev,pack:pack()});
@@ -115,4 +115,4 @@ test('the action registry endpoint validates the pack and offers concrete action
 });
 
 
-test('success and failure isolate existing saves and project bytes; retargeting clears snapshot results',async()=>{const {app,call,cleanup}=await boot();try{const draft=await call('/api/studio/create',{});await call('/api/studio/save',{id:draft.data.id,pack:pack()});const save=await call('/api/new',{packId:Object.keys(app.packs)[0]}),before=structuredClone(app.store.load(save.data.state.campaignId)),project=(await call('/api/studio/get?id='+draft.data.id)).data;const saved=await call('/api/studio/scenario/save',{...scenario,target:{draftId:draft.data.id}});for(const assertions of [scenario.assertions,[{kind:'tick',value:999}]]){const r=await call('/api/studio/scenario/run',{...scenario,assertions,id:saved.data.id,rev:saved.data.rev,pack:pack()});assert.equal(r.status,200);assert.deepEqual(app.store.load(save.data.state.campaignId),before);assert.deepEqual((await call('/api/studio/get?id='+draft.data.id)).data,project);}const p=pack();p.statDefinitions[0].max=4;await call('/api/studio/save',{id:draft.data.id,pack:p});const stale=(await call('/api/studio/scenario?id='+saved.data.id)).data;assert.notEqual(stale.currentDigest,stale.lastRun.snapshotDigest);await call('/api/studio/scenario/save',{...scenario,id:saved.data.id,rev:saved.data.rev,target:{draftId:'another'}});assert.equal((await call('/api/studio/scenario?id='+saved.data.id)).data.lastRun,null);}finally{await cleanup();}});
+test('success and failure isolate existing saves and project bytes; retargeting clears snapshot results',async()=>{const {app,call,cleanup}=await boot();try{const draft=await call('/api/studio/create',{});await call('/api/studio/save',{id:draft.data.id,pack:pack(),revision:draft.data.updated});const save=await call('/api/new',{packId:Object.keys(app.packs)[0]}),before=structuredClone(app.store.load(save.data.state.campaignId)),project=(await call('/api/studio/get?id='+draft.data.id)).data;const saved=await call('/api/studio/scenario/save',{...scenario,target:{draftId:draft.data.id}});for(const assertions of [scenario.assertions,[{kind:'tick',value:999}]]){const r=await call('/api/studio/scenario/run',{...scenario,assertions,id:saved.data.id,rev:saved.data.rev,pack:pack()});assert.equal(r.status,200);assert.deepEqual(app.store.load(save.data.state.campaignId),before);assert.deepEqual((await call('/api/studio/get?id='+draft.data.id)).data,project);}const p=pack();p.statDefinitions[0].max=4;await call('/api/studio/save',{id:draft.data.id,pack:p,revision:(await call('/api/studio/get?id='+draft.data.id)).data.updated});const stale=(await call('/api/studio/scenario?id='+saved.data.id)).data;assert.notEqual(stale.currentDigest,stale.lastRun.snapshotDigest);await call('/api/studio/scenario/save',{...scenario,id:saved.data.id,rev:saved.data.rev,target:{draftId:'another'}});assert.equal((await call('/api/studio/scenario?id='+saved.data.id)).data.lastRun,null);}finally{await cleanup();}});

@@ -11,7 +11,7 @@ test('Studio Chat Lab: three mock turns update the side panel, export works and 
   const sheet=importCharacterSheet(p,'friend');sheet.personality.traits=['warm','dry'];
   sheet.goal={id:'audition',title:'Nail the audition',why:'Opening night',steps:[{id:'lines',title:'Learn the lines',hint:'Run the lines',complete:{minTick:9999}},{id:'perform',title:'Perform',hint:'Take the stage',complete:'narrative'}]};
   p.characterSheets=[sheet];
-  const draft=await api('/api/studio/create',{});await api('/api/studio/save',{id:draft.id,pack:p});
+  const draft=await api('/api/studio/create',{});await api('/api/studio/save',{id:draft.id,pack:p,revision:draft.updated});
   assert.equal((await api('/api/lab/build')).stale,false,'a fresh server is not stale');
   b=await browser('C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe');
   await b.call('Emulation.setDeviceMetricsOverride',{width:1440,height:1100,deviceScaleFactor:1,mobile:false});

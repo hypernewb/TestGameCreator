@@ -15,10 +15,11 @@ import {validateConditions} from '../modules/conditions.mjs';
 import {heldBy,transfer} from '../modules/inventory.mjs';
 import {closedReason,holidayOf} from '../modules/calendar.mjs';
 import {validateProjectUi} from '../../public/ui-selection.mjs';
+import {PROGRESSION_VERSION,cutoverStamp,progressionVersionOf,validateProgression} from './progression.mjs';
 export const CORE_API = '0.1.0';
 export const clone = x => structuredClone(x);
 export const plannerMode = pack => pack.gameProject?.timeMode==='planner';
-export const committedChange=(before,after)=>[...new Set([...Object.keys(before),...Object.keys(after)])].some(k=>!['revision','rng','events','turns','refusalHistory'].includes(k)&&JSON.stringify(before[k])!==JSON.stringify(after[k]));
+export const committedChange=(before,after)=>[...new Set([...Object.keys(before),...Object.keys(after)])].some(k=>!['revision','rng','events','turns','refusalHistory','progression'].includes(k)&&JSON.stringify(before[k])!==JSON.stringify(after[k]));
 export function assert(ok, message) { if (!ok) throw new Error(message); }
 const untilTicks=(tick,part,n)=>{const slot=Math.floor(tick/n),d=((PERIODS.indexOf(part)-slot%3+3)%3)||3;return (slot+d)*n-tick;};
 export const refusalCode=e=>e?.code||e?.refusal?.code||(/consent|intima|boundary/i.test(e?.message||'')?'boundary':/route|location|destination/i.test(e?.message||'')?'place':/revision/i.test(e?.message||'')?'changed':/insufficient|debt limit/i.test(e?.message||'')?'item':'unavailable');
@@ -149,7 +150,7 @@ export function resolveModules(pack, registry) {
 export function validatePack(pack, registry) {
   assert(pack && pack.schemaVersion===1,'pack.schemaVersion: expected 1');
   validateWeeklyRoutines(pack);
-  validateProjectUi(pack.gameProject?.ui);
+  validateProjectUi(pack.gameProject?.ui);validateProgression(pack);
   assert(pack.gameProject?.timeMode===undefined||['clock','planner'].includes(pack.gameProject.timeMode),'gameProject.timeMode: expected clock or planner');
   assert(safeKey(pack.id),'pack.id: invalid ID'); assert(typeof pack.title==='string','pack.title: required');
   assert(/^\d+\.\d+\.\d+$/.test(pack.version),'pack.version: expected x.y.z');
@@ -227,6 +228,8 @@ export function execute(world,command,pack,registry,packChecked=false) {
   assert(command.actorId===pack.playerId,'Only the player can submit commands');
   assert(command.args&&typeof command.args==='object'&&!Array.isArray(command.args),'args must be an object');assert(command.components===undefined||Array.isArray(command.components)&&command.components.length<=3&&command.components.every(c=>c&&safeKey(c.type)&&c.args&&typeof c.args==='object'&&!Array.isArray(c.args)),'Invalid turn components');
   assert(!world.modules['story.endings']?.selected||['core.refuse','core.inspect'].includes(command.type),'The story has ended. Start a new campaign to play again.');
+  // Unknown progression versions are read-only in this build; a stamped save cannot run under a pack that dropped the flag.
+  const pv=progressionVersionOf(pack);assert(pv===undefined||pv===PROGRESSION_VERSION,`Progression version ${pv} is not supported by this build; the save is read-only`);assert(!world.progression||pv===PROGRESSION_VERSION,'This save has progression rules; its pack must keep progression version 1');
   // A director incident is a model-played moment, so its conversation can end like any other (the scenes module then dismisses it).
   if(world.modules['story.scenes']?.pending)assert(['story.choose','story.respond','story.leave','social.withdrawConsent'].includes(command.type)||FREE_ACTIONS.has(command.type)||command.type==='core.endScene'&&pack.scriptedScenes?.find(x=>x.id===world.modules['story.scenes'].pending)?.template?.delivery==='incident','Choose an option, reply in your own words, withdraw consent, or leave the active scene first');
   const mods=resolveModules(pack,registry), state=clone(world), emitted=[];let steps=0,waitTicks=0,meetingBlocked=false;
@@ -238,6 +241,8 @@ export function execute(world,command,pack,registry,packChecked=false) {
     set(path,value){put(state,path,value);this.emit('core.patch',{path,value},[]);},
     random(){const n=(Math.imul(state.rng,1664525)+1013904223)>>>0;this.set(['rng'],n);return n/4294967296;}
   };
+  // Cutover: the first turn under progression version 1 stamps the save; later turns replay with their markers.
+  if(pv===PROGRESSION_VERSION&&!state.progression)tx.set(['progression'],cutoverStamp(world,command));
   if(command.type==='core.refuse'){const refusal=recordRefusal(tx,registry,typeof command.args.code==='string'?command.args.code:'unavailable',command.args.target);tx.emit('core.refused',{refusal,text:refusal.reason},[pack.playerId]);tx.set(['revision'],world.revision+1);const turn={id:command.id,command:clone(command),events:emitted,narrative:null,status:'pending',refusal};state.events.push(...emitted);state.turns[command.id]=turn;return {state,turn,duplicate:false};}
   const base={
     'core.refuse'(tx,args){const refusal=recordRefusal(tx,registry,typeof args.code==='string'?args.code:'unavailable',args.target);tx.emit('core.refused',{refusal,text:refusal.reason},[pack.playerId]);},

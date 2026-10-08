@@ -38,7 +38,7 @@ test('arc trust is the shared relationship Trust when romance stats are on',()=>
 });
 
 test('without romanceStats nothing is capped',()=>{
- const p=pack();delete p.romanceStats;const g=run(p),t0=g.trust('jana');
+ const p=pack();delete p.romanceStats;delete p.progression;const g=run(p),t0=g.trust('jana');
  g.act('test.trust',{character:'jana',amount:20});g.act('test.like',{character:'jana',amount:9});assert.equal(g.trust('jana'),t0+20);assert.equal(g.like('jana'),9);
  assert.equal(cappedGain(p,'jana',20,0),20);
 });

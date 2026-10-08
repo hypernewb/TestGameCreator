@@ -1,3 +1,4 @@
+import {categoriesOf} from '../modules/intimacy.mjs';
 // Intimacy drafts (docs/GENERATOR-PLAN.md step 7). Code builds each love interest's intimacy profile and a 5-beat first encounter
 // (the scene social.beginIntimacy starts) plus a short repeatable one, with a stop choice at every beat that withdraws consent.
 // The model fills the prose slots only. The author sets the boundaries (content level, private places) and every age: nothing here
@@ -48,7 +49,7 @@ export function intimacyFrame(pack,{characters,contentLevel='fade',privateLocati
  p.modules={...p.modules};for(const m of ['social.relationships','social.dating','social.intimacy'])p.modules[m]??='0.1.0';
  p.datingProfiles=[...(p.datingProfiles||[])];for(const x of ids)if(!p.datingProfiles.some(d=>d.character===x))p.datingProfiles.push({character:x,initialChemistry:5,initialPhase:'available',agreements:['casual','monogamous'],thresholds:{crush:15,date:35,exclusive:70},preferences:[],signals:[]});
  p.intimacySettings??={difficulty:'normal',contentLevel,privateLocations:privateLocations||home,aftercareWindow:2,aftercareOptions:[{id:'stay',name:'Ask them to stay'},{id:'talk',name:'Lie there and talk'},{id:'space',name:'Give them some space'}]};
- p.intimacyCategories=[...(p.intimacyCategories||[])];if(!p.intimacyCategories.some(c=>c.id===CATEGORY))p.intimacyCategories.push({id:CATEGORY,name:'Spend the night',privacy:'private',casual:false,resolution:'scene',style:CATEGORY,discretion:'discreet'});
+ p.intimacyCategories=[...categoriesOf(p)];if(!p.intimacyCategories.some(c=>c.id===CATEGORY))p.intimacyCategories.push({id:CATEGORY,name:'Spend the night',privacy:'private',casual:false,resolution:'scene',style:CATEGORY,discretion:'discreet'});
  p.intimacyProfiles=[...(p.intimacyProfiles||[])];for(const x of ids)if(!p.intimacyProfiles.some(q=>q.character===x))p.intimacyProfiles.push({character:x,openness:50,casual:false,consentPolicy:'threshold',consentDuration:2,allowedCategories:[CATEGORY],interests:[],cooldown:12,requirements:{attraction:25,phases:['dating','exclusive']}});
  return p;
 }

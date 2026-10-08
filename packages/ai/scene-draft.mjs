@@ -1,5 +1,6 @@
 import {cardLines} from './fill-blanks.mjs';
 import {sexStyleText} from '../../public/card-presets.mjs';
+import {categoriesOf} from '../modules/intimacy.mjs';
 
 // AI draft for one sex scene: ordered beats (text plus an optional consent check-in) and an aftermath line, written from
 // the character card and the scene's own notes. Only empty scene fields are offered back; authored beats are never overwritten.
@@ -13,7 +14,7 @@ export const sceneDraftNeeds=scene=>[...(scene?.beats?.length?[]:['beats']),...(
 
 /** The strict schema for the empty fields, and the prompt built from the card, the category and the scene's notes. */
 export function sceneDraftMessages(pack,actor,scene){
- const needs=sceneDraftNeeds(scene),category=pack?.intimacyCategories?.find(c=>c.id===scene.category),label=clean(category?.name||scene.category),props={};
+ const needs=sceneDraftNeeds(scene),category=categoriesOf(pack||{}).find(c=>c.id===scene.category),label=clean(category?.name||scene.category),props={};
  if(needs.includes('beats'))props.beats=SCHEMA.properties.beats;
  if(needs.includes('aftermath'))props.aftermath=SCHEMA.properties.aftermath;
  const schema=obj(props),want=[

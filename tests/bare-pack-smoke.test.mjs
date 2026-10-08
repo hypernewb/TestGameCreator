@@ -23,6 +23,7 @@ import {secrecyContext} from '../packages/modules/secrecy.mjs';
 import {firstBrief} from '../packages/modules/firsts.mjs';
 import {narratorBrief} from '../packages/modules/acts.mjs';
 import {incidentBrief} from '../packages/modules/scenes.mjs';
+import {INTIMACY_CATEGORIES} from '../packages/cards/beat-library.mjs';
 const readPack=name=>JSON.parse(readFileSync(new URL(`../packs/${name}`,import.meta.url)));
 const packs={neutral:readPack('neutral.json'),'fantasy-town':readPack('template-fantasy-town.json'),'template-bar':readPack('template-bar.json')};
 // Every module's prompt-facing context hook (the datingContext/context family), each called for the player and every NPC.
@@ -68,4 +69,6 @@ async function smoke(pack){
 // dayRecap and directorProfile are absent here because recap/director are not enabled in these packs.
 const optionalKeys=['items','schedules','quests','facts','durations','initialMoney','economySettings','services','wageRules','datingProfiles','intimacySettings','intimacyCategories','intimacyProfiles','phoneContacts','phoneMessages','feedPosts','timedEvents','endings'];
 for(const [name,pack] of Object.entries(packs))test(`bare pack smoke: ${name}`,async()=>{await smoke(pack);});
-for(const [name,pack] of Object.entries(packs))for(const key of optionalKeys.filter(k=>k in pack))test(`bare pack smoke: ${name} without ${key}`,async()=>{const p=clone(pack);delete p[key];await smoke(p);});
+// Without intimacyCategories the default set applies; a profile naming a custom category is then rejected by validation, not crashed.
+const customCategory=p=>(p.intimacyProfiles||[]).some(x=>[...(x.allowedCategories||[]),...(x.blockedCategories||[]),...(x.scenes||[]).map(s=>s.category)].some(c=>!INTIMACY_CATEGORIES.some(d=>d.id===c)));
+for(const [name,pack] of Object.entries(packs))for(const key of optionalKeys.filter(k=>k in pack))test(`bare pack smoke: ${name} without ${key}`,async()=>{const p=clone(pack);delete p[key];if(key==='intimacyCategories'&&customCategory(p))return assert.throws(()=>validatePack(p,registry),/intimacy/);await smoke(p);});

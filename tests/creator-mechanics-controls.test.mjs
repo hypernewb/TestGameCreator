@@ -169,7 +169,7 @@ test('save, reopen and publish keep every authored value (real API)',async()=>{
   f.modules['social.relationships']=version('social.relationships');
   f.dialogueReactions=[{id:'proud',character:'mia',phrases:['I am proud of you'],trustDelta:3,cooldownTicks:5}];
   const created=await api('/api/studio/create',{});
-  const saved=await api('/api/studio/save',{id:created.id,pack:f});
+  const saved=await api('/api/studio/save',{id:created.id,pack:f,revision:created.updated});
   assert.deepEqual(saved.pack,f,'save keeps the authored configuration');
   const reopened=(await api('/api/studio/get?id='+encodeURIComponent(created.id))).pack;
   assert.deepEqual(reopened,f,'reopen keeps the authored configuration');

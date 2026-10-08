@@ -9,16 +9,16 @@ test('an older playthrough moves to the newest publish of its project, keeps its
  const dir=mkdtempSync(join(tmpdir(),'pack-update-')),app=createApp({dataPath:':memory:',scenarioDir:dir});await new Promise(r=>app.server.listen(0,'127.0.0.1',r));
  const base=`http://127.0.0.1:${app.server.address().port}`,call=async(path,body,status=200)=>{const r=await fetch(base+path,body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await r.json();assert.equal(r.status,status,JSON.stringify(data));return data;};
  try{
-  const d=await call('/api/studio/create',{});await call('/api/studio/save',{id:d.id,pack:pack()});const v1=await call('/api/studio/publish',{id:d.id}),old=await call('/api/new',{packId:v1.id}),id=old.state.campaignId;
+  const d=await call('/api/studio/create',{});let rv=(await call('/api/studio/save',{id:d.id,pack:pack(),revision:d.updated})).updated;const v1=await call('/api/studio/publish',{id:d.id}),old=await call('/api/new',{packId:v1.id}),id=old.state.campaignId;
   assert.equal((await call(`/api/update?id=${id}`)).update,null);
   const move=old.actions.find(a=>a.enabled&&/cave/i.test(a.label||''));assert(move,JSON.stringify(old.actions.map(a=>a.label)));const moved=await call('/api/action',{campaignId:id,id:'m1',expectedRevision:0,input:move.label});const turns=Object.keys(moved.state.turns).length;
-  await call('/api/studio/save',{id:d.id,pack:pack({name:'Coral Reef',extra:true})});const v2=await call('/api/studio/publish',{id:d.id});
+  rv=(await call('/api/studio/save',{id:d.id,pack:pack({name:'Coral Reef',extra:true}),revision:rv})).updated;const v2=await call('/api/studio/publish',{id:d.id});
   const {update}=await call(`/api/update?id=${id}`);assert.equal(update.packId,v2.id);assert.equal(update.blocked,null);assert(update.changes.includes('actors.olu: added'),JSON.stringify(update.changes));
   await call('/api/update',{campaignId:id,packId:'stale'},400);
   const up=await call('/api/update',{campaignId:id,packId:v2.id});assert.equal(up.state.packId,v2.id);assert.equal(up.state.actors.olu.location,'wreck');assert.equal(up.state.actors.diver.location,'cave');assert.equal(Object.keys(up.state.turns).length,turns);assert.equal(up.pack.locations[0].name,'Coral Reef');
   assert.equal((await call('/api/load',{id})).state.packId,v2.id);assert.equal((await call(`/api/update?id=${id}`)).update,null);
   const back=up.actions.find(a=>a.enabled&&/reef/i.test(a.label||''));assert(back);const again=await call('/api/action',{campaignId:id,id:'m2',expectedRevision:up.state.revision,input:back.label});assert.equal(again.state.actors.diver.location,'reef');
-  await call('/api/studio/save',{id:d.id,pack:pack({cave:false,extra:true})});const v3=await call('/api/studio/publish',{id:d.id});
+  rv=(await call('/api/studio/save',{id:d.id,pack:pack({cave:false,extra:true}),revision:rv})).updated;const v3=await call('/api/studio/publish',{id:d.id});
   const blocked=(await call(`/api/update?id=${id}`)).update;assert.equal(blocked.packId,v3.id);assert.match(blocked.blocked,/new game.*locations\.cave: removed/);
   assert.match((await call('/api/update',{campaignId:id},400)).error,/new game/);assert.equal((await call('/api/load',{id})).state.packId,v2.id);
  }finally{await new Promise(r=>app.server.close(r));app.store.close();rmSync(dir,{recursive:true,force:true});}

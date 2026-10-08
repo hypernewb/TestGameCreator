@@ -1,0 +1,164 @@
+{
+  "task": "GC1.1 freeze accepted conversation examples",
+  "date": "2026-10-08",
+  "status": "no_files_frozen",
+  "frozen_file_count": 0,
+  "prose_only_count": 7,
+  "summary": "No accepted transcript, request trace, input list, profile record or displayed-reply file exists on disk for the owner-accepted warm Montgomery sample or the Leonard/Parker references. Each accepted sample survives only as short quoted excerpts inside briefs. Those excerpts are recorded below verbatim as prose-only. Nothing was reconstructed or invented.",
+  "evidence_location_note": "The accepted briefs and BOARD/NEXT-MILESTONES text are in the shared main checkout working tree and are not committed at 9535347. T-chatting-gate-accepted.report.md, T-temporary-author-reference.report.md, T-persona-author-wordplay.report.md, T-chat-author-style.report.md and T-author-persona-mapping.report.md are untracked or modified there. This worktree is on e0f2a05, an older base.",
+  "raw_outputs_referenced_but_missing": [
+    "task-local work/author-tests/ (run.mjs, analyze.mjs, personas.mjs, verify-adoption.mjs, npm-test logs)",
+    "outputs/chat-author-style-results.txt and outputs/chat-author-style-summary.json",
+    "outputs/rei-author-{baseline,leonard,parker}-{trace.json,results.txt}",
+    "outputs/persona-author-*-trace.json, persona-author-*-results.txt, persona-author-all-results.txt, persona-author-summary.json",
+    "outputs/temporary-author-reference.txt",
+    "outputs/chatting-gate-accepted.txt",
+    "outputs/rei-three-fixes-* (T-chat-three-fixes.report.md)"
+  ],
+  "frozen_files": [],
+  "prose_only": [
+    {
+      "id": "warm-montgomery-accepted",
+      "accepted_status": "accepted sample (owner provisionally accepted warm chatting; Montgomery without wordplay is the warm-socialite fallback)",
+      "what": "Warm-socialite persona reply under the Montgomery author reference, from the four-input tease/tease/flirt/flirt arm, seed 7, own-history GameService run",
+      "quoted_reply_excerpt": "Ah yes, company is indeed its own kind of caffeine.",
+      "sources": [
+        "docs/briefs/T-chatting-gate-accepted.report.md (Evidence line, line 6)",
+        "docs/briefs/T-persona-author-wordplay.report.md (Excerpts line, line 7)"
+      ],
+      "missing": [
+        "full player inputs (described only as four tease/tease/flirt/flirt inputs; exact text not recorded)",
+        "profile settings (synthetic adult warm-socialite fixture, not saved; fixture file absent)",
+        "request traces",
+        "all displayed replies for the four turns"
+      ]
+    },
+    {
+      "id": "leonard-fallback-accepted",
+      "accepted_status": "accepted (owner preferred both tested Leonard and Parker versions over baseline; Leonard is the default solo-prose fallback)",
+      "what": "Elmore Leonard author reference reply, Rei profile, seed 7, four tease/tease/flirt/flirt inputs",
+      "quoted_reply_excerpt": "I would never dream of approving anything without tasting it first. It's basic quality control.",
+      "sources": [
+        "docs/briefs/T-temporary-author-reference.report.md (Excerpts line, line 6)",
+        "docs/briefs/T-chat-author-style.report.md (Excerpts line, line 6)"
+      ],
+      "missing": [
+        "full trajectories (report points to outputs/chat-author-style-results.txt, absent)",
+        "request traces",
+        "exact player inputs"
+      ]
+    },
+    {
+      "id": "parker-explicit-accepted",
+      "accepted_status": "accepted for explicit selection only (Parker is selectable by Voice text; not a default)",
+      "what": "Dorothy Parker author reference invitation reply, Rei profile, seed 7",
+      "quoted_reply_excerpt": "But hey, if it gets you off my case for a few hours, I suppose I could be persuaded to participate.",
+      "sources": [
+        "docs/briefs/T-chat-author-style.report.md (Excerpts line, line 6)"
+      ],
+      "missing": [
+        "full trajectory",
+        "request traces",
+        "exact player inputs",
+        "note: the same report cites this line as an error present in raw generation, so it is an example, not a clean sample"
+      ]
+    },
+    {
+      "id": "warm-baseline-reference",
+      "accepted_status": "baseline comparison (no author reference), not an accepted sample",
+      "what": "Warm persona no-author baseline reply from the same warm comparison that produced the Montgomery sample",
+      "quoted_reply_excerpt": "Sometimes the best connections happen when we least expect them",
+      "sources": [
+        "docs/briefs/T-chatting-gate-accepted.report.md (Evidence line, line 6)",
+        "docs/briefs/T-persona-author-wordplay.report.md (Excerpts line, line 7)"
+      ],
+      "missing": [
+        "full baseline trajectory",
+        "request traces",
+        "exact player inputs"
+      ]
+    },
+    {
+      "id": "leonard-experiment-no-author-baseline",
+      "accepted_status": "baseline comparison (no author reference), not an accepted sample",
+      "what": "Rei no-author baseline invitation reply in the Leonard/Parker comparison, seed 7",
+      "quoted_reply_excerpt": "Well, if you're really so insistent...",
+      "sources": [
+        "docs/briefs/T-chat-author-style.report.md (Excerpts line, line 6)",
+        "docs/briefs/T-temporary-author-reference.report.md (Excerpts line, line 6)"
+      ],
+      "missing": [
+        "full baseline trajectory",
+        "request traces"
+      ]
+    },
+    {
+      "id": "montgomery-with-wordplay-variant",
+      "accepted_status": "variant, not retained (the wordplay clause added eight prompt tokens and was dropped)",
+      "what": "Montgomery plus the wordplay clause on the warm-socialite fixture",
+      "quoted_reply_excerpt": null,
+      "sources": [
+        "docs/briefs/T-persona-author-wordplay.report.md (Findings line, line 5)",
+        "docs/briefs/T-chatting-gate-accepted.report.md (Evidence line, line 6)"
+      ],
+      "missing": [
+        "no quoted excerpt in any report",
+        "the report says this arm jumps to an intense physical encounter during the relaxed invitation; record as an experiment only"
+      ]
+    },
+    {
+      "id": "mansfield-variant-not-promoted",
+      "accepted_status": "variant, not promoted (quiet-persona work is deferred)",
+      "what": "Mansfield persona variants on the guarded-loner fixture, with and without wordplay",
+      "quoted_reply_excerpt": "The coffee was merely an excuse to prolong our conversation.",
+      "sources": [
+        "docs/briefs/T-persona-author-wordplay.report.md (Excerpts line, line 7)",
+        "docs/briefs/T-chatting-gate-accepted.report.md (Acceptance line, line 4)"
+      ],
+      "missing": [
+        "full trajectories",
+        "request traces",
+        "the quiet-baseline excerpt 'Nothing says quality snack like my personal stamp of approval' is also quoted in the same report and is an experiment line"
+      ]
+    }
+  ],
+  "variants_not_frozen_by_rule": [
+    "Montgomery plus wordplay (warm)",
+    "Mansfield with and without wordplay (quiet persona)",
+    "Leonard and Parker experiment arms other than the accepted Leonard fallback and explicit Parker selection"
+  ],
+  "code_references_not_copied": [
+    {
+      "path": "packages/ai/local-scene-writer.mjs",
+      "what": "Production author-reference instruction text (Leonard default, Parker/Montgomery/none explicit, Montgomery warm-socialite fallback)",
+      "note": "Prompt text, not a transcript. Not copied."
+    },
+    {
+      "path": "tests/prose-author-reference.test.mjs",
+      "what": "Pins the exact accepted instruction strings for Leonard default, Parker explicit, Montgomery warm fallback and explicit precedence",
+      "note": "Test file exists only in the shared main checkout working tree and is not in this worktree. Not copied, since it is a test, not a sample. It is the nearest on-disk record of the accepted prompt instruction text."
+    }
+  ],
+  "excluded_candidates": [
+    {
+      "path": "artifacts/conversation-workflow/classic.requests.json and wizard.requests.json (plus classic.png, wizard.png, prompt-size.json)",
+      "reason": "Committed at 9535347. Controlled-response Friend/Dilek talk-flow verification from T-conversation-workflow, not the owner-accepted warm conversation. Not copied."
+    },
+    {
+      "path": "artifacts/rei-model-comparison/**",
+      "reason": "Committed model-comparison experiments. T-rei-model-comparison says the generated scene remains unaccepted. Not copied."
+    },
+    {
+      "path": "docs/research/conversation-quality-2026-10-06.md",
+      "reason": "Diagnosis of the rejected Selma playtest. The owner verdict was negative. Not a sample. Not copied."
+    }
+  ],
+  "search_scope": [
+    "Grep of the main checkout docs/ for Montgomery|Leonard|Parker (case-insensitive): 10 files",
+    "Grep of the main checkout artifacts/ for the same names: no matches",
+    "Grep of the main checkout data/scenarios/ for the same names: no matches (data/ai-settings.json not opened)",
+    "Grep of the main checkout for accepted-reply phrases: only briefs, the tests/prose-author-reference.test.mjs and packages/ai/local-scene-writer.mjs",
+    "git grep and git log -S over 9535347 and all refs for the same names: only docs/NEXT-MILESTONES.md, docs/briefs/BOARD.md and commit e4816ed",
+    "Find over sf-wt, .claude/worktrees, .worktrees, the Temp directory and data/.trash-cleanup to depth 4 for the referenced outputs: none found"
+  ]
+}

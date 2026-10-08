@@ -1,6 +1,9 @@
 # Models Weekly (2026-10-01)
 
-## Routing this week (director-verified: each id answered a test call 2026-10-01)
+## Owner override (2026-10-08): all worker tasks go to Claude Haiku 5.5, effort high
+Until the owner says otherwise, every new dispatch uses the Agent tool with `model: haiku` and `effort: high`. This replaces the table below for new tasks. Tasks already running keep their current platform.
+
+## Routing 2026-10-01 (superseded by the override above; director-verified: each id answered a test call)
 | Role | First choice (free) | Fallback (credit) |
 |---|---|---|
 | implementer, refactorer | Claude sonnet subagent (sub) | Codex after weekly reset |

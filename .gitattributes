@@ -82,3 +82,6 @@
 # Frozen regression inputs and pinned comparison evidence must retain their checksummed bytes.
 /tests/fixtures/current-cast/** -text
 /artifacts/venus-framework-comparison/** -text
+
+# GC1.1: recovered originals must keep their exact bytes for hash pins
+/docs/research/gc1-recovered/** -text

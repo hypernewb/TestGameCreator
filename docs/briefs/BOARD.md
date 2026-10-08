@@ -55,6 +55,13 @@ No milestone is accepted or verified yet. Statuses: planned / in progress / impl
 
 **Dispatched 2026-10-08 to close GC0 and GC1 (worktrees off `4dabfd7`; none merged yet):** `gc0-baseline` (GC0.1–GC0.2 ledger and dispositions); `gc0-browser` (GC0.3 serial browser run and reading-loop suite map); `gc0-matrix` (GC0.4 capability matrix and GC0.5 contracts); `gc1-verify` (GC1.1, GC1.2, GC1.4 pins and todos). GC1.5 is not triggered because no prompt change is planned.
 
+**Results (worker reports, not yet merged):**
+- GC0.1–0.2 `gc0-baseline` `68307b5`: ledger at `docs/research/gc0-baseline-ledger-2026-10-08.md`. 59 dirty paths; 72 candidate branches, 19 unmerged; T-105 conflicts with ancestry on T-101 status.
+- GC0.3 `gc0-browser` `d983bc3`: browser run on `4dabfd7` = 45 tests, 44 pass, 0 fail, 1 skip (live creator startup, needs a running backend). All reading-loop suites pass. Gap: no browser test covers speaker or expression changes across pages.
+- GC0.4–0.5 `gc0-matrix` `62db57f`: 33 capabilities, 68 of 231 cells absent or unverified. Top gaps: no nested AND/OR/NOT, no false-flag control, recovery cases 2–5 todo, GC2.2 contract unmerged.
+- GC1.1–1.4 `gc1-verify` `50ae1d1`: 14 pins pass, 5 todo. **GC1.1 is not closed**: the frozen-example manifest lists zero files and no hashes.
+- GC0 and GC1 remain open until GC1.1 has real frozen artifacts, GC1.3 has reading-loop evidence beyond mock providers, and the owner accepts GC1.
+
 Everything else (GC3–GC11) is planned, except audits that are merged and documented but not accepted: GC3.1 inventory (`4033b75`), GC4.1 time/presence (`dbcb9df`), GC6.2 relationship audit (`506f370`), GC7.1 source inventory (`0647892`).
 
 ### Milestones

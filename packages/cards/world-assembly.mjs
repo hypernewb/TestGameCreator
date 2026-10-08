@@ -137,6 +137,8 @@ function night(h,{c,at,text,interest}){
 // `cast` names each love interest's temperament and pace ({jana:{temperament:'torn',pace:'steady'}}); structure is not read back, it is re-derived.
 export function specFromPack(p,{cast}){
  const ids=Object.keys(cast),by=(k,c)=>(p[k]||[]).find(x=>x.character===c),strip=(c,id)=>String(id).replace(`${c}-`,''),{schemaVersion,...rest}=p;
+ // A heroine left out of cast would silently become a friend and lose her profiles; refuse while anything still points at her.
+ for(const c of (p.datingProfiles||[]).map(d=>d.character).filter(c=>!ids.includes(c))){const refs=[['activities',(p.activities||[]).filter(a=>a.character===c).map(a=>a.id)],['schedules',(p.schedules||[]).filter(r=>r.actor===c).map(r=>r.actor)],['phoneContacts',(p.phoneContacts||[]).filter(x=>x===c)],['phoneMessages',(p.phoneMessages||[]).filter(m=>m.character===c).map(m=>m.id)]].filter(([,x])=>x.length);assert(!refs.length,`cannot skip heroine ${c}; referenced by ${refs.map(([k,x])=>`${k}: ${x.join(', ')}`).join('; ')}`);}
  const actorOf=id=>{const {id:_,identityTags,...a}=p.actors.find(x=>x.id===id);return a;};
  const heroines=ids.map(c=>{
   const T=TEMPERAMENTS[cast[c].temperament],acts=by('actProfiles',c).entries,tempo=by('romanceTempoProfiles',c),arc=by('arcTracks',c),date=by('datingProfiles',c),intim=by('intimacyProfiles',c),a=actorOf(c);

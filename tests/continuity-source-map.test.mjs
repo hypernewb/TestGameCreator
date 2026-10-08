@@ -34,9 +34,9 @@ test('authored facts: public facts that name the cast reach KNOWN; private facts
  assert.ok(!a.context.facts.some(f=>f.id==='auth-private'));
 });
 
-test('GAP authored fact kept by the allocator is dropped by the renderer when it names no cast member or player and shares fewer than two query words',async()=>{
+test('authored fact that names no cast member and shares fewer than two query words is not selected, so it never reaches KNOWN (G2: selection before budgeting)',async()=>{
  const {p,s}=world(),{a,prompt}=await probe(s,p,'Owner archive notes');
- assert.ok(a.context.facts.some(f=>f.id==='auth-cellar'));
+ assert.ok(!a.context.facts.some(f=>f.id==='auth-cellar'));
  assert.ok(!prompt.includes('Lantern oil is stored in the cellar.'));
 });
 
@@ -93,10 +93,10 @@ test('GAP recentActions: computed from recent events but never rendered',async()
  assert.ok(!prompt.includes('RECENT-ACTION'));
 });
 
-test('GAP player block: the player description is in the request context but not in the scene prompt',async()=>{
+test('player block (G3): the player description is in the request context and in the scene prompt',async()=>{
  const {p,s}=world(),{a,prompt}=await probe(s,p,'Owner archive notes');
  assert.ok(a.context.player?.description.includes('PLAYER-DESC-MARK'));
- assert.ok(!prompt.includes('PLAYER-DESC-MARK'));
+ assert.ok(prompt.includes('PLAYER-DESC-MARK'));
 });
 
 test('corrections: a scene memory correction replaces the original and a statement retire removes it',async()=>{

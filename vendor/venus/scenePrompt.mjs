@@ -23,6 +23,11 @@ export function shortenSceneSoFar(user){
  return null;
 }
 
+// Relevance gate shared by the budget allocator (selection before budgeting) and the renderer: names the player or a cast member, or shares two content words with the player's words.
+const STOP=new Set('the and for with this that from have was were will would can could should about there their them they then than what when where which who how its our out off too very just also some any all each more most other such only own same over under again once here she her him his hers been being does did doing done let lets get got your you are has had not but room kitchen come'.split(' '));
+const words=t=>String(t||'').toLowerCase().match(/[\p{L}\p{N}]{3,}/gu)||[];
+export function aboutScene(text,castNames,playerName,sceneQuery){const w=new Set(words(text));if(castNames.concat(playerName).some(n=>w.has(n.toLowerCase())))return true;const q=words(sceneQuery).filter(x=>!STOP.has(x));return q.length>0&&q.filter(x=>w.has(x)).length>=2;}
+
 // What each pool looks like inside the prompt. Bookkeeping (source IDs, ranking reasons, flags the text already says)
 // stays in the context for traces but is not sent: on a 4K window every field name costs. context-budget.mjs measures
 // costs through these same views, so the budget matches what is rendered.
@@ -112,10 +117,9 @@ export function scenePromptMessages(context,pack,{trace}={}){
  // Relevance-gated prose state (replaces the JSON dump): a scene with Jana in the kitchen gets Jana's world, not the
  // whole save. An entry is about this scene when it names the player or a present character, or shares two content
  // words with the player's words; recency breaks caps. Absent characters appear as names only — never their state.
- const STOP=new Set('the and for with this that from have was were will would can could should about there their them they then than what when where which who how its our out off too very just also some any all each more most other such only own same over under again once here she her him his hers been being does did doing done let lets get got your you are has had not but room kitchen come'.split(' '));
- const words=t=>String(t||'').toLowerCase().match(/[\p{L}\p{N}]{3,}/gu)||[],playerName=pack.actors.find(a=>a.id===pack.playerId)?.name||'';
+ const playerName=pack.actors.find(a=>a.id===pack.playerId)?.name||'';
  const sceneQuery=`${context.playerAction||''} ${(context.sceneHistory||[]).map(h=>h.input||'').join(' ')}`;
- const about=t=>{const w=new Set(words(t));if(castNames.concat(playerName).some(n=>w.has(n.toLowerCase())))return true;const q=words(sceneQuery).filter(x=>!STOP.has(x));return q.length>0&&q.filter(x=>w.has(x)).length>=2;};
+ const about=t=>aboutScene(t,castNames,playerName,sceneQuery);
  const rel=(list,keep)=>(list||[]).filter(x=>about(typeof x==='string'?x:x.text||x.desc||JSON.stringify(x))).slice(-keep);
  const nameOf=id=>pack.actors.find(a=>a.id===id)?.name||id;
  const moneyish=/\$|\b\d+\s*(?:dollars|bucks)\b|\b(?:pay|paying|paid|buy|buying|purchase|gift|gifted|afford|expensive|cheap|money|cash|price|cost|spend|spent)\b/i.test(sceneQuery)||(context.outcomes||[]).some(o=>/\$|money/i.test(JSON.stringify(o)));
@@ -139,6 +143,8 @@ export function scenePromptMessages(context,pack,{trace}={}){
   // Stable first (T-114): profiles stay put across a scene's turns, so the cacheable prefix runs through them; when/where come after.
   profiles.map(a=>emit('persona',a,profileLine(a),'CURRENT STATE')).join('\n'),
   timeLine(context),
+  // Player identity is background for second-person narration only; it never licenses invented actions or feelings.
+  context.player?.name&&`PLAYER — ${context.player.name}${context.player.pronouns?` (${context.player.pronouns})`:''}${context.player.description?`: ${context.player.description}`:''}. Narrate as "you"; background only, never add actions, words or feelings the player did not commit.`,
   youLine,
   absent,
   section('WITH YOU',bondLines),
@@ -147,7 +153,7 @@ export function scenePromptMessages(context,pack,{trace}={}){
   section('JUST NOW',(context.outcomes||[]).map(o=>o.text||o.type)),
   section('HAPPENING',(context.activeEvents||[]).map(e=>e.description?`${e.name}: ${e.description}`:e.name)),
   section('REMEMBERED',rel((context.memories||[]).filter(m=>!m.relevant),4).map(m=>emit('memories',m,m.text,'REMEMBERED'))),
-  section('KNOWN',rel([...sharedAuthoredFacts(context,pack),...(context.generatedFacts||[])],6).map(f=>emit((context.facts||[]).includes(f)?'facts':'generatedFacts',f,f.text,'KNOWN'))),
+  section('KNOWN',[...sharedAuthoredFacts(context,pack),...(context.generatedFacts||[])].map(f=>emit((context.facts||[]).includes(f)?'facts':'generatedFacts',f,f.text,'KNOWN'))),
   section('LORE',(context.lorebook||[]).map(e=>emit('lorebook',e,e.text,'LORE'))),
   section('BEFORE THIS',rel(context.pastScenes,3).map(g=>g.summary||g.text||'')),
   section('LOOSE ENDS',rel(context.openThreads,4).map(t=>t.text||t)),

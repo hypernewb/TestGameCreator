@@ -1,6 +1,7 @@
 // M2 assembler: a world spec (world data + one short spec per love interest) -> a playable pack. The structure comes from the beat
 // library; the spec only fills text slots. Anything left blank becomes a visible [[slot]] placeholder and is listed in `missing`.
 import {withDirector} from './director-library.mjs';
+import {settingsOf} from '../modules/intimacy.mjs';
 import {withProgression} from '../core/progression.mjs';
 import {TEMPERAMENTS,PACES,SHARED_ACTS,RANK_POINTS,THRESHOLDS,WANT_WEIGHTS,INTIMACY_CATEGORIES,RUNGS,FIRST_CHECKPOINTS,TONES,NIGHT,STOP_LABEL,STOP_TRUST,ENDING_PRIORITY,slug,idOf,AI_GUIDANCE,DEFAULT_CHOICE_TONES} from './beat-library.mjs';
 
@@ -170,7 +171,7 @@ export function specFromPack(p,{cast}){
  return {id:p.id,version:p.version,title:p.title,subtitle:p.subtitle,days:p.run.days,project:p.gameProject,player:p.actors.find(a=>a.id===p.playerId),
   friends:p.actors.filter(a=>a.id!==p.playerId&&!hero.has(a.id)),fallback:{id:fb.id,name:fb.name,text:fb.text,flag:Object.keys(fb.requires?.flags||{})[0]},heroines,
   world:{calendar:p.calendar,romanceStats:p.romanceStats,locations:p.locations,statDefinitions:p.statDefinitions,initialStats:p.initialStats,items:p.items,activities:p.activities,schedules:p.schedules,initialMoney:p.initialMoney,economySettings:p.economySettings,sobriety:p.sobriety,
-   phoneContacts:p.phoneContacts,phoneMessages:p.phoneMessages,momentsProfile:p.momentsProfile,moments:p.moments,contentLevel:p.intimacySettings.contentLevel,privateLocations:p.intimacySettings.privateLocations,aftercareOptions:p.intimacySettings.aftercareOptions,
+   phoneContacts:p.phoneContacts,phoneMessages:p.phoneMessages,momentsProfile:p.momentsProfile,moments:p.moments,contentLevel:settingsOf(p).contentLevel,privateLocations:settingsOf(p).privateLocations,aftercareOptions:settingsOf(p).aftercareOptions,
    ...(p.firsts?.length?{firsts:'free'}:{}),
    initialRelationships:p.initialRelationships.filter(r=>!hero.has(r.character))}};
 }

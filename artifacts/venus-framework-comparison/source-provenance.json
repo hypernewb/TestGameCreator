@@ -1,0 +1,395 @@
+{
+  "revision": "ec8f7cee4fd9236e3dbcdc2e4683afba3acab748",
+  "date": "2026-10-03T14:26:42Z",
+  "files": [
+    {
+      "path": "LICENSE",
+      "sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/LICENSE"
+    },
+    {
+      "path": "package.json",
+      "sha256": "e531f759e32ab94cf89cb31a7b7783b85592eff8b84aa5280850bc47f89d550a",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/package.json"
+    },
+    {
+      "path": "src/renderer/prompts/scenePrompt.ts",
+      "sha256": "11a7f28dc38f6555d060cbf2368a4d51bb436f439623077ec92b74a6c22a8b0d",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/prompts/scenePrompt.ts"
+    },
+    {
+      "path": "src/renderer/prompts/sceneWindow.ts",
+      "sha256": "25c31ea67154104d79d25b144d7060e88f0712bf05c521708127c15c472ca9e4",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/prompts/sceneWindow.ts"
+    },
+    {
+      "path": "src/renderer/prompts/schema.ts",
+      "sha256": "ce95be37bfdb8c4165d6f2fcfcb3074bc6dddca97a6b05ca8283adb9593b74fc",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/prompts/schema.ts"
+    },
+    {
+      "path": "src/renderer/stores/sceneSanitizer.ts",
+      "sha256": "c7df13cfd377bb0a9bcc4ed28250cb08083c8e09266349aa10e59ce0b5a49b51",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/stores/sceneSanitizer.ts"
+    },
+    {
+      "path": "src/renderer/stores/loop/promptState.ts",
+      "sha256": "11036222cb90b91fb352691405f73c1f254774480be4693b61a60b32c00bb144",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/stores/loop/promptState.ts"
+    },
+    {
+      "path": "src/shared/llm/cloudLlm.ts",
+      "sha256": "2b7b4de4992952aed87f6db71e57341ee7c075c75fe395a143b5f4984711b291",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/llm/cloudLlm.ts"
+    },
+    {
+      "path": "src/shared/llm/geminiAdapter.ts",
+      "sha256": "fa23ab30b8820b914f64f522c9bb45e79279e0678abcf0bb98c8b5e013682e01",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/llm/geminiAdapter.ts"
+    },
+    {
+      "path": "src/shared/llm/openaiAdapter.ts",
+      "sha256": "52a1c1a72d18a47b6aea9872969519d2b59ada40aa8234de572a0561944132ea",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/llm/openaiAdapter.ts"
+    },
+    {
+      "path": "src/shared/llm/transport.ts",
+      "sha256": "dbc6634a3abf371029d912f1db6ea8574cc417eb94e59e8396a48d506e3d03a7",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/llm/transport.ts"
+    },
+    {
+      "path": "src/shared/sentences.ts",
+      "sha256": "4f63963b4fd98940fe9ad8c3dcff70f608c907b020b2b5e2baa21b6842cc2de8",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/sentences.ts"
+    },
+    {
+      "path": "src/shared/sceneActions.ts",
+      "sha256": "e32804aa272849bdcb3de91bb6ddec9993f76817c9bf64a32ecd0c2e0ceca45b",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/sceneActions.ts"
+    },
+    {
+      "path": "src/shared/characterRules.ts",
+      "sha256": "834a2b136742bea419b64c8ce6549b0432e5e1c6a0b546e46b4559a93844a26f",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/characterRules.ts"
+    },
+    {
+      "path": "src/shared/classes.ts",
+      "sha256": "d98a82fdd663469cd97a17fb8cc7fe614ed2eb586cbc5d3e73538fe6849d5b9f",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/classes.ts"
+    },
+    {
+      "path": "src/shared/dorms.ts",
+      "sha256": "214c7aaba50c7d5caad6b7498605d90c28be281c4b88c9420e8abd630a3ae9fc",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/dorms.ts"
+    },
+    {
+      "path": "src/shared/emotions.ts",
+      "sha256": "21ad251717c183b74275b46cf86b1f407f6910a10d16a813606d8b2e8a4c5106",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/emotions.ts"
+    },
+    {
+      "path": "src/shared/outfits.ts",
+      "sha256": "bbad3fb09c93e838e8985d30838c20f8c1991ad4c437edcf997618c2d60cca74",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/outfits.ts"
+    },
+    {
+      "path": "src/shared/playerStats.ts",
+      "sha256": "746e93710fc52018f0102ddbd94fdd77b0c929f8954e9781edfe1a6ace8050ab",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/playerStats.ts"
+    },
+    {
+      "path": "src/shared/academics.ts",
+      "sha256": "9e30efb356eb4b40704997c45c370d80cb006daa8443b58ff000c443470e4c13",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/academics.ts"
+    },
+    {
+      "path": "src/shared/positions.ts",
+      "sha256": "c872bb13137a840979296ee3bc8be4ba0721b3b279ee9af6cfbcdc16d6e3a46d",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/positions.ts"
+    },
+    {
+      "path": "src/shared/readerVoice.ts",
+      "sha256": "2f9e30a728ae83610ed79e86bd491b1b18d2a94fa4b30410995aa042e01d616f",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/readerVoice.ts"
+    },
+    {
+      "path": "src/shared/relationship.ts",
+      "sha256": "5d48e38ba5ed9251354bea36cdd2b7eeac8d602d7190d8cf59093eed9da7f3cd",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/relationship.ts"
+    },
+    {
+      "path": "src/shared/settingsRules.ts",
+      "sha256": "15d4e17e25adccf29fa37fb8df37bc270f97ad3dfcdfa43a4285c6f98a9b7a71",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/settingsRules.ts"
+    },
+    {
+      "path": "src/shared/tags.ts",
+      "sha256": "f976814891c3009b3e2ba7eb328eae83824bc09598f74129069f84eb6de4168b",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/tags.ts"
+    },
+    {
+      "path": "src/shared/traits.ts",
+      "sha256": "19b2505a9290cc37000df3b43abaed14848cc7519ec6da05b6eb00d14014b436",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/traits.ts"
+    },
+    {
+      "path": "src/shared/types.ts",
+      "sha256": "cead2a1bd22b9bff968f30d324a4275ff203e3c99d678a0ff20f35ba2c3782ad",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/types.ts"
+    },
+    {
+      "path": "src/renderer/prompts/gameDate.ts",
+      "sha256": "b259d216ce079515affb61e047f03a4dc363f369df6d1f5ca6806f4d2997f6f7",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/prompts/gameDate.ts"
+    },
+    {
+      "path": "src/shared/jobs.ts",
+      "sha256": "a605561bd1a23c69823ed43a90636ae17bb5b8b44a2fb816702ae133a1261732",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/jobs.ts"
+    },
+    {
+      "path": "src/renderer/prompts/lorebook.ts",
+      "sha256": "f5208f37be679124c68e60b75c4c04d883fe4b733ce785695fb11bcdc7130a1c",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/prompts/lorebook.ts"
+    },
+    {
+      "path": "src/renderer/prompts/graduation.ts",
+      "sha256": "0e52104abd3a6a23d3b3be995077ad7e8706e032e15d1290b50b12e73bc06733",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/prompts/graduation.ts"
+    },
+    {
+      "path": "src/renderer/prompts/moods.ts",
+      "sha256": "7b7d2a4a64044bc1429fca35143cf4df4fa0364f1e3e6ccad6dd0055c800e31a",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/prompts/moods.ts"
+    },
+    {
+      "path": "src/renderer/prompts/springBreak.ts",
+      "sha256": "8e9457c1f7d583d88dd491eb3ab7be5756c963464818fb3c1228cf9655497c0d",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/prompts/springBreak.ts"
+    },
+    {
+      "path": "src/renderer/prompts/npcRelationship.ts",
+      "sha256": "4cde0d1b83fecf76b7d93d55dd11a7e43409ab707230c7c4245e6823e802bb31",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/prompts/npcRelationship.ts"
+    },
+    {
+      "path": "src/renderer/prompts/occasions.ts",
+      "sha256": "083d3370de30c2d0ab7792259e4a095870b5f75efa3660207e2a8f27ad8fae9c",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/prompts/occasions.ts"
+    },
+    {
+      "path": "src/renderer/prompts/relationship.ts",
+      "sha256": "d121e52f5672ca9b0dea108dac140767724b8b5f82b87f052f0359804b05285d",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/prompts/relationship.ts"
+    },
+    {
+      "path": "src/renderer/prompts/schedulePrompt.ts",
+      "sha256": "cd375f517bec4c48a80a86e14ec331a5ddfd5d478ba619226e3d091689c4df9e",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/prompts/schedulePrompt.ts"
+    },
+    {
+      "path": "src/renderer/prompts/seedWords.ts",
+      "sha256": "6a908cc62d0781759e858563cb96b59883f829d3e9ce222c87754542c4c67868",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/prompts/seedWords.ts"
+    },
+    {
+      "path": "src/renderer/prompts/weather.ts",
+      "sha256": "2f871aa9226b641962ddeeffca41492eebc1eb88db7a3bb6ad44fe568ca91b6d",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/prompts/weather.ts"
+    },
+    {
+      "path": "src/shared/characterFiles.ts",
+      "sha256": "372dc57aadfe2b7724fd01fd4be092615cc06a35f9bf1699cf673557282c3345",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/characterFiles.ts"
+    },
+    {
+      "path": "src/shared/jsonValidate.ts",
+      "sha256": "bf904e251751512cc8ef5d97ad56cf64bc88dbcd755f2a7f87f68a9b5b6f8c1c",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/jsonValidate.ts"
+    },
+    {
+      "path": "src/shared/spriteScale.ts",
+      "sha256": "3fb3c6c9411ee654600b822b1583418da6d6c7e20e9bb717b526df2daa95a115",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/spriteScale.ts"
+    },
+    {
+      "path": "src/shared/uuid.ts",
+      "sha256": "96b94ec4a102e2b0bb8f45b892c9fc186f25db990dd608335844b5e8d03d063f",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/uuid.ts"
+    },
+    {
+      "path": "src/shared/locations.ts",
+      "sha256": "437da33d6ecb1b2f5c15b5ffd2fc388bf63433608c10cbb83279c200ef70804a",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/locations.ts"
+    },
+    {
+      "path": "src/shared/regenTags.ts",
+      "sha256": "57bafd875f76aaf3ee358680d0a5e81cf121f6a7b21730fbd9379e05caccc0f3",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/regenTags.ts"
+    },
+    {
+      "path": "src/shared/shuffle.ts",
+      "sha256": "97d3e47ff48ad7cfe24fd08b85722a4551ce431552dcdb2f3b9d3e3a5351b04c",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/shuffle.ts"
+    },
+    {
+      "path": "src/shared/feed.ts",
+      "sha256": "7960b3373926ade9fe0791b086fc1f486338bf1e6c37a097ebd2dcdb2fa397cb",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/feed.ts"
+    },
+    {
+      "path": "src/shared/statusMark.ts",
+      "sha256": "0da5fb5f6182635441e20dcf9c6201bf94de3a1f64f9104a0f73198b78e788d6",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/statusMark.ts"
+    },
+    {
+      "path": "src/shared/audio.ts",
+      "sha256": "4295fedf5ec53a9908e0b1e101413cfd035e53fe4cd1a95ec22fce76ba2a567b",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/audio.ts"
+    },
+    {
+      "path": "src/shared/endpoint.ts",
+      "sha256": "d09946065287f1f38d5578ccd9dcbe18ec2e828b9004b3be454df9491c509809",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/endpoint.ts"
+    },
+    {
+      "path": "src/shared/errors.ts",
+      "sha256": "faa00ef7469d35e472fc43c8f9a942c3b970a6032acf9ebcc4bb0ef62bdb8e63",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/errors.ts"
+    },
+    {
+      "path": "src/shared/providers.ts",
+      "sha256": "3770a7eec8db6b8d9be5cc5550c44c2a2eb8bd2d77e40d72035175ab8df91940",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/providers.ts"
+    },
+    {
+      "path": "src/shared/npcRelationships.ts",
+      "sha256": "0e911c298ff5af37d84a74ff829cbf2b4e1600e71713a3ec01b2b5764fc9cca1",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/npcRelationships.ts"
+    },
+    {
+      "path": "src/renderer/prompts/textingPrompt.ts",
+      "sha256": "a56d783c73569f23ac39cf4a8a1b15268158726336ef5b2aa82e77f3bc2ca114",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/prompts/textingPrompt.ts"
+    },
+    {
+      "path": "src/shared/weather.ts",
+      "sha256": "23ed711419fed9c581af5a5f0c53d9d47cf56f0748ce80b9c42f14e919fe878f",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/weather.ts"
+    },
+    {
+      "path": "src/shared/room.ts",
+      "sha256": "ffca55e67a4cd728d43089b90719c0707deb702c0af209dda167e33e4b708134",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/room.ts"
+    },
+    {
+      "path": "src/shared/dating.ts",
+      "sha256": "b0905577386129ff36c2000d8962d0546f76887ab3c648153cefa8536b3f7bd0",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/dating.ts"
+    },
+    {
+      "path": "src/shared/shop.ts",
+      "sha256": "fd5df70e8b3d26e0d59cc8762727f87154ca6334625105c9f5a11b1cf38d8df7",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/shop.ts"
+    },
+    {
+      "path": "src/shared/rumors.ts",
+      "sha256": "53de5d04a6a8b9bd41296c574c9ec09c4b7620b64e8cf19ee0261b2771b2c413",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/rumors.ts"
+    },
+    {
+      "path": "src/shared/money.ts",
+      "sha256": "0bc0ccea15be89d51b04af42bcb5ae6baa3d54fa13915fc2c73633cf447b2e86",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/money.ts"
+    },
+    {
+      "path": "src/shared/llm/httpStatus.ts",
+      "sha256": "483ac891060bc8f566b27ac16edd5f9a324f2f4af65d7cb9445a00211dd768c9",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/llm/httpStatus.ts"
+    },
+    {
+      "path": "src/renderer/stores/loop/turn.ts",
+      "sha256": "506f839f51fb59f7ce04f547e43f20cc42f9bbeaa811f267f63db94e4d51e1d9",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/stores/loop/turn.ts"
+    },
+    {
+      "path": "src/renderer/stores/loop/stream.ts",
+      "sha256": "d3b5cd910911d790686c3aabb25713b609c464ffe100274c15363bd5577be46b",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/stores/loop/stream.ts"
+    },
+    {
+      "path": "src/renderer/stores/loop/encode.ts",
+      "sha256": "1c1c76f45754ad4371b6e1b5e2d01e44d42e986ecf8973844e1c49ae3329d669",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/renderer/stores/loop/encode.ts"
+    },
+    {
+      "path": "src/shared/llm/adapter.ts",
+      "sha256": "b6baf52902da9922a866796ba5f83c57fbdde08d2cbd95b9f84c614f2802b4f5",
+      "url": "https://raw.githubusercontent.com/venus-uni-dev/venus-university/ec8f7cee4fd9236e3dbcdc2e4683afba3acab748/src/shared/llm/adapter.ts"
+    }
+  ],
+  "promptClosure": [
+    "src/shared/llm/openaiAdapter.ts",
+    "src/shared/llm/geminiAdapter.ts",
+    "src/renderer/stores/sceneSanitizer.ts",
+    "src/renderer/prompts/scenePrompt.ts",
+    "src/renderer/prompts/sceneWindow.ts",
+    "src/renderer/prompts/schema.ts",
+    "src/shared/sceneActions.ts",
+    "src/shared/sentences.ts",
+    "src/shared/errors.ts",
+    "src/shared/llm/httpStatus.ts",
+    "src/shared/dating.ts",
+    "src/shared/outfits.ts",
+    "src/shared/relationship.ts",
+    "src/shared/readerVoice.ts",
+    "src/shared/shop.ts",
+    "src/shared/types.ts",
+    "src/shared/characterRules.ts",
+    "src/shared/classes.ts",
+    "src/shared/dorms.ts",
+    "src/shared/emotions.ts",
+    "src/shared/playerStats.ts",
+    "src/shared/academics.ts",
+    "src/shared/positions.ts",
+    "src/shared/settingsRules.ts",
+    "src/shared/tags.ts",
+    "src/shared/traits.ts",
+    "src/renderer/prompts/gameDate.ts",
+    "src/shared/jobs.ts",
+    "src/renderer/prompts/lorebook.ts",
+    "src/renderer/prompts/graduation.ts",
+    "src/renderer/prompts/moods.ts",
+    "src/renderer/prompts/springBreak.ts",
+    "src/renderer/prompts/npcRelationship.ts",
+    "src/renderer/prompts/occasions.ts",
+    "src/renderer/prompts/relationship.ts",
+    "src/renderer/prompts/schedulePrompt.ts",
+    "src/renderer/prompts/seedWords.ts",
+    "src/renderer/prompts/weather.ts",
+    "src/shared/npcRelationships.ts",
+    "src/shared/rumors.ts",
+    "src/shared/regenTags.ts",
+    "src/shared/feed.ts",
+    "src/shared/statusMark.ts",
+    "src/shared/money.ts",
+    "src/shared/characterFiles.ts",
+    "src/shared/jsonValidate.ts",
+    "src/shared/spriteScale.ts",
+    "src/shared/uuid.ts",
+    "src/shared/locations.ts",
+    "src/shared/shuffle.ts",
+    "src/shared/audio.ts",
+    "src/shared/endpoint.ts",
+    "src/shared/providers.ts",
+    "src/renderer/prompts/textingPrompt.ts",
+    "src/shared/weather.ts",
+    "src/shared/room.ts"
+  ],
+  "externalImports": [
+    "store boundary: src/renderer/stores/assetStore.ts",
+    "store boundary: src/renderer/stores/gameStore.ts",
+    "store boundary: src/renderer/stores/stageStep.ts",
+    "store boundary: src/renderer/stores/textingLoop.ts"
+  ]
+}

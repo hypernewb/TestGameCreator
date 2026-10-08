@@ -44,6 +44,7 @@ import {reviewProposal,regenerateEntry,applyReviewed} from './packages/ai/propos
 import {characterMessages,normalizeCharacter,authorCharacter,characterResponseFormat,profileSectionMessages,mergeProfileSections,PROFILE_SECTION_KEYS} from './packages/ai/character-authoring.mjs';
 import {parseModelObject} from './packages/ai/json.mjs';
 import {fillBlanksMessages,fillBlanksResponseFormat,blanksPatch} from './packages/ai/fill-blanks.mjs';
+import {sceneDraftMessages,sceneDraftNeeds,sceneDraftPatch} from './packages/ai/scene-draft.mjs';
 import {locationFillMessages,locationFillPatch} from './packages/ai/location-lint.mjs';
 import {BLANK_SECTIONS} from './public/card-presets.mjs';
 import {creatorRoutes} from './packages/cards/creator-routes.mjs';
@@ -192,6 +193,14 @@ export function createApp({dataPath,scenarioDir,provider=new MockProvider(),draf
         const request=fillBlanksMessages(body.pack,body.actor,body.section);if(!request.blanks.length)return send({patch:{},filled:[]});
         let raw,patch;
         for(let attempt=0;attempt<2;attempt++){raw=await authorProvider().complete(request.messages,undefined,fillBlanksResponseFormat(request.schema));let retry;try{patch=blanksPatch(body.actor,parseModelObject(raw),body.section,body.pack);if(Object.keys(patch).length||attempt)break;retry='Nothing usable came back: every field was empty or every pick was off its list. Fill each requested field, choosing list picks exactly as spelled in the lists.';}catch(error){if(attempt)throw error;retry=`Return the corrected JSON object only. Parsing failed: ${error.message}`;}request.messages.push({role:'assistant',content:typeof raw==='string'?raw:JSON.stringify(raw)},{role:'user',content:retry});}
+        return send({patch,filled:Object.keys(patch),provider:service.provider.name});
+      }
+      if(path==='/api/studio/ai-scene-draft'&&req.method==='POST'){
+        assert(service.provider instanceof CompatibleProvider,'Connect an AI model in AI settings before drafting a scene');assert(body.pack&&typeof body.pack==='object'&&!Array.isArray(body.pack),'Project data required');
+        assert(body.actor&&typeof body.actor==='object'&&!Array.isArray(body.actor),'Character required');assert(body.scene&&typeof body.scene==='object'&&!Array.isArray(body.scene),'Scene required');
+        const request=sceneDraftMessages(body.pack,body.actor,body.scene);if(!request.needs.length)return send({patch:{},filled:[]});
+        let patch={};
+        for(let attempt=0;attempt<2;attempt++){const raw=await authorProvider().complete(request.messages,undefined,fillBlanksResponseFormat(request.schema));let retry;try{patch=sceneDraftPatch(body.scene,parseModelObject(raw));if(Object.keys(patch).length||attempt)break;retry='Nothing usable came back: write at least three beats with text and an aftermath line.';}catch(error){if(attempt)throw error;retry=`Return the corrected JSON object only. Parsing failed: ${error.message}`;}request.messages.push({role:'assistant',content:typeof raw==='string'?raw:JSON.stringify(raw)},{role:'user',content:retry});}
         return send({patch,filled:Object.keys(patch),provider:service.provider.name});
       }
       // Regenerate chosen deep-profile sections of one character; every other field of the caller's actor is preserved.

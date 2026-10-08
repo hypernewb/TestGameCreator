@@ -1,5 +1,5 @@
 // Blind pairwise judging of final presentations from independent campaigns.
-import {guardSceneLines,dropRepeats,dropStock,dropAdvances} from '../ai/untrusted-output.mjs';
+import {guardSceneLines,dropRepeats,dropStock} from '../ai/untrusted-output.mjs';
 import {avoidList} from '../../public/avoid-phrases.mjs';
 import {SUB_TURNS} from '../ai/service.mjs';
 import {linesFor} from '../../public/turn-presentation.mjs';
@@ -16,7 +16,7 @@ export function blockTokens(context,pack,scenePrompt){
 }
 export const judgeResponseFormat={type:'json_schema',json_schema:{name:'prompt_comparison',strict:true,schema:{type:'object',additionalProperties:false,required:['A','B','winner','why'],properties:{...Object.fromEntries(['A','B'].map(k=>[k,{type:'object',additionalProperties:false,required:Object.keys(CRITERIA),properties:Object.fromEntries(Object.keys(CRITERIA).map(c=>[c,{type:'number',minimum:1,maximum:10}]))}])),winner:{type:'string',enum:['A','B','tie']},why:{type:'string'}}}}};
 // Draft-filter helper retained for callers; evaluation runs GameService rather than using this approximation.
-export function composeLines(lines,context,pack){const out=dropStock(dropRepeats(guardSceneLines(lines,context.speakers||[],pack),context.spokenBefore||[],context.playerAction),avoidList(pack.gameProject));return pack.modules?.['social.intimacy']?out:dropAdvances(out,context.playerAction);}
+export function composeLines(lines,context,pack){const out=dropStock(dropRepeats(guardSceneLines(lines,context.speakers||[],pack),context.spokenBefore||[],context.playerAction),avoidList(pack.gameProject));return out;}
 // Uses exactly the same presentation function as the play screen, including director/first/ending beats.
 export function shownTurn(prev,state,pack,highlights=[],diagnostics={}){
  const fresh=Object.entries(state.turns||{}).filter(([k])=>!prev?.turns?.[k]).map(([,t])=>t),main=[...fresh].reverse().find(t=>!SUB_TURNS.has(t.command?.type))||fresh.at(-1);

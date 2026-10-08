@@ -73,23 +73,21 @@ test('generator steers love-life fields toward the pick lists and returns sex-st
  assert.deepEqual(normalizeCharacter(raw,p).sexStyle,{leads:72,loud:100});assert.equal(normalizeCharacter({...raw,sexStyle:undefined},p).sexStyle,undefined);
 });
 
-const source=readFileSync(new URL('../public/studio.mjs',import.meta.url),'utf8'),fn=name=>{const a=source.indexOf(`function ${name}(`);assert.ok(a>=0,name);return source.slice(a,source.indexOf('\n',a));};
+const source=readFileSync(new URL('../public/studio.mjs',import.meta.url),'utf8').split(String.fromCharCode(13,10)).join(String.fromCharCode(10)),fn=name=>{const a=source.indexOf(`function ${name}(`);assert.ok(a>=0,name);return source.slice(a,source.indexOf('\n',a));};
 const dom=()=>{const el=tag=>({tag,children:[],dataset:{},className:'',value:'',append(...c){this.children.push(...c);},replaceChildren(...c){this.children=c;}});return (tag,text)=>Object.assign(el(tag),text===undefined?{}:{textContent:text});};
 const all=n=>[n,...(n.children||[]).flatMap(all)];
 
-test('Studio pick chips toggle list values, keep custom values, and write text picks as one string',()=>{
+test('Studio pick fields: comma-separated text with datalist suggestions, normalised list/text/tag values, share hook',()=>{
  const msgs=[],pickChips=new Function('node','message','splitPicks','tagOf',`${fn('pickChips')}\nreturn pickChips;`)(dom(),m=>msgs.push(m),splitPicks,tagOf);
  const parent=dom()('div'),o={turnOns:['custom thing'],kinks:'praise kink',bodyTags:[]};
- pickChips(parent,o,'turnOns','Turn-ons',['praise','being pinned'],'list');let chips=all(parent).filter(n=>n.dataset?.value);
- assert.deepEqual(chips.map(c=>[c.dataset.value,c.className]),[['praise','chip check'],['being pinned','chip check'],['custom thing','chip check on']]);
- chips[0].onclick();assert.deepEqual(o.turnOns,['custom thing','praise']);chips[2].onclick();assert.deepEqual(o.turnOns,['praise']);
- pickChips(parent,o,'kinks','Kinks',['brat taming'],'text');const k=parent.children.at(-1),input=all(k).find(n=>n.tag==='input');input.value='edging, rope';input.onblur();assert.equal(o.kinks,'praise kink, edging, rope');
- pickChips(parent,o,'bodyTags','Body',['wide_hips'],'tag');const b=parent.children.at(-1),bi=all(b).find(n=>n.tag==='input');bi.value='Navel Piercing';bi.onkeydown({key:'Enter',preventDefault(){}});assert.deepEqual(o.bodyTags,['navel_piercing']);assert.equal(b.dataset.pickKey,'bodyTags');
- assert.ok(msgs.length>=4);
- // shared lists: a getter for options, custom values offered to the project list, keep() hides values owned by another group
- const shared=[],L=['red_hair'],q={appearanceTags:['red_hair','long_hair','glasses']},g=dom()('div');pickChips(g,q,'appearanceTags','Hair colour',()=>L,'tag',vs=>{shared.push(...vs);L.push(...vs);},v=>L.includes(v));
- const box=g.children[0];assert.deepEqual(all(box).filter(n=>n.dataset?.value).map(n=>n.dataset.value),['red_hair']);const gi=all(box).find(n=>n.tag==='input');gi.value='Teal Hair';gi.onkeydown({key:'Enter',preventDefault(){}});
- assert.deepEqual(shared,['teal_hair']);assert.deepEqual(q.appearanceTags,['red_hair','long_hair','glasses','teal_hair']);assert.match(gi.placeholder,/every card/);
+ pickChips(parent,o,'turnOns','Turn-ons',['praise','being pinned'],'list');const w=parent.children[0],inp=all(w).find(n=>n.tag==='input'),dl=all(w).find(n=>n.tag==='datalist');
+ assert.equal(inp.value,'custom thing');assert.deepEqual(dl.children.map(n=>n.value),['praise','being pinned']);
+ inp.value='praise, Moonlight, praise';inp.onchange();assert.deepEqual(o.turnOns,['praise','Moonlight']);assert.equal(inp.value,'praise, Moonlight');
+ pickChips(parent,o,'kinks','Kinks',['brat taming'],'text');const ki=all(parent.children[1]).find(n=>n.tag==='input');ki.value='edging, rope';ki.onchange();assert.equal(o.kinks,'edging, rope');
+ pickChips(parent,o,'bodyTags','Body',['wide_hips'],'tag');const b=parent.children[2],bi=all(b).find(n=>n.tag==='input');bi.value='Navel Piercing';bi.onchange();assert.deepEqual(o.bodyTags,['navel_piercing']);assert.equal(b.dataset.pickKey,'bodyTags');
+ assert.ok(msgs.length>=3);
+ const shared=[],L=['red_hair','long_hair','glasses'],q={appearanceTags:['red_hair','long_hair','glasses']},g=dom()('div');pickChips(g,q,'appearanceTags','Hair colour',()=>L,'tag',vs=>{shared.push(...vs);L.push(...vs);});
+ const gi=all(g.children[0]).find(n=>n.tag==='input');gi.value='red_hair, long_hair, glasses, Teal Hair';gi.onchange();assert.deepEqual(shared,['teal_hair']);assert.deepEqual(q.appearanceTags,['red_hair','long_hair','glasses','teal_hair']);
 });
 
 test('Studio shared pick lists and grouped looks: custom picks join pack.cardLists, every look tag shows once',()=>{

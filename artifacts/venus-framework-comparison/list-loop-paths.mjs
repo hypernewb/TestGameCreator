@@ -1,0 +1,1 @@
+import fs from 'node:fs';const a=JSON.parse(fs.readFileSync('artifacts/venus-framework-comparison/upstream-index.json'));console.log(a.paths.map(x=>x.path).filter(x=>x.startsWith('src/renderer/stores/loop/')).join('\n'));

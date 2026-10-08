@@ -5,7 +5,7 @@ import {readFile,access} from 'node:fs/promises';
 import {browser as launchBrowser} from '../scripts/visual-fixtures/browser.mjs';
 test('speech and world narrator controls warn, apply and reopen in a browser',{timeout:45000},async()=>{
  let browser;for(const path of [process.env.CHROME_PATH,process.env.EDGE_PATH,'C:/Program Files/Google/Chrome/Application/chrome.exe','C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe','/usr/bin/chromium','/usr/bin/google-chrome'].filter(Boolean)){try{await access(path);browser=path;break;}catch{}}assert.ok(browser,'Set CHROME_PATH or EDGE_PATH');
- const script=await readFile(new URL('../public/sheet-editor.mjs',import.meta.url),'utf8'),html=`<!doctype html><html><body><main></main><pre id="result">WAIT</pre><script type="module">
+ const dep=await readFile(new URL('../public/profile-tags.mjs',import.meta.url),'utf8'),script=await readFile(new URL('../public/sheet-editor.mjs',import.meta.url),'utf8'),html=`<!doctype html><html><body><main></main><pre id="result">WAIT</pre><script type="module">
  import {createSheet,mountSheetEditor,mountNarratorPersona,saveSheets,loadSheets} from '/sheet-editor.mjs';
  try{
   const pack={playerId:'traveler',actors:[{id:'traveler',name:'Traveler'},{id:'maker',name:'Maker'},{id:'sailor',name:'Sailor'}],locations:[{id:'dock',name:'Dock'}],characterSheets:['maker','sailor'].map(id=>{const s=createSheet(id);s.personality.traits=['curious','practical'];return s;})};pack.characterSheets[1].speech.petPhrases=['Fair winds'];let changes=0;
@@ -16,6 +16,6 @@ test('speech and world narrator controls warn, apply and reopen in a browser',{t
   main.replaceChildren();mountNarratorPersona(main,loaded);mountSheetEditor(main,loaded,'maker');button('Personality & voice');check([...main.querySelectorAll('textarea')].some(i=>i.value==='Precisely. We can fix this.'),'speech did not reopen');check(saveSheets(loaded)===saved,'opening changed saved data');document.querySelector('#result').textContent='VOICE_PASS';
  }catch(e){document.querySelector('#result').textContent='VOICE_FAIL: '+e.stack;}
  </script></body></html>`;
- const server=createServer((req,res)=>{res.setHeader('Content-Type',req.url==='/sheet-editor.mjs'?'text/javascript':'text/html');res.end(req.url==='/sheet-editor.mjs'?script:html);});await new Promise(r=>server.listen(0,'127.0.0.1',r));let b;
+ const server=createServer((req,res)=>{res.setHeader('Content-Type',req.url.endsWith('.mjs')?'text/javascript':'text/html');res.end(req.url==='/sheet-editor.mjs'?script:req.url==='/profile-tags.mjs'?dep:html);});await new Promise(r=>server.listen(0,'127.0.0.1',r));let b;
  try{b=await launchBrowser(browser,{args:process.platform==='win32'?['--no-sandbox']:[]});await b.call('Page.navigate',{url:`http://127.0.0.1:${server.address().port}`});await b.wait("document.querySelector('#result')?.textContent.startsWith('VOICE_')");assert.equal(await b.evaluate("document.querySelector('#result').textContent"),'VOICE_PASS');assert.deepEqual(b.errors,[]);}finally{await b?.close();await new Promise(r=>server.close(r));}
 });

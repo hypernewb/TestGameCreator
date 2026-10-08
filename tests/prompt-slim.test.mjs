@@ -45,13 +45,13 @@ test('blockTokens prices the state block and sums every block',()=>{
  assert.ok(Math.abs(total-Math.ceil(messages.reduce((a,m)=>a+m.content.length,0)/4))<total*0.25,'estimate near raw chars/4');
 });
 
-test('player stats render with rank names and the opening contract colors actions by them',()=>{
+test('player ranks remain visible without mandatory stat-colored opening narration',()=>{
  const p=pack();p.statDefinitions=[{id:'charm',name:'Charm',min:0,max:20,ranks:[{min:0,name:'Awkward'},{min:8,name:'Magnetic'}]},{id:'wit',name:'Wit',min:0,max:20}];
  const withStats={stagedCast:['brin'],scenePhase:'opening',sceneHistory:[],playerAction:'Hi',location:p.locations[0],present:p.actors.filter(a=>['player','brin'].includes(a.id)),characterStats:[{character:'player',values:{charm:3,wit:0}}]};
  const [system,user]=scenePromptMessages(withStats,p);
  assert.match(user.content,/YOU — Charm: Awkward \(3\), Wit: 0/);
  const plain=scenePromptMessages({...withStats,characterStats:[]},p)[1].content;
  assert.doesNotMatch(plain,/YOU —/);
- assert.match(system.content,/stat ranks/);
- assert.match(user.content,/short narrator beat of the player.s action landing/);
+ assert.match(system.content,/Do not recap earlier turns or add stat-colored delivery/);
+ assert.match(user.content,/Preserve the submitted words and actions across ordered scene beats/);
 });

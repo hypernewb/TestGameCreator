@@ -1,0 +1,816 @@
+{
+  "url": "https://github.com/venus-uni-dev/venus-university",
+  "revision": "ec8f7cee4fd9236e3dbcdc2e4683afba3acab748",
+  "date": "2026-10-03T14:26:42Z",
+  "treeSha": "77360212962bd299005da02d827b687b954967bc",
+  "paths": [
+    {
+      "path": "LICENSE",
+      "sha": "be3f7b28e564e7dd05eaf59d64adba1a4065ac0e"
+    },
+    {
+      "path": "package.json",
+      "sha": "659ae471f98dfc25ec67b3ef32942658821ad7c8"
+    },
+    {
+      "path": "src/renderer/prompts/bunnybot.ts",
+      "sha": "cfbcaf0e2cd216d2a5a823767f000efda687c86d"
+    },
+    {
+      "path": "src/renderer/prompts/characterCard.ts",
+      "sha": "542738fb0ee66b1dc1b75113b232fd3f8ed8997a"
+    },
+    {
+      "path": "src/renderer/prompts/characterPrompt.ts",
+      "sha": "cfb6c98eaacde37c4aab778148eddb1059c04067"
+    },
+    {
+      "path": "src/renderer/prompts/characterSuggestions.ts",
+      "sha": "49568d10dab01c6d5d205b84ee9a8a43d19fcb7f"
+    },
+    {
+      "path": "src/renderer/prompts/classProgress.ts",
+      "sha": "fafc66db5a6e17d9033d71bacc7a89d3b6d01efd"
+    },
+    {
+      "path": "src/renderer/prompts/classPrompt.ts",
+      "sha": "4d6d65e80b47f5533afd14a80176079068fba683"
+    },
+    {
+      "path": "src/renderer/prompts/endingPostsPrompt.ts",
+      "sha": "ddac05288a8326614e442c5682d0e3cba6689048"
+    },
+    {
+      "path": "src/renderer/prompts/feedRandoms.ts",
+      "sha": "d9a91230939db0c63e522e6ce98a89e7ce4e4444"
+    },
+    {
+      "path": "src/renderer/prompts/gameDate.ts",
+      "sha": "d00a10645e2ebeb5d09f3c8b22cba5d744f461bd"
+    },
+    {
+      "path": "src/renderer/prompts/graduation.ts",
+      "sha": "0553b27689d9b7b53ad9ac03ffd795ceb10ced98"
+    },
+    {
+      "path": "src/renderer/prompts/hangoutClassifierPrompt.ts",
+      "sha": "9f2d21659769f8aa6a06ec18f5f0d87c3ff4656f"
+    },
+    {
+      "path": "src/renderer/prompts/introScript.ts",
+      "sha": "e783487cbb5a0c3d6d65d905dcba5f47c408eda3"
+    },
+    {
+      "path": "src/renderer/prompts/lorebook.ts",
+      "sha": "2a2d6fc98abb6a94c98d52561514e21e896c0a61"
+    },
+    {
+      "path": "src/renderer/prompts/moods.ts",
+      "sha": "a40bd1f50fcd94e26770b8b41781ee7c33745530"
+    },
+    {
+      "path": "src/renderer/prompts/npcRelationship.ts",
+      "sha": "05bfbf06c03ad75813ba05bd65ffd54c602f76d5"
+    },
+    {
+      "path": "src/renderer/prompts/occasionPrompt.ts",
+      "sha": "313f466e6ad170585fb2b15978b3a06d27b8c6b8"
+    },
+    {
+      "path": "src/renderer/prompts/occasions.ts",
+      "sha": "93f6d4b0a359fbb1ca5291fb5f8050a6c0edea72"
+    },
+    {
+      "path": "src/renderer/prompts/photo.ts",
+      "sha": "ab634787ce53430cbafe929102a36381ff93a465"
+    },
+    {
+      "path": "src/renderer/prompts/profilePrompt.ts",
+      "sha": "84b5b5bf3eeb15a5b5f17419dd58395fc5142ee6"
+    },
+    {
+      "path": "src/renderer/prompts/quizPrompt.ts",
+      "sha": "c5285caca92a80c43530e4679c0333955530aba1"
+    },
+    {
+      "path": "src/renderer/prompts/relationship.ts",
+      "sha": "c4c6fb700f7191b4a286ce4282534b4ff9e62911"
+    },
+    {
+      "path": "src/renderer/prompts/scenePrompt.ts",
+      "sha": "574b09fbd5ac5e57751da9c1f66245c0d4f51de2"
+    },
+    {
+      "path": "src/renderer/prompts/sceneWindow.ts",
+      "sha": "e2326a5e143a55d68c164347f33e5fbc2dd76912"
+    },
+    {
+      "path": "src/renderer/prompts/schedulePrompt.ts",
+      "sha": "900b7534cb8f8684d0aeae7749784bcf761ed0e0"
+    },
+    {
+      "path": "src/renderer/prompts/schema.ts",
+      "sha": "86408d4ca9eb09ec638f48aab5bc6a440edd03bf"
+    },
+    {
+      "path": "src/renderer/prompts/seedWords.ts",
+      "sha": "89c5901b7648a707f53cb9112a6a02beb18b1a1d"
+    },
+    {
+      "path": "src/renderer/prompts/setting.ts",
+      "sha": "06f5b6990cc962c97e842cd67ff4d8447a98f9ee"
+    },
+    {
+      "path": "src/renderer/prompts/slotIntroPrompt.ts",
+      "sha": "842924d281f90259c491bb1e45e88c3e7dd147d3"
+    },
+    {
+      "path": "src/renderer/prompts/springBreak.ts",
+      "sha": "c9744dcb44b62f06f3999cdb502d20973f6f970a"
+    },
+    {
+      "path": "src/renderer/prompts/statActions.ts",
+      "sha": "7b60b7efcdbff033e841d903fab48e01065698df"
+    },
+    {
+      "path": "src/renderer/prompts/supporters.ts",
+      "sha": "2493e8c02ef145d1e9760d65ccfb6a10b8d0dc2c"
+    },
+    {
+      "path": "src/renderer/prompts/textLedgerPrompt.ts",
+      "sha": "9163c4f72141ebfe2d4103746844a29bcb24bb92"
+    },
+    {
+      "path": "src/renderer/prompts/textingPrompt.ts",
+      "sha": "c241cc6a89e32278a5632160f9bd50b6f5ebce5c"
+    },
+    {
+      "path": "src/renderer/prompts/venus.ts",
+      "sha": "64dd42274abd3de03c03794e3b87b5232a0e179b"
+    },
+    {
+      "path": "src/renderer/prompts/weather.ts",
+      "sha": "06a5dd127785bd7f0e2e3cfdd32f5994521ea671"
+    },
+    {
+      "path": "src/renderer/stores/assetStore.ts",
+      "sha": "25a029580c4d6924739ca12f39156ab6d38e2c19"
+    },
+    {
+      "path": "src/renderer/stores/audioEngine.ts",
+      "sha": "194c335f62d6eccfffe4f5a64240335d3865fa10"
+    },
+    {
+      "path": "src/renderer/stores/audioStore.ts",
+      "sha": "c38ad7a9c2c65a50d96bb15e28d86e178da60cf3"
+    },
+    {
+      "path": "src/renderer/stores/bunnyboardStore.ts",
+      "sha": "823a345e4f53b10f61de19414fa93c39a506e9ee"
+    },
+    {
+      "path": "src/renderer/stores/characterStore.ts",
+      "sha": "a6a2185aca676aae7b09bdcfcef4784f5a1c79f5"
+    },
+    {
+      "path": "src/renderer/stores/classScheduler.ts",
+      "sha": "8e762447e4cd017c2d439660757122d642c309cc"
+    },
+    {
+      "path": "src/renderer/stores/comfyStore.ts",
+      "sha": "6c58a39161fe37ff5e4c9e633448c7ad3dc7c750"
+    },
+    {
+      "path": "src/renderer/stores/crossingStore.ts",
+      "sha": "ee307ad26b40381bd4272ad08915d50ccd8186c1"
+    },
+    {
+      "path": "src/renderer/stores/feedRolls.ts",
+      "sha": "cf82ddd48893d7b8b7ba3421bbdd1cf2fd57f153"
+    },
+    {
+      "path": "src/renderer/stores/feedView.ts",
+      "sha": "8fe10819a176b3207d0f47bd20edadc98c28cfc6"
+    },
+    {
+      "path": "src/renderer/stores/gameLoop.ts",
+      "sha": "f799392cb79ae8b2999d77d11acace3db7032e82"
+    },
+    {
+      "path": "src/renderer/stores/gameStore.ts",
+      "sha": "aec088cdf121298a9ea2d5c4515830a767eefbeb"
+    },
+    {
+      "path": "src/renderer/stores/grabBagStore.ts",
+      "sha": "e87b6dd57789fa17bdb42b0b05e603af5ea18aed"
+    },
+    {
+      "path": "src/renderer/stores/hiddenScheduler.ts",
+      "sha": "4745a58ca4ed16fc60fe4393af288f4bc6ce5638"
+    },
+    {
+      "path": "src/renderer/stores/imageUrl.ts",
+      "sha": "ba2fe318b2bf01b024c678f827f8cc2827d1e839"
+    },
+    {
+      "path": "src/renderer/stores/jobStore.ts",
+      "sha": "bb2a186eafd997ef115ab10594c142c80a841775"
+    },
+    {
+      "path": "src/renderer/stores/jsonStream.ts",
+      "sha": "418f47f07339eb5b713bfb8538f9486638756c25"
+    },
+    {
+      "path": "src/renderer/stores/lineupSheet.ts",
+      "sha": "01afedb89eae36aaf2ec1e40c3fd52a0173dc577"
+    },
+    {
+      "path": "src/renderer/stores/llmQueue.ts",
+      "sha": "11424ed1eed6b119ff127ee7292ac4e47adb9f15"
+    },
+    {
+      "path": "src/renderer/stores/loop/academics.ts",
+      "sha": "fe7b2b6e583a01d89410a95921fb037a056e0c75"
+    },
+    {
+      "path": "src/renderer/stores/loop/cast.ts",
+      "sha": "0a84bd2171762d442f3bd10cb0e8d49f19249951"
+    },
+    {
+      "path": "src/renderer/stores/loop/casting.ts",
+      "sha": "98f24b20c8b6a3eb9420d0df8a1fcd4ceacc4abd"
+    },
+    {
+      "path": "src/renderer/stores/loop/classify.ts",
+      "sha": "9d883464f6395a78af359dd9ab422818798bca64"
+    },
+    {
+      "path": "src/renderer/stores/loop/crushes.ts",
+      "sha": "1b78bfd2feea31ce049c88edf3c8e1a040672131"
+    },
+    {
+      "path": "src/renderer/stores/loop/encode.ts",
+      "sha": "1e0217484bc9664dac32e0bbbaa60f9ecffdc01a"
+    },
+    {
+      "path": "src/renderer/stores/loop/endingArt.ts",
+      "sha": "c3ee610faf32b12e2a008427876436631d7cc3bc"
+    },
+    {
+      "path": "src/renderer/stores/loop/endingPosts.ts",
+      "sha": "d5799732f34b7bbb8693406a1093ab7ad7f8dc35"
+    },
+    {
+      "path": "src/renderer/stores/loop/exams.ts",
+      "sha": "35c25db8faac259fce8639d02115223103aee337"
+    },
+    {
+      "path": "src/renderer/stores/loop/farewells.ts",
+      "sha": "eedf9f8bd3b58d53e838087f4dc86a2bff7c0b34"
+    },
+    {
+      "path": "src/renderer/stores/loop/feed.ts",
+      "sha": "82e602a655adb2ec0231f6037eec10d59562d32d"
+    },
+    {
+      "path": "src/renderer/stores/loop/hangouts.ts",
+      "sha": "ae640ddcc1ce6fa3a8aac1b7f1e904d93ab458b3"
+    },
+    {
+      "path": "src/renderer/stores/loop/hooks.ts",
+      "sha": "ec4af0318424cb50ecbee8f2275709113ca1f534"
+    },
+    {
+      "path": "src/renderer/stores/loop/jobs.ts",
+      "sha": "dbff03c08d266600ec7dfbf5926868eedf0805bd"
+    },
+    {
+      "path": "src/renderer/stores/loop/ledgerView.ts",
+      "sha": "5de6f44b1eddd55c7c715ee2215bcfbb4d898617"
+    },
+    {
+      "path": "src/renderer/stores/loop/memoryEdit.ts",
+      "sha": "56ca5ee2313ce864f56b84d57860f3def4c1dcbe"
+    },
+    {
+      "path": "src/renderer/stores/loop/npc.ts",
+      "sha": "d04a6fd0d1e9f6395d7026c2be8f4ca834c5b147"
+    },
+    {
+      "path": "src/renderer/stores/loop/playback.ts",
+      "sha": "cb487c6bb167c6437489b9a4e3f10976c4683d8d"
+    },
+    {
+      "path": "src/renderer/stores/loop/profilePicture.ts",
+      "sha": "27c6193918d5d9d0a2e20845458745e3799b801b"
+    },
+    {
+      "path": "src/renderer/stores/loop/promptState.ts",
+      "sha": "07167ca7e08e77386c1979fdc8e31686e7612a40"
+    },
+    {
+      "path": "src/renderer/stores/loop/rumors.ts",
+      "sha": "ad5ac4c07dea61639d83e5997685a9c53f01d19d"
+    },
+    {
+      "path": "src/renderer/stores/loop/saves.ts",
+      "sha": "b03095017cfba26ed291938afcd26325ba1ad3ed"
+    },
+    {
+      "path": "src/renderer/stores/loop/springBreak.ts",
+      "sha": "742ea9f22149080441f6e4d061d75efb187fde65"
+    },
+    {
+      "path": "src/renderer/stores/loop/state.ts",
+      "sha": "6614392788ce57cfb58cd01fa279176756a46ae6"
+    },
+    {
+      "path": "src/renderer/stores/loop/statusSteps.ts",
+      "sha": "484eaf6c2e378e65e4db9d038a18bd68e4b70a75"
+    },
+    {
+      "path": "src/renderer/stores/loop/stream.ts",
+      "sha": "a2c9a18ed997fb5032270d10741a65fbd525056f"
+    },
+    {
+      "path": "src/renderer/stores/loop/thumbnail.ts",
+      "sha": "fc87e4ce083af33755879db6f32e0a3e58d7e9ba"
+    },
+    {
+      "path": "src/renderer/stores/loop/turn.ts",
+      "sha": "302bfac104e2b1e01b40638c1c6c7fbb67eeb360"
+    },
+    {
+      "path": "src/renderer/stores/newGame.ts",
+      "sha": "a3b1a1842ca698673365f5565d84b583f9730726"
+    },
+    {
+      "path": "src/renderer/stores/npcOverlay.ts",
+      "sha": "1bf021fcf3858d8cf356f0377003418d81371179"
+    },
+    {
+      "path": "src/renderer/stores/npcRunIns.ts",
+      "sha": "82dcec189368b436ee9e881c6fcf883583144b8f"
+    },
+    {
+      "path": "src/renderer/stores/photoStore.ts",
+      "sha": "99b4f5f50b45179d19d20fc75fbb8cce8b311ad4"
+    },
+    {
+      "path": "src/renderer/stores/pngCanvas.ts",
+      "sha": "7268c5cbba6363ed244f96ad1425cdc0656e0f63"
+    },
+    {
+      "path": "src/renderer/stores/renameMentions.ts",
+      "sha": "2786600b54fd33a6977ee6ff59ab5e81911b82ed"
+    },
+    {
+      "path": "src/renderer/stores/replyFloor.ts",
+      "sha": "6555317e20957a16644e6f17d5fbe04051ba9d79"
+    },
+    {
+      "path": "src/renderer/stores/reschedule.ts",
+      "sha": "143ed55da45f336a2430f06196dc4ed0d8663f84"
+    },
+    {
+      "path": "src/renderer/stores/retryGate.ts",
+      "sha": "6a5dd0fbef84536be3d6aed50b51d6983bbcda2e"
+    },
+    {
+      "path": "src/renderer/stores/roomPicture.ts",
+      "sha": "1cf375e343e898621dcb9f17528e0df299a3d6f7"
+    },
+    {
+      "path": "src/renderer/stores/saveStore.ts",
+      "sha": "d6b4de14645d44a33b6c16e09608051ef300a24b"
+    },
+    {
+      "path": "src/renderer/stores/sceneSanitizer.ts",
+      "sha": "1fb50c369c76918713993f55a469e9706be6b0a7"
+    },
+    {
+      "path": "src/renderer/stores/sceneStream.ts",
+      "sha": "5925e45bdc5166a8f7ab315a1dfa33e60678bf66"
+    },
+    {
+      "path": "src/renderer/stores/settingsStore.ts",
+      "sha": "ceab5ee772903ad92f736a0e4705ded7ba3d1f83"
+    },
+    {
+      "path": "src/renderer/stores/setupStore.ts",
+      "sha": "e8d787618f1a88d5a8040b0cce434bec9606f874"
+    },
+    {
+      "path": "src/renderer/stores/silentRetry.ts",
+      "sha": "aa94002238afd750a16b7f6c6eccacd4c3d1649e"
+    },
+    {
+      "path": "src/renderer/stores/sillyTavernExport.ts",
+      "sha": "3fdcd5fb891fa85bf3f3cad7e5b46c07ce118f87"
+    },
+    {
+      "path": "src/renderer/stores/slotActions.ts",
+      "sha": "90630079f9ed55777a67e6759fad6ea722c5be66"
+    },
+    {
+      "path": "src/renderer/stores/slotAskers.ts",
+      "sha": "b54403f52c3b3a2f0f816e3f44574e5dba663a61"
+    },
+    {
+      "path": "src/renderer/stores/slotCrossing.ts",
+      "sha": "200d98843ee1ceee30b976a8b5fbef8d7d92db65"
+    },
+    {
+      "path": "src/renderer/stores/soundscape.ts",
+      "sha": "bb3eaceb63742f736df63c02c70fe7ba0f6fd508"
+    },
+    {
+      "path": "src/renderer/stores/stageDisplay.ts",
+      "sha": "a4be7dd2444265df88f8c26ce09853300d08cac1"
+    },
+    {
+      "path": "src/renderer/stores/stageStep.ts",
+      "sha": "49e54c5e5fefa1dda438910139542ca73101012b"
+    },
+    {
+      "path": "src/renderer/stores/textingLoop.ts",
+      "sha": "4ffdcb7d4c3f4b5bfc00e096c09f926d518b3b07"
+    },
+    {
+      "path": "src/renderer/stores/textingPace.ts",
+      "sha": "14f2b42e0d00673c15d46dc5cc24d98af6fccd04"
+    },
+    {
+      "path": "src/renderer/stores/textingStream.ts",
+      "sha": "892cdd62bd19a743d52b350af1b846c09e25f3ae"
+    },
+    {
+      "path": "src/renderer/stores/timetable.ts",
+      "sha": "677eee087b4276e77e514bd000e10833ebb042f7"
+    },
+    {
+      "path": "src/renderer/stores/uiStore.ts",
+      "sha": "7714a7813fb667d596070b863aef4336dd9c055e"
+    },
+    {
+      "path": "src/renderer/stores/updateStore.ts",
+      "sha": "68c65548bd719965ea488c1c25bb6fc0bb2f009e"
+    },
+    {
+      "path": "src/renderer/stores/whereabouts.ts",
+      "sha": "adbe00daea1984dce3dcdad3345f9351c097fa6e"
+    },
+    {
+      "path": "src/shared/academics.ts",
+      "sha": "c612372cbb9343214cf67915e27800b0835db037"
+    },
+    {
+      "path": "src/shared/appId.ts",
+      "sha": "c4c6f5826216a7f703bd3d06199231d2074854b7"
+    },
+    {
+      "path": "src/shared/assetRules.ts",
+      "sha": "9e7b2fc026fb1245711d46268c321ca42c18dba2"
+    },
+    {
+      "path": "src/shared/audio.ts",
+      "sha": "ff8451e9c3686f826f351a1e717652ac38d746b3"
+    },
+    {
+      "path": "src/shared/backgroundSets.ts",
+      "sha": "227172076a46bfa93bb709e2bbe2e8e07be6f8bc"
+    },
+    {
+      "path": "src/shared/backup.ts",
+      "sha": "21b335b298a164ff3b9b0458305e89bf20a40964"
+    },
+    {
+      "path": "src/shared/base64.ts",
+      "sha": "e3cb45c5bb5d33c20515b2032d8fbaa1c50cacce"
+    },
+    {
+      "path": "src/shared/characterFiles.ts",
+      "sha": "160253fcdcbc7303752d18a61d57b4efc81d1e98"
+    },
+    {
+      "path": "src/shared/characterRules.ts",
+      "sha": "92e172208216851d50ca27c364e168e86185e9e3"
+    },
+    {
+      "path": "src/shared/characterTransfer.ts",
+      "sha": "e0f5c4b80bd4c35bc39485ff0851c8629ea5ba90"
+    },
+    {
+      "path": "src/shared/classes.ts",
+      "sha": "5c0941f7e8fc6ff10ca4e166767e9753b552a226"
+    },
+    {
+      "path": "src/shared/classifier.ts",
+      "sha": "19b8d38b555f5b5b9dfa1cd16b2dd381a7d0cf31"
+    },
+    {
+      "path": "src/shared/coverCrop.ts",
+      "sha": "3861dbc01b9483dd936ad586d3f75c2dcb21dcdd"
+    },
+    {
+      "path": "src/shared/customBackgrounds.ts",
+      "sha": "2dc15d7a80f2d5061bcf02f5b7d18f4eeb32c2f8"
+    },
+    {
+      "path": "src/shared/dating.ts",
+      "sha": "2c63302f398d7e95467a6bcc1e054d460efe39e5"
+    },
+    {
+      "path": "src/shared/dorms.ts",
+      "sha": "9fda369429a547217db2fa703279e1d1dd815ddf"
+    },
+    {
+      "path": "src/shared/emotions.ts",
+      "sha": "311f73fe4309b5dbdb8c625faa5057db8b119839"
+    },
+    {
+      "path": "src/shared/endingPicture.ts",
+      "sha": "71812ecd9f74277056ef24d5b701dbc7ad38bb46"
+    },
+    {
+      "path": "src/shared/endpoint.ts",
+      "sha": "e305ae7840e040913d32ae76739c6318dacf9aed"
+    },
+    {
+      "path": "src/shared/errors.ts",
+      "sha": "eab125c668be3b62db3840f218b82a35f4dd2bfe"
+    },
+    {
+      "path": "src/shared/feed.ts",
+      "sha": "0253bd0e02aba87f35b3d5b89c29b8390dc5d0ff"
+    },
+    {
+      "path": "src/shared/gameOver.ts",
+      "sha": "a930c1606a59f94c0f9886e9ed9930d90a9406f2"
+    },
+    {
+      "path": "src/shared/gpuRules.ts",
+      "sha": "05358a8a39f2f3ef88aa2c43b583b08ffc991d91"
+    },
+    {
+      "path": "src/shared/grabBag.ts",
+      "sha": "4a8dfa0658e875f4b80abd797907b5b1d4b49a8d"
+    },
+    {
+      "path": "src/shared/hash.ts",
+      "sha": "d7189d13e40dee19467d860c4977e30b8caaedd7"
+    },
+    {
+      "path": "src/shared/imageBytes.ts",
+      "sha": "8f8691c20f7fc5b914b4e9de32a95c8a7738a576"
+    },
+    {
+      "path": "src/shared/imagePrompt.ts",
+      "sha": "da2f1265af1fbd83dda83c22e14a035edb903dd8"
+    },
+    {
+      "path": "src/shared/jobQueue.ts",
+      "sha": "8580e7e60abf12231d3cc912671e552dd8d80370"
+    },
+    {
+      "path": "src/shared/jobs.ts",
+      "sha": "72a7134bc060435b858b41d4478e3f52949b9742"
+    },
+    {
+      "path": "src/shared/jsonValidate.ts",
+      "sha": "c70e78d845c507e2c06ab18efb9c516caef32fc2"
+    },
+    {
+      "path": "src/shared/lineup.ts",
+      "sha": "323e4ebaa0fef71f1411d003e34b8e7a9c8b0f70"
+    },
+    {
+      "path": "src/shared/llm/adapter.ts",
+      "sha": "449390d064cd446c12edc0b5dfbad09df50a7327"
+    },
+    {
+      "path": "src/shared/llm/cloudClassifier.ts",
+      "sha": "98c256e0902ba131bf2b89ad87a7d686e5c2ba98"
+    },
+    {
+      "path": "src/shared/llm/cloudImage.ts",
+      "sha": "5c73e3cf9de9e31c5a4561ab39385de22ec16245"
+    },
+    {
+      "path": "src/shared/llm/cloudLlm.ts",
+      "sha": "f6085bf518511d8e8973d01cbf4b7ccdd89cf142"
+    },
+    {
+      "path": "src/shared/llm/endpointProbe.ts",
+      "sha": "d345a97e58cf54dd99d8937ab1ba212ad05810df"
+    },
+    {
+      "path": "src/shared/llm/geminiAdapter.ts",
+      "sha": "ebba5e5ec22f1b56e898fbd20c7fcb1344ae82e4"
+    },
+    {
+      "path": "src/shared/llm/httpStatus.ts",
+      "sha": "525f6591c4661a20d443cdca87baf91d1c0162ed"
+    },
+    {
+      "path": "src/shared/llm/imagesAdapter.ts",
+      "sha": "4e8a5649736a573e4ff0f2a11b3c1d22349ce082"
+    },
+    {
+      "path": "src/shared/llm/index.ts",
+      "sha": "56b70481b66cf5c61c82d799517b1fafdbfd50c5"
+    },
+    {
+      "path": "src/shared/llm/openaiAdapter.ts",
+      "sha": "b83dc1568b14f7dcd76e1816196d856f23f1f517"
+    },
+    {
+      "path": "src/shared/llm/settingsPort.ts",
+      "sha": "e7e1f9412c84cc32cf981601780ee5804ad9a083"
+    },
+    {
+      "path": "src/shared/llm/tokenPort.ts",
+      "sha": "955462b51d27ff607e9c533c6f6662bb9daa9b87"
+    },
+    {
+      "path": "src/shared/llm/transport.ts",
+      "sha": "be869665451287a97dab84f0ddbce80cbc595bac"
+    },
+    {
+      "path": "src/shared/locations.ts",
+      "sha": "57b03cb4eafb5691518a56c5dfb905bca1034f0c"
+    },
+    {
+      "path": "src/shared/logRules.ts",
+      "sha": "98e4a4cdcce72df15075bb934f5c6478efac693b"
+    },
+    {
+      "path": "src/shared/money.ts",
+      "sha": "1c9c0b236da8018cfbc5855af7544947906a4713"
+    },
+    {
+      "path": "src/shared/npcRelationships.ts",
+      "sha": "511064d40e7200e75055fc96a6753bdfcffe5c9c"
+    },
+    {
+      "path": "src/shared/outfits.ts",
+      "sha": "dbf574b176ec1e0056e8da8c581c59170fd0e145"
+    },
+    {
+      "path": "src/shared/photos.ts",
+      "sha": "340214d4ef8866e04ea4e8657fcdfc583217f64b"
+    },
+    {
+      "path": "src/shared/playerStats.ts",
+      "sha": "cd06d045d2ada9c338f011e2e453e9d2de2dd7de"
+    },
+    {
+      "path": "src/shared/pngText.ts",
+      "sha": "404cb365624d66d8523455863341a22453799505"
+    },
+    {
+      "path": "src/shared/positions.ts",
+      "sha": "120059916af4395dd4c38b4f2cf6ec6cab358629"
+    },
+    {
+      "path": "src/shared/profileCrop.ts",
+      "sha": "b030c0cbe68fccbcb2c87c40577ed896361f635a"
+    },
+    {
+      "path": "src/shared/profilePicture.ts",
+      "sha": "5590dc62e95e7bcd8248c9e35a626c22700065a0"
+    },
+    {
+      "path": "src/shared/promptKinds.ts",
+      "sha": "d28003feb3d676aa75f46823500620bfc35efd48"
+    },
+    {
+      "path": "src/shared/providers.ts",
+      "sha": "191b7a9b24e3dd489d953a78f214d44a421449cf"
+    },
+    {
+      "path": "src/shared/readerVoice.ts",
+      "sha": "01d155b72773a89afdfec80e2a4d06d13729621d"
+    },
+    {
+      "path": "src/shared/regenTags.ts",
+      "sha": "86f1ff6f3d30ed4fe4d6b76dff00af551073b14e"
+    },
+    {
+      "path": "src/shared/relationship.ts",
+      "sha": "bce8c0a74ff2ace575f04cbcb53beec6fcb8197d"
+    },
+    {
+      "path": "src/shared/retry.ts",
+      "sha": "00bcb3bc3331f84275644cc23b664d6fb1110e9d"
+    },
+    {
+      "path": "src/shared/room.ts",
+      "sha": "d17e87c739b0c707dd603e369c0da1d346c3a6cf"
+    },
+    {
+      "path": "src/shared/roomPicture.ts",
+      "sha": "b663d459c15ff5c12347b06a8b83c2b8c044533e"
+    },
+    {
+      "path": "src/shared/rumors.ts",
+      "sha": "c37c5d0501687275c7216f9294fb22d9ad1a1646"
+    },
+    {
+      "path": "src/shared/saveRules.ts",
+      "sha": "f99e33cf147b9b7ba22c175c2b705cd65f399f7e"
+    },
+    {
+      "path": "src/shared/sceneActions.ts",
+      "sha": "89e5bd1814fa763947c0dc7977cfa605914c51c0"
+    },
+    {
+      "path": "src/shared/sentences.ts",
+      "sha": "6d7ad7c5ad12cdb69984954bf05d399e37293a8b"
+    },
+    {
+      "path": "src/shared/settingsRules.ts",
+      "sha": "1ec951f93f30caf8372c9df80ebdeb00fd077279"
+    },
+    {
+      "path": "src/shared/setupManifest.ts",
+      "sha": "119d4e238a022bf2a569beec2ada43674a3388a6"
+    },
+    {
+      "path": "src/shared/sfw.ts",
+      "sha": "28c996a79b4947f0afedbacab8a7884f46e8a845"
+    },
+    {
+      "path": "src/shared/shop.ts",
+      "sha": "7cffcebf5839aebf7338cc36da295a0e252191cd"
+    },
+    {
+      "path": "src/shared/shuffle.ts",
+      "sha": "2a74f5449704398569d1b84a492fb26af0075e96"
+    },
+    {
+      "path": "src/shared/sillyTavern.ts",
+      "sha": "94ec26b7d661d7d03f2bbb71df36a8cda4a543f8"
+    },
+    {
+      "path": "src/shared/spriteScale.ts",
+      "sha": "f2317895b7ad9726cf932d2bc566426fe5237fa1"
+    },
+    {
+      "path": "src/shared/stageThumb.ts",
+      "sha": "57484f608419334597d39483d38f2f7924f2b28d"
+    },
+    {
+      "path": "src/shared/stageZoom.ts",
+      "sha": "2e73aeaf7cee566d6746fabbc71db5db16fb3f96"
+    },
+    {
+      "path": "src/shared/statusMark.ts",
+      "sha": "e81b6f0e9d1853bad1f099e7afe2fd30570d285a"
+    },
+    {
+      "path": "src/shared/supporters.ts",
+      "sha": "238c35b21941cad4d55c6defb745351f3bac8a4e"
+    },
+    {
+      "path": "src/shared/tags.ts",
+      "sha": "8f7b23f7ea8f93800829e23df02ed02a29740ccf"
+    },
+    {
+      "path": "src/shared/tallies.ts",
+      "sha": "d325646e34e95205c573f249b63f0540ee14c5f5"
+    },
+    {
+      "path": "src/shared/traits.ts",
+      "sha": "39c3e967db9dede954c79d6af5a94ee959b31f95"
+    },
+    {
+      "path": "src/shared/types.ts",
+      "sha": "734c54ea03e925d3d910454cfdb01a5edd69efd0"
+    },
+    {
+      "path": "src/shared/updateSource.ts",
+      "sha": "3088c2df5dae4e48c4584ff9610e47644c73f455"
+    },
+    {
+      "path": "src/shared/uuid.ts",
+      "sha": "749ceedc64f956f2406b008829262a4662f6f86d"
+    },
+    {
+      "path": "src/shared/weather.ts",
+      "sha": "f09e803bb74c4fd50936d564a55cd536930dfe9b"
+    },
+    {
+      "path": "src/shared/zipRules.ts",
+      "sha": "d1ea3ee4f5211f2fcc21ee9d9687b4afa86e6551"
+    },
+    {
+      "path": "tsconfig.test.json",
+      "sha": "d66896dff666580e65a3b697347ccf31e8d67c09"
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha": "171240babd74e06e96a94e774401a4c275163706"
+    }
+  ]
+}

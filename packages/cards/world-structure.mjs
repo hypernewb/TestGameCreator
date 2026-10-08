@@ -45,7 +45,7 @@ JSON shape:
 // Proposal -> structure-only spec. notes: what code changed or invented, for the wizard to show.
 export function structureFromProposal(p){
  const notes=[],taken=new Set(['player']),byName=new Map(),key=s=>String(s||'').trim().toLowerCase();
- const places=list(p.places).slice(0,8).map(x=>({id:idFor(x.name,taken),name:String(x.name).trim(),kind:PLACE_KINDS.includes(x.kind)?x.kind:'public',about:x.about||''}));assert(places.length>=2,'needs at least two places');
+ const places=list(p.places).slice(0,8).map((x,i)=>{const nm=String(x.name||'').trim()||`Place ${i+1}`;if(!String(x.name||'').trim())notes.push(`place ${i+1} had no name: called it "${nm}"`);return {id:idFor(nm,taken),name:nm,kind:PLACE_KINDS.includes(x.kind)?x.kind:'public',about:x.about||''};});assert(places.length>=2,'needs at least two places');
  places.forEach(x=>byName.set(key(x.name),x));const home=places[0];
  const place=(n,fallback)=>{const x=byName.get(key(n));if(n&&!x)notes.push(`unknown place "${n}": used ${fallback.name}`);return x||fallback;};
  const shops=places.filter(x=>x.kind==='shop'||x.kind==='bar'),shop=shops[0]||places.find(x=>x!==home)||home;
@@ -53,14 +53,14 @@ export function structureFromProposal(p){
  list(p.items).slice(0,12).forEach(x=>x.name&&addItem(x));
  const item=n=>!n?undefined:(itemBy.get(key(n))||addItem({name:n},`"${n}" was not in the shop list: added at ${shop.name}`)).id;
  const hs=list(p.heroines).slice(0,6);assert(hs.length,'needs at least one love interest');
- const heroines=hs.map(h=>{const id=idFor(h.name,taken);assert(Number.isInteger(h.age)&&h.age>=18,`${h.name||id}: every character is an adult with an integer age of 18 or more`);
-  assert(TEMPERAMENTS[h.temperament],`${h.name}: temperament must be one of ${Object.keys(TEMPERAMENTS)}`);assert(PACES[h.pace],`${h.name}: pace must be one of ${Object.keys(PACES)}`);assert(String(h.topic||'').trim(),`${h.name||'A love interest'}: needs a topic (or remove this blank love interest)`);
+ const heroines=hs.map((h,i)=>{const unnamed=!String(h.name||'').trim(),nm=unnamed?`Love interest ${i+1}`:String(h.name).trim(),who=unnamed?`${nm} (unnamed)`:nm,id=idFor(nm,taken);if(unnamed)notes.push(`love interest ${i+1} had no name: called her "${nm}"`);assert(Number.isInteger(h.age)&&h.age>=18,`${who}: every character is an adult with an integer age of 18 or more`);
+  assert(TEMPERAMENTS[h.temperament],`${who}: temperament must be one of ${Object.keys(TEMPERAMENTS)}`);assert(PACES[h.pace],`${who}: pace must be one of ${Object.keys(PACES)}`);assert(String(h.topic||'').trim(),`${who}: needs a topic (or remove this blank love interest)`);
   const hh=place(h.home,home),hang=list(h.hangouts).map(n=>place(n,places[1]||home)),stops=[hh,hang[0]||places[1]||hh,hang[1]||hang[0]||hh];
-  byName.set(key(h.name),{heroine:id});
+  byName.set(key(nm),{heroine:id});
   return {id,temperament:h.temperament,pace:h.pace,topic:String(h.topic).trim(),...(h.looks?{looks:h.looks}:{}),...(h.quirk?{quirk:h.quirk}:{}),
    gifts:{...(h.loved?{loved:item(h.loved)}:{}),...(h.liked?{liked:[item(h.liked)]}:{}),...(h.disliked?{disliked:item(h.disliked)}:{})},...(h.buy?{buy:item(h.buy)}:{}),
    wants:list(h.wants).filter(w=>STATS.includes(w.stat)).slice(0,2).map(w=>({id:w.stat,stat:w.stat,min:WANT_MIN[w.level]||WANT_MIN.some})),activities:[],
-   actor:{name:String(h.name).trim(),...(h.portrait?{portrait:h.portrait}:{}),age:h.age,pronouns:'she/her',location:hh.id,likes:list(h.likes).slice(0,4),dislikes:list(h.dislikes).slice(0,3)},_stops:stops.map(x=>x.id)};});
+   actor:{name:nm,...(h.portrait?{portrait:h.portrait}:{}),age:h.age,pronouns:'she/her',location:hh.id,likes:list(h.likes).slice(0,4),dislikes:list(h.dislikes).slice(0,3)},_stops:stops.map(x=>x.id)};});
  // The opening scene needs someone in it: if no love interest starts at the player's home, the game opens where the first one spends her morning.
  let start=home;if(!heroines.some(h=>h._stops[0]===home.id)){const h=heroines[0],i=Math.max(0,h._stops.findIndex(s=>s!==h.actor.location));h._stops=[...h._stops.slice(i),...h._stops.slice(0,i)];h.actor.location=h._stops[0];start=places.find(x=>x.id===h._stops[0]);notes.push(`nobody starts at ${home.name}: the game opens at ${start.name}, where ${h.actor.name} is`);}
  const hero=n=>{const x=byName.get(key(n));return x?.heroine;};

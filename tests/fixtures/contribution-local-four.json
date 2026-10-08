@@ -1,0 +1,92 @@
+{
+  "provenance": "Local model run captured 2026-10-07; rejected drafts and repair strings, not accepted conversations",
+  "pack": {
+    "schemaVersion": 1,
+    "id": "rei-four-turn-probe",
+    "version": "0.1.0",
+    "title": "Rei chat probe",
+    "playerId": "player",
+    "modules": {},
+    "narratorPersona": "lean",
+    "gameProject": {
+      "premise": "An off-duty conversation between acquainted adults, Haru (21) and Rei (27), without an established romantic relationship.",
+      "setting": "A quiet campus common room.",
+      "conversationStyle": "continuous",
+      "ai": {
+        "intent": "",
+        "scene": "",
+        "daypart": ""
+      }
+    },
+    "locations": [
+      {
+        "id": "common-room",
+        "name": "Campus Common Room",
+        "description": "A quiet campus common room.",
+        "exits": []
+      }
+    ],
+    "actors": [
+      {
+        "id": "player",
+        "name": "Haru Mizuno",
+        "age": 21,
+        "location": "common-room"
+      },
+      {
+        "id": "dilek-sahin",
+        "name": "Rei Kurosawa",
+        "age": 27,
+        "pronouns": "she/her",
+        "description": "Rei is 27, a literature lecturer with cropped dark hair and a well-kept dark coat. Outside work she enjoys black coffee, old films and quiet evenings. She is considering a small film night with friends and has not chosen what to show yet.",
+        "personality": "A reserved adult tsundere with genuine warmth. Her dry jokes tend to be about herself or the situation. Takes people at their word and can answer kindness plainly. Warmth and embarrassment are possibilities, not obligations.",
+        "voice": "Everyday complete sentences, dry humour and honest replies. Her wording can be relaxed even when she is reserved. She follows the other person's point rather than testing them. A joke can give way to a direct answer; interest, hesitation and refusal all fit her.",
+        "goal": "Choose a film she would enjoy showing to a few friends and decide whether she wants to organise a small screening.",
+        "likes": [
+          "coffee and old films",
+          "honest playful company"
+        ],
+        "dislikes": [
+          "overly sweet coffee",
+          "dodging a sincere answer"
+        ],
+        "examples": [
+          "I keep buying the dark roast and then pretending I am open to suggestions.",
+          "The ending annoyed me. I still stayed through the credits.",
+          "Thanks. I was pleased with how it turned out.",
+          "I would rather head home tonight. Another time would be nice."
+        ],
+        "neverSays": [
+          "scansion",
+          "syllabus",
+          "keep up with the argument",
+          "protocol",
+          "as your therapist"
+        ],
+        "location": "common-room"
+      }
+    ]
+  },
+  "turns": [
+    {
+      "input": "I tease Rei that her coffee rules could fill a whole menu.",
+      "raw": "{\n  \"lines\": [\n    {\n      \"speaker\": \"\",\n      \"text\": \"You lean back in your chair with a playful grin, letting the jab hang in the air. \\\"Dude, I swear you could write a whole barista's manual based on those preferences alone.\\\" You shake your head fondly.\",\n      \"type\": \"playerSpeech\",\n      \"source\": \"I tease Rei that her coffee rules could fill a whole menu.\"\n    },\n    {\n      \"speaker\": \"dilek-sahin\",\n      \"text\": \"Rei laughs, shaking her head. \\\"Please, don't even get me started on the nuances of acidity and roast profiles.\\\" She takes another sip, savoring the bitter notes. \\\"It's not just about taste though,\\\" she admits with a small smile. \\\"There's something comforting in having a ritual to start the day.\"\n    },\n    {\n      \"speaker\": \"\",\n      \"text\": \"Her gaze meets yours briefly before flickering away, cheeks flushing slightly at her own candor. The moment passes quickly, replaced by another dry joke about her film choices.\",\n      \"type\": \"narration\"\n    }\n  ],\n  \"memories\": [\n    {\n      \"charKey\": \"dilek-sahin\",\n      \"type\": \"liked\",\n      \"desc\": \"Appreciates the player's playful teasing and easy banter.\"\n    }\n  ],\n  \"facts\": [\n    {\n      \"subject\": \"dilek-sahin\",\n      \"text\": \"Blushes easily when complimented or caught off guard.\",\n      \"quote\": \"Her gaze meets yours briefly before flickering away, cheeks flushing slightly.\"\n    }\n  ]\n}",
+      "repairRaw": "{\"lines\":[{\"after\":0,\"type\":\"playerAction\",\"source\":\"exact substring of submitted\",\"text\":\"You tease Rei that her coffee rules could fill a whole menu.\",\"pending\":false}]}"
+    },
+    {
+      "input": "I tease Rei that even the biscuits probably need her approval, then after her response I admit that I stayed for her company rather than the coffee.",
+      "raw": "{\n  \"lines\": [\n    {\n      \"speaker\": \"\",\n      \"text\": \"Haru's teasing smile falters slightly as she considers the implication. Her cheeks flush a delicate pink.\",\n      \"type\": \"narration\"\n    },\n    {\n      \"speaker\": \"dilek-sahin\",\n      \"text\": \"The biscuits do require my approval,\"\n      } ],\n  \"summary\": \"Haru admits her true reason for staying - Rei's company rather than the coffee. The admission catches them both off guard, leading to an awkward but sweet moment.\",\n  \"memories\": [\n    {\n      \"charKey\": \"dilek-sahin\",\n      \"type\": \"liked\",\n      \"desc\": \"Haru's honesty and vulnerability endear her further.\"\n    }\n  ],\n  \"facts\": [\n    {\n      \"subject\": \"common-room\",\n      \"text\": \"A few stray crumbs litter the table where they've been sitting.\",\n      \"quote\": \"\"\n    },\n    {\n      \"subject\": \"dilek-sahin\",\n      \"text\": \"Her cheeks flush a delicate pink at Haru's admission.\",\n      \"quote\": \"\"\n    }\n  ]\n}",
+      "repairRaw": "{\"lines\":[{\"after\":0,\"type\":\"playerAction\",\"source\":\"exact substring of submitted\",\"text\":\"You tease Rei that even the biscuits probably need her approval, then after her response you admit that you stayed for her company rather than the coffee.\",\"pending\":false}]}"
+    },
+    {
+      "input": "I lightly flirt with Rei, telling her that I like her smile more than any perfect cup of coffee.",
+      "raw": "{\n  \"lines\": [\n    {\n      \"speaker\": \"\",\n      \"text\": \"Haru's playful tease hangs in the air, a light breeze carrying the scent of fresh coffee and old books. Rei blinks in surprise, caught off guard by such an unexpected compliment.\",\n      \"type\": \"narration\"\n    },\n    {\n      \"speaker\": \"dilek-sahin\",\n      \"text\": \"Her cheeks flush a delicate pink as she looks away, unable to meet Haru's gaze. \\\"You're impossible,\\\" she murmurs, but there's no real bite in her tone.\"\n    },\n    {\n      \"speaker\": \"\",\n      \"text\": \"Haru grins triumphantly, reveling in the effect he has on her. He leans back against the table, crossing his arms over his chest as he watches Rei with an amused glint in his eye.\",\n      \"type\": \"narration\"\n    },\n    {\n      \"speaker\": \"dilek-sahin\",\n      \"text\": \"\\\"And yet here we are,\\\" she says softly, shaking her head. \\\"You're quite a character, aren't you?\\\" A small smile tugs at the corners of her mouth as she meets his gaze again.\"\n    },\n    {\n      \"speaker\": \"\",\n      \"text\": \"Haru's heart skips a beat at the sight of her smiling at him like that. He feels a strange warmth spreading through his chest, a feeling he hasn't experienced in years.\",\n      \"type\": \"narration\"\n    },\n    {\n      \"speaker\": \"dilek-sahin\",\n      \"text\": \"\\\"So what's it going to be then? Film night or home early?\\\" She raises an eyebrow, waiting for his decision with a hint of anticipation in her eyes.\"\n    }\n  ],\n  \"summary\": \"Haru teases Rei playfully about her coffee preferences and biscuits. Flustered but charmed, Rei responds with a mix of bashfulness and amusement as Haru's flirtatious words take effect.\",\n  \"memories\": [\n    {\n      \"charKey\": \"dilek-sahin\",\n      \"type\": \"liked\",\n      \"desc\": \"Enjoys being teased by Haru\"\n    }\n  ],\n  \"facts\": []\n}",
+      "repairRaw": "{\"lines\":[{\"after\":1,\"type\":\"playerAction\",\"source\":\"exact substring of submitted\",\"text\":\"You lightly flirt with Rei, telling her that you like her smile more than any perfect cup of coffee.\",\"pending\":false}]}"
+    },
+    {
+      "input": "I flirt with Rei, telling her I would enjoy a relaxed film evening with her, with no pressure to decide tonight.",
+      "raw": "{\"lines\":[{\"speaker\":\"\",\"text\":\"I would enjoy a relaxed film evening with you, no pressure to decide tonight.\"},{\"speaker\":\"dilek-sahin\",\"text\":\"A smile tugs at her lips as she takes in your suggestion. \\\"A film evening? With me? I'm not sure that's entirely necessary.\\\" Despite the teasing tone, there's a hint of genuine interest beneath her words. She crosses her arms over her chest, leaning back slightly against the couch armrest.\"},{\"speaker\":\"\",\"text\":\"The air between you crackles with unspoken possibilities as she considers your proposal.\"}]}",
+      "repairRaw": "{\"lines\":[{\"after\":-1,\"type\":\"playerAction\",\"source\":\"exact substring of submitted\",\"text\":\"I flirt with Rei, telling her I would enjoy a relaxed film evening with her, with no pressure to decide tonight.\",\"pending\":false}]}"
+    }
+  ]
+}

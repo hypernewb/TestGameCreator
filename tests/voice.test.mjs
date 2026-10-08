@@ -131,20 +131,5 @@ test('minji voice examples are distinct',()=>{
   store.close();
 });
 
-test('a legacy actor with no voice/fingerprint keeps the old tag text',()=>{
-  const persona={...trio,actors:[...trio.actors,{id:'legacy',name:'Legacy',personality:'Gruff and terse.',voice:undefined,fingerprint:undefined}]};
-  assert.match(beatDirection({stagedCast:['legacy'],scenePhase:'opening',playerAction:'Hi',sceneHistory:[]},persona,'s1'),/^Legacy \(Gruff and terse\.\):/,'personality is the tag');
-  // Legacy packs (neutral, badge-bond, threshold) keep that same personality line in `style` and have no voice/fingerprint.
-  const neutral=JSON.parse(readFileSync(new URL('../packs/neutral.json',import.meta.url)));
-  const ada=neutral.actors.find(a=>a.id==='ada');
-  assert.equal(ada.voice,undefined);assert.equal(ada.fingerprint,undefined);
-  assert.match(beatDirection({stagedCast:['ada'],scenePhase:'continuation',playerAction:'Hand me the spanner.',sceneHistory:[]},neutral,'s1'),/^Ada \(Measured and practical\)/,'legacy style line still tags the speech');
-});
-
-test('a voice/fingerprint replaces the legacy tag and clothing never reaches it',()=>{
-  for(const a of trio.actors.filter(x=>x.fingerprint)){
-    const dir=beatDirection({stagedCast:[a.id],scenePhase:'continuation',playerAction:'Nice frames.',sceneHistory:[]},trio,'s1');
-    assert.match(dir,new RegExp(`^${a.name.split(' ')[0]} \\(${a.fingerprint.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}`),`${a.id}: fingerprint is the tag`);
-    assert.ok(!dir.includes(a.style),`${a.id}: clothing style never in the speech tag`);
-  }
-});
+test('ordinary direction stays responsive while legacy personality remains in the cast profile',()=>{const p={...trio,actors:[...trio.actors,{id:'legacy',name:'Legacy',personality:'Gruff and terse.',voice:undefined,fingerprint:undefined}]},c={stagedCast:['legacy'],scenePhase:'opening',playerAction:'Hi',sceneHistory:[]};assert.match(beatDirection(c,p,'s1'),/^Legacy: respond to what the player means/);assert.match(scenePromptMessages(c,p)[1].content,/Personality: Gruff and terse/);assert.equal(beatDirection(c,p,'s1'),beatDirection(c,p,'s2'));const ada=legacy.actors.find(a=>a.id==='ada');assert.equal(ada.voice,undefined);assert.equal(ada.fingerprint,undefined);assert.match(beatDirection({stagedCast:['ada'],scenePhase:'continuation',playerAction:'Hand me the spanner.',sceneHistory:[]},legacy,'s1'),/^Ada: respond to what the player means/);});
+test('authored fingerprints reach ordinary cast profiles without clothing in beat direction',()=>{for(const a of trio.actors.filter(x=>x.fingerprint)){const c={stagedCast:[a.id],scenePhase:'continuation',playerAction:'Nice frames.',sceneHistory:[]},d=beatDirection(c,trio,'s1');assert.ok(d.startsWith(a.name+':'));assert.ok(!d.includes(a.style));assert.ok(scenePromptMessages(c,trio)[1].content.includes(a.fingerprint));}});

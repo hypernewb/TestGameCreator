@@ -5,6 +5,8 @@ export const CHARACTER_FILE='character.json',STYLE_FILE='_style.json',INDEX_FILE
 export const EMOTIONS=['neutral','smile','concerned','frustrated'],ROOM_VARIANTS=['day','night'];
 export const expressionRel=emotion=>`expressions/${emotion}.png`,outfitRel=(set,emotion)=>`outfits/${set}/${emotion}.png`,roomRel=v=>`room_${v}.png`,profileRel=()=>'expressions/profile.png';
 export const spriteRel=(set,emotion)=>!set||set==='default'?expressionRel(emotion):outfitRel(set,emotion);
+// First matching outfit rule wins; an empty condition is any value. Falls back to the default outfit, so a rule never points at a missing set.
+export const wornSetOf=(char,ctx={})=>(char?.outfitRules||[]).find(r=>(r.set==='default'||r.set in (char.outfitSets||{}))&&['daypart','location','stage'].every(k=>!r[k]||r[k]===ctx[k])&&(!r.undressed||r.undressed===(ctx.undressed?'yes':'no')))?.set||'default';
 export const takeRel=(rel,n=1)=>n>1?rel.replace(/\.png$/,`_v${n}.png`):rel,sceneRel=(scene,n=1)=>takeRel(`scenes/${scene}.png`,n);
 export const renderRel=rel=>`renders/${rel.replace(/\.png$/,'').replaceAll('/','_')}.json`;
 const SAFE_ID=/^[a-z0-9][a-z0-9_-]*$/;

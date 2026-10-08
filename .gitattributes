@@ -78,3 +78,7 @@
 /public/assets/characters/yuna/expressions/surprised.png -text
 /public/assets/characters/yuna/scenes/missionary.png -text
 /docs/research/asset-manifest-76-T-085.csv -text
+
+# Frozen regression inputs and pinned comparison evidence must retain their checksummed bytes.
+/tests/fixtures/current-cast/** -text
+/artifacts/venus-framework-comparison/** -text

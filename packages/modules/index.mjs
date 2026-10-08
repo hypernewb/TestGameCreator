@@ -88,4 +88,5 @@ const descriptions={
   'social.touch-ladder':['Intimate action ladder','Maps a typed physical action to the nearest ladder step and has the engine, not the model, accept, hesitate or refuse it from trust, sobriety and privacy — refusals stay in character with a vague hint.'],
   'social.anniversary':['Anniversaries and shared history','Records key shared moments, marks every 28 days from the dating start, and offers up to two of them to the narrator when the day or the place fits.']
 };
-export const moduleCatalog=Object.fromEntries(Object.values(registry).map(m=>[m.id,{id:m.id,version:m.version,requires:m.requires||[],title:descriptions[m.id][0],description:descriptions[m.id][1],group:m.id.split('.')[0]}]));
+const CAMPUS=new Set(['world.academics','world.jobs']);
+export const moduleCatalog=Object.fromEntries(Object.values(registry).map(m=>[m.id,{id:m.id,version:m.version,requires:m.requires||[],title:descriptions[m.id][0],description:descriptions[m.id][1],group:m.id.split('.')[0],...(CAMPUS.has(m.id)?{campus:true}:{})}]));

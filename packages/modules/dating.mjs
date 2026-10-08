@@ -2,6 +2,7 @@ import {assert,safeKey} from '../core/engine.mjs';
 import {bondKey} from './bonds.mjs';
 import {statValue} from './stats.mjs';
 import {changeTrust} from './romance-stats.mjs';
+import {interestGate,gateText} from '../../public/stat-gates.mjs';
 
 const modulePath=['modules','social.dating'];
 const clamp=value=>Math.max(-100,Math.min(100,value));
@@ -70,6 +71,7 @@ export function datingEvaluation(state,pack,character){
  const exclusive=Object.entries(state.modules['social.dating'].characters).find(([id,x])=>id!==character&&x.phase==='exclusive'&&x.agreement==='monogamous');if(exclusive&&!profile.allowWhileExclusive&&!state.modules['social.secrecy'])reasons.push(`a monogamous agreement with ${exclusive[0]} blocks another relationship`);
  if(runtime.cooldownUntil>state.tick&&!(pack.relationshipStageSettings&&runtime.phase==='broken'))reasons.push(`cooldown until tick ${runtime.cooldownUntil}`);
  if(pack.routeRepair&&(runtime.phase==='rejected'&&waived?.repairedPhase!==runtime.phase||waived?.thread))reasons.push('Route repair conversation required');
+ for(const m of interestGate(state,pack,character).missing)reasons.push(`not interested until ${gateText(m)}`);
  // No passive drift (owner call 2026-09-30): a matched preference only counts once she has noticed it in time spent together.
  const trace=(profile.preferences||[]).map(rule=>contribution(rule,state,pack,character)).map(x=>x.matched&&!(runtime.noticed||[]).includes(x.id)?{...x,points:0,unnoticed:true}:x);
  return {eligible:reasons.length===0,reasons,score:clamp(runtime.chemistry+trace.reduce((n,x)=>n+x.points,0)),chemistry:runtime.chemistry,trace};

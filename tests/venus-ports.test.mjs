@@ -49,10 +49,10 @@ test('compatible provider serializes simultaneous requests to its local endpoint
 });
 
 test('compatible provider emits complete sanitized-preview candidates from an SSE scene stream',async()=>{
- const p=JSON.parse(readFileSync(new URL('../packs/neutral.json',import.meta.url))),json=JSON.stringify({lines:[{speaker:'ada',text:'First page.'},{speaker:'',text:'Second page.'}]});
+ const p=JSON.parse(readFileSync(new URL('../packs/neutral.json',import.meta.url))),json=JSON.stringify({lines:[{speaker:'',type:'playerSpeech',source:'Continue',text:'Continue'},{speaker:'ada',text:'First page.'},{speaker:'',text:'Second page.'}]});
  const chunks=[json.slice(0,35),json.slice(35,65),json.slice(65)],encoder=new TextEncoder();
  const provider=new CompatibleProvider({endpoint:'http://localhost:1234/v1/chat/completions',model:'stream',fetchImpl:async()=>new Response(new ReadableStream({start(controller){for(const chunk of chunks)controller.enqueue(encoder.encode(`data: ${JSON.stringify({choices:[{delta:{content:chunk}}]})}\n\n`));controller.enqueue(encoder.encode('data: [DONE]\n\n'));controller.close();}}),{headers:{'Content-Type':'text/event-stream'}})});
- const seen=[],context={stagedCast:['ada'],absentCharacters:[],sceneHistory:[],playerAction:'Continue',location:p.locations[0]};const result=await provider.generateScene(context,p,null,lines=>seen.push(...lines));assert.deepEqual(result.lines.map(x=>x.text),['First page.','Second page.']);assert.deepEqual(seen.map(x=>x.text),['First page.','Second page.']);
+ const seen=[],context={stagedCast:['ada'],absentCharacters:[],sceneHistory:[],playerAction:'Continue',location:p.locations[0]};const result=await provider.generateScene(context,p,null,lines=>seen.push(...lines));assert.deepEqual(result.lines.map(x=>x.text),['Continue','First page.','Second page.']);assert.deepEqual(seen.map(x=>x.text),['Continue','First page.','Second page.']);
 });
 
 test('compatible provider never previews a rejected scene draft',async()=>{

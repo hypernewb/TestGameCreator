@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-07T08:31:39.723Z",
+  "configuredStoryApp": {
+    "available": true,
+    "preset": "custom",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+    "keyPresent": true
+  },
+  "proposedComparisonModel": "deepseek/deepseek-v4.1-flash",
+  "venusBrowserGeminiExactModel": null,
+  "geminiReason": "No actual Venus/browser model selection or response metadata supplied; source defaults cannot prove the browser model or its tier.",
+  "credentialsReadOut": false,
+  "settingsChanged": false
+}

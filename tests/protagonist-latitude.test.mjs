@@ -1,0 +1,9 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {assertPlayerContributions} from '../packages/ai/player-contribution.mjs';
+import {lintScene} from '../packages/ai/narration-lint.mjs';
+import {splitRoleplay} from '../packages/ai/untrusted-output.mjs';
+const pack={playerId:'player',actors:[{id:'player',name:'Haru Mizuno'},{id:'rei',name:'Rei Kurosawa'}]},input='I tease Rei about her coffee.',c={playerAction:input,typedActivity:true,stagedCast:['rei'],speakers:['rei'],scenePhase:'continuation',sceneHistory:[],outcomes:[]},chosen={speaker:'',type:'playerAction',source:input,text:'You tease Rei about her coffee.'},npc={speaker:'rei',text:'It deserves a little respect.'};
+test('incidental protagonist actions and speech survive ownership, lint and speaker transforms',()=>{const lines=[chosen,npc,{speaker:'',type:'narration',text:'You lean closer to inspect your mug, then add, "A very distinguished coffee."'}];assert.doesNotThrow(()=>assertPlayerContributions(lines,c,pack));assert.doesNotThrow(()=>lintScene({lines},c,pack));assert.deepEqual(splitRoleplay(lines,['rei'],pack,c),lines);});
+test('incidental beats cannot replace the submitted contribution',()=>assert.throws(()=>assertPlayerContributions([{speaker:'',type:'narration',text:'You smile and say, "Fair enough."'},npc],c,pack),/Missing submitted/));
+test('narration still cannot accept, promise, consent or buy for the player',()=>{for(const text of ['You accept her invitation.','You promise to come tonight.','You consent to her offer.','You buy her a drink.'])assert.throws(()=>lintScene({lines:[chosen,npc,{speaker:'',type:'narration',text}]},c,pack));});
+test('incidental speech cannot change exact submitted quoted words',()=>assert.throws(()=>assertPlayerContributions([{speaker:'',type:'playerSpeech',source:'"No, thank you."',text:'Yes, please.'},npc],{...c,playerAction:'"No, thank you."'},pack),/exactly/));

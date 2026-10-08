@@ -1,0 +1,28 @@
+[
+  {
+    "id": "warm-opener",
+    "probe": "supporting ordinary chat with personal interest",
+    "text": "I ask whether she has a few minutes to talk, and tell her I was hoping to see her."
+  },
+  {
+    "id": "tease",
+    "probe": "primary playful teasing with interwoven reaction",
+    "text": "I tease her that this is an elaborate way of making me come back, then after her response I admit that I don't mind."
+  },
+  {
+    "id": "flirt",
+    "probe": "primary character-specific attraction and romantic tension",
+    "text": "I say, \"I like your company. I also like how easily you make me lose my train of thought.\""
+  },
+  {
+    "id": "decline",
+    "probe": "supporting declined invitation or proposed-plan boundary; no assumed accepted plan",
+    "text": "I say, \"I cannot join you tonight. Another evening could be nice, if you want.\"",
+    "note": "Player declines joining tonight; if no invitation actually occurred, score boundary respect and mark invitation-specific reaction not applicable. Never insert a fabricated NPC offer to make the probe apply."
+  },
+  {
+    "id": "callback",
+    "probe": "primary romantic callback with initiative",
+    "text": "I tease her about making me lose my train of thought again, then ask what she would actually enjoy doing together."
+  }
+]

@@ -24,7 +24,7 @@ test('voice examples follow each actor daily mood, including compact profiles an
   for(const a of p.actors.filter(a=>ids.includes(a.id)))assert.deepEqual(out.castProfiles.find(x=>x.id===a.id).voiceBlock.examples,[hash(`${a.id}:day${day}`)%3===0?'dodge':'welcome']);
  }
  const day=Array.from({length:30},(_,i)=>i+1).find(d=>hash(`jana:day${d}`)%3===0),c={...ctx,stagedCast:['jana'],day};
- assert.match(beatDirection(c,p,'s1'),/a little tired today/);
+ assert.match(beatDirection(c,p,'s1'),/respond to what the player means/);assert.equal(beatDirection(c,p,'s1'),beatDirection(c,p,'s2'));
  for(const window of [8192,600])assert.deepEqual(budgetSceneContext(c,p,w,'t1',{window,reply:0,render}).context.castProfiles[0].voiceBlock.examples,['dodge']);
  assert.deepEqual(budgetSceneContext({...c,scriptedScene:{id:'authored'}},p,w,'t1',{render}).context.castProfiles[0].voiceBlock.examples,['welcome']);
 });

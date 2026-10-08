@@ -1,0 +1,1 @@
+import fs from 'node:fs';const p=JSON.parse(fs.readFileSync('data/scenarios/published/e7bed17c-7b65-4ac6-8ec4-c447120cf55a.json'));console.log(JSON.stringify(p.actors.map(a=>({id:a.id,name:a.name,age:a.age,personality:a.personality,voice:a.voice,description:a.description})),null,2));

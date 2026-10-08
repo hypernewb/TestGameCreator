@@ -68,19 +68,6 @@ test('ordinary gestures do not trigger forced replacement; authored gesture chec
  assert.doesNotThrow(()=>lintScene({lines:[{speaker:'ada',text:'She flicks a bottle cap across the counter and catches it.'}]},context,p));
 });
 
-test('touch stays out of reach until the crush stage, but the player still owns their own hands',()=>{
- const p=pack(),base={daypart:'Afternoon',scenePhase:'continuation',stagedCast:['ada'],knownFacts:[],spokenBefore:[],playerAction:'Smile back.'};
- const blocked={...base,touchStage:{ada:false}},allowed={...base,touchStage:{ada:true}};
- const texts=['She leans in and kisses your cheek.','Her hands come up to frame your face.','Ada takes your hand in both of hers.','She pulls you closer against her.'];
- for(const text of texts){
-  assert.throws(()=>lintScene({lines:[{speaker:'',text}]},blocked,p),error=>error.lintCheck==='touch-stage'&&/close enough/.test(error.message));
-  assert.throws(()=>lintScene({lines:[{speaker:'ada',text}]},blocked,p),error=>error.lintCheck==='touch-stage');
-  assert.doesNotThrow(()=>lintScene({lines:[{speaker:'ada',text}]},allowed,p));
- }
- assert.doesNotThrow(()=>lintScene({lines:[{speaker:'',text:'You lean in and kiss her cheek.'}]},blocked,p));
- assert.doesNotThrow(()=>lintScene({lines:[{speaker:'',text:'You offer your hand and she shakes it.'}]},blocked,p));
-});
-
 test('a group scene never shows or stores an off-slate voice or model state syntax, in preview or final',async()=>{
  const p=pack();delete p.modules['world.schedule'];p.actors.find(a=>a.id==='brin').location='hub';
  const previews=[];let service;
@@ -104,4 +91,9 @@ test('a player-named day, the player’s own words and a character repeating her
  const hist={...base,playerAction:'Tell me about the old lighthouse keeper again.',sceneHistory:[{input:'Tell me about the old lighthouse keeper.',text:'Ada: He kept the light for forty years, you know.'}]};
  assert.doesNotThrow(()=>lintScene({lines:[{speaker:'',text:'She thinks about the old lighthouse keeper again for a moment.'}]},hist,p),'echoing the player’s phrase is not a stale mannerism');
  assert.doesNotThrow(()=>lintScene({lines:[{speaker:'ada',text:'He kept the light for forty years, you know.'}]},hist,p),'a character may repeat herself in dialogue');
+});
+
+test('relationship labels alone do not reject character contact, including prior rejection or breakup',()=>{
+ const p=pack(),base={daypart:'Afternoon',scenePhase:'continuation',stagedCast:['ada'],knownFacts:[],spokenBefore:[],playerAction:'Hello.',touchStage:{ada:false}};
+ for(const phase of ['stranger','familiar','friend','strained','rejected','broken'])for(const speaker of ['', 'ada'])assert.doesNotThrow(()=>lintScene({lines:[{speaker,text:'Ada offers her hand.'}]},{...base,relationshipStages:{ada:phase},dating:[{character:'ada',phase}]},p));
 });

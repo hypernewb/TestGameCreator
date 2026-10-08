@@ -136,12 +136,12 @@ test('spotlight equity counts who the dealt beats starred',()=>{
  assert.equal(funMetrics({turns:{}},{scriptedScenes:[]}).spotlight,null);
 });
 
-test('the narrator can glance back at the director callback line on an opening',()=>{
+test('ordinary opening does not rotate director callbacks with sampling seeds',()=>{
  const bp={actors:[{id:'ada',name:'Ada',personality:'warm and curious'}]};
  const ctx=director=>({stagedCast:['ada'],scenePhase:'opening',playerAction:'hey',day:1,actor:{relationshipToPlayer:50},director});
  const withLine=i=>beatDirection(ctx({lastBeat:'you walked away from "Jealousy, quietly"'}),bp,i);
  const without=i=>beatDirection(ctx({}),bp,i);
- assert.ok([...Array(40).keys()].some(i=>withLine(i).includes('walked away')),'some openings quote the last beat');
+ assert.equal(new Set([...Array(40).keys()].map(withLine)).size,1,'ordinary direction does not rotate callbacks with seed');assert.match(withLine(0),/respond to what the player means/);
  assert.ok([...Array(40).keys()].every(i=>!without(i).includes('walked away')),'an empty director context never does');
 });
 

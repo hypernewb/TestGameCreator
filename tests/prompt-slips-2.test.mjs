@@ -50,9 +50,9 @@ test('a line one turn settled twice reaches the model once, in the order it happ
   assert.deepEqual(said.split('\n'),['You get to work.','You pocket the brass key.'],'the mock narrator plays the action once');
 });
 
-test('the STAGING paragraph asks for a prop without naming one, and the prompt gets smaller',async()=>{
+test('scripted STAGING asks for a prop without naming one; ordinary scenes omit it',async()=>{
   // STAGING belongs to bounded scenes; continuous free conversation uses the live-reply contract instead.
-  const p=campus(),{context:live}=await scene(p,'slips2-staging',48),context={...live,gameProject:{...live.gameProject,conversationStyle:'bounded'}},messages=scenePromptMessages(context,p);
+  const p=campus(),{context:live}=await scene(p,'slips2-staging',48),context={...live,scriptedScene:{id:'authored-prop-scene'},gameProject:{...live.gameProject,conversationStyle:'bounded'}},messages=scenePromptMessages(context,p);
   assert.doesNotMatch(scenePromptMessages(live,p)[0].content,/STAGING:/);
   const staging=messages[0].content.match(/STAGING:[^\n]*/)[0];
   assert.match(staging,/^STAGING: Give each present character one physical object or task in their hands and let it carry their mood\./,'the instruction stays');
@@ -66,8 +66,8 @@ test('the STAGING paragraph asks for a prop without naming one, and the prompt g
   assert.equal(estimateTokens(' (a cup, a phone, a book)'),7,'the seven tokens the examples cost are gone');
 });
 
-test('the venus variant carries the same five slip lines, and invents none without engine state',async()=>{
-  const p=campus(),{context}=await scene(p,'slips2-venus',48),[sys,user]=venusStyleMessages(context,p);
+test('scripted Venus scenes carry the five legacy slip lines without invented engine state',async()=>{
+  const p=campus(),{context:live}=await scene(p,'slips2-venus',48),context={...live,scriptedScene:{id:'authored-slip-scene'}},[sys,user]=venusStyleMessages(context,p);
   assert.equal(calendarLine(context),'Day 5, Friday.');
   assert.match(user.content,/^Day 5, Friday\.$/m,'the day is stated once, on its own line');
   assert.equal(user.content.match(/Day 5, Friday/g).length,1);
@@ -92,8 +92,8 @@ test('the venus variant carries the same five slip lines, and invents none witho
   assert.deepEqual(reply.lines.map(l=>l.text),['Sit down, then.'],'and the reply still comes back');
 });
 
-test('the venus slip lines fit the budget, and a rule moved into a paragraph is still charged',async()=>{
-  const p=campus(),{context}=await scene(p,'slips2-budget',48),messages=venusStyleMessages(context,p);
+test('scripted Venus slip lines fit the budget and rules remain charged inside paragraphs',async()=>{
+  const p=campus(),{context:live}=await scene(p,'slips2-budget',48),context={...live,scriptedScene:{id:'authored-slip-scene'}},messages=venusStyleMessages(context,p);
   const rules=[calendarLine(context),awayLine(context.absentCharacters),STAY_RULE,ECHO_RULE,PROP_RULE];
   for(const r of rules)assert.ok(messages.some(m=>m.content.includes(r)),`the prompt carries: ${r}`);
   const growth=cost(messages,rules);

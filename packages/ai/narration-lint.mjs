@@ -4,7 +4,7 @@ import {lintFacts,lintHistory,sharedAuthoredFact} from './knowledge.mjs';
 import {assertSceneBoundaries} from './scene-boundaries.mjs';
 import {ordinaryConversation} from './conversation.mjs';
 import {playerOpeningLine} from './player-opening.mjs';
-import {requiresPlayerContribution} from './player-contribution.mjs';
+import {requiresPlayerContribution,playerContributionLine} from './player-contribution.mjs';
 import {speechOf} from './character-context.mjs';
 import {onlyRepeats,PLAYER_INTERIOR} from './untrusted-output.mjs';
 // A fact's quote is how facts.mjs proves a fact happened in narration; the same quote in a line spoken by
@@ -38,6 +38,11 @@ function assertPlayerInterior(value,context){
 }
 // Narration is second person. Once a named player turns up in memories, small models drift to "Cael vows to protect her",
 // which authors the player from outside and dodges the "you" checks above. Characters may still say the name. Soft: one repair.
+function assertPlayerPrivate(value,context,pack){
+ const escape=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),name=pack.actors?.find(a=>a.id===pack.playerId)?.name||'',names=[name,name.split(' ')[0]].filter(n=>n&&!/^you$/iu.test(n)),subject=new RegExp('\\b(?:you'+names.map(n=>'|'+escape(n)).join('')+')\\s+(?:then\\s+)?(?:feel|feels|realize|realizes|remember|remembers|decide|decides|resolve|resolves|accept|accepts|consent|consents|promise|promises|agree|agrees|kiss(?:es)?)\\b','iu'),possessive=new RegExp('\\b(?:your'+names.map(n=>'|'+escape(n)+"[’\']s").join('')+')\\s+(?:heart|pulse)\\s+(?:skips?|pounds?|races?|quickens?)\\b','iu');
+ const namedSpeech=names.length?new RegExp('\\b(?:'+names.map(escape).join('|')+')\\s+(?:then\\s+)?(?:admits?|tells?|says?|asks?|confesses?|murmurs?)\\b','iu'):null;
+ for(const l of value.lines){if(l.speaker||l.type==='playerSpeech')continue;if(!namedSpeech?.test(l.text)&&!subject.test(l.text)&&!possessive.test(l.text)&&! /^(?:(?:playerAction|playerSpeech|narration):\s*)?I\b/u.test(l.text))continue;if(l.type==='playerAction'&&l.source&&String(context.playerAction||'').includes(l.source)&&/\b(?:feel|realize|remember|decide|resolve|accept|consent|promise|agree)\b/iu.test(l.source))continue;throw Object.assign(Error('Do not invent player feelings, memories, history, acceptance or decisions. Rewrite affected narration using NPC action or surroundings; retain grounded NPC dialogue.'),{lintCheck:'player-agency',unsafeLines:[l],safeRepair:'Rewrite narration that invents player feelings, memories, history, acceptance or decisions, including named-player narration. Use second person. Preserve grounded NPC dialogue and submitted contributions; do not invent player acceptance.'});}
+}
 function assertPlayerPerson(value,context,pack){
  const name=pack.actors?.find(a=>a.id===pack.playerId)?.name;if(!name||/^you$/i.test(name))return;
  const re=new RegExp(`(?<![\\p{L}\\p{N}])${name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}(?![\\p{L}\\p{N}])`,'iu');
@@ -76,20 +81,6 @@ function assertFreshNarration(value,context){
   for(const old of prior)if(gramOverlap(grams,gramsOf(old))>=0.7)throw Object.assign(Error('This narration repeats what was already shown: write what happens now, in new words and new beats'),{soft:true});
  }
 }
-// Before the crush stage a character initiating physical contact breaks the pacing contract ("her hands come up
-// to frame your face" at first-name terms). Patterns are NPC-initiated forms only: the player reaching out first
-// ("you take her hand") never matches. Soft, like speech: one rewrite is requested, then the answer stands.
-const NPC_TOUCH=/(?<!\byou )leans? (?:in|closer)\b[^.?!]*\b(?:kiss|cup|frame|touch|brush|whisper)|kiss(?:es)? your (?:cheek|lips|forehead|neck|jaw|hand|wrist)|(?:hand|hands|fingers|fingertips|lips|arms?) (?:come|comes|move|moves|reach|reaches|rise|rises|slide|slides|slip|slips|drift|drifts|curl|curls|crawl|crawls|travel|travels) (?:up |to |toward|across |along |over |against |into |behind )[^.?!]*\byour |(?:cups?|frames?|caress(?:es)?|strokes?|brush(?:es)?|tucks?|touches?|grabs?|takes?|holds?|squeezes?) your (?:face|cheek|chin|jaw|neck|waist|hip|thigh|hair|hand|wrist)|(?:pulls?|draws?|tugs?) you (?:closer|in|into|against|down)|wraps? (?:an arm|her arms|his arms|their arms) (?:around|about) you\b/iu;
-function assertStageTouch(value,context,pack){
- const rules=context.touchStage||{};if(!Object.keys(rules).length)return;
- const allAllowed=Object.values(rules).every(Boolean);
- for(const line of value.lines){
-  if(!NPC_TOUCH.test(line.text))continue;
-  if(line.speaker?rules[line.speaker]!==false:allAllowed)continue;
-  const who=line.speaker?pack.actors.find(a=>a.id===line.speaker)?.name||line.speaker:'A character';
-  throw Object.assign(Error(`${who} is not close enough to the player to initiate touch: keep the contact one-sided or remove it until the relationship reaches the crush stage`),{soft:true});
- }
-}
 // A recycled mannerism ("amused glint in her eye" every other turn) is shorter than the paraphrase check's sentences
 // and reads as stock animation. Any 5-word run of text already used in this scene asks for fresh business. Soft.
 function assertFreshBeats(value,context){
@@ -119,9 +110,9 @@ function assertPlayerTransactions(value,context){
   throw Object.assign(Error(`Do not narrate "you ${m[1]} ..." during a typed activity: purchases, sales, trades and item transfers are committed by the engine, not by prose. Describe the scene or have a character speak instead`),{soft:true});
  }
 }
-const CHECKS=[['attendance',assertSceneBoundaries],['knowledge',assertKnowledgeLeaks],['time',assertDaypart],['calendar',assertWeekday],['player-agency',assertPlayerInterior],['player-decisions',assertPlayerDecisions],['question-ending',assertQuestionEnding],['player-person',assertPlayerPerson],['player-transactions',assertPlayerTransactions],['touch-stage',assertStageTouch],['speech',assertCastSpeaks],['repeat',assertFresh],['paraphrase',assertFreshNarration],['beats',assertFreshBeats]];
+const CHECKS=[['attendance',assertSceneBoundaries],['knowledge',assertKnowledgeLeaks],['time',assertDaypart],['calendar',assertWeekday],['player-private',assertPlayerPrivate],['player-agency',assertPlayerInterior],['player-decisions',assertPlayerDecisions],['question-ending',assertQuestionEnding],['player-person',assertPlayerPerson],['player-transactions',assertPlayerTransactions],['speech',assertCastSpeaks],['repeat',assertFresh],['paraphrase',assertFreshNarration],['beats',assertFreshBeats]];
 // Style checks a strong model may break without a repair call; attendance, knowledge, content, player-person,
-// touch-stage and speech stay hard for every model.
+// Speech checks stay hard for every model.
 export const STYLE_CHECKS=new Set(['question-ending','time','calendar','player-agency','player-transactions','repeat','paraphrase','beats']);
 // A character asking the same question twice in one scene reads as not listening. Warn only: rewording is the model's job.
 const QSTOP=new Set('the and you your are was were did does what how who why where when that this for with have has about just really so do is it to of a an in on me my i'.split(' '));
@@ -144,15 +135,15 @@ export function lintScene(value,context,pack,{lenient=false}={}){
  const warnings=[];
  for(const line of value.lines.filter(l=>l.speaker))for(const owner of pack.characterSheets||[]){if(owner.actorId===line.speaker)continue;const own=speechOf(pack,line.speaker),mine=[...(own?.tics||[]),...(own?.petPhrases||[])].map(x=>x.trim().toLowerCase());for(const phrase of [...(owner.speech?.tics||[]),...(owner.speech?.petPhrases||[])]){const tic=phrase.trim().toLowerCase(),text=line.text.toLowerCase();if(tic&&!mine.includes(tic)&&phraseIn(text,tic))warnings.push({check:'speech-owner',message:line.speaker+' used '+owner.actorId+'’s speech phrase: '+phrase});}}
  for(const [check,run] of CHECKS){
-  try{run(['player-agency','player-decisions','player-person','player-transactions'].includes(check)?{...value,lines:value.lines.filter(l=>l.type!=='playerSpeech')}:value,context,pack);}
-  catch(error){if(lenient&&STYLE_CHECKS.has(check)){warnings.push({check,message:String(error.message).slice(0,200)});continue;}throw Object.assign(Error(error.message),{lintCheck:check,soft:!!error.soft,safeRepair:error.safeRepair});}
+  try{run(['player-private','player-agency','player-decisions','player-person','player-transactions'].includes(check)?{...value,lines:value.lines.filter(l=>l.type!=='playerSpeech')}:value,context,pack);}
+  catch(error){if(lenient&&STYLE_CHECKS.has(check)){warnings.push({check,message:String(error.message).slice(0,200)});continue;}throw Object.assign(Error(error.message),{lintCheck:error.lintCheck||check,soft:!!error.soft,safeRepair:error.safeRepair,unsafeLines:error.unsafeLines});}
  }
  // Warn only, never repair: in a group scene someone who gets no line or beat reads as a prop.
  const cast=context.stagedCast||[],silent=cast.length>1?cast.filter(id=>{const name=pack.actors.find(x=>x.id===id)?.name;return !value.lines.some(l=>l.speaker===id||(name&&!l.speaker&&l.text.includes(name)));}):[];
  if(silent.length)warnings.push({check:'ensemble',message:'No line or beat for '+silent.map(id=>pack.actors.find(x=>x.id===id)?.name||id).join(', ')});
  const again=repeatedQuestions(value.lines,lintHistory(context));
  if(again.length)warnings.push({check:'repeat-question',message:'Asked again: '+again.join(' | ').slice(0,200)});
- const echoWords=pack.slipGuard?.echoWords??8,echo=echoedRun(value.lines.map(l=>l.text).join(' '),context.playerAction,echoWords);
+ const echoWords=pack.slipGuard?.echoWords??8,echo=echoedRun(value.lines.filter(l=>!playerContributionLine(l)).map(l=>l.text).join(' '),context.playerAction,echoWords);
  if(echo)warnings.push({check:'echo',message:`Echoed ${echoWords}+ words of the player: "${echo}"`});
  return warnings;
 }

@@ -1,0 +1,40 @@
+# Venus / framework conversation comparison — preparation only
+
+No inference has been executed for this comparison. There are no results or invented model transcripts. Two immutable adult profiles (Rei 27, reserved/dry; Natsumi 31, sociable/playful) were copied once from the current published pack into `profiles.snapshot.json`. The source pack hash and selected fields are recorded there. No creator/profile files or settings were edited.
+
+The planned experiment is two routes × two profiles × five turns: at most **20 standalone scene completions**, one sample per turn, with zero repairs/retries, classifiers, closing summaries or settlement calls. The player sequence is identical: personal opener, interwoven teasing/admission, direct non-explicit flirt, decline/boundary, flirt callback plus possible shared activity. Flirting is essential to the erotic dating-sim experience and differs by character. Individual exchanges may instead build interest, reveal personality, establish trust or tension, or make time together enjoyable. Neither constant flirting nor romantic escalation on every turn is required. Evaluate purposeful ordinary conversation and character-specific flirting in complete exchanges; neither compensates for poor writing in the other. The frozen sequence is a limited probe, not broad ordinary-conversation coverage. Its adequacy and runtime fidelity must be reviewed before a live run. Neither attraction nor an invitation is forced. If no invitation preceded the decline, that probe measures boundary handling and invitation-specific scoring is N/A.
+
+## Source fidelity and limits
+
+The pinned public Venus revision is `ec8f7cee4fd9236e3dbcdc2e4683afba3acab748`. The harness executes its original opening/continuation builders, OpenAI adapter, schema, 450-word history-window function and scene sanitizer from checksum-checked TypeScript. Four UI/store interfaces supply static cast/background data and reject mutations. No asset generation, gameplay advancement or saved campaign is involved. Native stat/mood/calendar/attraction instructions remain native: heart/body/brain 15, known/acquainted adult reader, no established relationship, date 0 / Day. Framework context uses familiar stage, day 1 / Monday / Afternoon. These are reported differences, not claims of identical state mechanics. The character adapter places the same frozen description/personality/voice/examples in Venus's personality/behavior fields, with no invented backstory.
+
+Framework uses the current working-tree prompt builder and output pipeline; `framework-provenance.json` pins hashes rather than assuming HEAD describes concurrent edits. The same scene premise, player, profile, input, model, temperature .5 and output cap 1100 apply. Persona/instructions, role assembly, schemas and actor identifiers intentionally differ. Compare engine prompt strategy, not byte-identical prompts. Raw responses must stay unchanged. Sanitized/presented lines are stored separately; validation failures count as failures with no hidden repair.
+
+Venus summary coverage is the transcript length **before** the new reply, as verified in upstream `loop/stream.ts`. Subsequent requests use each route's own actual generated/presented history. Framework history here is a line-by-line context projection, rather than the complete service's turn grouping/history-budget machinery. No outcomes/memory ledger or relationship progression is applied. Venus `fits` uses a declared 260-character bound instead of renderer/font layout. This is a prose-stage comparison, not a full Venus gameplay equivalence test.
+
+Later-turn prepared captures have **empty history**, visibly labelled. They are instruction previews, not faithful completed multi-turn requests. Real continuation captures must be assembled after the preceding real reply. `materialize.mjs` reproduces that sequence from real records and stops a branch when the native end flag closes its scene. Missing later turns are reported missing, never fabricated.
+
+## Offline commands
+
+From repository root (Node 24):
+
+```powershell
+node --experimental-vm-modules --disable-warning=ExperimentalWarning artifacts/venus-framework-comparison/prepare.mjs
+node --test tests/venus-framework-comparison.test.mjs
+node --experimental-vm-modules --disable-warning=ExperimentalWarning artifacts/venus-framework-comparison/materialize.mjs <real-model-records.json>
+node artifacts/venus-framework-comparison/blind.mjs
+```
+
+The last two commands require genuine responses and do not make requests. Record format: array with `origin: "live-model"`, exact `model`, `route` (`venus`/`story`), `profileId`, zero-based contiguous `turnIndex`, exact `input`, unmodified JSON content string `raw`, `messagesSha256`, `endpoint`, `providerRoute`, `latencyMs`, `usage`, `effectiveSampling` and any `formatAdjustments`. Keep provider envelope separately; `extractCompletion` uses each route's actual parser. Record endpoint/provider route and effective sampling metadata during any authorized collection. Offline fixtures in the checks are labelled structural tests and never appear as model outputs.
+
+`blind.mjs` currently shuffles individual responses into anonymous trial IDs and leaves legacy numeric score fields blank. It does not export blinded whole conversations. Those rows cannot establish flow/continuity by themselves: review each complete route/profile transcript in order as well. Whole-conversation blinded export remains a tooling gap. Keep `blind-private-key.json` away from the scorer. `rubric.json` defines qualitative review prompts and flags; `blind-output.schema.json` retains optional nullable numeric fields for existing export compatibility, not a weighted acceptance score. Leave scores blank and record judgments in notes. Raw schemas/voices can reveal the route, so blinding is partial. Review raw prose first, then display changes separately; report omissions, invalid output, unsupported controls and early endings alongside whole-exchange judgments.
+
+## Live-run blockers and cost
+
+The safe application metadata reports saved `deepseek/deepseek-v4.1-flash` through OpenRouter with authentication present. No credentials or suffixes were read out. Public endpoint metadata lists Fireworks at $0.30/M input and $1.20/M output tokens, with temperature/structured-output/reasoning support. This is **paid**, not verified free. The 20-call scenario with 65,536 input and 1,100 output tokens per call costs about **$0.419616** at those rates. It is a budget scenario, not a guaranteed hard upper bound without a verified tokenizer/input gate; actual usage is unknown. Recheck pricing before approval. The exact Venus browser Gemini selection and free-tier eligibility are unknown; defaults do not establish either.
+
+Preparation does not authorize paid inference. No live caller or generic authentication proxy is included. A later authorized run needs an application-owned bounded request bridge using existing saved auth, exact prompt checksums, a fixed Fireworks provider route with fallback disabled, explicit input/cost caps, and zero retries. Provider routing is currently a declared control, not a field enforced by an executing bridge. Unsupported sampling/schema controls must stop the run or be explicitly reported as format-only differences. Never manually export credentials, change saved defaults, substitute another DeepSeek model or fall back to a paid/unverified Gemini endpoint.
+
+## Owner-approved review policy (2026-10-07)
+
+Chatting must be enjoyable before progression work. Review purposeful ordinary conversation and fitting, character-specific flirting together; no required flirt per reply and no weighted total. Extra model calls are permitted as an architectural option: the existing twenty single-completion plan remains only a prose-stage diagnostic, not a mandated runtime call budget. No classification/closing implementation or paid run is authorized by this change. Prices above are a historical preparation estimate and require refresh, not a current quote. Profiles, inputs, upstream source and prepared request captures remain unchanged.

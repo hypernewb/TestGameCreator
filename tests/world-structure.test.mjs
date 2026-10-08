@@ -61,5 +61,20 @@ test('M5 creator mapping: every drafted activity gets the widget of the stat it 
 
 test('a blank love interest names itself in the error and says how to fix it',()=>{
  const p=proposal();p.heroines.push({name:'',age:21,temperament:'torn',pace:'steady',topic:'',wants:[]});
- assert.throws(()=>structureFromProposal(p),/A love interest: needs a topic \(or remove this blank love interest\)/);
+ assert.throws(()=>structureFromProposal(p),/Love interest \d+ \(unnamed\): needs a topic \(or remove this blank love interest\)/);
+});
+
+test('blank place and love interest names get visible fallbacks, and the builder says so',()=>{
+ const p=proposal();p.places[1].name='';p.heroines[0].name='';
+ const {spec,notes}=structureFromProposal(p);
+ assert.ok(spec.world.locations.every(l=>l.name.trim()));
+ assert.ok(notes.includes('place 2 had no name: called it "Place 2"'),notes.join('|'));
+ assert.ok(notes.includes('love interest 1 had no name: called her "Love interest 1"'),notes.join('|'));
+ assert.ok(!notes.some(n=>/nobody starts at :/.test(n)));
+ assert.equal(spec.heroines[0].actor.name,'Love interest 1');
+});
+
+test('the added Odd job is reported to the creator as a note',()=>{
+ const q=proposal();q.activities=q.activities.filter(a=>a.gives!=='money');
+ assert.ok(structureFromProposal(q).notes.includes('no paid job was proposed: added "Odd job"'));
 });

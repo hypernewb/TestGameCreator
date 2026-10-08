@@ -104,7 +104,7 @@ test('the hub\'s Skip button reaches the engine through the service with its day
 test('the scene prompt never asks the model to restate the player action (the UI already shows it)',()=>{
  const p=load('neutral');for(const sceneWriter of ['venus','framework'])for(const scenePhase of ['opening','continuation']){
   const all=scenePromptMessages({stagedCast:['brin'],scenePhase,sceneWriter,playerAction:'Ask Brin about the job.'},p).map(m=>m.content).join('\n');
-  assert.doesNotMatch(all,/restating only|echoing only|acknowledge the player/i,`${sceneWriter} ${scenePhase}`);assert.match(all,/never restate/i,`${sceneWriter} ${scenePhase}`);}
+  assert.doesNotMatch(all,/restating only|echoing only|acknowledge the player/i,`${sceneWriter} ${scenePhase}`);assert.match(all,/Do not recap earlier turns or add stat-colored delivery/i,`${sceneWriter} ${scenePhase}`);}
 });
 
 // Playtest 2026-09-30: a director incident is a moment played by the model with the people it names, not pasted authored prose.
@@ -142,8 +142,8 @@ test('the weekday check only rejects a line that says today is another day',asyn
 test('a first talk opens with a greeting and one thread, not her life goal or a topic from her sheet',async()=>{
  const {beatDirection}=await import('../packages/ai/beats.mjs'),p=load('campus'),jana=p.actors.find(a=>a.id==='jana');
  for(const seed of ['a','b','c','d','e']){const d=beatDirection({stagedCast:['jana'],scenePhase:'opening',playerAction:'Hey Jana.',sceneHistory:[],actor:{id:'jana',relationshipToPlayer:20},memories:[]},p,seed);
-  assert.match(d,/greet the player their own way/,seed);assert.ok(!d.includes(jana.goal.replace(/\.$/,'')),seed);assert.doesNotMatch(d,/bring up/,seed);assert.match(d,/one thread/,seed);}
- assert.match(beatDirection({stagedCast:['jana'],scenePhase:'opening',playerAction:'Hey Jana.',sceneHistory:[],actor:{id:'jana',relationshipToPlayer:60},memories:[]},p,'a'),/start on what they want/,'a friend may open on what is on her mind');
+  assert.match(d,/respond to what the player means/,seed);assert.ok(!d.includes(jana.goal.replace(/\.$/,'')),seed);assert.doesNotMatch(d,/bring up/,seed);assert.doesNotMatch(d,/start on what they want/,seed);}
+ assert.match(beatDirection({stagedCast:['jana'],scenePhase:'opening',playerAction:'Hey Jana.',sceneHistory:[],actor:{id:'jana',relationshipToPlayer:60},memories:[]},p,'a'),/respond to what the player means/,'friendship does not force an authored goal topic');
 });
 test('when she says goodbye the day is over; when you walk away only the period is',()=>{
  const p=load('campus');p.gameProject.timeMode='clock';assert.equal(p.gameProject.goodbyeEndsDay,true);

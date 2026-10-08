@@ -18,9 +18,9 @@ test('a present character with a goal raises it on the cadence, unprompted; 0 tu
  assert.ok(!(await play(harbor({initiativeEvery:0}),talk)).some(c=>c.wantHint),'0 = off');
  assert.ok((await play(harbor({initiativeEvery:1}),talk)).filter(c=>c.sceneHistory?.length).every(c=>c.wantHint),'1 = every exchange');
 });
-test('both writers render the initiative note as private direction',()=>{
+test('both writers keep authored wants private and optional',()=>{
  const pack=harbor({}),ctx={stagedCast:['olu'],scenePhase:'continuation',playerAction:'Any news?',sceneHistory:[{input:'Hi.',text:'Olu: Back again.'}],gameProject:pack.gameProject,wantHint:'Olu: wants to buy back the old ferry'};
- for(const build of [scenePromptMessages,venusStyleMessages]){const text=build(ctx,pack).map(m=>m.content).join(' ');assert.match(text,/bring it up in their own voice/);assert.match(text,/buy back the old ferry/);}
+ for(const build of [scenePromptMessages,venusStyleMessages]){const text=build(ctx,pack).map(m=>m.content).join(' ');assert.match(text,/an authored want may guide the reply when relevant; no topic change is required/);assert.match(text,/buy back the old ferry/);}
 });
 test('validation accepts 0..10 and rejects anything else',()=>{
  const p=JSON.parse(readFileSync(new URL('../packs/neutral.json',import.meta.url)));p.gameProject={premise:'A harbor town.',setting:'Docks.',ai:{intent:'',scene:'',daypart:''},calendar:{startDate:'2026-06-01'},initiativeEvery:2};

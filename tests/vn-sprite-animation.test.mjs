@@ -6,7 +6,7 @@ const vn=readFileSync(new URL('../public/vn.mjs',import.meta.url),'utf8');
 const css=readFileSync(new URL('../public/style.css',import.meta.url),'utf8');
 
 test('sprite figures are reused across refreshes so idle animation does not restart',()=>{
- assert.match(vn,/const syncSprites=\(slots,present,poses\)=>/);
+ assert.match(vn,/const syncSprites=\(slots,present,poses,ctxOf=\(\)=>\(\{\}\)\)=>/);
  assert.match(vn,/old\.find\(f=>!used\.has\(f\)&&f\.dataset\.actor===id\)/,'same-actor figures are reused, not recreated');
  assert.match(vn,/stage\.replaceChildren\(\.\.\.kept\)/);
  assert.doesNotMatch(vn,/\$\('sprites'\)\.replaceChildren/,'the sprite stage is only rebuilt through syncSprites');

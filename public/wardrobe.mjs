@@ -1,0 +1,4 @@
+// Play-time outfit choice. wornSetOf mirrors packages/assets/character-sprites.mjs (tests/wardrobe-play.test.mjs keeps them in step). Outfit images are actor poses named `${set}-${emotion}`, so sprite actions and the Studio pose list need no new syntax.
+export const wornSetOf=(char,ctx={})=>(char?.outfitRules||[]).find(r=>(r.set==='default'||r.set in (char.outfitSets||{}))&&['daypart','location','stage'].every(k=>!r[k]||r[k]===ctx[k])&&(!r.undressed||r.undressed===(ctx.undressed?'yes':'no')))?.set||'default';
+export const wornImageOf=(char,emotion,ctx={})=>{const set=wornSetOf(char,ctx);return set==='default'?undefined:char.poses?.find(pose=>pose.id===`${set}-${emotion||'neutral'}`)?.image;};
+export const undressedOf=(state,id)=>{const r=state.modules?.['social.intimacy']?.characters?.[id];return Boolean(r?.active||r?.pendingAftercare);};

@@ -2,6 +2,7 @@
 // import packages/, so the few reads below mirror acts.knownActs / arc.stageOf / acts.sceneVerdicts (tests pin them).
 import {calendarFor,WEEKDAYS,PERIODS} from './calendar.mjs';
 import {firstEndCard} from './firsts-ui.mjs';
+import {interestGate,desireReveal,gateText} from './stat-gates.mjs';
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const nameOf=(pack,id)=>pack.actors.find(a=>a.id===id)?.name||id;
 // Campus is the showcase world: it leads the start screens, everything else keeps the server's order.
@@ -70,7 +71,11 @@ export function endCard(state,pack){
 }
 
 // Journal: read-only, only what the player has learned: arc stage by name and discovered likes/dislikes.
-export function journal(state,pack){
+// Stat gates join every entry: what still blocks interest, and turn-ons/offs discovered so far. Gated cast without act profiles get an entry too.
+export function journal(state,pack){const base=journalBase(state,pack),ids=new Set(base.map(j=>j.id)),extra=pack.actors.filter(a=>a.id!==pack.playerId&&!ids.has(a.id)&&(a.desireReveal||a.interestGate?.length)).map(a=>({id:a.id,name:a.name||a.id,portrait:a.portrait||null,stage:null,...(pack.likesOpen!==undefined?{clues:[],likes:[],dislikes:[]}:{likes:[],dislikes:[]})}));
+ return [...base,...extra].map(j=>({...j,interest:interestGate(state,pack,j.id).missing.map(m=>`until ${gateText(m)}`),desires:desireReveal(state,pack,j.id)}));
+}
+function journalBase(state,pack){
  if(pack.likesOpen!==undefined)return loveInterests(pack).map(id=>{const actor=pack.actors.find(a=>a.id===id),track=(pack.arcTracks||[]).find(t=>t.character===id),stage=track?.stages?.[state.modules['character.arc']?.characters?.[id]?.stage??0],clues=state.modules['social.dating']?.characters?.[id]?.likeClues||[],counts=new Map();for(const clue of clues)counts.set(clue.entry,(counts.get(clue.entry)||0)+1);const known=pack.likesOpen===true?[...counts].filter(([,n])=>n>=(pack.likeClueSettings?.promotionThreshold??2)).map(([entry])=>clues.find(x=>x.entry===entry)):[];return {id,name:actor?.name||id,portrait:actor?.portrait||null,stage:stage?.name||null,clues:clues.map(({text,tick,from})=>({text,tick,from})),likes:known.filter(x=>x.liked).map(x=>({reason:x.label})),dislikes:known.filter(x=>!x.liked).map(x=>({reason:x.label}))};});
  return loveInterests(pack).map(id=>{const track=(pack.arcTracks||[]).find(t=>t.character===id),stage=track?.stages?.[state.modules['character.arc']?.characters?.[id]?.stage??0],known=state.modules['social.acts']?.characters?.[id]?.known||[];
   const acts=((pack.actProfiles||[]).find(x=>x.character===id)?.entries||[]).filter(x=>known.includes(x.id)).map(x=>({kind:x.kind,target:x.target,reason:x.reason,liked:x.points>0}));

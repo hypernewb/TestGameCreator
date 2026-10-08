@@ -1,6 +1,6 @@
 import {narrationContext,authoredAudience,intersectKnown,visibleToAudience} from './knowledge.mjs';
 import {ordinaryConversation} from './conversation.mjs';
-import {relationshipStageOf,behaviorCueOf,voiceExamplesOf} from './character-context.mjs';
+import {relationshipStageOf,behaviorCueOf,voiceExamplesOf,experienceCueOf} from './character-context.mjs';
 import {allocate,lods,messageTokens,DEFAULT_TIERS} from './budget.mjs';
 import {calendarFor} from '../../public/calendar.mjs';
 import {promptView} from '../../vendor/venus/scenePrompt.mjs';
@@ -124,7 +124,7 @@ export function budgetSceneContext(context,pack,world,turnId,{window=8192,reply=
  // Determine stage and mood for voice example selection
   const datingInfo=a=>(context.dating||[]).find(d=>d.character===a.id)||{};
   const currentMood=a=>dailyMood(a,context);
-  actors.forEach((a,i)=>{const d=datingInfo(a);const phase=relationshipStageOf(context,a,world.modules?.['social.relationships']?.edges?.[`${a.id}--${pack.playerId}`]??null);a={...a,relationshipStage:phase,behaviorCue:[behaviorCueOf(a,phase),interestCue(world,pack,a)].filter(Boolean).join(' ')};const strained=d.strained||false;add('castProfiles',1,`cast:${a.id}`,100-i,[['full',profileOf(a,phase,currentMood(a),strained,actors.length===1)],['compact',compactProfile(a,phase,currentMood(a),strained,actors.length===1)],['cue',lean({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',personality:clip(a.personality||a.description||'',80),voice:clip(a.voice||'',100),relationshipStage:phase})],['name',{id:a.id,name:a.name,pronouns:a.pronouns||'they/them'}]]);});
+  actors.forEach((a,i)=>{const d=datingInfo(a);const phase=relationshipStageOf(context,a,world.modules?.['social.relationships']?.edges?.[`${a.id}--${pack.playerId}`]??null);a={...a,relationshipStage:phase,behaviorCue:[behaviorCueOf(a,phase),interestCue(world,pack,a)].concat(experienceCueOf(context,a)).filter(Boolean).join(' ')};const strained=d.strained||false;add('castProfiles',1,`cast:${a.id}`,100-i,[['full',profileOf(a,phase,currentMood(a),strained,actors.length===1)],['compact',compactProfile(a,phase,currentMood(a),strained,actors.length===1)],['cue',lean({id:a.id,name:a.name,pronouns:a.pronouns||'they/them',personality:clip(a.personality||a.description||'',80),voice:clip(a.voice||'',100),relationshipStage:phase})],['name',{id:a.id,name:a.name,pronouns:a.pronouns||'they/them'}]]);});
  const history=context.sceneHistory||[];
  // `verbatim` caps how many recent turns may stay word for word even when they fit: a small model given 25 full turns
   // loses track of which question it is answering, and does better with a short transcript plus one-line digests.

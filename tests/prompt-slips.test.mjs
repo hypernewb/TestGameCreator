@@ -1,3 +1,5 @@
+import {codeContribution} from '../packages/ai/player-contribution.mjs';
+test('echo diagnostics exclude submitted player words while still warning on NPC copies',()=>{const source='I know the old archive closes just after sunset every Friday.',part=codeContribution({id:'player-1',source}),p={playerId:'p',actors:[{id:'p',name:'You'},{id:'n',name:'Nia'}]},c={stagedCast:['n'],scenePhase:'continuation',playerAction:source,sceneHistory:[]};assert.ok(!lintScene({lines:[part,{speaker:'n',text:'I will bring a light.'}]},c,p).some(w=>w.check==='echo'));assert.ok(lintScene({lines:[part,{speaker:'n',text:source}]},c,p).some(w=>w.check==='echo'));});
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -33,7 +35,7 @@ const echoInput='I tell her the truth about why I came back to Ashford this autu
 const echoReply=[{speaker:'',text:'You begin badly. I tell her the truth about why I stayed, and she hears every word of it.'},{speaker:'jana',text:'Then say the rest. I am listening.'}];
 // The same provider call the service makes, so the post-check runs exactly as it does in play.
 function narrate(context,pack,lines){
-  const provider=new CompatibleProvider({endpoint:'http://127.0.0.1:65535/v1/chat/completions',model:'mock',fetchImpl:async()=>new Response(JSON.stringify({choices:[{message:{content:JSON.stringify({lines})}}]}),{status:200,headers:{'content-type':'application/json'}})});
+  const provider=new CompatibleProvider({endpoint:'http://127.0.0.1:65535/v1/chat/completions',model:'mock',fetchImpl:async()=>new Response(JSON.stringify({choices:[{message:{content:JSON.stringify({lines:[codeContribution({id:'player-1',source:context.playerAction}),...lines]})}}]}),{status:200,headers:{'content-type':'application/json'}})});
   return provider.generateScene(context,pack);
 }
 
@@ -86,7 +88,7 @@ test('identical result lines from one turn reach the prompt once, in order',asyn
 test('the prompt gains one short style line each against echo and prop fixation',async()=>{
   const p=campus(),{context}=await scene(p,'slips-style'),sys=scenePromptMessages(context,p)[0].content;
   assert.ok(sys.includes(ECHO_RULE),ECHO_RULE);
-  assert.ok(sys.includes(PROP_RULE),PROP_RULE);
+  assert.ok(!sys.includes(PROP_RULE),'ordinary conversation does not impose one prop per beat');assert.match(sys,/do not fill gaps with token gestures or introduce props for variety/);
   assert.ok(estimateTokens(ECHO_RULE)+estimateTokens(PROP_RULE)<=11,'both lines together cost about ten tokens');
 });
 
@@ -99,7 +101,7 @@ test('a reply that repeats the player word for word is logged, never blocked',as
   assert.equal(echo.length,1,'the echo is flagged once');
   assert.equal(echo[0].warned,true,'flagged, not a repair');
   assert.match(echo[0].message,/i tell her the truth about why i/);
-  assert.deepEqual(flagged.lines.map(l=>l.text),echoReply.map(l=>l.text),'the reply still reaches the player');
+  assert.deepEqual(flagged.lines.filter(l=>l.type!=='playerAction').map(l=>l.text),echoReply.map(l=>l.text),'the NPC/body reply still reaches the player');assert.equal(flagged.lines[0].source,echoInput);
   assert.ok(flagged.lines.some(l=>l.speaker),'a scene where nobody speaks is not an echo');
   // A missing pack field uses the eight-word default.
   const legacy=await narrate(turn,{...p,slipGuard:undefined},echoReply);
@@ -112,7 +114,7 @@ test('a reply that repeats the player word for word is logged, never blocked',as
 });
 
 test('the Studio gives the echo threshold its own section and writes it back to the pack',()=>{
-  const snippet=readFileSync(new URL('../public/studio.mjs',import.meta.url),'utf8').match(/function slipGuardEditor.*\n/)[0];
+  const snippet=readFileSync(new URL('../public/studio.mjs',import.meta.url),'utf8').split(String.fromCharCode(13,10)).join(String.fromCharCode(10)).match(/function slipGuardEditor.*\n/)[0];
   assert.ok(snippet,'the editor has its own section');
   let title='',numbered=false;
   const studio={section:(name)=>{title=name;return {append(){}};},field:(parent,obj,key,label,kind)=>{assert.equal(kind,'number');numbered=true;assert.equal(obj.echoWords,8);return {value:obj.echoWords};},node:()=>({}),message:()=>{}};

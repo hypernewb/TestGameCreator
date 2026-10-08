@@ -1,0 +1,18 @@
+{
+  "sourceCommit": "d509f73b2df621422ebf35cb0d129c2c8139f1fa",
+  "purpose": "Frozen inputs for cast assembly, Rei context and checkpoint regression tests. Tests never read the local scenario store.",
+  "files": [
+    {
+      "path": "world.json",
+      "source": "data/scenarios/worlds/the-counsellors-semester-d0a64e8e.json",
+      "sha256": "9f22cb2584842d7c02af197c370a4af77a5020b433584e821b17191bc51cee9b",
+      "bytes": 640103
+    },
+    {
+      "path": "pack.json",
+      "source": "data/scenarios/published/e7bed17c-7b65-4ac6-8ec4-c447120cf55a.json",
+      "sha256": "866cc1f791247660f79cea12011461b5e96a726c314320afafb83ec83ac5bf64",
+      "bytes": 913529
+    }
+  ]
+}

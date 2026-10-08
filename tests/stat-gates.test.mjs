@@ -53,7 +53,7 @@ test('journal: gated cast get entries with what still blocks them and discovered
 });
 
 // Studio: the player card owns stats; NPC Love life folds own gates. Functions are pulled out of studio.mjs and run against a tiny DOM.
-const source=readFileSync(new URL('../public/studio.mjs',import.meta.url),'utf8'),fn=n=>{const i=source.indexOf(`function ${n}(`);assert.ok(i>=0,n);return source.slice(i,source.indexOf('\n',i));};
+const source=readFileSync(new URL('../public/studio.mjs',import.meta.url),'utf8').split(String.fromCharCode(13,10)).join(String.fromCharCode(10)),fn=n=>{const i=source.indexOf(`function ${n}(`);assert.ok(i>=0,n);return source.slice(i,source.indexOf('\n',i));};
 const node=(tag,text)=>{const n={tag,children:[],dataset:{},className:'',textContent:text||'',value:'',append(...k){n.children.push(...k);},closest:()=>null};return n;};
 const all=n=>[n,...(n.children||[]).flatMap(all)];
 test('Studio: player Stats fold adds stats; NPC gate rows and reveal setting edit the card',()=>{

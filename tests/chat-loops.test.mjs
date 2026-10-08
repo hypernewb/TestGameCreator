@@ -5,11 +5,11 @@ import {dropRepeats} from '../packages/ai/untrusted-output.mjs';
 const pack={playerId:'me',actors:[{id:'me',name:'You'},{id:'olu',name:'Olu',personality:'gruff'}],locations:[]};
 const earlier=[{speaker:'',text:'Olu coils a wet rope around his forearm, slow and deliberate. The tide slaps the hull.'},{speaker:'olu',text:'You came back, then.'}];
 const ctx=(scenePhase='continuation')=>({stagedCast:['olu'],scenePhase,playerAction:'I ask about the storm.',sceneHistory:[{input:'Hi.',text:'Olu: You came back, then.'}],usedBeats:usedBeats(earlier)});
-test('a continuation lists the beats this scene already used and says passed offers evolve',()=>{
+test('ordinary continuation retains history without a forced used-gesture list or repeated offers',()=>{
  const [sys,user]=scenePromptMessages(ctx(),pack);
- assert.match(user.content,/ALREADY USED THIS SCENE[^\n]*\n- Olu coils a wet rope around his forearm, slow and deliberate\./);
- assert.ok(user.content.indexOf('ALREADY USED')<user.content.indexOf('YOUR TURN'));
- assert.match(sys.content,/A question or offer the player let pass is never made again: drop it, change it, or act on it/);
+ assert.doesNotMatch(user.content,/ALREADY USED THIS SCENE/);assert.match(sys.content,/carry forward unfinished tasks, established objects, positions and interruptions/);
+ assert.ok(user.content.includes('Olu: You came back, then.'));
+ assert.match(sys.content,/Stay with the current subject unless a clear connection motivates a change/);
  const [os,ou]=scenePromptMessages(ctx('opening'),pack);assert.doesNotMatch(ou.content,/ALREADY USED/);assert.doesNotMatch(os.content,/let pass/);
 });
 test('a narration beat already used this scene is cut while someone still speaks',()=>{

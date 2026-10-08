@@ -25,9 +25,9 @@ test('encouragement develops the supplied thread without forced sheet-topic drif
  const c=ctx('Go on.');c.direction=beatDirection(c,pack);assert.match(scenePromptMessages(c,pack)[1].content,/On bus transfers, during my commute/);assert.doesNotMatch(c.direction,/Sound like/);
 });
 
-test('ordinary meaning and stage boundaries replace seeded personality moves without mutating context',()=>{
+test('ordinary direction stays seed-independent without blanket stage-based contact bans',()=>{
  for(const input of ['Nice try!','I grew up by the harbor.','I think coffee is overrated.']){const directions=seeds.map(seed=>dir(input,{},seed));assert.equal(new Set(directions).size,1);assert.doesNotMatch(directions[0],/flirt a little|tease the player lightly|dodge with a dry aside|show curiosity through a specific observation/);}
- for(const phase of ['rejected','broken'])for(const seed of seeds){const d=dir('Nice try!',{dating:[{character:'mina',phase}]},seed);assert.doesNotMatch(d,/flirt a little|admit one small/);assert.match(d,/no romantic or physical escalation/);}
+ for(const phase of ['rejected','broken'])for(const seed of seeds){const d=dir('Nice try!',{dating:[{character:'mina',phase}]},seed);assert.doesNotMatch(d,/flirt a little|admit one small/);assert.doesNotMatch(d,/no romantic or physical escalation/);}
  const before=ctx('Nice try!'),saved=structuredClone(before);assert.equal(beatDirection(before,pack,'same'),beatDirection(before,pack,'different'));assert.deepEqual(before,saved);
 });
 
@@ -46,7 +46,7 @@ test('ordinary exchanges share one capped length policy in both writers and keep
  for(const sceneWriter of ['framework','venus'])for(const input of ['Okay.','Nice try!','No thanks.']){
   const c=ctx(input,{sceneWriter}),p=exchangePolicy(c);assert.equal(p.ordinary,true);assert.equal(p.max,12);assert.equal(p.min,undefined);assert.equal(p.range,undefined);c.direction=beatDirection(c,pack,'s1');
   const [sys,user]=scenePromptMessages(c,pack);assert.ok(sys.content.includes(conversationProse));assert.doesNotMatch(sys.content+user.content,/2-3 visual-novel entries|5-7 visual-novel entries|6-9 visual-novel entries|at least four entries NPC dialogue|never a bare one-liner|End with a specific question or offer|INITIATIVE:|one short narrator beat/);
-  assert.match(sys.content,/Accepting invitations, consent, promises, travel and spending require the player/);assert.match(sys.content,/Never invent player reactions/);assert.match(sys.content,/This JSON contract takes priority/);assert.match(sys.content,/Committed outcomes are authoritative/);assert.match(sys.content,/set end_scene true/);
+  assert.match(sys.content,/Accepting invitations, consent, promises, travel and spending require the player/);assert.match(sys.content,/Occasional protagonist actions and brief remarks may fit submitted meaning; leave consequential choices to the player/);assert.match(sys.content,/This JSON contract takes priority/);assert.match(sys.content,/Committed outcomes are authoritative/);assert.match(sys.content,/set end_scene true/);
  }
 });
 

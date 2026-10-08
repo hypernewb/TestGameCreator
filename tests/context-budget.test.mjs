@@ -277,3 +277,10 @@ test('wideContext tail window is 1500 chars instead of 700',()=>{
     assert.equal(turn.text,longText);
   }
 });
+
+test('Venus sheet: love life reaches the prompt only in an involved one-on-one scene, and empty voice fields stay out',()=>{
+ const p=pack(),world=createWorld(p,registry,'love'),ada=p.actors.find(a=>a.id==='ada');Object.assign(ada,{datingHistory:'One long ex.',datingPreference:'Casual, sleeps around.',kinks:'Being watched.',isVirgin:false,voice:'',style:'',examples:[],neverSays:[]});
+ const run=(cast,dating)=>budgetSceneContext({stagedCast:cast,sceneHistory:[],location:p.locations[0],playerAction:'Hello',dating},p,world,'none',{window:32000,render:c=>scenePromptMessages(c,p)}).context.castProfiles.find(a=>a.id==='ada');
+ const solo=run(['ada'],[{character:'ada',phase:'dating'}]);assert.deepEqual(solo.loveLife,{history:'One long ex.',preference:'Casual, sleeps around.',kinks:'Being watched.'});for(const k of ['voice','style','examples','neverSays','fingerprint'])assert.equal(solo[k],undefined);
+ const r=budgetSceneContext({stagedCast:['ada'],sceneHistory:[],location:p.locations[0],playerAction:'Hello',dating:[{character:'ada',phase:'dating'}]},p,world,'none',{window:32000,render:c=>scenePromptMessages(c,p)});assert.match(JSON.stringify(scenePromptMessages(r.context,p)),/Being watched/);assert.equal(run(['ada'],[]).loveLife,undefined);assert.equal(run(['ada','brin'],[{character:'ada',phase:'dating'}]).loveLife,undefined);
+});

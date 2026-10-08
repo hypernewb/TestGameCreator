@@ -1,0 +1,418 @@
+{
+  "purpose": "Delivery checksums for the existing preparation; historical manifests and pinned evidence are preserved, not resealed.",
+  "sourceCommit": "d509f73b2df621422ebf35cb0d129c2c8139f1fa",
+  "files": [
+    {
+      "path": "NOTICE.md",
+      "sha256": "22e47fb6f8674c21ff7dc655e9ce09b3e553942869cbb3cb8486a299b96e3006"
+    },
+    {
+      "path": "README.md",
+      "sha256": "5f349ffcebee0e0ad49661ec1a1e0274259caeb49ee2d4bff0b8865efa266f3e"
+    },
+    {
+      "path": "blind-output.schema.json",
+      "sha256": "fa5b66912287cf1a59afe370be542e8a93402807bfff3eadbecf678e0e221f41"
+    },
+    {
+      "path": "blind.mjs",
+      "sha256": "80aa6b86032bed64cbcc267dd37ab675bd1af937712eb74d2e78de54e55fe805"
+    },
+    {
+      "path": "capture-index.json",
+      "sha256": "d82046108abbc105dac9a6bf5776cf529698720dc9f97a5f7572cefd13bab867"
+    },
+    {
+      "path": "captures/dilek-sahin-1.json",
+      "sha256": "1487ef400f79d62cd44f0ff0a0c8a4a5729708fa39bdf90e0451e75cfd4775e8"
+    },
+    {
+      "path": "captures/dilek-sahin-2.json",
+      "sha256": "4be845b12755e451b84bf7e1303e5640d6e1802f5814ee71564e7fba313ca5a0"
+    },
+    {
+      "path": "captures/dilek-sahin-3.json",
+      "sha256": "65f64906c428424d1126824966c1c1cb131d1034221914dad5c2b0b375641e64"
+    },
+    {
+      "path": "captures/dilek-sahin-4.json",
+      "sha256": "5ce00e1ee9542af7e74d475166c4fdea74b41efaa0dc3f2d3f03e325793df934"
+    },
+    {
+      "path": "captures/dilek-sahin-5.json",
+      "sha256": "092868a29669cefb50240b843724f361d87fbc01f471fd28dbec40e2898d939e"
+    },
+    {
+      "path": "captures/priya-raman-1.json",
+      "sha256": "2fb52b1a99efba513e87cc1d6dc00b40850ad70db59a3bcc5b53b4f060742424"
+    },
+    {
+      "path": "captures/priya-raman-2.json",
+      "sha256": "6f4e6550869ea19f747ff11008f0ec996bef8fa8a3a2403ce268380d191cb258"
+    },
+    {
+      "path": "captures/priya-raman-3.json",
+      "sha256": "17516acee943d05df1fd105f743f5f72e6108149dd143fb0c80920333dbd5f06"
+    },
+    {
+      "path": "captures/priya-raman-4.json",
+      "sha256": "0dd5598597100afa66ff9ec586eedb6b4d3085ef599bc4a880142c8945729c36"
+    },
+    {
+      "path": "captures/priya-raman-5.json",
+      "sha256": "99d1fdcb27d649a7857df4134c0ba69bc9cd6605bb22394ec2a784685eab8ec2"
+    },
+    {
+      "path": "fetch-closure.mjs",
+      "sha256": "57fe8de95c65d9f1c73c5d5b0ffcb89eb2cffe62655adf3a51d28c4391162db7"
+    },
+    {
+      "path": "fetch-index.mjs",
+      "sha256": "f23332e1d6d62eef95f9a70ac14f5bdda80ddfaa7f514588c95f87e32f783278"
+    },
+    {
+      "path": "fetch-loop.mjs",
+      "sha256": "1fc8a865d384cb30bb44c34489c4eb4df4c23efe8afcdea1db96c3aaf54367ff"
+    },
+    {
+      "path": "fetch-selected.mjs",
+      "sha256": "c7d9998ca3e9790050ef1fa69dec91b3e2d5bd78c539cb748b79b62eeca09768"
+    },
+    {
+      "path": "framework-provenance.json",
+      "sha256": "8938a366597fdf4b3ad69518508be98a566931a67c9b888b560af575ea7c0c2b"
+    },
+    {
+      "path": "framework-status.mjs",
+      "sha256": "29ed3dec5cc78c88276b7b53df9da0aef15b66a2531c5bbfcf415e0adab9fedc"
+    },
+    {
+      "path": "freeze-profiles.mjs",
+      "sha256": "b1c428a418c9c1ac152d638dcc1602d95c9af634abb51732109b2d4f74954a2e"
+    },
+    {
+      "path": "inputs.json",
+      "sha256": "186b5469871860f372e0eb76f19b4f7289b10b8bf838f25b6a8f0611d37673c7"
+    },
+    {
+      "path": "inspect-profile-candidates.mjs",
+      "sha256": "a3679d1e0ac72fb60321435f366b996a23006cf95bf91a7889ae288b4fc07751"
+    },
+    {
+      "path": "list-loop-paths.mjs",
+      "sha256": "c66856fc88f310ead897715d9fc79de4ac151230f0eee9f6929244bdc0455238"
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "1e1cddb03f9e9d8c8b70a8e5e565f0ce069ca57ea28f3020d5e4e09cd48255a6"
+    },
+    {
+      "path": "materialize.mjs",
+      "sha256": "05d95a706821493022b1498c23d3297ebcb9494eb49eefba7fce5c016d1450dd"
+    },
+    {
+      "path": "model-metadata.json",
+      "sha256": "25b9c9a3c57042ad2c28064ac60a0f0c5ee4ad9a98220fa9f8ca5d37573144d3"
+    },
+    {
+      "path": "offline-check.mjs",
+      "sha256": "b093d54bae573d1f4cbaa305bfd656dd25eb3ce911fb173402935d1fc3c56d69"
+    },
+    {
+      "path": "prepare.mjs",
+      "sha256": "710c9433f9704849b110b20653f60b617a566545874e2abb9952643268842c00"
+    },
+    {
+      "path": "pricing.json",
+      "sha256": "f7252e851f238862abbe1fd159581a8d7d926d518cc7d14db790236c4310e98c"
+    },
+    {
+      "path": "profiles.snapshot.json",
+      "sha256": "170080ef3ecb51096d389dca4736ce84bf4852d4a54a85546e3f7246ef3021f4"
+    },
+    {
+      "path": "read-safe-metadata.mjs",
+      "sha256": "8f4cbcdc06e18fa4e2c7da5f73d5f7eb748a76e6c0b41d23e740df633d34304f"
+    },
+    {
+      "path": "rubric.json",
+      "sha256": "b0a73f5cfe334d6e576e11ae674b685b48799869b8e36efa340611161227c1ab"
+    },
+    {
+      "path": "seal.mjs",
+      "sha256": "fd71f0897b892afb08c141d17a3c8485a3b1f0fe6d44a17fa2e6d80f7c0d7de9"
+    },
+    {
+      "path": "source-provenance.json",
+      "sha256": "2e7fd9bf3c58e3aac0a1d77b9767ea5a279529defd09612805d4444e9cdf6dbe"
+    },
+    {
+      "path": "upstream-index.json",
+      "sha256": "7d2660f43004fdb3fdf38022a430e79a9c9771e5b92ad6a8c7d6baa4aeece7f4"
+    },
+    {
+      "path": "upstream/LICENSE",
+      "sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0"
+    },
+    {
+      "path": "upstream/package.json",
+      "sha256": "e531f759e32ab94cf89cb31a7b7783b85592eff8b84aa5280850bc47f89d550a"
+    },
+    {
+      "path": "upstream/src/renderer/prompts/gameDate.ts",
+      "sha256": "b259d216ce079515affb61e047f03a4dc363f369df6d1f5ca6806f4d2997f6f7"
+    },
+    {
+      "path": "upstream/src/renderer/prompts/graduation.ts",
+      "sha256": "0e52104abd3a6a23d3b3be995077ad7e8706e032e15d1290b50b12e73bc06733"
+    },
+    {
+      "path": "upstream/src/renderer/prompts/lorebook.ts",
+      "sha256": "f5208f37be679124c68e60b75c4c04d883fe4b733ce785695fb11bcdc7130a1c"
+    },
+    {
+      "path": "upstream/src/renderer/prompts/moods.ts",
+      "sha256": "7b7d2a4a64044bc1429fca35143cf4df4fa0364f1e3e6ccad6dd0055c800e31a"
+    },
+    {
+      "path": "upstream/src/renderer/prompts/npcRelationship.ts",
+      "sha256": "4cde0d1b83fecf76b7d93d55dd11a7e43409ab707230c7c4245e6823e802bb31"
+    },
+    {
+      "path": "upstream/src/renderer/prompts/occasions.ts",
+      "sha256": "083d3370de30c2d0ab7792259e4a095870b5f75efa3660207e2a8f27ad8fae9c"
+    },
+    {
+      "path": "upstream/src/renderer/prompts/relationship.ts",
+      "sha256": "d121e52f5672ca9b0dea108dac140767724b8b5f82b87f052f0359804b05285d"
+    },
+    {
+      "path": "upstream/src/renderer/prompts/scenePrompt.ts",
+      "sha256": "11a7f28dc38f6555d060cbf2368a4d51bb436f439623077ec92b74a6c22a8b0d"
+    },
+    {
+      "path": "upstream/src/renderer/prompts/sceneWindow.ts",
+      "sha256": "25c31ea67154104d79d25b144d7060e88f0712bf05c521708127c15c472ca9e4"
+    },
+    {
+      "path": "upstream/src/renderer/prompts/schedulePrompt.ts",
+      "sha256": "cd375f517bec4c48a80a86e14ec331a5ddfd5d478ba619226e3d091689c4df9e"
+    },
+    {
+      "path": "upstream/src/renderer/prompts/schema.ts",
+      "sha256": "ce95be37bfdb8c4165d6f2fcfcb3074bc6dddca97a6b05ca8283adb9593b74fc"
+    },
+    {
+      "path": "upstream/src/renderer/prompts/seedWords.ts",
+      "sha256": "6a908cc62d0781759e858563cb96b59883f829d3e9ce222c87754542c4c67868"
+    },
+    {
+      "path": "upstream/src/renderer/prompts/springBreak.ts",
+      "sha256": "8e9457c1f7d583d88dd491eb3ab7be5756c963464818fb3c1228cf9655497c0d"
+    },
+    {
+      "path": "upstream/src/renderer/prompts/textingPrompt.ts",
+      "sha256": "a56d783c73569f23ac39cf4a8a1b15268158726336ef5b2aa82e77f3bc2ca114"
+    },
+    {
+      "path": "upstream/src/renderer/prompts/weather.ts",
+      "sha256": "2f871aa9226b641962ddeeffca41492eebc1eb88db7a3bb6ad44fe568ca91b6d"
+    },
+    {
+      "path": "upstream/src/renderer/stores/loop/encode.ts",
+      "sha256": "1c1c76f45754ad4371b6e1b5e2d01e44d42e986ecf8973844e1c49ae3329d669"
+    },
+    {
+      "path": "upstream/src/renderer/stores/loop/promptState.ts",
+      "sha256": "11036222cb90b91fb352691405f73c1f254774480be4693b61a60b32c00bb144"
+    },
+    {
+      "path": "upstream/src/renderer/stores/loop/stream.ts",
+      "sha256": "d3b5cd910911d790686c3aabb25713b609c464ffe100274c15363bd5577be46b"
+    },
+    {
+      "path": "upstream/src/renderer/stores/loop/turn.ts",
+      "sha256": "506f839f51fb59f7ce04f547e43f20cc42f9bbeaa811f267f63db94e4d51e1d9"
+    },
+    {
+      "path": "upstream/src/renderer/stores/sceneSanitizer.ts",
+      "sha256": "c7df13cfd377bb0a9bcc4ed28250cb08083c8e09266349aa10e59ce0b5a49b51"
+    },
+    {
+      "path": "upstream/src/shared/academics.ts",
+      "sha256": "9e30efb356eb4b40704997c45c370d80cb006daa8443b58ff000c443470e4c13"
+    },
+    {
+      "path": "upstream/src/shared/audio.ts",
+      "sha256": "4295fedf5ec53a9908e0b1e101413cfd035e53fe4cd1a95ec22fce76ba2a567b"
+    },
+    {
+      "path": "upstream/src/shared/characterFiles.ts",
+      "sha256": "372dc57aadfe2b7724fd01fd4be092615cc06a35f9bf1699cf673557282c3345"
+    },
+    {
+      "path": "upstream/src/shared/characterRules.ts",
+      "sha256": "834a2b136742bea419b64c8ce6549b0432e5e1c6a0b546e46b4559a93844a26f"
+    },
+    {
+      "path": "upstream/src/shared/classes.ts",
+      "sha256": "d98a82fdd663469cd97a17fb8cc7fe614ed2eb586cbc5d3e73538fe6849d5b9f"
+    },
+    {
+      "path": "upstream/src/shared/dating.ts",
+      "sha256": "b0905577386129ff36c2000d8962d0546f76887ab3c648153cefa8536b3f7bd0"
+    },
+    {
+      "path": "upstream/src/shared/dorms.ts",
+      "sha256": "214c7aaba50c7d5caad6b7498605d90c28be281c4b88c9420e8abd630a3ae9fc"
+    },
+    {
+      "path": "upstream/src/shared/emotions.ts",
+      "sha256": "21ad251717c183b74275b46cf86b1f407f6910a10d16a813606d8b2e8a4c5106"
+    },
+    {
+      "path": "upstream/src/shared/endpoint.ts",
+      "sha256": "d09946065287f1f38d5578ccd9dcbe18ec2e828b9004b3be454df9491c509809"
+    },
+    {
+      "path": "upstream/src/shared/errors.ts",
+      "sha256": "faa00ef7469d35e472fc43c8f9a942c3b970a6032acf9ebcc4bb0ef62bdb8e63"
+    },
+    {
+      "path": "upstream/src/shared/feed.ts",
+      "sha256": "7960b3373926ade9fe0791b086fc1f486338bf1e6c37a097ebd2dcdb2fa397cb"
+    },
+    {
+      "path": "upstream/src/shared/jobs.ts",
+      "sha256": "a605561bd1a23c69823ed43a90636ae17bb5b8b44a2fb816702ae133a1261732"
+    },
+    {
+      "path": "upstream/src/shared/jsonValidate.ts",
+      "sha256": "bf904e251751512cc8ef5d97ad56cf64bc88dbcd755f2a7f87f68a9b5b6f8c1c"
+    },
+    {
+      "path": "upstream/src/shared/llm/adapter.ts",
+      "sha256": "b6baf52902da9922a866796ba5f83c57fbdde08d2cbd95b9f84c614f2802b4f5"
+    },
+    {
+      "path": "upstream/src/shared/llm/cloudLlm.ts",
+      "sha256": "2b7b4de4992952aed87f6db71e57341ee7c075c75fe395a143b5f4984711b291"
+    },
+    {
+      "path": "upstream/src/shared/llm/geminiAdapter.ts",
+      "sha256": "fa23ab30b8820b914f64f522c9bb45e79279e0678abcf0bb98c8b5e013682e01"
+    },
+    {
+      "path": "upstream/src/shared/llm/httpStatus.ts",
+      "sha256": "483ac891060bc8f566b27ac16edd5f9a324f2f4af65d7cb9445a00211dd768c9"
+    },
+    {
+      "path": "upstream/src/shared/llm/openaiAdapter.ts",
+      "sha256": "52a1c1a72d18a47b6aea9872969519d2b59ada40aa8234de572a0561944132ea"
+    },
+    {
+      "path": "upstream/src/shared/llm/transport.ts",
+      "sha256": "dbc6634a3abf371029d912f1db6ea8574cc417eb94e59e8396a48d506e3d03a7"
+    },
+    {
+      "path": "upstream/src/shared/locations.ts",
+      "sha256": "437da33d6ecb1b2f5c15b5ffd2fc388bf63433608c10cbb83279c200ef70804a"
+    },
+    {
+      "path": "upstream/src/shared/money.ts",
+      "sha256": "0bc0ccea15be89d51b04af42bcb5ae6baa3d54fa13915fc2c73633cf447b2e86"
+    },
+    {
+      "path": "upstream/src/shared/npcRelationships.ts",
+      "sha256": "0e911c298ff5af37d84a74ff829cbf2b4e1600e71713a3ec01b2b5764fc9cca1"
+    },
+    {
+      "path": "upstream/src/shared/outfits.ts",
+      "sha256": "bbad3fb09c93e838e8985d30838c20f8c1991ad4c437edcf997618c2d60cca74"
+    },
+    {
+      "path": "upstream/src/shared/playerStats.ts",
+      "sha256": "746e93710fc52018f0102ddbd94fdd77b0c929f8954e9781edfe1a6ace8050ab"
+    },
+    {
+      "path": "upstream/src/shared/positions.ts",
+      "sha256": "c872bb13137a840979296ee3bc8be4ba0721b3b279ee9af6cfbcdc16d6e3a46d"
+    },
+    {
+      "path": "upstream/src/shared/providers.ts",
+      "sha256": "3770a7eec8db6b8d9be5cc5550c44c2a2eb8bd2d77e40d72035175ab8df91940"
+    },
+    {
+      "path": "upstream/src/shared/readerVoice.ts",
+      "sha256": "2f9e30a728ae83610ed79e86bd491b1b18d2a94fa4b30410995aa042e01d616f"
+    },
+    {
+      "path": "upstream/src/shared/regenTags.ts",
+      "sha256": "57bafd875f76aaf3ee358680d0a5e81cf121f6a7b21730fbd9379e05caccc0f3"
+    },
+    {
+      "path": "upstream/src/shared/relationship.ts",
+      "sha256": "5d48e38ba5ed9251354bea36cdd2b7eeac8d602d7190d8cf59093eed9da7f3cd"
+    },
+    {
+      "path": "upstream/src/shared/room.ts",
+      "sha256": "ffca55e67a4cd728d43089b90719c0707deb702c0af209dda167e33e4b708134"
+    },
+    {
+      "path": "upstream/src/shared/rumors.ts",
+      "sha256": "53de5d04a6a8b9bd41296c574c9ec09c4b7620b64e8cf19ee0261b2771b2c413"
+    },
+    {
+      "path": "upstream/src/shared/sceneActions.ts",
+      "sha256": "e32804aa272849bdcb3de91bb6ddec9993f76817c9bf64a32ecd0c2e0ceca45b"
+    },
+    {
+      "path": "upstream/src/shared/sentences.ts",
+      "sha256": "4f63963b4fd98940fe9ad8c3dcff70f608c907b020b2b5e2baa21b6842cc2de8"
+    },
+    {
+      "path": "upstream/src/shared/settingsRules.ts",
+      "sha256": "15d4e17e25adccf29fa37fb8df37bc270f97ad3dfcdfa43a4285c6f98a9b7a71"
+    },
+    {
+      "path": "upstream/src/shared/shop.ts",
+      "sha256": "fd5df70e8b3d26e0d59cc8762727f87154ca6334625105c9f5a11b1cf38d8df7"
+    },
+    {
+      "path": "upstream/src/shared/shuffle.ts",
+      "sha256": "97d3e47ff48ad7cfe24fd08b85722a4551ce431552dcdb2f3b9d3e3a5351b04c"
+    },
+    {
+      "path": "upstream/src/shared/spriteScale.ts",
+      "sha256": "3fb3c6c9411ee654600b822b1583418da6d6c7e20e9bb717b526df2daa95a115"
+    },
+    {
+      "path": "upstream/src/shared/statusMark.ts",
+      "sha256": "0da5fb5f6182635441e20dcf9c6201bf94de3a1f64f9104a0f73198b78e788d6"
+    },
+    {
+      "path": "upstream/src/shared/tags.ts",
+      "sha256": "f976814891c3009b3e2ba7eb328eae83824bc09598f74129069f84eb6de4168b"
+    },
+    {
+      "path": "upstream/src/shared/traits.ts",
+      "sha256": "19b2505a9290cc37000df3b43abaed14848cc7519ec6da05b6eb00d14014b436"
+    },
+    {
+      "path": "upstream/src/shared/types.ts",
+      "sha256": "cead2a1bd22b9bff968f30d324a4275ff203e3c99d678a0ff20f35ba2c3782ad"
+    },
+    {
+      "path": "upstream/src/shared/uuid.ts",
+      "sha256": "96b94ec4a102e2b0bb8f45b892c9fc186f25db990dd608335844b5e8d03d063f"
+    },
+    {
+      "path": "upstream/src/shared/weather.ts",
+      "sha256": "23ed711419fed9c581af5a5f0c53d9d47cf56f0748ce80b9c42f14e919fe878f"
+    },
+    {
+      "path": "venus-loader.mjs",
+      "sha256": "6134a0199a7f840db863d88eba6f412209707d2811d39ae43160744c4695714f"
+    }
+  ]
+}

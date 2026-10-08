@@ -120,7 +120,7 @@ test('one heroine, one line: the want reaches the scene prompt only while she is
    const text=scenePromptMessages(both,p).map(m=>m.content).join(' ');
    assert.ok(text.includes('has been wanting'),'the wish reaches the prompt');
    assert.ok(!text.includes('quiet-night')&&!text.includes('wantSettings')&&!text.includes('+3'),'the id, the tuning and the price never do');
-   assert.match(text,/never call it a want/,'the model is told to keep it in her voice');
+   assert.match(text,/an authored want may guide the reply when relevant; no topic change is required/,'the model is told to keep it in her voice');
    await service.act('wants-svc',{id:'leave',expectedRevision:revision(),command:{type:'core.endScene',args:{reason:'player'}}});
    await open('with-ada',['ada']);
    const other=provider.seen.at(-1);

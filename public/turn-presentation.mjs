@@ -34,6 +34,7 @@ export function linesFor(data){const {state:s,pack:p}=data,turns=Object.values(s
  if(first?.opening&&!base.some(l=>l.text===first.opening))base.unshift({speaker:'',text:first.opening});
  if(first?.cue&&!base.some(l=>l.text===first.cue))base.push({speaker:first.first.character,text:first.cue});
  if(first?.ended&&!base.some(l=>l.text===first.ended.text))base.push({speaker:'',text:first.ended.text,...(first.cg?{cg:first.cg}:{})});
+ const sexCg=turns.slice(turns.indexOf(main)).flatMap(t=>t.events||[]).find(e=>e.type==='social.intimacyCompleted'&&e.payload.cg);if(sexCg)base.push({speaker:'',text:sexCg.payload.text,cg:sexCg.payload.cg});
  // Every relationship shift the action caused, summed into one reaction per character.
  const reactions=reactionsFor(turns.slice(turns.indexOf(main)).flatMap(t=>t.events||[]),p);
  // The engine's close text marks the end unless the prose already said goodbye (a model or solo natural close).

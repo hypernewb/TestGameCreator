@@ -1,0 +1,46 @@
+{
+  "revision": "35a0f4ff2307ba1aab2a56df0bb2c81bd0f4b054",
+  "workingTreeFiles": [
+    {
+      "path": "vendor/venus/scenePrompt.mjs",
+      "sha256": "072ffac9246ee04efebf1e448417274c46131a2d80cf989b07e67de505894b92"
+    },
+    {
+      "path": "packages/ai/providers.mjs",
+      "sha256": "91480b37931b13ba1983f0fde1af77e851baf3648962503db84d6fe1081a966a"
+    },
+    {
+      "path": "packages/ai/knowledge.mjs",
+      "sha256": "418924d0917f787c1261b367ef31ef12ac7ec75b3fdf77323ab59193bbb16d91"
+    },
+    {
+      "path": "packages/ai/player-contribution.mjs",
+      "sha256": "2cab70bc7453f665a150a5ef7003331558e3e60e8c77dcddecbf0be7e8830b45"
+    },
+    {
+      "path": "packages/ai/untrusted-output.mjs",
+      "sha256": "38e7346cf0dd855cfe35b785b4ac0fa1f122471aae08552f8d5e439ae96c5beb"
+    },
+    {
+      "path": "public/avoid-phrases.mjs",
+      "sha256": "fa46db9099b600ced06e3ddf1a11453583467fadbc1ea76a1690926059f52037"
+    },
+    {
+      "path": "vendor/venus/sceneSanitizer.mjs",
+      "sha256": "953756f998b1a58f62f2fe48d8da3313773a40b0360b1750f336ed058641eeb4"
+    },
+    {
+      "path": "packages/ai/narration-lint.mjs",
+      "sha256": "64415958d84fb6dd151c1ce17df4c4bda6d8c7f51ff1781e265823204ed7a133"
+    },
+    {
+      "path": "vendor/venus/openaiResponse.mjs",
+      "sha256": "8820a459ef271f4091078996c7c1ba7b4b289b980804020f057bc6b443b37ba5"
+    },
+    {
+      "path": "public/turn-presentation.mjs",
+      "sha256": "0358d460f942fcdb773b40c170b23e112f514ba0b93d34efab5d2c22ae395a1c"
+    }
+  ],
+  "note": "Hashes identify the actual working tree; it may contain unrelated uncommitted work. Recheck before any live run."
+}

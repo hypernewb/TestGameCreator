@@ -5,6 +5,7 @@ import {registry} from '../packages/modules/index.mjs';
 import {intimacyContext} from '../packages/modules/intimacy.mjs';
 import {linesFor} from '../public/turn-presentation.mjs';
 import {listsFor,SEX_SLIDERS} from '../public/card-presets.mjs';
+import {sceneCoverage} from '../public/scene-coverage.mjs';
 const fantasy=JSON.parse(readFileSync(new URL('../packs/template-fantasy-town.json',import.meta.url),'utf8'));
 const neutral=JSON.parse(readFileSync(new URL('../packs/neutral.json',import.meta.url),'utf8'));
 
@@ -38,12 +39,14 @@ test('per-character sex scenes: notes steer the narrator while active, the image
  for(const bad of [[{category:'nope'}],[{category:'fling',cg:'http://x/y.png'}],[{category:'fling',notes:'x'.repeat(2001)}]])assert.throws(()=>validatePack(sexPack(bad),registry),/sex scene/);
 });
 
-const source=readFileSync(new URL('../public/studio.mjs',import.meta.url),'utf8'),fn=name=>{const a=source.indexOf(`function ${name}(`),first=source.slice(a,source.indexOf('\n',a));return first.endsWith('}')?first:source.slice(a,source.indexOf('\n}\n',a)+2);};
+const source=readFileSync(new URL('../public/studio.mjs',import.meta.url),'utf8').split(String.fromCharCode(13,10)).join(String.fromCharCode(10)),fn=name=>{const a=source.indexOf(`function ${name}(`),first=source.slice(a,source.indexOf('\n',a));return first.endsWith('}')?first:source.slice(a,source.indexOf('\n}\n',a)+2);};
 test('Studio "Sex & body" fold: picker chips, sex-style sliders, body and wardrobe tags, aroused face, AI fill blanks; one click makes a character romanceable with sex scenes and images',()=>{
  const seen=[],box=()=>({children:[],dataset:{},append(...c){this.children.push(...c);}}),node=(tag,text)=>Object.assign(box(),{tag,textContent:text});let renders=0;
  const track=kind=>(parent,obj,key,label)=>{seen.push([kind,key,label,obj]);return {placeholder:''};};
- const blanks=[],f=new Function('node','fold','lines','field','hint','tagChips','imageUpload','render','message','openFolds','moduleCatalog','listsFor','pickChips','sliderRow','SEX_SLIDERS','fillBlanksButton','picks','comfyGen','comfyDeps',`${fn('enableRomanceFor')}\n${fn('eroticFold')}\nconst SEX_CATEGORIES=${source.match(/const SEX_CATEGORIES=(\[.*?\]);/)[1]};return {enableRomanceFor,eroticFold};`);
- const {enableRomanceFor,eroticFold}=f(node,(g,o,title)=>{seen.push(['fold',title]);return box();},track('lines'),track('field'),(i)=>i,track('tags'),track('image'),()=>renders++,()=>{},new Set(),{'social.dating':{version:'0.2.0'}},listsFor,(parent,obj,key,label,options,mode)=>{seen.push(['pick',key,label,obj,options,mode]);},(parent,obj,[key])=>{seen.push(['slider',key,'',obj]);},SEX_SLIDERS,(parent,p,o,part)=>blanks.push(part),(parent,p,obj,key,label,k,mode='list')=>{seen.push(['pick',key,label,obj,listsFor(p)[k],mode]);},(parent,p,slot)=>seen.push(['comfy',slot.key,slot.id,slot.obj]),()=>({}));
+ const blanks=[],f=new Function('node','fold','lines','field','hint','tagChips','imageUpload','render','message','openFolds','moduleCatalog','listsFor','pickChips','sliderRow','SEX_SLIDERS','fillBlanksButton','picks','comfyGen','comfyDeps','sceneCoverage',`${fn('enableRomanceFor')}\n${fn('eroticFold')}
+${fn('coveragePanel')}
+${fn('sceneDraftButton')}\n${fn('beatsEditor')}\n${fn('wardrobeEditor')}\nconst locs=()=>[];\nconst SEX_CATEGORIES=${source.match(/const SEX_CATEGORIES=(\[.*?\]);/)[1]};return {enableRomanceFor,eroticFold};`);
+ const {enableRomanceFor,eroticFold}=f(node,(g,o,title)=>{seen.push(['fold',title]);return box();},track('lines'),track('field'),(i)=>i,track('tags'),track('image'),()=>renders++,()=>{},new Set(),{'social.dating':{version:'0.2.0'}},listsFor,(parent,obj,key,label,options,mode)=>{seen.push(['pick',key,label,obj,options,mode]);},(parent,obj,[key])=>{seen.push(['slider',key,'',obj]);},SEX_SLIDERS,(parent,p,o,part)=>blanks.push(part),(parent,p,obj,key,label,k,mode='list')=>{seen.push(['pick',key,label,obj,listsFor(p)[k],mode]);},(parent,p,slot)=>seen.push(['comfy',slot.key,slot.id,slot.obj]),()=>({}),sceneCoverage);
  const p={modules:{},actors:[{id:'wren'}]},o=p.actors[0];eroticFold(box(),p,o);
  assert.deepEqual(seen.filter(x=>x[0]!=='fold').map(x=>x[1]),['turnOns','turnOffs','leads','loud','rough','drive','experience','adventurous','inBed','afterSex','bodyTags','underwear','sleep','swim','aroused']);assert.equal(seen.find(x=>x[1]==='aroused')[3],o.expressionTags);assert.deepEqual(blanks,['sex']);
  assert.equal(seen.find(x=>x[1]==='leads')[3],o.sexStyle);assert.deepEqual(seen.filter(x=>x[0]==='pick').map(x=>x[5]),['list','list','text','tag','tag','tag','tag','tag']);assert.ok(seen.find(x=>x[1]==='turnOns')[4].length>=10);

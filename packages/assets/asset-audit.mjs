@@ -28,6 +28,7 @@ export function assetReferences(pack){
    (b?.pages||[]).forEach((page,j)=>addPage(bt,j,page));
   }
  }
+ for(const d of pack.intimacyProfiles||[])for(const x of d?.scenes||[]){const name=pack.actors?.find(a=>a.id===d.character)?.name||d.character,id=`${d.character}:${x.category}`,at=`intimacy.${d.character}.${x.category}`;if(x.cg)add({type:'intimacy',id,name,label:`${name} — ${x.category} CG`},`${at}.cg`,'cg',x.cg,'Intimate scenes');(x.beats||[]).forEach((b,k)=>{if(b?.cg)add({type:'intimacy',id,name,label:`${name} — ${x.category} beat ${k+1} CG`},`${at}.beats.${k}.cg`,'cg',b.cg,'Intimate scenes');});}
  for(const [i,f] of (pack.firsts||[]).entries())if(f?.cg)add({type:'first',id:f?.id||String(i),name:f?.title||f?.id||`First ${i+1}`,label:`${f?.title||f?.id||`First ${i+1}`} — CG`},`firsts.${f?.id||i}.cg`,'cg',f.cg,null);
  return refs;
 }

@@ -1,0 +1,170 @@
+{
+  "preparedAt": "2026-10-07T08:34:30.039Z",
+  "generationCalls": 0,
+  "plannedMaximumSceneRequests": 20,
+  "controls": {
+    "model": "deepseek/deepseek-v4.1-flash",
+    "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+    "providerRoute": "fireworks",
+    "temperature": 0.5,
+    "max_tokens": 1100,
+    "reasoning_effort": "none",
+    "stream": false,
+    "retries": 0,
+    "seed": null,
+    "maxInputTokenUpper": 65536,
+    "paidAuthorization": false
+  },
+  "captures": [
+    {
+      "profileId": "dilek-sahin",
+      "turn": 1,
+      "profileSha256": "e46708a1ebbd8e4d13d9fa63f3595c0103d7f99ab86f9b5ccdc78457b7fa5fce",
+      "input": "I ask whether she has a few minutes to talk, and tell her I was hoping to see her.",
+      "historyStatus": "EMPTY preparation; not a simulated conversation",
+      "messagesSha256": {
+        "venus": "f7b18781bd72b2bad0310733f75c737b78aab6cbb4ec619adc12d2102dc8d65d",
+        "story": "0b3aea7aedb1028ac09522668e84d0beca227c353353544a0c6ffcb4b9ff4d1e"
+      },
+      "inputBytes": {
+        "venus": 6938,
+        "story": 10149
+      }
+    },
+    {
+      "profileId": "dilek-sahin",
+      "turn": 2,
+      "profileSha256": "e46708a1ebbd8e4d13d9fa63f3595c0103d7f99ab86f9b5ccdc78457b7fa5fce",
+      "input": "I tease her that this is an elaborate way of making me come back, then after her response I admit that I don't mind.",
+      "historyStatus": "EMPTY preparation; not a simulated conversation",
+      "messagesSha256": {
+        "venus": "2bd9f2a101d9b9b93c90138ea1a69c0616fc8eecbabc56488511bbbe957b3b76",
+        "story": "bc88fcd4773d2f587c5af5537b7e1989d682668125b5c1855fda2a1cd02dfdf5"
+      },
+      "inputBytes": {
+        "venus": 8278,
+        "story": 10302
+      }
+    },
+    {
+      "profileId": "dilek-sahin",
+      "turn": 3,
+      "profileSha256": "e46708a1ebbd8e4d13d9fa63f3595c0103d7f99ab86f9b5ccdc78457b7fa5fce",
+      "input": "I say, \"I like your company. I also like how easily you make me lose my train of thought.\"",
+      "historyStatus": "EMPTY preparation; not a simulated conversation",
+      "messagesSha256": {
+        "venus": "5d117beb691a470649d656388d2bd5290a3bc783bb4e4e0b52d31ae0ba259457",
+        "story": "41fd2d22eae0348fe0e07fdf71dd418150865a19337be1f8ff89ad40bf452d17"
+      },
+      "inputBytes": {
+        "venus": 8254,
+        "story": 10278
+      }
+    },
+    {
+      "profileId": "dilek-sahin",
+      "turn": 4,
+      "profileSha256": "e46708a1ebbd8e4d13d9fa63f3595c0103d7f99ab86f9b5ccdc78457b7fa5fce",
+      "input": "I say, \"I cannot join you tonight. Another evening could be nice, if you want.\"",
+      "historyStatus": "EMPTY preparation; not a simulated conversation",
+      "messagesSha256": {
+        "venus": "42bb5412cc51187e9bf1d8de4bc9fe5550dae86c07a3a43b0aecad08f297a007",
+        "story": "9fe38a9b26d8478ed3f66c89c3f641c7af617ea6a59dfebcf1ca7a523857f550"
+      },
+      "inputBytes": {
+        "venus": 8243,
+        "story": 10267
+      }
+    },
+    {
+      "profileId": "dilek-sahin",
+      "turn": 5,
+      "profileSha256": "e46708a1ebbd8e4d13d9fa63f3595c0103d7f99ab86f9b5ccdc78457b7fa5fce",
+      "input": "I tease her about making me lose my train of thought again, then ask what she would actually enjoy doing together.",
+      "historyStatus": "EMPTY preparation; not a simulated conversation",
+      "messagesSha256": {
+        "venus": "df9d207b3489930d9eae7743c701820f1a6086b5f417ccc74da8acd9d50d3c01",
+        "story": "ba7078aeeb4cddcbb7276c4cad59049275a5b8ea72e55b863146a4c16873f494"
+      },
+      "inputBytes": {
+        "venus": 8276,
+        "story": 10300
+      }
+    },
+    {
+      "profileId": "priya-raman",
+      "turn": 1,
+      "profileSha256": "01fe732bca25a56ca4e203e62b56f7885bfc7bab90ae30b0a47d9f291d7c06fa",
+      "input": "I ask whether she has a few minutes to talk, and tell her I was hoping to see her.",
+      "historyStatus": "EMPTY preparation; not a simulated conversation",
+      "messagesSha256": {
+        "venus": "5504f19f1a97d7b28f599a7056959008a4465641b7dd6cb68fd45fcc4fedb788",
+        "story": "0f4d7946ec5e9f8a8a7d7b19875460fcb613526b828418b79883cbeeb6be74ed"
+      },
+      "inputBytes": {
+        "venus": 7152,
+        "story": 10284
+      }
+    },
+    {
+      "profileId": "priya-raman",
+      "turn": 2,
+      "profileSha256": "01fe732bca25a56ca4e203e62b56f7885bfc7bab90ae30b0a47d9f291d7c06fa",
+      "input": "I tease her that this is an elaborate way of making me come back, then after her response I admit that I don't mind.",
+      "historyStatus": "EMPTY preparation; not a simulated conversation",
+      "messagesSha256": {
+        "venus": "955e1929e7dd80e838f85dab6edb8c6976bbf0cd32de1d31b439bb22dfa42144",
+        "story": "3d434074f4e9755b009663df70ba641b81bb053f81ab1d1034aeee0af230f08e"
+      },
+      "inputBytes": {
+        "venus": 8492,
+        "story": 10437
+      }
+    },
+    {
+      "profileId": "priya-raman",
+      "turn": 3,
+      "profileSha256": "01fe732bca25a56ca4e203e62b56f7885bfc7bab90ae30b0a47d9f291d7c06fa",
+      "input": "I say, \"I like your company. I also like how easily you make me lose my train of thought.\"",
+      "historyStatus": "EMPTY preparation; not a simulated conversation",
+      "messagesSha256": {
+        "venus": "6a97a6ba64a84eff781d298d418c82d57c171e2de74cf114385932e5318aa9b3",
+        "story": "bb61e63e3c0516509976f11f005fe67c60d7b881434115bbe7821ae20db11453"
+      },
+      "inputBytes": {
+        "venus": 8468,
+        "story": 10413
+      }
+    },
+    {
+      "profileId": "priya-raman",
+      "turn": 4,
+      "profileSha256": "01fe732bca25a56ca4e203e62b56f7885bfc7bab90ae30b0a47d9f291d7c06fa",
+      "input": "I say, \"I cannot join you tonight. Another evening could be nice, if you want.\"",
+      "historyStatus": "EMPTY preparation; not a simulated conversation",
+      "messagesSha256": {
+        "venus": "d7f689c47f3d7aa721bd69a58befc6ccb16a3d1eebfd9a07278e187338282fc9",
+        "story": "94899b015b2663e3efd6e8114c00116e45ed4914e1e2fb3a4f1f99594f8a1efc"
+      },
+      "inputBytes": {
+        "venus": 8457,
+        "story": 10402
+      }
+    },
+    {
+      "profileId": "priya-raman",
+      "turn": 5,
+      "profileSha256": "01fe732bca25a56ca4e203e62b56f7885bfc7bab90ae30b0a47d9f291d7c06fa",
+      "input": "I tease her about making me lose my train of thought again, then ask what she would actually enjoy doing together.",
+      "historyStatus": "EMPTY preparation; not a simulated conversation",
+      "messagesSha256": {
+        "venus": "2bd14da2ff9e7e3e072dbbd990ffadab8816fdd362684b964e885f7334af1da1",
+        "story": "3ad143ec82373613540b4e7fbdfc3634ca90d699fce140d61533172cb86c08b3"
+      },
+      "inputBytes": {
+        "venus": 8490,
+        "story": 10435
+      }
+    }
+  ]
+}

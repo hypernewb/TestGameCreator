@@ -34,13 +34,13 @@ test('the input that reaches the budget gets a closing reply that answers it, th
   const r=await service.act('closing',{id:'last',expectedRevision:1,command:{type:'core.scene',args:talk('Coffee tomorrow?','continue')}});
   assert.deepEqual(seen.map(s=>s.phase),['opening','closing']);
   assert.match(seen[1].prompt,/PLAYER ACTION\nCoffee tomorrow\?/);assert.match(seen[1].prompt,/Answer the player action first/);
-  assert.match(seen[0].prompt,/never restate or paraphrase/);assert.doesNotMatch(seen[0].prompt,/restating only the player action|echoing only/);assert.match(seen[0].prompt,/5–7 visual-novel entries/);
+  assert.match(seen[0].prompt,/Do not recap earlier turns or add stat-colored delivery/);assert.doesNotMatch(seen[0].prompt,/restating only the player action|echoing only/);assert.match(seen[0].prompt,/at most 12 entries/);
   assert.equal(r.state.scene,null);assert.equal(r.turn.id,'last');assert.match(r.turn.narrative,/see you then/);
   assert.equal(r.state.turns['last-end'].events.find(e=>e.type==='core.sceneEnded').payload.reason,'natural');
  }finally{store.close();}
 });
 
-test('an unbudgeted scene also targets a full typed exchange',()=>{
+test('an unbudgeted scene permits a connected typed exchange without fixed line balance',()=>{
  const p=pack(),prompt=scenePromptMessages({stagedCast:['ada'],scenePhase:'opening',playerAction:'Hi.'},p).map(m=>m.content).join('\n');
- assert.match(prompt,/5–7 visual-novel entries/);assert.match(prompt,/about half of them spoken NPC lines/);assert.match(prompt,/never a bare one-liner/);
+ assert.match(prompt,/at most 12 entries/);assert.match(prompt,/no minimum or fixed balance/);assert.match(prompt,/Let characters finish connected thoughts in their own speaking rhythm/);
 });

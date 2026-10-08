@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "results": [],
+  "criteria": [
+    {
+      "id": "flirtEnjoyment",
+      "question": "When flirting fits the scene, is it enjoyable, responsive and specific to this character? Absence on an individual turn is not a failure."
+    },
+    {
+      "id": "attractionTension",
+      "question": "Across the exchange, does romantic interest, tension or resistance fit this character and situation, without requiring success or escalation every turn?"
+    },
+    {
+      "id": "characterAppeal",
+      "question": "Does this character have a distinctive, appealing voice across turns?"
+    },
+    {
+      "id": "interweaving",
+      "question": "Do action and dialogue naturally interleave with the submitted player contributions?"
+    },
+    {
+      "id": "responsiveness",
+      "question": "Does the exchange respond to the player and make ordinary conversation enjoyable and purposeful through interest, personality, trust, tension or companionship?"
+    },
+    {
+      "id": "continuity",
+      "question": "Are callbacks grounded and the decline respected?"
+    }
+  ],
+  "hardFlags": [
+    "invented consequential player decision or unauthorized speech/action beyond permitted incidental embellishment",
+    "invented established history",
+    "ignored decline or assumed consent",
+    "unearned romantic agreement"
+  ],
+  "secondaryNotes": [
+    "metaphors: useful, ornamental, repetitive or confusing",
+    "action/dialogue placement",
+    "raw-to-display deletions or rewrites",
+    "schema/ownership failure"
+  ],
+  "probeNote": "If no preceding invitation exists, score the decline as a boundary statement; invitation-specific response is not applicable. Never fabricate an invitation.",
+  "reviewMode": "qualitative-whole-exchange",
+  "acceptance": "Flirting is essential to the erotic dating-sim experience and differs by character. Individual exchanges may instead build interest, reveal personality, establish trust or tension, or make time together enjoyable. Neither constant flirting nor romantic escalation on every turn is required. Evaluate purposeful ordinary conversation and character-specific flirting in complete exchanges; neither compensates for poor writing in the other. Owner review of complete transcripts determines acceptance; no weighted total or numerical pass threshold.",
+  "exportCompatibility": "Existing blind export has nullable numeric score slots. Leave them null; use notes. Review complete conversations in order as well as individual raw/display rows."
+}

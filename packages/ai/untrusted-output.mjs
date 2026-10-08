@@ -97,9 +97,6 @@ function freshLines(lines,earlier=[],input=''){
 }
 export const onlyRepeats=(lines,earlier=[],input='',context={})=>{if(ordinaryConversation(context)){const plain=t=>t.trim().replace(/\s+/gu,' ').replaceAll('\u2019',"'").toLowerCase(),spoken=lines.filter(l=>l.speaker);if(/\b(?:quote|repeat)\b/iu.test(input))return false;return spoken.length>0&&spoken.every(l=>earlier.some(e=>e.speaker===l.speaker&&(!e.example||!isQuestion(input)&&!plain(input).includes(plain(e.text)))&&plain(e.text)===plain(l.text)));}return lines.some(l=>l.speaker)&&!freshLines(lines,earlier,input).some(l=>l.speaker);};
 export function dropRepeats(lines,earlier=[],input='',context={}){if(ordinaryConversation(context)){if(isQuestion(input)||/\b(?:repeat|quote|mean)\b/iu.test(input))return lines;const exact=t=>t.trim().replace(/\s+/gu,' ').toLowerCase(),samples=earlier.filter(e=>e.example),out=lines.flatMap(l=>{if(!l.speaker)return [l];const kept=l.text.split(/(?<=[.!?])\s+/u).filter(s=>!samples.some(e=>e.speaker===l.speaker&&exact(e.text)===exact(s)&&!exact(input).includes(exact(s))));return kept.length?[{...l,text:kept.join(' ')}]:[];});return out.some(l=>l.speaker)?out:lines;}return onlyRepeats(lines,earlier,input)?lines:freshLines(lines,earlier,input);}
-// Role-play fine-tunes escalate to kissing or groping on their own. Outside a pack with an intimacy module, a sentence
-// where someone kisses, gropes or grinds on the player is dropped unless the player's own action started it.
-const ADVANCE=/\b(?:kiss(?:es|ed|ing)?|grind(?:s|ing)?|grop(?:es?|ing)|straddl(?:es?|ing)|caress(?:es|ing)?|(?:lips|mouth)\s+(?:on|against|bites?|crush(?:es)?|finds?|meets?|claims?))\b|\b(?:grabs?|yank(?:s|ing)?|pull(?:s|ing)?|press(?:es|ing)?)\s+(?:you|your|herself|himself)\b(?:\s+\w+){0,4}\s+(?:into|against|close|closer)\b/iu;
 // Role-play fine-tunes pad every beat with the same stock reactions ("a flicker of surprise crossing his features", "a small
 // smile tugging at her lips", "His gaze softens."). Trailing stock clauses are cut from narration, and a narration sentence that
 // is nothing but a face reacting is dropped when someone speaks this reply. Nothing spoken is touched.
@@ -115,8 +112,5 @@ export function dropStock(lines,avoid=[],{allowPlayerReactions=false,context={}}
   if(kept.length)out.push({...line,text:kept.join(' ')});}
  return out.some(l=>l.speaker)||out.length?out:lines;
 }
-export function dropAdvances(lines,input=''){
- if(ADVANCE.test(input))return lines;
- const out=[];for(const line of lines){const kept=line.text.split(/(?<=[.!?…])\s+/u).filter(t=>!(ADVANCE.test(t)&&/\byou(?:rs?)?\b/i.test(t)));if(kept.length)out.push({...line,text:kept.join(' ')});}
- return out.length?out:lines;
-}
+// Compatibility export for saved replay tools; contact is not deleted by a blanket lexical filter.
+export const dropAdvances=lines=>lines;

@@ -1,4 +1,5 @@
 export const exampleTexts=xs=>[].concat(xs||[]).map(x=>typeof x==='string'?x:x?.text).filter(x=>typeof x==='string'&&x.trim());
+export {experienceCueOf} from './relationship-experience.mjs';
 export function relationshipStageOf(c,a,trust=c.actor?.id===a.id?c.actor.relationshipToPlayer:null){
  const d=(c.dating||[]).find(x=>x.character===a.id);if(d?.strained&&!['rejected','broken'].includes(d.phase))return 'strained';if(d&&d.phase!=='available')return d.phase;
  if(c.relationshipStages?.[a.id])return c.relationshipStages[a.id];if(trust==null)return '';return trust>=75?'close':trust>=40?'friend':trust<5&&!(c.memories||[]).some(m=>m.character===a.id||m.knownBy?.includes(a.id))&&!(c.pastScenes||[]).some(m=>m.cast?.includes(a.id)||m.knownBy?.includes(a.id))?'stranger':'familiar';

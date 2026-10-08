@@ -138,13 +138,10 @@ test('a body-part subject filed under a speaker is narration whatever its verb',
  assert.deepEqual(guard('She was always like that.',['mina'],'mina'),[{speaker:'mina',text:'She was always like that.'}]);
 });
 
-test('an NPC does not kiss or grope the player unless the player started it, and the prompt says so outside intimacy packs',()=>{
- const lines=[{speaker:'mina',text:'With Rowan? Really?'},{speaker:'',text:'She grabs your collar, yanking you into a heated kiss. Her lips bite yours as she presses against you, grinding her hips roughly. The room hums.'}];
- assert.deepEqual(dropAdvances(lines,'Sorry I am late, I was with Rowan.'),[{speaker:'mina',text:'With Rowan? Really?'},{speaker:'',text:'The room hums.'}]);
- assert.deepEqual(dropAdvances(lines,'I kiss Mina.'),lines);
- assert.deepEqual(dropAdvances([{speaker:'mina',text:'Rowan kissed a frog once. Long story.'}],'Hi'),[{speaker:'mina',text:'Rowan kissed a frog once. Long story.'}]);
+test('character contact remains visible and the prompt respects actual refusals rather than stage bans',()=>{
+ const lines=[{speaker:'',text:'She takes your hand.'},{speaker:'mina',text:'Come and see.'}];assert.deepEqual(dropAdvances(lines,'What is it?'),lines);
  const p=pack(),rule=/Nobody kisses or touches the player unless the player starts it/,sys=q=>scenePromptMessages({stagedCast:['ada'],sceneHistory:[],playerAction:'Hi',location:q.locations[0]},q)[0].content;
- assert.match(sys(p),rule);p.modules['social.intimacy']='0.1.0';assert.doesNotMatch(sys(p),rule);
+ assert.doesNotMatch(sys(p),rule);assert.match(sys(p),/Respect an actual refusal or withdrawal from either participant/);assert.match(sys(p),/Do not invent the player’s acceptance or decisions/);p.modules['social.intimacy']='0.1.0';assert.doesNotMatch(sys(p),rule);
 });
 
 test('a question about an NPC is answered from the authored line it touches',()=>{
@@ -209,14 +206,14 @@ test('stock RP reactions are trimmed from narration, concrete actions and speech
  assert.deepEqual(run([['','Her expression softens.']]),[':Her expression softens.']);
 });
 
-test('per-NPC relationship stages preserve boundaries without stock temperament or romance moves',()=>{
+test('per-NPC relationship stages preserve context without blanket contact restrictions',()=>{
  const p=JSON.parse(readFileSync(new URL('../packs/crossed-plans.json',import.meta.url))),mina=p.actors.find(a=>a.id==='mina'),c=extra=>({stagedCast:['mina'],scenePhase:'continuation',playerAction:'Nice frames.',sceneHistory:[],...extra}),at=extra=>beatDirection(c(extra),p,'s1'),actor=t=>({actor:{id:'mina',relationshipToPlayer:t}}),stage=extra=>relationshipStageOf(c(extra),mina);
- assert.equal(stage(actor(0)),'stranger');assert.match(at(actor(0)),/no touching or leaning in/);assert.doesNotMatch(at(actor(0)),/quick to spar|tease the player|admit one small/);
- assert.equal(stage({...actor(0),memories:[{text:'Met Mina',knownBy:[p.playerId,'mina']}]}),'familiar');assert.equal(stage({...actor(0),memories:[{text:'Met Rowan',knownBy:[p.playerId,'rowan']}]}),'stranger');assert.equal(stage(actor(20)),'familiar');assert.match(at(actor(20)),/no touching or leaning in/);assert.doesNotMatch(at(actor(20)),/banter and charged looks/);
+ assert.equal(stage(actor(0)),'stranger');assert.doesNotMatch(at(actor(0)),/no touching or leaning in/);assert.doesNotMatch(at(actor(0)),/quick to spar|tease the player|admit one small/);
+ assert.equal(stage({...actor(0),memories:[{text:'Met Mina',knownBy:[p.playerId,'mina']}]}),'familiar');assert.equal(stage({...actor(0),memories:[{text:'Met Rowan',knownBy:[p.playerId,'rowan']}]}),'stranger');assert.equal(stage(actor(20)),'familiar');assert.doesNotMatch(at(actor(20)),/no touching or leaning in/);assert.doesNotMatch(at(actor(20)),/banter and charged looks/);
  for(const [trust,expected] of [[45,'friend'],[80,'close']]){assert.equal(stage(actor(trust)),expected);assert.match(scenePromptMessages(c(actor(trust)),p)[1].content,new RegExp('Relationship with player: '+expected));assert.doesNotMatch(at(actor(trust)),/admit one small|knows the player well: relaxed/);}
  assert.equal(stage({}),'');assert.equal(stage({actor:{id:'rowan',relationshipToPlayer:90}}),'');
  const dating=(phase,x={})=>({...actor(80),dating:[{character:'mina',phase,...x}]});for(const phase of ['crush','dating','exclusive']){assert.equal(stage(dating(phase)),phase);assert.doesNotMatch(at(dating(phase)),/flirt a little/);}
- assert.equal(stage(dating('crush',{strained:true})),'strained');assert.match(at(dating('crush',{strained:true})),/physical distance/);for(const ph of ['rejected','broken']){assert.equal(stage(dating(ph)),ph);assert.match(at(dating(ph)),/no romantic or physical escalation/);assert.doesNotMatch(at(dating(ph)),/flirt a little|admit one small/);}assert.equal(stage(dating('available')),'close');
+ assert.equal(stage(dating('crush',{strained:true})),'strained');assert.doesNotMatch(at(dating('crush',{strained:true})),/physical distance/);for(const ph of ['rejected','broken']){assert.equal(stage(dating(ph)),ph);assert.doesNotMatch(at(dating(ph)),/no romantic or physical escalation/);assert.doesNotMatch(at(dating(ph)),/flirt a little|admit one small/);}assert.equal(stage(dating('available')),'close');
 });
 
 test('past disclosures and promises remain available without forced opening callbacks or invented fulfillment',()=>{
@@ -234,4 +231,9 @@ test('ordinary filler and substantive input preserve author topics without compu
  const p=JSON.parse(readFileSync(new URL('../packs/crossed-plans.json',import.meta.url))),c=input=>({stagedCast:['mina'],scenePhase:'continuation',playerAction:input,sceneHistory:[]});
  for(const input of ['Go on.',"I spent the whole summer fixing my uncle's boat"])for(let n=0;n<40;n++)assert.doesNotMatch(beatDirection(c(input),p,'t'+n),/bring up /);
  const user=scenePromptMessages(c("I spent the whole summer fixing my uncle's boat"),p)[1].content;assert.match(user,/fixing my uncle's boat/);assert.match(user,/felt-tip pens/);
+});
+
+test('different authored contact preferences survive in the prompt for the same relationship stage',()=>{
+ const p=pack(),a=p.actors.find(x=>x.id==='ada');a.behavior={withStrangers:'She offers a friendly handshake.'};const c={stagedCast:['ada'],scenePhase:'continuation',playerAction:'Hello.',relationshipStages:{ada:'stranger'},sceneHistory:[]};const text=()=>scenePromptMessages(c,p).map(x=>x.content).join('\n');
+ assert.match(text(),/offers a friendly handshake/);a.behavior.withStrangers='She declines handshakes and prefers more space.';assert.match(text(),/declines handshakes/);assert.doesNotMatch(text(),/no touching|no leaning|Nobody kisses or touches/);
 });

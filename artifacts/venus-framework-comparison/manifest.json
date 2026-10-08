@@ -1,0 +1,59 @@
+{
+  "sealedAt": "2026-10-07T08:43:00.866Z",
+  "modelCalls": 0,
+  "phase": "offline preparation only",
+  "files": [
+    {
+      "path": "profiles.snapshot.json",
+      "sha256": "170080ef3ecb51096d389dca4736ce84bf4852d4a54a85546e3f7246ef3021f4"
+    },
+    {
+      "path": "inputs.json",
+      "sha256": "186b5469871860f372e0eb76f19b4f7289b10b8bf838f25b6a8f0611d37673c7"
+    },
+    {
+      "path": "prepare.mjs",
+      "sha256": "710c9433f9704849b110b20653f60b617a566545874e2abb9952643268842c00"
+    },
+    {
+      "path": "venus-loader.mjs",
+      "sha256": "6134a0199a7f840db863d88eba6f412209707d2811d39ae43160744c4695714f"
+    },
+    {
+      "path": "materialize.mjs",
+      "sha256": "1c8725397bb43c7996296f49d95fab643d1bcf295124014fe808277d8e772c7b"
+    },
+    {
+      "path": "blind.mjs",
+      "sha256": "80aa6b86032bed64cbcc267dd37ab675bd1af937712eb74d2e78de54e55fe805"
+    },
+    {
+      "path": "rubric.json",
+      "sha256": "b0a73f5cfe334d6e576e11ae674b685b48799869b8e36efa340611161227c1ab"
+    },
+    {
+      "path": "blind-output.schema.json",
+      "sha256": "fa5b66912287cf1a59afe370be542e8a93402807bfff3eadbecf678e0e221f41"
+    },
+    {
+      "path": "capture-index.json",
+      "sha256": "d82046108abbc105dac9a6bf5776cf529698720dc9f97a5f7572cefd13bab867"
+    },
+    {
+      "path": "source-provenance.json",
+      "sha256": "2e7fd9bf3c58e3aac0a1d77b9767ea5a279529defd09612805d4444e9cdf6dbe"
+    },
+    {
+      "path": "framework-provenance.json",
+      "sha256": "8938a366597fdf4b3ad69518508be98a566931a67c9b888b560af575ea7c0c2b"
+    }
+  ],
+  "reviewRevisions": [
+    {
+      "date": "2026-10-07",
+      "reason": "Owner-approved qualitative whole-exchange review replaces weighted scoring",
+      "file": "rubric.json",
+      "previousSha256": "8d4bc39c9dd79cf95d6b779d130a0ab5c0f636f34dc269d34510433ba8730b6d"
+    }
+  ]
+}

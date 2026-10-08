@@ -11,7 +11,7 @@ const m=JSON.parse(src('docs/research/gc1-1-accepted-evidence-manifest-2026-10-0
 
 test('GC1.1 pin: manifest counts match its entries and no files are frozen yet',()=>{assert.equal(m.frozen_file_count,m.frozen_files.length);assert.equal(m.prose_only_count,m.prose_only.length);assert.equal(m.frozen_file_count,0);assert.ok(m.prose_only.every(e=>'quoted_reply_excerpt' in e));}); // variant excerpts may be empty by design
 test('GC1.1 pin: every frozen file exists and matches its manifest SHA-256 (entry key shape assumed; none exist yet)',()=>{for(const f of m.frozen_files){assert.equal(createHash('sha256').update(readFileSync(root(f.path))).digest('hex'),f.sha256,f.path);}});
-test.todo('GC1.1 gap: no accepted transcript, request trace, player input or displayed reply is frozen on disk, so no hash check runs'); // manifest has no hashes; do not invent them
+test.todo('GC1.1 gap: eight recovered originals (traces, results, summaries, references) sit outside the repo; copy them in and the hash pin runs. Their SHA-256 values match the manifest (checked 2026-10-08)'); // in-repo manifest lists 0 files; do not invent entries
 
 const pins=[
 ['GC1.2 assembly','tests/player-contribution.test.mjs','direct speech ownership survives quotes, filters, sanitizer and shared display at a later position'],

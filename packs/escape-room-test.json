@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "progression": {"version": 1},
+  "id": "test.escape-room",
+  "version": "0.1.0",
+  "title": "The Locked Room",
+  "subtitle": "A small test slice: tension, conflict, and consent",
+  "playerId": "player",
+  "calendar": "Night",
+  "modules": {
+    "social.conversation": "0.1.0",
+    "social.relationships": "0.1.0",
+    "social.dating": "0.1.0",
+    "social.intimacy": "0.1.0",
+    "story.endings": "0.1.0"
+  },
+  "locations": [
+    {"id": "room", "name": "The Room", "description": "A windowless room with one locked door and a dim lamp.", "exits": []}
+  ],
+  "actors": [
+    {"id": "player", "name": "You", "age": 28, "location": "room", "identityTags": ["adult"]},
+    {"id": "ren", "name": "Ren", "age": 30, "location": "room", "description": "Calm, practical, reads the room first.", "style": "Measured, dry, asks questions.", "goal": "Get out without anyone getting hurt."},
+    {"id": "sol", "name": "Sol", "age": 26, "location": "room", "description": "Impatient, funny, hides fear behind jokes.", "style": "Quick, teasing, deflects with humour.", "goal": "Find the way out and stop feeling trapped."}
+  ],
+  "facts": [
+    {"id": "door-locked", "text": "The door is locked from outside. Nobody in the room has a key.", "knownBy": "public"},
+    {"id": "ren-lamp", "text": "Ren noticed a loose panel behind the lamp.", "knownBy": ["ren"]},
+    {"id": "sol-note", "text": "Sol found a note under the mattress that she has not shown anyone.", "knownBy": ["sol"]}
+  ],
+  "datingProfiles": [
+    {"character": "ren", "initialChemistry": 20, "initialPhase": "crush", "agreements": ["casual", "open"], "thresholds": {"crush": 10, "date": 25, "exclusive": 65}, "preferences": [], "signals": []},
+    {"character": "sol", "initialChemistry": 20, "initialPhase": "crush", "agreements": ["casual", "open"], "thresholds": {"crush": 10, "date": 25, "exclusive": 65}, "preferences": [], "signals": []}
+  ],
+  "intimacySettings": {"difficulty": "normal", "contentLevel": "fade", "privateLocations": ["room"], "aftercareOptions": []},
+  "intimacyCategories": [
+    {"id": "intimacy", "name": "Intimacy", "privacy": "private", "casual": true, "resolution": "scene", "requiresAgreement": []}
+  ],
+  "intimacyProfiles": [
+    {"character": "ren", "openness": 60, "casual": false, "consentPolicy": "ask", "allowedCategories": ["intimacy"], "blockedCategories": [], "interests": []},
+    {"character": "sol", "openness": 70, "casual": true, "consentPolicy": "ask", "allowedCategories": ["intimacy"], "blockedCategories": [], "interests": []}
+  ],
+  "endings": [
+    {"id": "way-out", "name": "The panel opens", "character": "ren", "requires": {"intimacyCounts": {"ren": 0}}}
+  ]
+}

@@ -1,4 +1,4 @@
-// SillyTavern-style Visual Novel Client with Venus Daypart Loop
+// SillyTavern-style Visual Novel Client with Venus Daypart Loop & In-Game Smartphone
 
 const LOCATIONS = {
   living_room: {
@@ -68,11 +68,15 @@ let state = {
   history: {
     rin: [],
     hana: []
+  },
+  smsHistory: {
+    rin: [{ from: 'rin', text: "Did you make coffee yet?" }],
+    hana: [{ from: 'hana', text: "Good morning! Let me know if you need any study notes 😊" }]
   }
 };
 
-// Cached character definitions from /api/characters
 let characters = {};
+let activePhoneContact = 'rin';
 
 // DOM Elements
 const bgLayer = document.getElementById('bg-layer');
@@ -88,6 +92,7 @@ const quickReplies = document.getElementById('quick-replies');
 const userInput = document.getElementById('user-input');
 const btnSend = document.getElementById('btn-send');
 
+// Modals
 const mapModal = document.getElementById('map-modal');
 const btnMap = document.getElementById('btn-map');
 const btnCloseMap = document.getElementById('btn-close-map');
@@ -100,7 +105,18 @@ const btnDoWork = document.getElementById('btn-do-work');
 const btnDoGift = document.getElementById('btn-do-gift');
 const btnDoRest = document.getElementById('btn-do-rest');
 
-// Load characters from server
+// Phone Elements
+const phoneModal = document.getElementById('phone-modal');
+const btnPhone = document.getElementById('btn-phone');
+const btnClosePhone = document.getElementById('btn-close-phone');
+const phoneBackBtn = document.getElementById('phone-back-btn');
+const phoneContactsView = document.getElementById('phone-contacts-view');
+const phoneThreadView = document.getElementById('phone-thread-view');
+const phoneContactName = document.getElementById('phone-contact-name');
+const phoneMessagesList = document.getElementById('phone-messages-list');
+const phoneInput = document.getElementById('phone-input');
+const btnPhoneSend = document.getElementById('btn-phone-send');
+
 async function init() {
   try {
     const res = await fetch('/api/characters');
@@ -110,17 +126,15 @@ async function init() {
     console.error('Failed to load characters:', err);
   }
 
-  // Load saved state if available
   const saved = localStorage.getItem('vn_sandbox_state');
   if (saved) {
-    try { state = JSON.parse(saved); } catch (e) {}
+    try { state = { ...state, ...JSON.parse(saved) }; } catch (e) {}
   }
 
   renderHUD();
   updateScene();
   setupEventListeners();
 
-  // Initial welcome greeting if chat history is empty
   const char = characters[state.characterId];
   if (char && state.history[char.id].length === 0) {
     const opening = char.dialogueExamples?.[0] || '[smile] "Good morning. Are you ready for today?"';
@@ -143,24 +157,27 @@ function renderHUD() {
   const aff = state.affection[state.characterId] || 1;
   hudAffection.textContent = `❤️ Level ${aff}/5`;
 
-  // Update daypart tracker dots
   ['morning', 'afternoon', 'evening'].forEach((id, idx) => {
     const dot = document.getElementById(`dp-${id}`);
     if (dot) {
       dot.classList.toggle('active', idx === state.daypartIndex);
     }
   });
+
+  // Update phone preview snippets
+  const rinLast = state.smsHistory.rin.slice(-1)[0];
+  const hanaLast = state.smsHistory.hana.slice(-1)[0];
+  if (rinLast) document.getElementById('preview-rin').textContent = rinLast.text;
+  if (hanaLast) document.getElementById('preview-hana').textContent = hanaLast.text;
 }
 
 function updateScene() {
   const loc = LOCATIONS[state.location] || LOCATIONS.living_room;
   const isNight = state.daypartIndex === 2;
 
-  // Background
   const bgUrl = (isNight && loc.bgNight) ? loc.bgNight : loc.bgDay;
   bgLayer.style.backgroundImage = `url('${bgUrl}')`;
 
-  // Character presence
   const char = characters[state.characterId];
   if (char) {
     speakerName.textContent = char.name;
@@ -193,7 +210,6 @@ function updateSprite(expression) {
   }
 }
 
-// Typewriter effect for dialogue
 function typeText(text, callback) {
   dialogueText.textContent = '';
   let i = 0;
@@ -211,7 +227,6 @@ function typeText(text, callback) {
   type();
 }
 
-// Generate contextual quick reply chips
 function updateQuickReplies() {
   quickReplies.innerHTML = '';
   const char = characters[state.characterId];
@@ -235,9 +250,7 @@ function updateQuickReplies() {
     const btn = document.createElement('button');
     btn.className = 'chip-btn';
     btn.textContent = text;
-    btn.onclick = () => {
-      sendMessage(text);
-    };
+    btn.onclick = () => { sendMessage(text); };
     quickReplies.appendChild(btn);
   });
 }
@@ -252,7 +265,6 @@ async function sendMessage(text) {
   const charId = state.characterId;
   const history = state.history[charId] || [];
 
-  // Record user turn in local history
   history.push({ role: 'user', content: text });
 
   try {
@@ -272,7 +284,6 @@ async function sendMessage(text) {
     const data = await res.json();
     handleNPCReply(data.raw || data.text, data.expression);
 
-    // Save assistant reply to history
     history.push({ role: 'assistant', content: data.raw || data.text });
     state.history[charId] = history;
     saveState();
@@ -286,7 +297,6 @@ async function sendMessage(text) {
 }
 
 function handleNPCReply(rawText, explicitExpression) {
-  // Extract expression tag if present: e.g. [smile], [blush], [smug]
   let expression = explicitExpression || 'neutral';
   const match = rawText.match(/^\[([a-zA-Z0-9_-]+)\]/);
   if (match) {
@@ -294,15 +304,67 @@ function handleNPCReply(rawText, explicitExpression) {
   }
 
   updateSprite(expression);
-
-  // Strip leading expression tag for clean reading
   const cleanText = rawText.replace(/^\[[a-zA-Z0-9_-]+\]\s*/, '');
   typeText(cleanText, () => {
     updateQuickReplies();
   });
 }
 
-// Time advancing (Daypart loop)
+// Smartphone SMS logic
+function openPhoneThread(charId) {
+  activePhoneContact = charId;
+  phoneContactName.textContent = characters[charId]?.name || charId;
+  phoneContactsView.style.display = 'none';
+  phoneThreadView.style.display = 'flex';
+  renderPhoneMessages();
+}
+
+function renderPhoneMessages() {
+  phoneMessagesList.innerHTML = '';
+  const msgs = state.smsHistory[activePhoneContact] || [];
+  msgs.forEach(m => {
+    const bubble = document.createElement('div');
+    bubble.className = `msg-bubble ${m.from === 'user' ? 'user' : 'npc'}`;
+    bubble.textContent = m.text;
+    phoneMessagesList.appendChild(bubble);
+  });
+  phoneMessagesList.scrollTop = phoneMessagesList.scrollHeight;
+}
+
+async function sendPhoneMessage() {
+  const text = phoneInput.value.trim();
+  if (!text) return;
+  phoneInput.value = '';
+
+  const charId = activePhoneContact;
+  state.smsHistory[charId].push({ from: 'user', text });
+  renderPhoneMessages();
+
+  try {
+    const res = await fetch('/api/phone/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        characterId: charId,
+        userMessage: text,
+        history: state.smsHistory[charId].map(m => ({
+          role: m.from === 'user' ? 'user' : 'assistant',
+          content: m.text
+        })),
+        daypart: DAYPARTS[state.daypartIndex]
+      })
+    });
+    const data = await res.json();
+    state.smsHistory[charId].push({ from: charId, text: data.text });
+    renderPhoneMessages();
+    renderHUD();
+    saveState();
+  } catch (e) {
+    console.error('Phone SMS error:', e);
+  }
+}
+
+// Time advancing (Daypart loop + Spontaneous SMS triggers)
 function advanceDaypart() {
   state.daypartIndex++;
   if (state.daypartIndex >= DAYPARTS.length) {
@@ -311,13 +373,42 @@ function advanceDaypart() {
   }
   updateScene();
   updateQuickReplies();
+
+  // Spontaneous message trigger in the evening
+  if (state.daypartIndex === 2) {
+    state.smsHistory.rin.push({
+      from: 'rin',
+      text: "I just finished my drawings. Are you going to be home tonight?"
+    });
+    renderHUD();
+  }
 }
 
 function setupEventListeners() {
-  // Send message on Enter or click
   btnSend.onclick = () => sendMessage(userInput.value);
   userInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') sendMessage(userInput.value);
+  });
+
+  // Phone Modal
+  btnPhone.onclick = () => {
+    phoneModal.classList.add('active');
+    phoneContactsView.style.display = 'flex';
+    phoneThreadView.style.display = 'none';
+  };
+  btnClosePhone.onclick = () => phoneModal.classList.remove('active');
+  phoneBackBtn.onclick = () => {
+    phoneThreadView.style.display = 'none';
+    phoneContactsView.style.display = 'flex';
+  };
+
+  document.querySelectorAll('.phone-chat-item').forEach(item => {
+    item.onclick = () => openPhoneThread(item.dataset.char);
+  });
+
+  btnPhoneSend.onclick = sendPhoneMessage;
+  phoneInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') sendPhoneMessage();
   });
 
   // Map Modal
@@ -331,7 +422,6 @@ function setupEventListeners() {
   btnActionRow.onclick = () => actionsModal.classList.add('active');
   btnCloseActions.onclick = () => actionsModal.classList.remove('active');
 
-  // Action: Work
   btnDoWork.onclick = () => {
     actionsModal.classList.remove('active');
     state.money += 3500;
@@ -340,7 +430,6 @@ function setupEventListeners() {
     updateSprite('neutral');
   };
 
-  // Action: Gift
   btnDoGift.onclick = () => {
     if (state.money < 1000) {
       alert("You don't have enough money for a gift!");
@@ -354,7 +443,6 @@ function setupEventListeners() {
     sendMessage("I brought you a small gift—some fresh pastries from the bakery downtown.");
   };
 
-  // Action: Rest
   btnDoRest.onclick = () => {
     actionsModal.classList.remove('active');
     advanceDaypart();
@@ -384,5 +472,4 @@ function renderMapModal() {
   });
 }
 
-// Start game
 init();

@@ -1,0 +1,27 @@
+[
+  {
+    "id": "apartment",
+    "keys": ["apartment", "sharehouse", "home", "living room", "flat", "kitchen"],
+    "content": "The apartment is a modern, stylish 3-bedroom sharehouse in Shibuya, Tokyo. It has a spacious open kitchen, hardwood floors, a shared living area with a large sofa, and a quiet balcony overlooking the street. Rin, Hana, and {{user}} live here together as flatmates."
+  },
+  {
+    "id": "diner",
+    "keys": ["diner", "restaurant", "counter", "mai", "grill"],
+    "content": "Station Diner is a cozy, nostalgic eatery located in Station Lane. It is owned by Mai, a confident 38-year-old woman. It serves comforting home-style Japanese dishes like ginger pork, curry, and cold draft beer. It's lively during dinner and quiet after closing."
+  },
+  {
+    "id": "rin_background",
+    "keys": ["architecture", "building", "drafting", "project", "blueprints", "firm"],
+    "content": "Rin is an architect at a competitive Tokyo design firm. She is meticulous, values clean lines, and often works late into the evening. She finds chaotic spaces exhausting and keeps her private room impeccably tidy."
+  },
+  {
+    "id": "hana_background",
+    "keys": ["university", "study", "exam", "college", "classes", "library"],
+    "content": "Hana is a 3rd-year university student studying literature. She is quiet, sweet, and tends to get nervous before exams. She secretly reads romance novels and visual novels in her room."
+  },
+  {
+    "id": "love_hotel",
+    "keys": ["hotel", "love hotel", "suite", "private room"],
+    "content": "A high-end boutique love hotel situated on a quiet side street in Shibuya. It features mood lighting, a luxury king bed, and complete privacy for romantic encounters."
+  }
+]

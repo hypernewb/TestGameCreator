@@ -35,6 +35,7 @@
       <div class="hud-right">
         <span class="hud-badge stat-badge" id="hud-money">💰 ¥2,500</span>
         <span class="hud-badge stat-badge" id="hud-affection">❤️ Level 1</span>
+        <button class="hud-btn" id="btn-phone" title="Open Smartphone">📱 Phone <span class="badge-dot" id="phone-dot"></span></button>
         <button class="hud-btn" id="btn-map" title="Open Map">🗺️ Map</button>
         <button class="hud-btn" id="btn-action-row" title="Daily Actions">⚡ Actions</button>
       </div>
@@ -61,6 +62,52 @@
         </div>
       </div>
     </main>
+
+    <!-- Smartphone Modal (SMS / Messages) -->
+    <div class="modal" id="phone-modal">
+      <div class="phone-device">
+        <div class="phone-screen">
+          <div class="phone-notch"></div>
+          <div class="phone-header">
+            <button class="phone-back-btn" id="phone-back-btn">‹</button>
+            <div class="phone-contact-info">
+              <span id="phone-contact-name">Rin</span>
+              <span class="phone-status">Online</span>
+            </div>
+            <button class="btn-close" id="btn-close-phone">&times;</button>
+          </div>
+
+          <!-- Contact Picker View -->
+          <div class="phone-contacts-view" id="phone-contacts-view">
+            <div class="phone-chat-item" data-char="rin">
+              <div class="phone-avatar">R</div>
+              <div class="phone-chat-preview">
+                <h4>Rin</h4>
+                <p id="preview-rin">Did you make coffee?</p>
+              </div>
+            </div>
+            <div class="phone-chat-item" data-char="hana">
+              <div class="phone-avatar hana-av">H</div>
+              <div class="phone-chat-preview">
+                <h4>Hana</h4>
+                <p id="preview-hana">Good morning! 😊</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Message Thread View -->
+          <div class="phone-thread-view" id="phone-thread-view">
+            <div class="phone-messages-list" id="phone-messages-list">
+              <!-- Dynamically populated -->
+            </div>
+            <div class="phone-input-bar">
+              <input type="text" id="phone-input" placeholder="Message..." autocomplete="off">
+              <button id="btn-phone-send">↑</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Map Modal -->
     <div class="modal" id="map-modal">

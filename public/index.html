@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tokyo After Hours — VN Sandbox</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container">
+    <!-- Background Layer -->
+    <div id="bg-layer"></div>
+
+    <!-- Character Stage (Sprite Layer) -->
+    <div id="stage-layer">
+      <div id="sprite-wrapper">
+        <img id="character-sprite" src="" alt="Character Sprite">
+      </div>
+    </div>
+
+    <!-- Top Status HUD -->
+    <header id="top-hud">
+      <div class="hud-left">
+        <span class="hud-badge time-badge" id="hud-time">Day 1 • Morning</span>
+        <span class="hud-badge loc-badge" id="hud-location">📍 Living Room</span>
+      </div>
+      <div class="hud-center">
+        <!-- Daypart indicators -->
+        <div class="daypart-track">
+          <span class="dp-dot active" id="dp-morning">M</span>
+          <span class="dp-dot" id="dp-afternoon">A</span>
+          <span class="dp-dot" id="dp-evening">E</span>
+        </div>
+      </div>
+      <div class="hud-right">
+        <span class="hud-badge stat-badge" id="hud-money">💰 ¥2,500</span>
+        <span class="hud-badge stat-badge" id="hud-affection">❤️ Level 1</span>
+        <button class="hud-btn" id="btn-map" title="Open Map">🗺️ Map</button>
+        <button class="hud-btn" id="btn-action-row" title="Daily Actions">⚡ Actions</button>
+      </div>
+    </header>
+
+    <!-- ADV Dialogue Box -->
+    <main id="adv-container">
+      <div id="adv-box">
+        <div id="nameplate">
+          <span id="speaker-name">Rin</span>
+          <span id="speaker-role">Flatmate</span>
+        </div>
+        <div id="dialogue-content">
+          <p id="dialogue-text">...</p>
+        </div>
+
+        <!-- Quick Reply Chips -->
+        <div id="quick-replies"></div>
+
+        <!-- Free-form User Input Bar (SillyTavern style) -->
+        <div id="input-bar">
+          <input type="text" id="user-input" placeholder="Speak or take an action..." autocomplete="off">
+          <button id="btn-send">Send</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Map Modal -->
+    <div class="modal" id="map-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Travel to Location</h2>
+          <button class="btn-close" id="btn-close-map">&times;</button>
+        </div>
+        <div class="map-grid" id="map-destinations">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions Modal (Work, Rest, Shop) -->
+    <div class="modal" id="actions-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Daily Actions</h2>
+          <button class="btn-close" id="btn-close-actions">&times;</button>
+        </div>
+        <div class="actions-list">
+          <div class="action-card" id="act-work">
+            <div class="action-icon">💼</div>
+            <div class="action-info">
+              <h3>Part-Time Job</h3>
+              <p>Work a shift at the nearby store. Takes 1 daypart.</p>
+            </div>
+            <button class="btn-primary" id="btn-do-work">+¥3,500</button>
+          </div>
+          <div class="action-card" id="act-gift">
+            <div class="action-icon">🎁</div>
+            <div class="action-info">
+              <h3>Buy a Gift</h3>
+              <p>Spend ¥1,000 on fresh pastries or coffee to boost affection.</p>
+            </div>
+            <button class="btn-primary" id="btn-do-gift">-¥1,000</button>
+          </div>
+          <div class="action-card" id="act-rest">
+            <div class="action-icon">🛏️</div>
+            <div class="action-info">
+              <h3>Rest / Pass Time</h3>
+              <p>Relax and advance to the next daypart.</p>
+            </div>
+            <button class="btn-secondary" id="btn-do-rest">Wait</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+{
+ "char": "hana",
+ "scene": "afterglow",
+ "take": 1,
+ "seed": 589190,
+ "request": {
+  "input": "nsfw, explicit, 1girl, 1boy, hetero, pov, faceless male, indoors, bedroom, on bed,\n\nafter sex, lying, pillow, white bedsheets, pov, lying next to viewer, close-up,\n\nbright cheerful bedroom, sunflowers in vase, polaroid photos on wall, colorful bedding, art supplies,\n\nnight, warm lamp light, intimate atmosphere,\n\nartist: 1::artist: 陰 祭::, 0.8::artist: zd_1995 ::, 0.15::artist: murata range::, 0.7::artist: yamaishi_(mukoubuti):: , 0.85::artist: seak5545 ::, 0.6::artist: kidmo::, 0.6::artist: zd_1995 ::, 0.7::artist: yamaishi_(mukoubuti):: manhwa style \nwoman in \nvariety+\n\n\n2:: masterpiece::, 2::very_aesthetic::\nspecular highlights\n\n,  1girl\n, very aesthetic, masterpiece, no text, very aesthetic, masterpiece, no text",
+  "model": "nai-diffusion-5-full",
+  "action": "generate",
+  "parameters": {
+   "params_version": 3,
+   "width": 1216,
+   "height": 832,
+   "scale": 9,
+   "sampler": "k_euler_ancestral",
+   "steps": 18,
+   "n_samples": 1,
+   "ucPreset": 2,
+   "qualityToggle": true,
+   "dynamic_thresholding": false,
+   "cfg_rescale": 0.7,
+   "noise_schedule": "karras",
+   "legacy": false,
+   "legacy_v3_extend": false,
+   "legacy_uc": false,
+   "use_coords": false,
+   "prefer_brownian": true,
+   "deliberate_euler_ancestral_bug": false,
+   "seed": 589190,
+   "negative_prompt": "lowres, artistic error, film grain, scan artifacts, worst quality, bad quality, jpeg artifacts, very displeasing, chromatic aberration, dithering, halftone, screentone, multiple views, logo, too many watermarks, negative space, blank page, text, characters in background, multiple scenes, frame, crowd multiple views, character sheet, concept sheet, chibi, loli, flat nose, animal ears, bunny ears, furry, drooling, fantasy, text, fox ears, fat, schoolgirl, gloves, schoolgirl uniform, child, underage, censored, mosaic censoring, bar censor, 2boys, multiple boys, 2girls, male focus, male face, bad anatomy, bad hands, extra fingers, extra limbs, missing limbs, deformed, penis, sex",
+   "characterPrompts": [
+    {
+     "prompt": "adult woman, 21 years old, korean, dark brown hair in two low pigtails, curtain bangs, star earrings,\n\nnude, blanket covering lower body, nipples, content smile, blush, sleepy, messy hair, lying on side, looking at viewer",
+     "uc": "",
+     "center": {
+      "x": 0.5,
+      "y": 0.5
+     },
+     "enabled": true
+    }
+   ],
+   "v4_prompt": {
+    "caption": {
+     "base_caption": "nsfw, explicit, 1girl, 1boy, hetero, pov, faceless male, indoors, bedroom, on bed,\n\nafter sex, lying, pillow, white bedsheets, pov, lying next to viewer, close-up,\n\nbright cheerful bedroom, sunflowers in vase, polaroid photos on wall, colorful bedding, art supplies,\n\nnight, warm lamp light, intimate atmosphere,\n\nartist: 1::artist: 陰 祭::, 0.8::artist: zd_1995 ::, 0.15::artist: murata range::, 0.7::artist: yamaishi_(mukoubuti):: , 0.85::artist: seak5545 ::, 0.6::artist: kidmo::, 0.6::artist: zd_1995 ::, 0.7::artist: yamaishi_(mukoubuti):: manhwa style \nwoman in \nvariety+\n\n\n2:: masterpiece::, 2::very_aesthetic::\nspecular highlights\n\n,  1girl\n, very aesthetic, masterpiece, no text, very aesthetic, masterpiece, no text",
+     "char_captions": [
+      {
+       "char_caption": "adult woman, 21 years old, korean, dark brown hair in two low pigtails, curtain bangs, star earrings,\n\nnude, blanket covering lower body, nipples, content smile, blush, sleepy, messy hair, lying on side, looking at viewer",
+       "centers": [
+        {
+         "x": 0.5,
+         "y": 0.5
+        }
+       ]
+      }
+     ]
+    },
+    "use_coords": false,
+    "use_order": true
+   },
+   "v4_negative_prompt": {
+    "caption": {
+     "base_caption": "lowres, artistic error, film grain, scan artifacts, worst quality, bad quality, jpeg artifacts, very displeasing, chromatic aberration, dithering, halftone, screentone, multiple views, logo, too many watermarks, negative space, blank page, text, characters in background, multiple scenes, frame, crowd multiple views, character sheet, concept sheet, chibi, loli, flat nose, animal ears, bunny ears, furry, drooling, fantasy, text, fox ears, fat, schoolgirl, gloves, schoolgirl uniform, child, underage, censored, mosaic censoring, bar censor, 2boys, multiple boys, 2girls, male focus, male face, bad anatomy, bad hands, extra fingers, extra limbs, missing limbs, deformed, penis, sex",
+     "char_captions": [
+      {
+       "char_caption": "",
+       "centers": [
+        {
+         "x": 0.5,
+         "y": 0.5
+        }
+       ]
+      }
+     ]
+    },
+    "legacy_uc": false
+   }
+  }
+ }
+}

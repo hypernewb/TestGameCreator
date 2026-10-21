@@ -1,0 +1,20 @@
+{
+  "name": "vn-sillytavern-sandbox",
+  "version": "1.0.0",
+  "description": "Visual Novel Sandbox powered by SillyTavern-style roleplay with dynamic sprite expressions and daypart loop",
+  "main": "server.mjs",
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs"
+  },
+  "keywords": [
+    "visual-novel",
+    "sillytavern",
+    "roleplay",
+    "llm",
+    "sandbox"
+  ],
+  "author": "hypernewb",
+  "license": "MIT"
+}

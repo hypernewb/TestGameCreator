@@ -1,0 +1,80 @@
+{
+ "char": "hana",
+ "set": "formal",
+ "emotion": "frustrated",
+ "take": 3,
+ "seed": 589192,
+ "request": {
+  "input": "1girl, solo, cowboy shot, standing, facing viewer, looking at viewer, arms at sides, simple background, white background,\n\nartist: 1::artist: 陰 祭::, 0.8::artist: zd_1995 ::, 0.15::artist: murata range::, 0.7::artist: yamaishi_(mukoubuti):: , 0.85::artist: seak5545 ::, 0.6::artist: kidmo::, 0.6::artist: zd_1995 ::, 0.7::artist: yamaishi_(mukoubuti):: manhwa style \nwoman in \nvariety+\n\n\n2:: masterpiece::, 2::very_aesthetic::\nspecular highlights\n\n,  1girl\n, very aesthetic, masterpiece, no text, very aesthetic, masterpiece, no text",
+  "model": "nai-diffusion-5-full",
+  "action": "generate",
+  "parameters": {
+   "params_version": 3,
+   "width": 832,
+   "height": 1216,
+   "scale": 9,
+   "sampler": "k_euler_ancestral",
+   "steps": 18,
+   "n_samples": 1,
+   "ucPreset": 2,
+   "qualityToggle": true,
+   "dynamic_thresholding": false,
+   "cfg_rescale": 0.7,
+   "noise_schedule": "karras",
+   "legacy": false,
+   "legacy_v3_extend": false,
+   "legacy_uc": false,
+   "use_coords": false,
+   "prefer_brownian": true,
+   "deliberate_euler_ancestral_bug": false,
+   "seed": 589192,
+   "negative_prompt": "nsfw, lowres, artistic error, film grain, scan artifacts, worst quality, bad quality, jpeg artifacts, very displeasing, chromatic aberration, dithering, halftone, screentone, multiple views, logo, too many watermarks, negative space, blank page, censor, mosiac ,text,  characters in background, multiple scenes, frame, crowd multiple views, character sheet, concept sheet, sfw,chibi, loli, flat nose, animal ears, bunny ears, furry, drooling, fantasy, text ,fox ears, fat, schoolgirl, gloves, naked, nude, schoolgirl uniform, child, underage",
+   "characterPrompts": [
+    {
+     "prompt": "adult woman, 21 years old, korean, dark brown hair in two low pigtails, curtain bangs, star earrings,\n\nyellow sundress with puff sleeves,\n\nannoyed, frustrated, pout, frown, looking to the side",
+     "uc": "",
+     "center": {
+      "x": 0.5,
+      "y": 0.5
+     },
+     "enabled": true
+    }
+   ],
+   "v4_prompt": {
+    "caption": {
+     "base_caption": "1girl, solo, cowboy shot, standing, facing viewer, looking at viewer, arms at sides, simple background, white background,\n\nartist: 1::artist: 陰 祭::, 0.8::artist: zd_1995 ::, 0.15::artist: murata range::, 0.7::artist: yamaishi_(mukoubuti):: , 0.85::artist: seak5545 ::, 0.6::artist: kidmo::, 0.6::artist: zd_1995 ::, 0.7::artist: yamaishi_(mukoubuti):: manhwa style \nwoman in \nvariety+\n\n\n2:: masterpiece::, 2::very_aesthetic::\nspecular highlights\n\n,  1girl\n, very aesthetic, masterpiece, no text, very aesthetic, masterpiece, no text",
+     "char_captions": [
+      {
+       "char_caption": "adult woman, 21 years old, korean, dark brown hair in two low pigtails, curtain bangs, star earrings,\n\nyellow sundress with puff sleeves,\n\nannoyed, frustrated, pout, frown, looking to the side",
+       "centers": [
+        {
+         "x": 0.5,
+         "y": 0.5
+        }
+       ]
+      }
+     ]
+    },
+    "use_coords": false,
+    "use_order": true
+   },
+   "v4_negative_prompt": {
+    "caption": {
+     "base_caption": "nsfw, lowres, artistic error, film grain, scan artifacts, worst quality, bad quality, jpeg artifacts, very displeasing, chromatic aberration, dithering, halftone, screentone, multiple views, logo, too many watermarks, negative space, blank page, censor, mosiac ,text,  characters in background, multiple scenes, frame, crowd multiple views, character sheet, concept sheet, sfw,chibi, loli, flat nose, animal ears, bunny ears, furry, drooling, fantasy, text ,fox ears, fat, schoolgirl, gloves, naked, nude, schoolgirl uniform, child, underage",
+     "char_captions": [
+      {
+       "char_caption": "",
+       "centers": [
+        {
+         "x": 0.5,
+         "y": 0.5
+        }
+       ]
+      }
+     ]
+    },
+    "legacy_uc": false
+   }
+  }
+ }
+}

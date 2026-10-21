@@ -1,0 +1,339 @@
+{
+  "pronouns": "she/her",
+  "age": 21,
+  "description": "Hana is a 21-year-old adult with dark brown hair in two low pigtails, curtain bangs, star earrings, usually wearing pastel yellow knit sweater and denim overall skirt.",
+  "personality": "Sunny, impulsively generous and determined to find beauty in an ordinary day.",
+  "behavior": {
+    "withStrangers": "Offers a bright greeting and a low-pressure invitation.",
+    "withFriends": "Makes little portraits and remembers their favorite snacks.",
+    "withCrush": "Compliments openly, then laughs at her own nerves.",
+    "withLover": "Initiates affection and talks through desires and limits.",
+    "withEnemy": "Names the hurt plainly and asks for space."
+  },
+  "backstory": "A freelance illustrator who fills her room with photos of small victories.",
+  "goal": "Hold her first exhibition without apologizing for her work.",
+  "datingHistory": "Two affectionate relationships; comfortable discussing sex.",
+  "datingPreference": "Affectionate adult partners of any gender; open to commitment.",
+  "kinks": "Praise, playful roleplay, mutual sensual massage.",
+  "isVirgin": false,
+  "traits": [
+    "Good-natured"
+  ],
+  "likes": [
+    "sunflowers",
+    "watercolors"
+  ],
+  "dislikes": [
+    "cruel jokes",
+    "broken promises"
+  ],
+  "identityTags": [
+    "adult",
+    "deredere"
+  ],
+  "route": {
+    "activityAffinity": {"reactions":{"training":"bored","date":"bored","game":"bored","risky":"excited","weekly":"bored","minigame":"bored"},"wagers":{"money":{"stage":1,"lust":0},"dare":{"stage":2,"lust":20},"favour":{"stage":2,"lust":0},"clothing":{"stage":2,"lust":45}},"favouritePlaceType":"risky","signature":"hana: Make it a little dangerous.","ourPlaces":true},
+    "meter": {
+      "name": "Everyday wonder",
+      "stages": [
+        {
+          "name": "Pocket sketch",
+          "min": 0,
+          "note": "Hana wears a paint-flecked sundress and talks to strangers as if a shared joke is already underway. She invites you to sketch in the park, grinning at praise; away from the crowd she admits she'd rather draw a flirt than another bowl of fruit."
+        },
+        {
+          "name": "A brighter detour",
+          "min": 10,
+          "note": "Bright earrings swing as she narrates an outing she invented on the bus. In public she asks you to pose with a sunflower; in private she offers a ridiculous costume and tries out a grand artist's voice, breaking character whenever you compliment her."
+        },
+        {
+          "name": "Color outside the lines",
+          "min": 20,
+          "note": "In a loose painting shirt over shorts, Hana now says 'I want you as my muse' without retreating into a joke. She offers a hand to hold on the walk, then privately asks whether a shoulder massage might help you both stop posing."
+        },
+        {
+          "name": "Her first private exhibition",
+          "min": 30,
+          "note": "She chooses a backless dress for the exhibition and a soft robe for the evening she invites you to share afterward. Praise brings a pleased little shiver; her studio chatter slows into requests for warm hands and a private portrait with only the details you both want."
+        },
+        {
+          "name": "A life worth painting",
+          "min": 40,
+          "note": "Hana greets you in a silk wrap dotted with yesterday's paint and announces a very exclusive sitting. In public she'll proudly introduce her favorite muse; behind the studio door she directs a playful costume romance, asks for admiring words, and proposes taking turns with the massage oil."
+        }
+      ]
+    },
+    "pace": "normal",
+    "access": "normal",
+    "signals": [
+      {
+        "id": "compliment",
+        "label": "Makes her glow",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "You look beautiful."
+        },
+        "points": 3
+      },
+      {
+        "id": "novelty",
+        "label": "A new place",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "Let us go somewhere new."
+        },
+        "points": 5
+      },
+      {
+        "id": "routine",
+        "label": "The same routine",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "Let us do exactly the same thing again."
+        },
+        "points": -2
+      },
+      {
+        "id": "plan",
+        "label": "Bring an adventure",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "I found a night walk we have never tried."
+        },
+        "points": 4
+      },
+      {
+        "id": "curious",
+        "label": "Ask her fantasy",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "What would your perfect daring evening look like?"
+        },
+        "points": 3
+      },
+      {
+        "id": "limits",
+        "label": "Plan participants",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "Let us choose who is involved and what stays private."
+        },
+        "points": 3
+      },
+      {
+        "id": "judge",
+        "label": "Shame her appetite",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "Only desperate people want to be watched."
+        },
+        "points": -5
+      },
+      {
+        "id": "bystanders",
+        "label": "Involve strangers",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "Who cares whether the people watching agreed?"
+        },
+        "points": -6
+      },
+      {
+        "id": "dare",
+        "label": "Suggests a colorful detour",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "Dare to try something new?"
+        },
+        "points": 5
+      },
+      {
+        "id": "hana-care",
+        "label": "Brings flowers for painting",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "I saved these sunflowers for your watercolor study."
+        },
+        "points": 5
+      },
+      {
+        "id": "hana-slight",
+        "label": "Mocks her art and flakes",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "Your drawings are a joke; I never meant to show up."
+        },
+        "points": -5
+      }
+    ],
+    "activities": [
+      {
+        "name": "Find a new view for her sketchbook",
+        "description": "She fills a page with the unfamiliar view and adds a tiny portrait of you in the corner.",
+        "points": 3,
+        "minTrust": 0
+      },
+      {
+        "name": "Pose for a playful private portrait",
+        "description": "She fusses over the light, asks what you want drawn and beams at specific praise.",
+        "points": 4,
+        "minTrust": 0
+      },
+      {
+        "name": "Trade a massage for a watercolor lesson",
+        "description": "You choose where touch feels welcome; her shoulders soften as she talks through a new color wash.",
+        "points": 5,
+        "minTrust": 0
+      }
+    ],
+    "gifts": 2,
+    "giftTastes": {
+      "liked": [
+        "sunflower",
+        "watercolor",
+        "lingerie"
+      ],
+      "disliked": [
+        "cruel",
+        "prank"
+      ],
+      "likedPoints": 4,
+      "dislikedPoints": -3,
+      "neutralPoints": 0
+    },
+    "firsts": "Hana can turn an early outing into a romantic invitation without waiting for a milestone. Ask whether she wants to be the artist, the model, or simply held; a portrait never includes more skin than its subject chooses, and massage is an invitation to discuss touch.",
+    "rewardSuggestions": [
+      {
+        "rank": 2,
+        "kind": "place",
+        "slot": "room",
+        "suggestion": "Her studio floor makes room for two sketchbooks, not a mandatory destination for affection."
+      },
+      {
+        "rank": 3,
+        "kind": "item",
+        "slot": "gift",
+        "suggestion": "A sunflower study she can hang among her small victories."
+      },
+      {
+        "rank": 4,
+        "kind": "activity",
+        "slot": "signature-1",
+        "suggestion": "Return to the lookout with paints and see what she notices in different weather."
+      },
+      {
+        "rank": 5,
+        "kind": "place",
+        "slot": "workplace",
+        "suggestion": "Where an illustration shift permits visitors, propose a worktable for a short shared sketch."
+      }
+    ],
+    "shiftMoments": [
+      {
+        "id": "hana-work",
+        "text": "Hana draws a tiny heroic version of you on the corner of a scrap order sheet, then asks whether the cape is too much before adding another flourish.",
+        "withRole": "self"
+      }
+    ],
+    "sceneDrafts": [
+      {
+        "id": "hana-invitation-2",
+        "rank": 2,
+        "title": "A brighter detour",
+        "opening": "Come be my favorite model. You can keep every stitch of clothing you like.",
+        "pages": [
+          {
+            "text": "She holds two mismatched scarves against the window light, unable to decide which suits her imaginary countess. 'You get casting approval,' she says, passing you the sketchbook with a clean page waiting.",
+            "cg": ""
+          }
+        ],
+        "choices": [
+          {
+            "id": "lean-in",
+            "label": "Choose a character for the portrait",
+            "effects": []
+          },
+          {
+            "id": "take-time",
+            "label": "Draw the view together instead",
+            "effects": []
+          }
+        ]
+      },
+      {
+        "id": "hana-invitation-4",
+        "rank": 4,
+        "title": "Her first private exhibition",
+        "opening": "I drew the evening I wanted. Now tell me which parts you would enjoy.",
+        "pages": [
+          {
+            "text": "The picture is a jumble of candles, cushions and suspiciously regal costumes. Hana sets her pencil down: 'I can draw the mood, but I need you to tell me what would feel good to be part of.'",
+            "cg": ""
+          }
+        ],
+        "choices": [
+          {
+            "id": "lean-in",
+            "label": "Suggest a costume and a massage",
+            "effects": []
+          },
+          {
+            "id": "take-time",
+            "label": "Help her finish the evening sketch",
+            "effects": []
+          }
+        ]
+      }
+    ],
+    "type": "thrill-seeker",
+    "summary": "A sunny illustrator makes dates out of overlooked corners and learns to ask for the attention she gives so freely.",
+    "staffRole": {
+      "role": "coworker",
+      "title": "Workshop illustrator"
+    }
+  },
+  "agenda": {
+    "id": "personal",
+    "title": "Hold her first exhibition without apologizing for her work",
+    "why": "She wants to show the ordinary moments she notices and receive attention without apologizing for taking up a wall.",
+    "steps": [
+      {
+        "id": "prepare",
+        "title": "Choose three everyday victories",
+        "description": "Hana spreads out watercolors and tiny portraits, laughs over a crooked sunflower, and chooses three pieces she wants people to see."
+      },
+      {
+        "id": "practice",
+        "title": "Rehearse the exhibition introduction",
+        "description": "She practices introducing the work without an apology. You can give specific feedback; she decides which words feel like hers."
+      },
+      {
+        "id": "finish",
+        "title": "Hang the first exhibition",
+        "description": "She checks the spacing, pins up her chosen pieces and writes her own name clearly beside them. The modest display is finally real."
+      }
+    ],
+    "wants": [
+      {
+        "id": "specific-praise",
+        "text": "someone to notice a particular detail in her watercolors",
+        "keys": [
+          "watercolor-detail"
+        ],
+        "reward": 2
+      },
+      {
+        "id": "show-up",
+        "text": "company who remembers the small exhibition she is planning",
+        "keys": [
+          "exhibition-plan"
+        ],
+        "reward": 2
+      }
+    ],
+    "ending": {
+      "title": "Her name on the wall",
+      "text": "Hana steps back from the display. \"I nearly said sorry for the space,\" she admits. \"Then I remembered I picked these because I like them.\" She asks which picture you want to look at first."
+    }
+  }
+}

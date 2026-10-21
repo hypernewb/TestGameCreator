@@ -1,0 +1,337 @@
+{
+  "pronouns": "she/her",
+  "age": 29,
+  "description": "Rin is a 29-year-old adult with sleek black hair in a low ponytail, sharp narrow eyes, red lipstick, silver chain earrings, usually wearing black turtleneck and black high-waisted trousers.",
+  "personality": "Economical with words, exacting with promises; affection appears in careful actions.",
+  "behavior": {
+    "withStrangers": "Asks clear questions without filling every silence.",
+    "withFriends": "Remembers preferences and quietly solves practical problems.",
+    "withCrush": "Makes time in a meticulous schedule and holds eye contact.",
+    "withLover": "States desires precisely and allows unguarded tenderness.",
+    "withEnemy": "Documents the issue and keeps her distance."
+  },
+  "backstory": "An architect who made her apartment orderly after years of constant moves.",
+  "goal": "Design a public space that feels welcoming.",
+  "datingHistory": "One long partnership; now selective and sexually self-aware.",
+  "datingPreference": "Reliable adults; monogamous long-term intimacy.",
+  "kinks": "Blindfolds, slow teasing, negotiated restraint.",
+  "isVirgin": false,
+  "traits": [
+    "High Standards"
+  ],
+  "likes": [
+    "architecture",
+    "quiet mornings"
+  ],
+  "dislikes": [
+    "unreliability",
+    "clutter imposed by others"
+  ],
+  "identityTags": [
+    "adult",
+    "kuudere"
+  ],
+  "route": {
+    "activityAffinity": {"reactions":{"training":"warm","date":"warm","game":"warm","risky":"warm","weekly":"warm","minigame":"warm"},"wagers":{"money":{"stage":1,"lust":0},"dare":{"stage":2,"lust":20},"favour":{"stage":2,"lust":0},"clothing":{"stage":2,"lust":45}},"favouritePlaceType":"social","signature":"rin: One round. Let us agree what we are playing for.","ourPlaces":true},
+    "meter": {
+      "name": "Private certainty",
+      "stages": [
+        {
+          "name": "A penciled appointment",
+          "min": 0,
+          "note": "Rin's charcoal trousers and crisp shirt look as considered as the rooms she designs. She offers a dawn architecture walk with precise meeting details; alone she admits she likes anticipation, letting a quiet pause do the work of a louder flirt."
+        },
+        {
+          "name": "A promise kept",
+          "min": 10,
+          "note": "A fine-gauge sweater replaces the work shirt when she keeps a morning free for you. She starts inviting you to coffee without explaining it to onlookers; privately she asks what helps you relax when you can't see what's coming, listening more closely than the question first suggests."
+        },
+        {
+          "name": "A room without spectators",
+          "min": 20,
+          "note": "In a dark wrap dress, Rin invites you to stay after the other guests leave. Her public affection is a steady hand at your elbow when welcome; alone she brings out a blindfold and discusses slow teasing with the same deliberate care she gives a floor plan."
+        },
+        {
+          "name": "The plan she revises for you",
+          "min": 30,
+          "note": "She wears a silk camisole beneath an unstructured jacket and no longer makes desire sound like logistics. Publicly she asks for another date without disguising it as an errand; in private she proposes a restraint scene, checks the release, and leaves room for unscripted requests."
+        },
+        {
+          "name": "An address called ours",
+          "min": 40,
+          "note": "Rin greets you in a linen robe, the blindfold laid beside a plan she's quite willing to discard. Outside she acknowledges the relationship on terms you've agreed; behind her own door she initiates long teasing games, asks for the restraint she wants, and tells you plainly when she'd prefer to be held instead."
+        }
+      ]
+    },
+    "pace": "slow",
+    "access": "phone",
+    "signals": [
+      {
+        "id": "compliment",
+        "label": "Public flattery",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "You look beautiful."
+        },
+        "points": -1
+      },
+      {
+        "id": "secret",
+        "label": "Discretion",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "We can talk somewhere quiet."
+        },
+        "points": 4
+      },
+      {
+        "id": "expose",
+        "label": "Threaten exposure",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "I will tell everyone about us."
+        },
+        "points": -6
+      },
+      {
+        "id": "terms",
+        "label": "Ask about agreements",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "What have you actually agreed with your partner?"
+        },
+        "points": 4
+      },
+      {
+        "id": "no-pressure",
+        "label": "Leave room",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "You do not owe me a decision tonight."
+        },
+        "points": 3
+      },
+      {
+        "id": "honest",
+        "label": "Name consequences",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "Let us be honest about what this could cost."
+        },
+        "points": 3
+      },
+      {
+        "id": "claim",
+        "label": "Claim ownership",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "You belong to me now."
+        },
+        "points": -5
+      },
+      {
+        "id": "alibi",
+        "label": "Impose a lie",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "Tell your partner you were working."
+        },
+        "points": -4
+      },
+      {
+        "id": "dare",
+        "label": "Suggests a private departure",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "Dare to try something new?"
+        },
+        "points": 0
+      },
+      {
+        "id": "rin-care",
+        "label": "Keeps the quiet morning plan",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "I arrived on time with the architecture book for our quiet morning."
+        },
+        "points": 5
+      },
+      {
+        "id": "rin-slight",
+        "label": "Exposes plans and invades space",
+        "event": "social.spoke",
+        "match": {
+          "utterance": "I posted your private plans and left my clutter in your space."
+        },
+        "points": -5
+      }
+    ],
+    "activities": [
+      {
+        "name": "Explore a building's hidden details at dawn",
+        "description": "She points out a welcoming threshold and gives your observation the same exact attention as the building.",
+        "points": 3,
+        "minTrust": 0
+      },
+      {
+        "name": "Design a welcoming corner together",
+        "description": "She moves one object by agreement and admits that sharing a decision can feel peaceful.",
+        "points": 4,
+        "minTrust": 0
+      },
+      {
+        "name": "Plan a private blindfold and slow-teasing evening",
+        "description": "She sets privacy, release and check-in terms, then asks which parts of the evening you actually want.",
+        "points": 5,
+        "minTrust": 0
+      }
+    ],
+    "gifts": 0,
+    "giftTastes": {
+      "liked": [
+        "architecture",
+        "coffee",
+        "blindfold"
+      ],
+      "disliked": [
+        "glitter",
+        "lingerie"
+      ],
+      "likedPoints": 4,
+      "dislikedPoints": -3,
+      "neutralPoints": 0
+    },
+    "firsts": "Rin's wish for discretion does not imply a hidden partner or permission to invent an alibi. A private invitation can come at any stage; ask who may know what, and treat blindfolds or restraint as plans to agree on afresh rather than proof of permanent trust.",
+    "rewardSuggestions": [
+      {
+        "rank": 2,
+        "kind": "place",
+        "slot": "room",
+        "suggestion": "A place at her orderly breakfast table signals welcome without making her room the sole setting for intimacy."
+      },
+      {
+        "rank": 3,
+        "kind": "item",
+        "slot": "gift",
+        "suggestion": "An architecture book about a building you both lingered beside."
+      },
+      {
+        "rank": 4,
+        "kind": "activity",
+        "slot": "signature-1",
+        "suggestion": "Revisit the shared corner and ask which detail still feels uncomfortable."
+      },
+      {
+        "rank": 5,
+        "kind": "place",
+        "slot": "workplace",
+        "suggestion": "If her practice has a visitor area, suggest a daylight design review there."
+      }
+    ],
+    "shiftMoments": [
+      {
+        "id": "rin-work",
+        "text": "Rin moves a meeting so your agreed coffee break stays intact, then sets down two cups without calling attention to the effort; she asks what you noticed on the walk over.",
+        "withRole": "self"
+      }
+    ],
+    "sceneDrafts": [
+      {
+        "id": "rin-invitation-2",
+        "rank": 2,
+        "title": "A promise kept",
+        "opening": "I kept the morning free. You can decide whether that means a walk or coffee here.",
+        "pages": [
+          {
+            "text": "A second cup is warming beside the first, but the walking shoes remain by the door. Rin gives you both possibilities without steering your answer: 'I wanted the time together; the route is negotiable.'",
+            "cg": ""
+          }
+        ],
+        "choices": [
+          {
+            "id": "lean-in",
+            "label": "Choose coffee at her table",
+            "effects": []
+          },
+          {
+            "id": "take-time",
+            "label": "Take the morning walk with her",
+            "effects": []
+          }
+        ]
+      },
+      {
+        "id": "rin-invitation-4",
+        "rank": 4,
+        "title": "The plan she revises for you",
+        "opening": "I trust you with a plan that can change. Shall we discuss the blindfold and what either of us can stop?",
+        "pages": [
+          {
+            "text": "She draws a line through the last item on the page and turns it toward you. 'A plan isn't a promise to finish,' Rin says, pointing to the blindfold she hasn't yet picked up.",
+            "cg": ""
+          }
+        ],
+        "choices": [
+          {
+            "id": "lean-in",
+            "label": "Agree on a signal and scope",
+            "effects": []
+          },
+          {
+            "id": "take-time",
+            "label": "Spend the evening without props",
+            "effects": []
+          }
+        ]
+      }
+    ],
+    "type": "secret-affair",
+    "summary": "An architect builds intimacy through kept promises, chosen privacy and plans that leave room for desire.",
+    "staffRole": null,
+    "partner": false
+  },
+  "agenda": {
+    "id": "personal",
+    "title": "Design a public space that feels welcoming",
+    "why": "A welcoming public space must work for its users. She wants decisions that stand up to observation and promises that survive the meeting.",
+    "steps": [
+      {
+        "id": "prepare",
+        "title": "Observe who the public space leaves out",
+        "description": "On a quiet walk, Rin notes awkward thresholds, missing seating and where people hesitate. She asks for one precise observation."
+      },
+      {
+        "id": "practice",
+        "title": "Review the welcoming-space sketch",
+        "description": "She draws a revised entrance and seating corner. You test the circulation together; she explains which change addresses which problem."
+      },
+      {
+        "id": "finish",
+        "title": "Present the public-space proposal",
+        "description": "Rin checks the promised revisions, labels the plan and presents the welcoming-space proposal. A clear design replaces a vague intention."
+      }
+    ],
+    "wants": [
+      {
+        "id": "precise-observation",
+        "text": "one useful observation about how a space welcomes people",
+        "keys": [
+          "welcoming-space"
+        ],
+        "reward": 2
+      },
+      {
+        "id": "quiet-walk",
+        "text": "a quiet walk that begins when agreed",
+        "keys": [
+          "quiet-walk"
+        ],
+        "reward": 2
+      }
+    ],
+    "ending": {
+      "title": "A place with room for people",
+      "text": "Rin sets the final proposal square with the table. \"The entrance works better now,\" she says. After a pause: \"So did working together.\" She offers a quiet walk and waits for your answer."
+    }
+  }
+}
